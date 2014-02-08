@@ -1,0 +1,12 @@
+# generated files
+build/
+
+# Gradle temp files?
+.gradle/
+
+# Android Studio
+/local.properties
+/.idea/workspace.xml
+
+# Mac
+.DS_Store
