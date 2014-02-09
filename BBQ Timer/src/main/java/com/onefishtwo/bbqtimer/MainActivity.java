@@ -15,6 +15,10 @@ public class MainActivity extends ActionBarActivity {
     private final TimeCounter time = new TimeCounter();
     private boolean running = false;
 
+    Button resetButton;
+    Button startStopButton;
+    TextView displayView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,7 +54,7 @@ public class MainActivity extends ActionBarActivity {
     /**
      * A placeholder fragment containing a simple view.
      */
-    public static class PlaceholderFragment extends Fragment {
+    public class PlaceholderFragment extends Fragment {
 
         public PlaceholderFragment() {
         }
@@ -60,6 +64,15 @@ public class MainActivity extends ActionBarActivity {
                 Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_main, container, false);
             return rootView;
+        }
+
+        @Override
+        public void onActivityCreated(Bundle savedInstanceState) {
+            super.onActivityCreated(savedInstanceState);
+
+            resetButton     = (Button) findViewById(R.id.resetButton);
+            startStopButton = (Button) findViewById(R.id.startStopButton);
+            displayView     = (TextView) findViewById(R.id.display);
         }
     }
 
@@ -82,17 +95,12 @@ public class MainActivity extends ActionBarActivity {
     /** Updates the time display. */
     private void displayTime() {
         String formatted = time.toString();
-        TextView displayView = (TextView) findViewById(R.id.display);
 
         displayView.setText(formatted);
     }
 
     /** Updates the UI controls for the current state. */
     private void updateUI() {
-        // TODO: Cache these, but onCreate() is too early to fetch them.
-        Button resetButton     = (Button) findViewById(R.id.resetButton);
-        Button startStopButton = (Button) findViewById(R.id.startStopButton);
-
         resetButton.setVisibility(running || time.getTime() == 0 ? View.INVISIBLE : View.VISIBLE);
         startStopButton.setText(running ? R.string.stop : R.string.start);
     }
