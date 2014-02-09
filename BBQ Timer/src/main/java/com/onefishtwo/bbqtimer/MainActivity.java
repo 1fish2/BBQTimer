@@ -46,6 +46,7 @@ public class MainActivity extends ActionBarActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if (id == R.id.action_settings) {
+            // TODO
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -73,6 +74,8 @@ public class MainActivity extends ActionBarActivity {
             resetButton     = (Button) findViewById(R.id.resetButton);
             startStopButton = (Button) findViewById(R.id.startStopButton);
             displayView     = (TextView) findViewById(R.id.display);
+
+            updateUI();
         }
     }
 
@@ -81,14 +84,12 @@ public class MainActivity extends ActionBarActivity {
         running = !running;
         time.addMilliseconds(2500); // TODO: actual stopwatch timing
 
-        displayTime();
         updateUI();
     }
 
     // TODO: Add this method to Proguard rules.
     public void onReset(View v) {
         time.setTime(0);
-        displayTime();
         updateUI();
     }
 
@@ -99,8 +100,9 @@ public class MainActivity extends ActionBarActivity {
         displayView.setText(formatted);
     }
 
-    /** Updates the UI controls for the current state. */
+    /** Updates the UI for the current state. */
     private void updateUI() {
+        displayTime();
         resetButton.setVisibility(running || time.getTime() == 0 ? View.INVISIBLE : View.VISIBLE);
         startStopButton.setText(running ? R.string.stop : R.string.start);
     }
