@@ -8,9 +8,58 @@
     android:paddingBottom="@dimen/activity_vertical_margin"
     tools:context="com.onefishtwo.bbqtimer.MainActivity$PlaceholderFragment">
 
-    <TextView
-        android:text="@string/hello_world"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_alignParentBottom="false"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="false"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="false">
+
+        <TextView
+            android:text="@string/time0"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:id="@+id/display"
+            android:textSize="72sp"
+            android:singleLine="true"
+            android:importantForAccessibility="yes"
+            android:gravity="right"
+            android:onClick="onStartStop" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/start"
+                android:id="@+id/startStopButton"
+                android:importantForAccessibility="yes"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:paddingLeft="@dimen/buttonPadding"
+                android:paddingRight="@dimen/buttonPadding"
+                android:onClick="onStartStop" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/reset"
+                android:id="@+id/resetButton"
+                android:importantForAccessibility="yes"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                android:visibility="invisible"
+                android:onClick="onReset" />
+        </RelativeLayout>
+
+    </LinearLayout>
 
 </RelativeLayout>

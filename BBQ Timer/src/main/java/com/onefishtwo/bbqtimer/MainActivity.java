@@ -8,12 +8,17 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.TextView;
 
 public class MainActivity extends ActionBarActivity {
+    private final TimeCounter time = new TimeCounter();
+    private boolean running = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
 
         if (savedInstanceState == null) {
@@ -56,6 +61,40 @@ public class MainActivity extends ActionBarActivity {
             View rootView = inflater.inflate(R.layout.fragment_main, container, false);
             return rootView;
         }
+    }
+
+    // TODO: Add this method to Proguard rules.
+    public void onStartStop(View v) {
+        running = !running;
+        time.addMilliseconds(2500); // TODO: actual stopwatch timing
+
+        displayTime();
+        updateUI();
+    }
+
+    // TODO: Add this method to Proguard rules.
+    public void onReset(View v) {
+        time.setTime(0);
+        displayTime();
+        updateUI();
+    }
+
+    /** Updates the time display. */
+    private void displayTime() {
+        String formatted = time.toString();
+        TextView displayView = (TextView) findViewById(R.id.display);
+
+        displayView.setText(formatted);
+    }
+
+    /** Updates the UI controls for the current state. */
+    private void updateUI() {
+        // TODO: Cache these, but onCreate() is too early to fetch them.
+        Button resetButton     = (Button) findViewById(R.id.resetButton);
+        Button startStopButton = (Button) findViewById(R.id.startStopButton);
+
+        resetButton.setVisibility(running || time.getTime() == 0 ? View.INVISIBLE : View.VISIBLE);
+        startStopButton.setText(running ? R.string.stop : R.string.start);
     }
 
 }
