@@ -51,6 +51,20 @@ public class TimeCounter {
         }
     }
 
+    /**
+     * Starts or pauses, i.e. toggles the running state.
+     *
+     * @return true if the timer is now running.
+     */
+    public boolean toggleRunning() {
+        if (isRunning) {
+            pause();
+        } else {
+            start();
+        }
+        return isRunning;
+    }
+
     /** Stops and resets the timer. */
     public void reset() {
         startTime = pauseTime = 0;

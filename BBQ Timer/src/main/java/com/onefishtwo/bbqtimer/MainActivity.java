@@ -1,6 +1,8 @@
 package com.onefishtwo.bbqtimer;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
@@ -11,7 +13,44 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+/**
+ * The BBQ Timer's main activity.
+ * </p>
+ * TODO: Add a landscape orientation layout.
+ * TODO: Handle Android sleep modes, suspending the app, etc. Put the TimeCounter in a Service.
+ * TODO: Implement a widget for the home and lock screens.
+ * TODO: Add alarms. Use or remove the Settings menu.
+ */
 public class MainActivity extends ActionBarActivity {
+
+    /** A Handler for periodic display updates. */
+    private class UpdateHandler extends Handler {
+        private static final int MSG_UPDATE = 1;
+        private static final long UPDATE_INTERVAL = 100; // msec
+
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what) {
+                case MSG_UPDATE:
+                    displayTime();
+                    scheduleNextUpdate();
+                    break;
+            }
+        }
+
+        /** Schedules the next display update if the timer is running. */
+        public void scheduleNextUpdate() {
+            if (timer.isRunning()) {
+                // TODO: Any race conditions that could end the update messages?
+                // TODO: Maybe use sendEmptyMessageAtTime() for drift-free scheduling.
+                sendEmptyMessageDelayed(MSG_UPDATE, UPDATE_INTERVAL);
+            }
+        }
+    }
+
+    private final UpdateHandler updateHandler = new UpdateHandler();
+
     private final TimeCounter timer = new TimeCounter();
 
     private Button resetButton;
@@ -53,6 +92,9 @@ public class MainActivity extends ActionBarActivity {
 
     /**
      * A placeholder fragment containing a simple view.
+     * </p>
+     * TODO: Directly include the fragment's contents? The New Project template created this. It
+     * might be handy for the lock screen widget.
      */
     private class PlaceholderFragment extends Fragment {
 
@@ -79,12 +121,8 @@ public class MainActivity extends ActionBarActivity {
 
     // TODO: Add this method to Proguard rules.
     public void onStartStop(View v) {
-        if (timer.isRunning()) {
-            timer.pause();
-        } else {
-            timer.start();
-        }
-
+        timer.toggleRunning();
+        updateHandler.scheduleNextUpdate();
         updateUI();
     }
 
@@ -94,7 +132,7 @@ public class MainActivity extends ActionBarActivity {
         updateUI();
     }
 
-    /** Updates the time display. */
+    /** Displays the current elapsed time. I.e. updates the display. */
     private void displayTime() {
         String formatted = timer.getFormattedElapsedTime();
 
