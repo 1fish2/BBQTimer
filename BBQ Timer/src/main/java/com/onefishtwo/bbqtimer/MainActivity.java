@@ -12,12 +12,11 @@ import android.widget.Button;
 import android.widget.TextView;
 
 public class MainActivity extends ActionBarActivity {
-    private final TimeCounter time = new TimeCounter();
-    private boolean running = false;
+    private final TimeCounter timer = new TimeCounter();
 
-    Button resetButton;
-    Button startStopButton;
-    TextView displayView;
+    private Button resetButton;
+    private Button startStopButton;
+    private TextView displayView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,10 +54,9 @@ public class MainActivity extends ActionBarActivity {
     /**
      * A placeholder fragment containing a simple view.
      */
-    public class PlaceholderFragment extends Fragment {
+    private class PlaceholderFragment extends Fragment {
 
-        public PlaceholderFragment() {
-        }
+        public PlaceholderFragment() { }
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -81,29 +79,35 @@ public class MainActivity extends ActionBarActivity {
 
     // TODO: Add this method to Proguard rules.
     public void onStartStop(View v) {
-        running = !running;
-        time.addMilliseconds(2500); // TODO: actual stopwatch timing
+        if (timer.isRunning()) {
+            timer.pause();
+        } else {
+            timer.start();
+        }
 
         updateUI();
     }
 
     // TODO: Add this method to Proguard rules.
     public void onReset(View v) {
-        time.setTime(0);
+        timer.reset();
         updateUI();
     }
 
     /** Updates the time display. */
     private void displayTime() {
-        String formatted = time.toString();
+        String formatted = timer.getFormattedElapsedTime();
 
         displayView.setText(formatted);
     }
 
     /** Updates the UI for the current state. */
     private void updateUI() {
+        boolean running = timer.isRunning();
+
         displayTime();
-        resetButton.setVisibility(running || time.getTime() == 0 ? View.INVISIBLE : View.VISIBLE);
+        resetButton.setVisibility(running
+                || timer.getElapsedTime() == 0 ? View.INVISIBLE : View.VISIBLE);
         startStopButton.setText(running ? R.string.stop : R.string.start);
     }
 
