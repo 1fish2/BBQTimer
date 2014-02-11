@@ -16,10 +16,13 @@ import android.widget.TextView;
 /**
  * The BBQ Timer's main activity.
  * </p>
- * TODO: Add a landscape orientation layout.
+ * TODO: Activity lifecycle.
+ * TODO: Add a landscape orientation layout. Handle configuration changes.
  * TODO: Handle Android sleep modes, suspending the app, etc. Put the TimeCounter in a Service.
  * TODO: Implement a widget for the home and lock screens.
+ * TODO: Create app icons.
  * TODO: Add alarms. Use or remove the Settings menu.
+ * TODO: Thumbnail.
  */
 public class MainActivity extends ActionBarActivity {
 
@@ -119,15 +122,14 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
-    // TODO: Add this method to Proguard rules.
-    public void onStartStop(View v) {
+    // A Proguard rule keeps all Activity onClick*() methods.
+    public void onClickStartStop(View v) {
         timer.toggleRunning();
         updateHandler.scheduleNextUpdate();
         updateUI();
     }
 
-    // TODO: Add this method to Proguard rules.
-    public void onReset(View v) {
+    public void onClickReset(View v) {
         timer.reset();
         updateUI();
     }
