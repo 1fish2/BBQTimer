@@ -3,13 +3,10 @@ package com.onefishtwo.bbqtimer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -66,11 +63,11 @@ public class MainActivity extends ActionBarActivity {
 
         setContentView(R.layout.activity_main);
 
-        if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new PlaceholderFragment())
-                    .commit();
-        }
+        resetButton     = (Button) findViewById(R.id.resetButton);
+        startStopButton = (Button) findViewById(R.id.startStopButton);
+        displayView     = (TextView) findViewById(R.id.display);
+
+        updateUI();
     }
 
     @Override
@@ -91,35 +88,6 @@ public class MainActivity extends ActionBarActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    /**
-     * A placeholder fragment containing a simple view.
-     * </p>
-     * TODO: Directly include the fragment's contents? The New Project template created this. It
-     * might be handy for the lock screen widget.
-     */
-    private class PlaceholderFragment extends Fragment {
-
-        public PlaceholderFragment() { }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-            return rootView;
-        }
-
-        @Override
-        public void onActivityCreated(Bundle savedInstanceState) {
-            super.onActivityCreated(savedInstanceState);
-
-            resetButton     = (Button) findViewById(R.id.resetButton);
-            startStopButton = (Button) findViewById(R.id.startStopButton);
-            displayView     = (TextView) findViewById(R.id.display);
-
-            updateUI();
-        }
     }
 
     // A Proguard rule keeps all Activity onClick*() methods.
