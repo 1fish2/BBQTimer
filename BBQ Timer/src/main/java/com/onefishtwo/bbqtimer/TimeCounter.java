@@ -4,6 +4,7 @@
 
 package com.onefishtwo.bbqtimer;
 
+import android.content.SharedPreferences;
 import android.os.SystemClock;
 
 /**
@@ -13,10 +14,46 @@ public class TimeCounter {
     private static final String SHORT_FORMAT =      "%d:%02d.%01d"; //   mm:ss.f
     private static final String LONG_FORMAT  = "%d:%02d:%02d.%01d"; // h:mm:ss.f
 
+    /** PERSISTENT STATE identifiers. */
+    public static final String PREF_IS_RUNNING = "isRunning";
+    public static final String PREF_START_TIME = "startTime";
+    public static final String PREF_PAUSE_TIME = "pauseTime";
+
     private boolean isRunning;
-    private long startTime, pauseTime; // in milliseconds
+    private long startTime; // when started, in system elapsed milliseconds
+    private long pauseTime; // if !isRunning, when paused, in system elapsed milliseconds
 
     public TimeCounter() {
+    }
+
+    /** Saves state to a preferences editor. */
+    public void save(SharedPreferences.Editor prefsEditor) {
+        prefsEditor.putBoolean(PREF_IS_RUNNING, isRunning);
+        prefsEditor.putLong(PREF_START_TIME, startTime);
+        prefsEditor.putLong(PREF_PAUSE_TIME, pauseTime);
+    }
+
+    /** Loads state from a preferences object. */
+    public void load(SharedPreferences prefs) {
+        isRunning = prefs.getBoolean(PREF_IS_RUNNING, false);
+        startTime = prefs.getLong(PREF_START_TIME, 0);
+        pauseTime = prefs.getLong(PREF_PAUSE_TIME, 0);
+
+        // Enforce invariants.
+        if (isRunning) {
+            if (startTime > elapsedTime()) {
+                // Must've rebooted.
+                // TODO: How to detect reboot when startTime <= elapsedTime()?
+                reset();
+            }
+        } else if (pauseTime < startTime) {
+            reset();
+        }
+    }
+
+    long elapsedTime() {
+        // TODO: Inject the clock for testability.
+        return SystemClock.elapsedRealtime();
     }
 
     /** Returns true if the timer is running (not paused/stopped). */
@@ -26,8 +63,7 @@ public class TimeCounter {
 
     /** Returns the running or paused elapsed time, in milliseconds. */
     public long getElapsedTime() {
-        // TODO: Inject the clock for testability.
-        return (isRunning ? SystemClock.elapsedRealtime() : pauseTime) - startTime;
+        return (isRunning ? elapsedTime() : pauseTime) - startTime;
     }
 
     /** Returns the running or stopped elapsed time, in [h:]mm:ss.f format. */
@@ -38,7 +74,7 @@ public class TimeCounter {
     /** Starts or resumes the timer. */
     public void start() {
         if (!isRunning) {
-            startTime = SystemClock.elapsedRealtime() - (pauseTime - startTime);
+            startTime = elapsedTime() - (pauseTime - startTime);
             isRunning = true;
         }
     }
@@ -46,7 +82,7 @@ public class TimeCounter {
     /** Pauses the timer. */
     public void pause() {
         if (isRunning) {
-            pauseTime = SystemClock.elapsedRealtime();
+            pauseTime = elapsedTime();
             isRunning = false;
         }
     }

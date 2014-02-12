@@ -1,5 +1,7 @@
 package com.onefishtwo.bbqtimer;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -19,9 +21,14 @@ import android.widget.Toast;
  * TODO: Implement a widget for the home and lock screens. Put the TimeCounter in a Service?
  * TODO: Create app icons.
  * TODO: Add alarms. Use or remove the Settings menu.
+ * TODO: Display a notification for the alarms so people can tell why it beeped.
  * TODO: Thumbnail.
+ * TODO: Red feedback when tapping on the time display text view, like the system stopwatch app.
  */
 public class MainActivity extends ActionBarActivity {
+
+    /** PERSISTENT STATE filename. */
+    public static final String TIMER_PREF_FILE = "timer";
 
     /** A Handler for periodic display updates. */
     private class UpdateHandler extends Handler {
@@ -73,6 +80,10 @@ public class MainActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // Load persistent state.
+        SharedPreferences prefs = getSharedPreferences(TIMER_PREF_FILE, Context.MODE_PRIVATE);
+        timer.load(prefs);
+
         setContentView(R.layout.activity_main);
 
         resetButton     = (Button) findViewById(R.id.resetButton);
@@ -93,6 +104,17 @@ public class MainActivity extends ActionBarActivity {
     protected void onStart() {
         super.onStart();
         updateHandler.beginScheduledUpdate();
+    }
+
+    @Override
+    protected void onPause() {
+        // Save persistent state.
+        SharedPreferences prefs = getSharedPreferences(TIMER_PREF_FILE, Context.MODE_PRIVATE);
+        SharedPreferences.Editor prefsEditor = prefs.edit();
+        timer.save(prefsEditor);
+        prefsEditor.commit();
+
+        super.onPause();
     }
 
     @Override
