@@ -14,10 +14,9 @@ import android.widget.Toast;
 /**
  * The BBQ Timer's main activity.
  * </p>
- * TODO: Activity lifecycle.
- * TODO: Add a landscape orientation layout. Handle configuration changes.
- * TODO: Handle Android sleep modes, suspending the app, etc. Put the TimeCounter in a Service.
- * TODO: Implement a widget for the home and lock screens.
+ * TODO: Save persistent state in onPause(). Via getSharedPreferences()? A file?
+ * TODO: Save state in onSaveInstanceState(Bundle)?
+ * TODO: Implement a widget for the home and lock screens. Put the TimeCounter in a Service?
  * TODO: Create app icons.
  * TODO: Add alarms. Use or remove the Settings menu.
  * TODO: Thumbnail.
@@ -29,6 +28,7 @@ public class MainActivity extends ActionBarActivity {
         private static final int MSG_UPDATE = 1;
         private static final long UPDATE_INTERVAL = 100; // msec
 
+        /** Handles a message to periodically update the display. */
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
@@ -49,9 +49,14 @@ public class MainActivity extends ActionBarActivity {
             }
         }
 
-        /** Starts scheduling display updates if the timer is running. */
-        void scheduleFirstUpdate() {
+        /** Ends any scheduled updated messages. */
+        void endScheduledUpdates() {
             removeMessages(MSG_UPDATE);
+        }
+
+        /** Begins the periodic display update messages if the timer is running. */
+        void beginScheduledUpdate() {
+            endScheduledUpdates();
             scheduleNextUpdate();
         }
     }
@@ -85,6 +90,18 @@ public class MainActivity extends ActionBarActivity {
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        updateHandler.beginScheduledUpdate();
+    }
+
+    @Override
+    protected void onStop() {
+        updateHandler.endScheduledUpdates();
+        super.onStop();
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
@@ -101,7 +118,7 @@ public class MainActivity extends ActionBarActivity {
     // A Proguard rule keeps all Activity onClick*() methods.
     public void onClickStartStop(View v) {
         timer.toggleRunning();
-        updateHandler.scheduleFirstUpdate();
+        updateHandler.beginScheduledUpdate();
         updateUI();
     }
 
