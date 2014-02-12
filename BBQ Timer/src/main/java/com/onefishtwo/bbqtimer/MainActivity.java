@@ -40,12 +40,18 @@ public class MainActivity extends ActionBarActivity {
         }
 
         /** Schedules the next display update if the timer is running. */
-        public void scheduleNextUpdate() {
+        private void scheduleNextUpdate() {
             if (timer.isRunning()) {
                 // TODO: Any race conditions that could end the update messages?
                 // TODO: Maybe use sendEmptyMessageAtTime() for drift-free scheduling.
                 sendEmptyMessageDelayed(MSG_UPDATE, UPDATE_INTERVAL);
             }
+        }
+
+        /** Starts scheduling display updates if the timer is running. */
+        void scheduleFirstUpdate() {
+            removeMessages(MSG_UPDATE);
+            scheduleNextUpdate();
         }
     }
 
@@ -93,7 +99,7 @@ public class MainActivity extends ActionBarActivity {
     // A Proguard rule keeps all Activity onClick*() methods.
     public void onClickStartStop(View v) {
         timer.toggleRunning();
-        updateHandler.scheduleNextUpdate();
+        updateHandler.scheduleFirstUpdate();
         updateUI();
     }
 
