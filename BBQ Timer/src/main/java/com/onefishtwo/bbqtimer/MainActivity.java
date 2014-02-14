@@ -18,9 +18,12 @@ import android.widget.Toast;
  * </p>
  * TODO: Finish implementing the app widget: Shared timer value; start/stop; margins; background.
  *   TODO: Add a widget preview image.
+ * TODO: Show the date and time in the widget. Only on the lock screen? Vertically resizable?
+ * TODO: Add a translucent widget background frame.
  * TODO: Figure out minSdkVersion for build.gradle. App Widgets were introduced in level 3.
  * TODO: Set other AndroidManifest.xml values.
  * TODO: Create app icons.
+ * TODO: Use image buttons.
  * TODO: Add alarms. Use or remove the Settings menu.
  * TODO: Display a notification for the alarms so people can tell why it beeped.
  * TODO: Thumbnail.
