@@ -16,9 +16,9 @@ import android.widget.Toast;
 /**
  * The BBQ Timer's main activity.
  * </p>
- * TODO: Save persistent state in onPause(). Via getSharedPreferences()? A file?
- * TODO: Save state in onSaveInstanceState(Bundle)?
  * TODO: Implement a widget for the home and lock screens. Put the TimeCounter in a Service?
+ * TODO: Figure out minSdkVersion for build.gradle. App Widgets were introduced in level 3.
+ * TODO: Set other AndroidManifest.xml values.
  * TODO: Create app icons.
  * TODO: Add alarms. Use or remove the Settings menu.
  * TODO: Display a notification for the alarms so people can tell why it beeped.
