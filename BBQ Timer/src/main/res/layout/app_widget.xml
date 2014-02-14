@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:padding="@dimen/widget_margin"
+    android:background="@android:color/background_dark">
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="@android:color/background_dark"
+        android:padding="@dimen/widget_interior_padding">
+
+        <Chronometer
+            android:id="@+id/chronometer"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:format="@string/widget_format"
+            android:importantForAccessibility="yes"
+            android:textSize="@dimen/widget_text_size"
+            android:textColor="@color/orange_red_text"
+            android:typeface="sans" />
+    </LinearLayout>
+</FrameLayout>

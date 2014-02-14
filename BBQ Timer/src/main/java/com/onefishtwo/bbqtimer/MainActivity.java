@@ -16,7 +16,8 @@ import android.widget.Toast;
 /**
  * The BBQ Timer's main activity.
  * </p>
- * TODO: Implement a widget for the home and lock screens. Put the TimeCounter in a Service?
+ * TODO: Finish implementing the app widget: Shared timer value; start/stop; margins; background.
+ *   TODO: Add a widget preview image.
  * TODO: Figure out minSdkVersion for build.gradle. App Widgets were introduced in level 3.
  * TODO: Set other AndroidManifest.xml values.
  * TODO: Create app icons.
