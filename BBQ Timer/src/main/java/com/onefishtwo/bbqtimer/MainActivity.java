@@ -16,18 +16,17 @@ import android.widget.Toast;
 /**
  * The BBQ Timer's main activity.
  * </p>
- * TODO: Finish implementing the app widget: Shared timer value; start/stop; margins; background.
- *   TODO: Add a widget preview image.
+ * TODO: Finish implementing the app widget: Start/stop buttons; margins; background, preview image.
  * TODO: Show the date and time in the widget. Only on the lock screen? Vertically resizable?
  * TODO: Add a translucent widget background frame.
  * TODO: Figure out minSdkVersion for build.gradle. App Widgets were introduced in level 3.
  * TODO: Set other AndroidManifest.xml values.
- * TODO: Create app icons.
+ * TODO: App icons.
  * TODO: Use image buttons.
  * TODO: Add alarms. Use or remove the Settings menu.
  * TODO: Display a notification for the alarms so people can tell why it beeped.
  * TODO: Thumbnail.
- * TODO: Red feedback when tapping on the time display text view, like the system stopwatch app.
+ * TODO: Color feedback when tapping on the time display text view, like the system stopwatch app.
  */
 public class MainActivity extends ActionBarActivity {
 
@@ -141,16 +140,21 @@ public class MainActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    /** The user clicked the Start/Stop button. */
+    // TODO: Use listeners to update the Activity UI and app widgets.
     // A Proguard rule keeps all Activity onClick*() methods.
     public void onClickStartStop(View v) {
         timer.toggleRunning();
         updateHandler.beginScheduledUpdate();
         updateUI();
+        TimerAppWidgetProvider.updateAllWidgets(this, timer);
     }
 
+    /** The user clicked the Reset button. */
     public void onClickReset(View v) {
         timer.reset();
         updateUI();
+        TimerAppWidgetProvider.updateAllWidgets(this, timer);
     }
 
     /** Displays the current elapsed time. I.e. updates the display. */

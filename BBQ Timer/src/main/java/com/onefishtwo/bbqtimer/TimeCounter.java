@@ -41,9 +41,9 @@ public class TimeCounter {
 
         // Enforce invariants.
         if (isRunning) {
-            if (startTime > elapsedTime()) {
+            if (startTime > elapsedRealtime()) {
                 // Must've rebooted.
-                // TODO: How to detect reboot when startTime <= elapsedTime()?
+                // TODO: How to detect reboot when startTime <= elapsedRealtime()?
                 reset();
             }
         } else if (pauseTime < startTime) {
@@ -51,8 +51,18 @@ public class TimeCounter {
         }
     }
 
-    long elapsedTime() {
-        // TODO: Inject the clock for testability.
+    /** Returns the timer's start time, in elapsedRealtime() milliseconds. */
+    public long getStartTime() {
+        return startTime;
+    }
+
+    public long getPauseTime() {
+        return pauseTime;
+    }
+
+    /** Returns the underlying clock time. */
+    // TODO: Inject the clock for testability.
+    long elapsedRealtime() {
         return SystemClock.elapsedRealtime();
     }
 
@@ -63,7 +73,18 @@ public class TimeCounter {
 
     /** Returns the running or paused elapsed time, in milliseconds. */
     public long getElapsedTime() {
-        return (isRunning ? elapsedTime() : pauseTime) - startTime;
+        return (isRunning ? elapsedRealtime() : pauseTime) - startTime;
+    }
+
+    /**
+     * Returns the value for {@link android.widget.Chronometer#setBase(long)} to make a Chronometer
+     * display {@link #getElapsedTime()}.</p>
+     *
+     * TODO: Switch to a TextView when paused so it doesn't need the OS to propagate the info to all
+     * widgets quickly?
+     */
+    public long chronometerTimeBase() {
+        return isRunning ? startTime : elapsedRealtime() - (pauseTime - startTime);
     }
 
     /** Returns the running or stopped elapsed time, in [h:]mm:ss.f format. */
@@ -74,7 +95,7 @@ public class TimeCounter {
     /** Starts or resumes the timer. */
     public void start() {
         if (!isRunning) {
-            startTime = elapsedTime() - (pauseTime - startTime);
+            startTime = elapsedRealtime() - (pauseTime - startTime);
             isRunning = true;
         }
     }
@@ -82,7 +103,7 @@ public class TimeCounter {
     /** Pauses the timer. */
     public void pause() {
         if (isRunning) {
-            pauseTime = elapsedTime();
+            pauseTime = elapsedRealtime();
             isRunning = false;
         }
     }
