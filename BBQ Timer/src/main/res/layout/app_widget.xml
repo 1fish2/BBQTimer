@@ -13,15 +13,30 @@
         android:background="@android:color/background_dark"
         android:padding="@dimen/widget_interior_padding">
 
-        <Chronometer
-            android:id="@+id/chronometer"
+        <ViewFlipper
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:clickable="true"
-            android:format="@string/widget_format"
-            android:importantForAccessibility="yes"
-            android:textSize="@dimen/widget_text_size"
-            android:textColor="@color/orange_red_text"
-            android:typeface="sans" />
+            android:id="@+id/viewFlipper">
+
+            <Chronometer
+                android:id="@+id/chronometer"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:importantForAccessibility="yes"
+                android:textSize="@dimen/widget_text_size"
+                android:textColor="@color/orange_red_text"
+                android:typeface="sans" />
+
+            <TextView
+                android:id="@+id/pausedChronometerTextView"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:textSize="@dimen/widget_text_size"
+                android:textColor="@color/orange_red_text"
+                android:typeface="sans"/>
+        </ViewFlipper>
+
     </LinearLayout>
 </FrameLayout>

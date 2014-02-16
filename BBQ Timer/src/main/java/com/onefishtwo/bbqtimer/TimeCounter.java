@@ -76,17 +76,6 @@ public class TimeCounter {
         return (isRunning ? elapsedRealtime() : pauseTime) - startTime;
     }
 
-    /**
-     * Returns the value for {@link android.widget.Chronometer#setBase(long)} to make a Chronometer
-     * display {@link #getElapsedTime()}.</p>
-     *
-     * TODO: Switch to a TextView when paused so it doesn't need the OS to propagate the info to all
-     * widgets quickly?
-     */
-    public long chronometerTimeBase() {
-        return isRunning ? startTime : elapsedRealtime() - (pauseTime - startTime);
-    }
-
     /** Returns the running or stopped elapsed time, in [h:]mm:ss.f format. */
     public String getFormattedElapsedTime() {
         return formatTime(getElapsedTime());

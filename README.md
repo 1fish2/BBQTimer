@@ -11,9 +11,10 @@ In development. Not ready for alpha test.
 Using Android Studio.
 
 ## TODO
-* Switch to a TextView when stopped (or see if there's a way to make a stopped Chronometer display a consistent value).
 * Add Start/Stop and Reset buttons to the widget.
-* Make the widget prettier: icon instead of "BBQ", margins, background, translucent widget background frame.
+* Make the widget prettier: add an icon or image buttons; margins, background, translucent widget background frame.
+* Format the widget's time without fractional seconds? Change the display for the common case 0:00?
+* Format the activity's time with fractional seconds in a smaller font?
 * Show the date and time in the widget. (Only on the lock screen? Vertically resizable?)
 * Add a widget preview image.
 * Figure out minSdkVersion. (It goes in "build.gradle".) App Widgets were introduced in level 3.

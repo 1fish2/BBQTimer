@@ -3,11 +3,10 @@
 
     <string name="action_settings">Settings</string>
     <string name="app_name">BBQ Timer</string>
-    <string name="app_description">A stopwatch with a lock-screen widget so you needn\'t unlock your phone to check the cook time.</string>
+    <string name="app_description">A stopwatch with a lock-screen widget (so you can see the cook time without unlocking your phone).</string>
     <string name="reset">Reset</string>
     <string name="start">Start</string>
     <string name="stop">Stop</string>
     <string name="time0">0:00.0</string>
-    <string name="widget_format">%s BBQ</string>
 
 </resources>
