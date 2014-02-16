@@ -8,7 +8,7 @@ import android.content.SharedPreferences;
 import android.os.SystemClock;
 
 /**
- * A stopwatch time counter.
+ * A stopwatch time counter (data model).
  */
 public class TimeCounter {
     private static final String SHORT_FORMAT =      "%d:%02d.%01d"; //   mm:ss.f

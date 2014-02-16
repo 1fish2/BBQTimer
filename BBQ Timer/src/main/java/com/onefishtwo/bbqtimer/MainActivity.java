@@ -15,18 +15,6 @@ import android.widget.Toast;
 
 /**
  * The BBQ Timer's main activity.
- * </p>
- * TODO: Finish implementing the app widget: Start/stop buttons; margins; background, preview image.
- * TODO: Show the date and time in the widget. Only on the lock screen? Vertically resizable?
- * TODO: Add a translucent widget background frame.
- * TODO: Figure out minSdkVersion for build.gradle. App Widgets were introduced in level 3.
- * TODO: Set other AndroidManifest.xml values.
- * TODO: App icons.
- * TODO: Use image buttons.
- * TODO: Add alarms. Use or remove the Settings menu.
- * TODO: Display a notification for the alarms so people can tell why it beeped.
- * TODO: Thumbnail.
- * TODO: Color feedback when tapping on the time display text view, like the system stopwatch app.
  */
 public class MainActivity extends ActionBarActivity {
 
@@ -54,7 +42,7 @@ public class MainActivity extends ActionBarActivity {
         private void scheduleNextUpdate() {
             if (timer.isRunning()) {
                 // TODO: Any race conditions that could end the update messages?
-                // TODO: Maybe use sendEmptyMessageAtTime() for drift-free scheduling.
+                // TODO: Use sendEmptyMessageAtTime() for drift-free scheduling?
                 sendEmptyMessageDelayed(MSG_UPDATE, UPDATE_INTERVAL);
             }
         }
@@ -133,7 +121,7 @@ public class MainActivity extends ActionBarActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if (id == R.id.action_settings) {
-            // TODO
+            // TODO: Implement Settings.
             Toast.makeText(this, "Settings are not yet implemented", Toast.LENGTH_SHORT).show();
             return true;
         }
