@@ -12,9 +12,6 @@ import android.text.format.DateUtils;
  * A stopwatch time counter (data model).
  */
 public class TimeCounter {
-    private static final String SHORT_FORMAT =      "%02d:%02d.%01d"; //    mm:ss.f
-    private static final String LONG_FORMAT  = "%02d:%02d:%02d.%01d"; // hh:mm:ss.f
-
     /** PERSISTENT STATE identifiers. */
     public static final String PREF_IS_RUNNING = "isRunning";
     public static final String PREF_START_TIME = "startTime";
@@ -77,11 +74,6 @@ public class TimeCounter {
         return (isRunning ? elapsedRealtime() : pauseTime) - startTime;
     }
 
-    /** Returns the running or stopped elapsed time, in [h:]mm:ss.f format. */
-    public String getFormattedElapsedTime() {
-        return formatTime(getElapsedTime());
-    }
-
     /** Starts or resumes the timer. */
     public void start() {
         if (!isRunning) {
@@ -130,26 +122,5 @@ public class TimeCounter {
         int tenths = (int)(elapsedTenths % 10);
 
         return String.format(".%1d", tenths);
-    }
-
-    /**
-     * Formats a millisecond duration in [hh:]mm:ss.f format.
-     * ([[h]h:][m]m:ss.f would look nicer but it wouldn't match Chronometer's formatting.
-     */
-    public static String formatTime(long elapsedMilliseconds) {
-        // TODO: Use android.text.format.DateUtils.formatElapsedTime() and append the fractional part?
-        long fx       = elapsedMilliseconds / 100; // time in tenths of a second
-        long sx       = fx / 10;  // time in seconds, extended with minutes and hours
-        long mx       = sx / 60;
-        long hours    = mx / 60;
-        long fraction = fx - sx * 10;
-        long seconds  = sx - mx * 60;
-        long minutes  = mx - hours * 60;
-
-        if (hours > 0) {
-            return String.format(LONG_FORMAT, hours, minutes, seconds, fraction);
-        } else {
-            return String.format(SHORT_FORMAT, minutes, seconds, fraction);
-        }
     }
 }

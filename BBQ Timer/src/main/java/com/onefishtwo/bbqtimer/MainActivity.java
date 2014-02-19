@@ -66,6 +66,7 @@ public class MainActivity extends ActionBarActivity {
     private Button resetButton;
     private Button startStopButton;
     private TextView displayView;
+    private TextView fractionDisplayView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,9 +78,10 @@ public class MainActivity extends ActionBarActivity {
 
         setContentView(R.layout.activity_main);
 
-        resetButton     = (Button) findViewById(R.id.resetButton);
-        startStopButton = (Button) findViewById(R.id.startStopButton);
-        displayView     = (TextView) findViewById(R.id.display);
+        resetButton         = (Button) findViewById(R.id.resetButton);
+        startStopButton     = (Button) findViewById(R.id.startStopButton);
+        displayView         = (TextView) findViewById(R.id.display);
+        fractionDisplayView = (TextView) findViewById(R.id.fractionDisplay);
 
         updateUI();
     }
@@ -145,11 +147,14 @@ public class MainActivity extends ActionBarActivity {
         TimerAppWidgetProvider.updateAllWidgets(this, timer);
     }
 
-    /** Displays the current elapsed time. I.e. updates the display. */
+    /** Updates the display to show the current elapsed time. */
     private void displayTime() {
-        String formatted = timer.getFormattedElapsedTime();
+        long elapsedTime = timer.getElapsedTime();
+        String formatted = TimeCounter.formatHhMmSs(elapsedTime);
+        String formattedFraction = TimeCounter.formatFractionalSeconds(elapsedTime);
 
         displayView.setText(formatted);
+        fractionDisplayView.setText(formattedFraction);
     }
 
     /** Updates the UI for the current state. */

@@ -10,6 +10,7 @@
 
     <!-- Text sizes. -->
     <dimen name="display_text_size">72sp</dimen>
+    <dimen name="fraction_text_size">48sp</dimen>
     <dimen name="widget_text_size">56sp</dimen>
 
     </resources>

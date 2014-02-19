@@ -6,37 +6,45 @@
     android:background="@android:color/background_dark">
 
     <LinearLayout
-        android:id="@+id/linearLayout"
-        android:orientation="horizontal"
+        android:orientation="vertical"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:background="@android:color/background_dark"
-        android:padding="@dimen/widget_interior_padding">
+        android:layout_height="fill_parent">
 
-        <ViewFlipper
-            android:layout_width="fill_parent"
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/viewFlipper">
+            android:background="@android:color/background_dark"
+            android:padding="@dimen/widget_interior_padding"
+            android:layout_gravity="right">
 
-            <Chronometer
-                android:id="@+id/chronometer"
+            <ViewFlipper
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:clickable="true"
-                android:importantForAccessibility="yes"
-                android:textSize="@dimen/widget_text_size"
-                android:textColor="@color/orange_red_text"
-                android:typeface="sans" />
+                android:id="@+id/viewFlipper">
 
-            <TextView
-                android:id="@+id/pausedChronometerTextView"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:clickable="true"
-                android:textSize="@dimen/widget_text_size"
-                android:textColor="@color/orange_red_text"
-                android:typeface="sans"/>
-        </ViewFlipper>
+                <Chronometer
+                    android:id="@+id/chronometer"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:clickable="true"
+                    android:importantForAccessibility="yes"
+                    android:textSize="@dimen/widget_text_size"
+                    android:textColor="@color/orange_red_text"
+                    android:typeface="sans" />
 
+                <TextView
+                    android:id="@+id/pausedChronometerTextView"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:clickable="true"
+                    android:importantForAccessibility="yes"
+                    android:textSize="@dimen/widget_text_size"
+                    android:textColor="@color/orange_red_text"
+                    android:typeface="sans"/>
+            </ViewFlipper>
+
+        </LinearLayout>
     </LinearLayout>
+
 </FrameLayout>
