@@ -38,6 +38,8 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
             views.setDisplayedChild(R.id.viewFlipper, PAUSED_CHRONOMETER_CHILD);
             views.setTextViewText(R.id.pausedChronometerTextView,
                     TimeCounter.formatHhMmSs(elapsedTime));
+            // Stop the Chronometer in case it'd use battery power even when not displayed.
+            views.setChronometer(R.id.chronometer, 0, null, false);
         }
 
         appWidgetManager.updateAppWidget(appWidgetIds, views);
@@ -68,7 +70,9 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
         if (appWidgetManager != null) {
             int[] appWidgetIds = appWidgetManager.getAppWidgetIds(componentName);
 
-            updateWidgets(context, appWidgetManager, appWidgetIds, timer);
+            if (appWidgetIds.length > 0) {
+                updateWidgets(context, appWidgetManager, appWidgetIds, timer);
+            }
         }
     }
 }
