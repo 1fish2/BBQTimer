@@ -34,8 +34,10 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
             views.setDisplayedChild(R.id.viewFlipper, RUNNING_CHRONOMETER_CHILD);
             views.setChronometer(R.id.chronometer, timer.getStartTime(), null, true);
         } else {
+            long elapsedTime = timer.getElapsedTime();
             views.setDisplayedChild(R.id.viewFlipper, PAUSED_CHRONOMETER_CHILD);
-            views.setTextViewText(R.id.pausedChronometerTextView, timer.getFormattedElapsedTime());
+            views.setTextViewText(R.id.pausedChronometerTextView,
+                    TimeCounter.formatHhMmSs(elapsedTime));
         }
 
         appWidgetManager.updateAppWidget(appWidgetIds, views);

@@ -6,13 +6,14 @@ package com.onefishtwo.bbqtimer;
 
 import android.content.SharedPreferences;
 import android.os.SystemClock;
+import android.text.format.DateUtils;
 
 /**
  * A stopwatch time counter (data model).
  */
 public class TimeCounter {
-    private static final String SHORT_FORMAT =      "%d:%02d.%01d"; //   mm:ss.f
-    private static final String LONG_FORMAT  = "%d:%02d:%02d.%01d"; // h:mm:ss.f
+    private static final String SHORT_FORMAT =      "%02d:%02d.%01d"; //    mm:ss.f
+    private static final String LONG_FORMAT  = "%02d:%02d:%02d.%01d"; // hh:mm:ss.f
 
     /** PERSISTENT STATE identifiers. */
     public static final String PREF_IS_RUNNING = "isRunning";
@@ -117,10 +118,27 @@ public class TimeCounter {
         isRunning = false;
     }
 
-    /** Formats a millisecond value in [h:]mm:ss.f format. */
-    public static String formatTime(long milliseconds) {
+    /** Formats a millisecond duration in [hh:]mm:ss format like Chronometer does. */
+    public static String formatHhMmSs(long elapsedMilliseconds) {
+        long elapsedSeconds = elapsedMilliseconds / 1000;
+        return DateUtils.formatElapsedTime(elapsedSeconds);
+    }
+
+    /** Formats a decimal fraction of a second of a millisecond duration, in .f format. */
+    public static String formatFractionalSeconds(long elapsedMilliseconds) {
+        long elapsedTenths = elapsedMilliseconds / 100;
+        int tenths = (int)(elapsedTenths % 10);
+
+        return String.format(".%1d", tenths);
+    }
+
+    /**
+     * Formats a millisecond duration in [hh:]mm:ss.f format.
+     * ([[h]h:][m]m:ss.f would look nicer but it wouldn't match Chronometer's formatting.
+     */
+    public static String formatTime(long elapsedMilliseconds) {
         // TODO: Use android.text.format.DateUtils.formatElapsedTime() and append the fractional part?
-        long fx       = milliseconds / 100; // time in tenths of a second
+        long fx       = elapsedMilliseconds / 100; // time in tenths of a second
         long sx       = fx / 10;  // time in seconds, extended with minutes and hours
         long mx       = sx / 60;
         long hours    = mx / 60;
