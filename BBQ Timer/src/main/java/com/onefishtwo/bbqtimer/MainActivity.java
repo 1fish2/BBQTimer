@@ -72,18 +72,12 @@ public class MainActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Load persistent state.
-        SharedPreferences prefs = getSharedPreferences(TIMER_PREF_FILE, Context.MODE_PRIVATE);
-        timer.load(prefs);
-
         setContentView(R.layout.activity_main);
 
         resetButton         = (Button) findViewById(R.id.resetButton);
         startStopButton     = (Button) findViewById(R.id.startStopButton);
         displayView         = (TextView) findViewById(R.id.display);
         fractionDisplayView = (TextView) findViewById(R.id.fractionDisplay);
-
-        updateUI();
     }
 
     @Override
@@ -96,6 +90,13 @@ public class MainActivity extends ActionBarActivity {
     @Override
     protected void onStart() {
         super.onStart();
+
+        // Load persistent state.
+        SharedPreferences prefs = getSharedPreferences(TIMER_PREF_FILE, Context.MODE_PRIVATE);
+        timer.load(prefs);
+
+        updateUI();
+
         updateHandler.beginScheduledUpdate();
     }
 
