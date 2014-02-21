@@ -57,12 +57,16 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
         if (timer.isRunning()) {
             // Note: setDisplayedChild() requires minSdkVersion 12 (in build.gradle).
             views.setDisplayedChild(R.id.viewFlipper, RUNNING_CHRONOMETER_CHILD);
+            // TODO: Preload the button image Bitmap?
+            views.setImageViewResource(R.id.remoteStartStopButton, R.drawable.pause);
             views.setChronometer(R.id.chronometer, timer.getStartTime(), null, true);
         } else {
             long elapsedTime = timer.getElapsedTime();
             views.setDisplayedChild(R.id.viewFlipper, PAUSED_CHRONOMETER_CHILD);
             views.setTextViewText(R.id.pausedChronometerTextView,
                     TimeCounter.formatHhMmSs(elapsedTime));
+            // TODO: Preload the button image Bitmap?
+            views.setImageViewResource(R.id.remoteStartStopButton, R.drawable.play);
             // Stop the Chronometer in case it'd use battery power even when not displayed.
             views.setChronometer(R.id.chronometer, 0, null, false);
         }

@@ -50,7 +50,7 @@
                 android:id="@+id/remoteStartStopButton"
                 android:layout_gravity="center_vertical|right"
                 android:importantForAccessibility="yes"
-                android:src="@drawable/play_pause"
+                android:src="@drawable/play"
                 android:layout_marginRight="@dimen/widget_spacing"/>
 
         </LinearLayout>
