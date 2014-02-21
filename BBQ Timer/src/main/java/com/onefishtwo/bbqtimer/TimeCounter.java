@@ -123,4 +123,10 @@ public class TimeCounter {
 
         return String.format(".%1d", tenths);
     }
+
+    @Override
+    public String toString() {
+        return (isRunning ? "TimeCounter running @ " : "TimeCounter paused @ ")
+                + formatHhMmSs(getElapsedTime());
+    }
 }
