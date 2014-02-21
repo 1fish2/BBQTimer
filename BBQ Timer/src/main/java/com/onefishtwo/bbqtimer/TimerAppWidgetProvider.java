@@ -4,10 +4,12 @@
 
 package com.onefishtwo.bbqtimer;
 
+import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.widget.RemoteViews;
 
@@ -17,6 +19,8 @@ import android.widget.RemoteViews;
 public class TimerAppWidgetProvider extends AppWidgetProvider {
     private static final int RUNNING_CHRONOMETER_CHILD = 0;
     private static final int PAUSED_CHRONOMETER_CHILD  = 1;
+
+    static final String ACTION_START_STOP = "com.onefishtwo.bbqtimer.ACTION_START_STOP";
 
     static ComponentName getComponentName(Context context) {
         return new ComponentName(context, TimerAppWidgetProvider.class);
@@ -48,6 +52,7 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
     private static void updateWidgets(Context context, AppWidgetManager appWidgetManager,
             int[] appWidgetIds, TimeCounter timer) {
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.app_widget);
+        PendingIntent startStopIntent = makeStartStopIntent(context);
 
         if (timer.isRunning()) {
             // Note: setDisplayedChild() requires minSdkVersion 12 (in build.gradle).
@@ -61,6 +66,8 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
             // Stop the Chronometer in case it'd use battery power even when not displayed.
             views.setChronometer(R.id.chronometer, 0, null, false);
         }
+
+        views.setOnClickPendingIntent(R.id.remoteStartStopButton, startStopIntent);
 
         appWidgetManager.updateAppWidget(appWidgetIds, views);
     }
@@ -91,6 +98,25 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
             if (appWidgetIds.length > 0) {
                 updateWidgets(context, appWidgetManager, appWidgetIds, timer);
             }
+        }
+    }
+
+    static PendingIntent makeStartStopIntent(Context context) {
+        Intent intent = new Intent(context, TimerAppWidgetProvider.class);
+        intent.setAction(ACTION_START_STOP);
+        return PendingIntent.getBroadcast(context, 0, intent, 0);
+    }
+
+    /** Receives an Intent, including one for the app widget's button clicks. */
+    @Override
+    public void onReceive(Context context, Intent intent) {
+        super.onReceive(context, intent);
+
+        if (ACTION_START_STOP.equals(intent.getAction())) {
+            TimeCounter timer = loadTimeCounter(context);
+            timer.toggleRunning();
+            saveTimeCounter(context, timer);
+            updateAllWidgets(context, timer);
         }
     }
 }
