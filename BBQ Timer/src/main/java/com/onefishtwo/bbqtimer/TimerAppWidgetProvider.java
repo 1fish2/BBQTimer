@@ -18,12 +18,32 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
     private static final int RUNNING_CHRONOMETER_CHILD = 0;
     private static final int PAUSED_CHRONOMETER_CHILD  = 1;
 
+    static ComponentName getComponentName(Context context) {
+        return new ComponentName(context, TimerAppWidgetProvider.class);
+    }
+
+    static TimeCounter loadTimeCounter(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(MainActivity.TIMER_PREF_FILE,
+                Context.MODE_PRIVATE);
+        TimeCounter timer = new TimeCounter();
+        timer.load(prefs);
+        return timer;
+    }
+
+    static void saveTimeCounter(Context context, TimeCounter timer) {
+        SharedPreferences prefs =
+                context.getSharedPreferences(MainActivity.TIMER_PREF_FILE, Context.MODE_PRIVATE);
+        SharedPreferences.Editor prefsEditor = prefs.edit();
+        timer.save(prefsEditor);
+        prefsEditor.commit();
+    }
+
     /**
      * Updates the given app widgets' contents to the Timer state.</p>
      *
      * Unfortunately, a Chronometer view can't accurately set its value when paused. You can compute
-     * (now - desired time) but even setting all widgets at once ends up with different displays,
-     * presumably due to propagation delays. *SO* when the timer is paused, switch to a text view.
+     * (now - desiredTime) but even setting all widgets at once ends up with different displays due
+     * to propagation delays. *SO* when the timer is paused, switch to a text view.
      */
     private static void updateWidgets(Context context, AppWidgetManager appWidgetManager,
             int[] appWidgetIds, TimeCounter timer) {
@@ -52,19 +72,17 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         // Load persistent state.
-        // TODO: Share the persistent I/O code with MainActivity, or use a ContentProvider, or ...
+        // TODO: Share the persistent I/O code with MainActivity, or use a ContentProvider or a
+        // bound Service or...
         // TODO: Ensure this gets up-to-date data.
-        SharedPreferences prefs = context.getSharedPreferences(MainActivity.TIMER_PREF_FILE,
-                Context.MODE_PRIVATE);
-        TimeCounter timer = new TimeCounter();
-        timer.load(prefs);
+        TimeCounter timer = loadTimeCounter(context);
 
         updateWidgets(context, appWidgetManager, appWidgetIds, timer);
     }
 
     /** Updates the contents of all of this provider's app widgets. */
     static void updateAllWidgets(Context context, TimeCounter timer) {
-        ComponentName componentName = new ComponentName(context, TimerAppWidgetProvider.class);
+        ComponentName componentName = getComponentName(context);
         AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
 
         if (appWidgetManager != null) {
