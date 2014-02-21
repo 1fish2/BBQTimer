@@ -1,6 +1,6 @@
 # BBQTimer Android app
 
-It's a stopwatch with a twist or two:
+It's a stopwatch with a twist (or two):
 1. It has a lock screen widget so you can check the timer without unlocking your phone.
 2. [TODO] It can set alarm times (like a count-down timer) while still counting up the time that the
 food has been cooking, however long that takes.
@@ -12,20 +12,20 @@ In development. Not ready for alpha test.
 Using Android Studio.
 
 ## TODO
-* Add Start/Stop and Reset buttons to the widget.
-* Make the widget prettier: add an icon or image buttons; margins, background, translucent widget
-background frame.
+* Make the widget prettier: margins, translucent frame, background image?
+* In the activity, use images in addition to or instead of the Start/Stop/Reset labels?
 * Show the date and time in the widget. (Only on the lock screen? Vertically resizable?)
-* Change the widget display when stopped at 0:00, e.g. just show the date, time, and start button.
+* When stopped at 0:00, show just the date, time, and start button in the widget?
+* Make the text a little smaller to fit durations > 9 hours? Just make the text smaller when the widget is small?
+* Add app icons.
 * Add a widget preview image.
 * Set other AndroidManifest.xml values. (Search info?)
-* App icons.
-* Use image buttons for Start/Stop & Reset.
+* Implement Activity#onCreateThumbnail().
+* Provide color feedback when tapping on the time display text view, like the system stopwatch app.
+* In the widget, tap the time display to open the activity? (... to start/stop?)
+* Follow system theme colors?
 * Add the alarm feature -- on the main activity? Use, replace, or remove the Settings menu.
 * Display a notification for the alarms so people can tell why it beeped.
-* Implement app thumbnail.
-* Provide color feedback when tapping on the time display text view, like the system stopwatch app.
-* Follow system theme colors?
 
 ## Implementation notes
 * The lock screen widget pretty much needs to use a Chronometer view for the ticking time display.
