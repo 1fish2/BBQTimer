@@ -8,14 +8,14 @@
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent">
+        android:layout_height="fill_parent"
+        android:padding="@dimen/widget_interior_padding">
 
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@android:color/background_dark"
-            android:padding="@dimen/widget_interior_padding"
             android:layout_gravity="right">
 
             <ViewFlipper
@@ -43,6 +43,15 @@
                     android:textColor="@color/orange_red_text"
                     android:typeface="sans"/>
             </ViewFlipper>
+
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/remoteStartStopButton"
+                android:layout_gravity="center_vertical|right"
+                android:importantForAccessibility="yes"
+                android:src="@drawable/play_pause"
+                android:layout_marginRight="@dimen/widget_spacing"/>
 
         </LinearLayout>
     </LinearLayout>
