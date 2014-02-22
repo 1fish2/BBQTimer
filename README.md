@@ -12,7 +12,6 @@ In development. Not ready for alpha test.
 Using Android Studio.
 
 ## TODO
-* Make the main Activity's text a little smaller?
 * Make the widget prettier: margins, translucent frame, background image?
 * Show the date and time in the widget. (Only on the lock screen? Vertically resizable?)
 * When stopped at 0:00, show just the date, time, and start button in the widget?
