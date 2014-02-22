@@ -52,8 +52,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:importantForAccessibility="yes"
-                android:src="@drawable/play"
-                android:layout_marginRight="@dimen/widget_spacing"
+                android:src="@drawable/ic_play"
                 android:layout_gravity="center_vertical"
                 android:contentDescription="@string/start_stop"/>
 

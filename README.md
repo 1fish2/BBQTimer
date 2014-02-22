@@ -14,18 +14,18 @@ Using Android Studio.
 ## TODO
 * Make the main Activity's text a little smaller?
 * Make the widget prettier: margins, translucent frame, background image?
-* In the activity, use images in addition to or instead of the Start/Stop/Reset labels?
 * Show the date and time in the widget. (Only on the lock screen? Vertically resizable?)
 * When stopped at 0:00, show just the date, time, and start button in the widget?
-* Make the text a little smaller to fit durations > 9 hours? Just make the text smaller when the widget is small?
+* Make the text a little smaller to fit durations > 9 hours? Only when the widget is small?
 * Add app icons.
 * Add a widget preview image.
+* In the activity, add images to the Start/Stop/Reset labels?
 * Set other AndroidManifest.xml values. (Search info?)
 * Implement Activity#onCreateThumbnail().
 * Provide color feedback when tapping on the time display text view, like the system stopwatch app.
 * In the widget, tap the time display to open the activity? (... to start/stop?)
 * Follow system theme colors?
-* Add the alarm feature -- on the main activity? Use, replace, or remove the Settings menu.
+* Add the alarm feature. On the main activity? Use, replace, or remove the Settings menu.
 * Display a notification for the alarms so people can tell why it beeped.
 
 ## Bugs
