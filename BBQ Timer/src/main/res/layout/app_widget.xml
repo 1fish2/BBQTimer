@@ -13,15 +13,16 @@
 
         <LinearLayout
             android:orientation="horizontal"
-            android:layout_width="wrap_content"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:background="@android:color/background_dark"
-            android:layout_gravity="right">
+            android:gravity="right">
 
             <ViewFlipper
-                android:layout_width="fill_parent"
+                android:id="@+id/viewFlipper"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/viewFlipper">
+                android:measureAllChildren="false">
 
                 <Chronometer
                     android:id="@+id/chronometer"
@@ -31,7 +32,8 @@
                     android:importantForAccessibility="yes"
                     android:textSize="@dimen/widget_text_size"
                     android:textColor="@color/orange_red_text"
-                    android:typeface="sans" />
+                    android:typeface="sans"
+                    android:ellipsize="end"/>
 
                 <TextView
                     android:id="@+id/pausedChronometerTextView"
@@ -41,17 +43,19 @@
                     android:importantForAccessibility="yes"
                     android:textSize="@dimen/widget_text_size"
                     android:textColor="@color/orange_red_text"
-                    android:typeface="sans"/>
+                    android:typeface="sans"
+                    android:ellipsize="end"/>
             </ViewFlipper>
 
             <ImageButton
+                android:id="@+id/remoteStartStopButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/remoteStartStopButton"
-                android:layout_gravity="center_vertical|right"
                 android:importantForAccessibility="yes"
                 android:src="@drawable/play"
-                android:layout_marginRight="@dimen/widget_spacing"/>
+                android:layout_marginRight="@dimen/widget_spacing"
+                android:layout_gravity="center_vertical"
+                android:contentDescription="@string/start_stop"/>
 
         </LinearLayout>
     </LinearLayout>

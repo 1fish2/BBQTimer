@@ -12,6 +12,7 @@ In development. Not ready for alpha test.
 Using Android Studio.
 
 ## TODO
+* Make the main Activity's text a little smaller?
 * Make the widget prettier: margins, translucent frame, background image?
 * In the activity, use images in addition to or instead of the Start/Stop/Reset labels?
 * Show the date and time in the widget. (Only on the lock screen? Vertically resizable?)
@@ -27,6 +28,9 @@ Using Android Studio.
 * Add the alarm feature -- on the main activity? Use, replace, or remove the Settings menu.
 * Display a notification for the alarms so people can tell why it beeped.
 
+## Bugs
+* In the emulator (Nexus 5 KitKat), the Activity's timer sometimes stops.
+
 ## Implementation notes
 * The lock screen widget pretty much needs to use a Chronometer view for the ticking time display.
 Using a Text view would show clock skew between multiple widgets and would use more CPU time and
@@ -39,3 +43,5 @@ from a Chronometer view to a Text view.
 * Formatting the elapsed time like 0:12 would look nicer than 00:12 but Android's Chronometer view
 only does the latter. The app's main activity screen and the paused Text view could deviate from
 that but the inconsistency would be jarring.
+* The widget's ViewFlipper must explicitly set android:measureAllChildren="false", otherwise
+flipping its subviews will resize the adjacent ImageButton on Galaxy Nexus Jelly Bean. (Why?)
