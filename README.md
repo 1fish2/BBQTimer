@@ -22,7 +22,6 @@ Using Android Studio.
 * Set other AndroidManifest.xml values. (Search info?)
 * Implement Activity#onCreateThumbnail().
 * Provide color feedback when tapping on the time display text view, like the system stopwatch app.
-* In the widget, tap the time display to open the activity? (... to start/stop?)
 * Follow system theme colors?
 * Add the alarm feature. On the main activity? Use, replace, or remove the Settings menu.
 * Display a notification for the alarms so people can tell why it beeped.

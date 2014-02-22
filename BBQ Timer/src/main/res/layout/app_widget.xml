@@ -22,13 +22,13 @@
                 android:id="@+id/viewFlipper"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:measureAllChildren="false">
+                android:measureAllChildren="false"
+                android:clickable="true">
 
                 <Chronometer
                     android:id="@+id/chronometer"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:clickable="true"
                     android:importantForAccessibility="yes"
                     android:textSize="@dimen/widget_text_size"
                     android:textColor="@color/orange_red_text"
@@ -39,7 +39,6 @@
                     android:id="@+id/pausedChronometerTextView"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:clickable="true"
                     android:importantForAccessibility="yes"
                     android:textSize="@dimen/widget_text_size"
                     android:textColor="@color/orange_red_text"

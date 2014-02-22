@@ -53,6 +53,7 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
             int[] appWidgetIds, TimeCounter timer) {
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.app_widget);
         PendingIntent startStopIntent = makeStartStopIntent(context);
+        PendingIntent openMainActivityIntent = makeOpenMainActivityIntent(context);
 
         if (timer.isRunning()) {
             // Note: setDisplayedChild() requires minSdkVersion 12 (in build.gradle).
@@ -72,6 +73,7 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
         }
 
         views.setOnClickPendingIntent(R.id.remoteStartStopButton, startStopIntent);
+        views.setOnClickPendingIntent(R.id.viewFlipper, openMainActivityIntent);
 
         appWidgetManager.updateAppWidget(appWidgetIds, views);
     }
@@ -103,6 +105,11 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
                 updateWidgets(context, appWidgetManager, appWidgetIds, timer);
             }
         }
+    }
+
+    static PendingIntent makeOpenMainActivityIntent(Context context) {
+        Intent intent = new Intent(context, MainActivity.class);
+        return PendingIntent.getActivity(context, 0, intent, 0);
     }
 
     static PendingIntent makeStartStopIntent(Context context) {
