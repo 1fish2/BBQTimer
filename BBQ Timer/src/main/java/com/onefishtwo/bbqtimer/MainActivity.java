@@ -41,8 +41,6 @@ public class MainActivity extends ActionBarActivity {
         /** Schedules the next display update if the timer is running. */
         private void scheduleNextUpdate() {
             if (timer.isRunning()) {
-                // TODO: Any race conditions that could end the update messages?
-                // TODO: Use sendEmptyMessageAtTime() for drift-free scheduling?
                 sendEmptyMessageDelayed(MSG_UPDATE, UPDATE_INTERVAL);
             }
         }

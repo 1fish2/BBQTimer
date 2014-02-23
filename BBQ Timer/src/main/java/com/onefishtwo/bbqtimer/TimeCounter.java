@@ -20,6 +20,7 @@ public class TimeCounter {
     private boolean isRunning;
     private long startTime; // when started, in system elapsed milliseconds
     private long pauseTime; // if !isRunning, when paused, in system elapsed milliseconds
+    private static final StringBuilder recycledStringBuilder = new StringBuilder(8);
 
     public TimeCounter() {
     }
@@ -113,7 +114,10 @@ public class TimeCounter {
     /** Formats a millisecond duration in [hh:]mm:ss format like Chronometer does. */
     public static String formatHhMmSs(long elapsedMilliseconds) {
         long elapsedSeconds = elapsedMilliseconds / 1000;
-        return DateUtils.formatElapsedTime(elapsedSeconds);
+
+        synchronized (recycledStringBuilder) {
+            return DateUtils.formatElapsedTime(recycledStringBuilder, elapsedSeconds);
+        }
     }
 
     /** Formats a decimal fraction of a second of a millisecond duration, in .f format. */
