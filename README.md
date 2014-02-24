@@ -6,27 +6,35 @@ It's a stopwatch with a twist (or two):
 food has been cooking, however long that takes.
 
 ## Status
-In development. Not ready for alpha test.
+It works. Development is ongoing.
 
 ## Build
 Using Android Studio.
 
 ## TODO
-* Add a Reset button to the widget. What should tapping the widget time do?
-* Make the widget prettier and visibly BBQ Timer: margins, background image, icon?
+* Add a Reset button to the widget. Then reconsider what tapping the widget text does.
+* Add a License file to the repo. Rethink the source code copyright text.
+* Make the widget prettier and visibly part of BBQ Timer: margins, background image, icon?
 * Add an app icon.
 * Add a widget preview image.
 * In the activity, add images to the Start/Stop/Reset buttons?
-* Add the alarm feature, a chime while running with a settable period or settable times. Set it in
-the main activity or via the Settings menu?
-* Display a notification for the alarms so people can tell why it beeped.
+* Add the alarm feature: a chime while running, with a settable period or settable times. Set it in
+  the main activity or via the Settings menu?
+* Display a notification for the alarms so people can tell why it chimed.
 * When stopped at 00:00, make the widget instead show the time? Just make the 00:00 white?
+  To track the time: Upon ACTION_SCREEN_ON when there are lock screen widgets, register a Service to
+  listen for ACTION_TIME_TICK. Unregister upon ACTION_SCREEN_OFF or when the last widget is removed.
 * Make the text smaller when the widget is small?
 * Set other AndroidManifest.xml values. (Search info?)
 * Implement Activity#onCreateThumbnail().
 * Provide color feedback when tapping on the time display text view, like the system stopwatch app.
 * Follow system theme colors?
+* Reset the timer on boot-up?
+* Test on various OS versions, screen sizes, and pixel densities.
 * L10N.
+* Help info via a menu command: How to install as home & lock screen widgets, what tapping the
+  widget text does, anything else?
+* Set up optimized release builds.
 * Accessibility.
 
 ## Bugs
@@ -42,10 +50,11 @@ battery power.
 * When paused, a Chronometer view can't show a well-determined time value because its API doesn't
 accommodate that case. You could fake it by sending it a start time that's about the right amount of
 time ago but you can't control how long until it reads the system clock. Consequently, multiple
-widgets display different paused time values. The workaround is to switch the display when paused
-from a Chronometer view to a Text view.
+widgets would display different paused time values. The workaround is to switch the display from a
+Chronometer view to a Text view when paused. A simpler workaround would pause the Chronometer then
+use it as the paused Text view, but that relies on the Chronometer's implementation details.
 * Formatting the elapsed time like 0:12 would look nicer than 00:12 but Android's Chronometer view
-only does the latter. The app's main activity screen and the paused Text view could deviate from
-that but the inconsistency would be jarring.
+only does the latter. The app's main activity screen and the paused Text view don't have to match it
+but the inconsistency would be jarring.
 * The widget's ViewFlipper must explicitly set android:measureAllChildren="false", otherwise
 flipping its subviews will resize the adjacent ImageButton on Galaxy Nexus Jelly Bean. (Why?)
