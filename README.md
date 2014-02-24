@@ -12,25 +12,28 @@ In development. Not ready for alpha test.
 Using Android Studio.
 
 ## TODO
-* Show the date and time in the widget. (Only on the lock screen? Vertically resizable?)
-* When stopped at 0:00, show just the date, time, and start button in the widget?
-* Add a Reset button to the widget.
-* Make the widget prettier: margins, background image?
-* Make the text smaller when the widget is small?
-* Add app icons.
+* Add a Reset button to the widget. What should tapping the widget time do?
+* Make the widget prettier and visibly BBQ Timer: margins, background image, icon?
+* Add an app icon.
 * Add a widget preview image.
 * In the activity, add images to the Start/Stop/Reset buttons?
+* Add the alarm feature, a chime while running with a settable period or settable times. Set it in
+the main activity or via the Settings menu?
+* Display a notification for the alarms so people can tell why it beeped.
+* When stopped at 00:00, make the widget instead show the time? Just make the 00:00 white?
+* Make the text smaller when the widget is small?
 * Set other AndroidManifest.xml values. (Search info?)
 * Implement Activity#onCreateThumbnail().
 * Provide color feedback when tapping on the time display text view, like the system stopwatch app.
 * Follow system theme colors?
-* Add the alarm feature. On the main activity? Use, replace, or remove the Settings menu.
-* Display a notification for the alarms so people can tell why it beeped.
 * L10N.
 * Accessibility.
 
 ## Bugs
 * In the emulator (Nexus 5 KitKat), the Activity's timer sometimes stops.
+* Due to Android OS bug https://code.google.com/p/android/issues/detail?id=2880 if the clock gets
+set backwards, the widget's date won't update until the clock catches up to what was going to be the
+next day.
 
 ## Implementation notes
 * The lock screen widget pretty much needs to use a Chronometer view for the ticking time display.

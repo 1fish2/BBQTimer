@@ -35,7 +35,7 @@
                     android:ellipsize="end"/>
 
                 <TextView
-                    android:id="@+id/pausedChronometerTextView"
+                    android:id="@+id/pausedChronometerText"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:importantForAccessibility="yes"
@@ -55,6 +55,15 @@
                 android:contentDescription="@string/start_stop"/>
 
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/secondaryText"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/secondary_text_size"
+            android:textStyle="bold"/>
     </LinearLayout>
 
 </FrameLayout>

@@ -11,6 +11,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.text.format.DateUtils;
 import android.widget.RemoteViews;
 
 /**
@@ -22,10 +23,15 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
 
     static final String ACTION_START_STOP = "com.onefishtwo.bbqtimer.ACTION_START_STOP";
 
+    // Synchronized on the class.
+    static String secondaryTextCache;
+
     static ComponentName getComponentName(Context context) {
         return new ComponentName(context, TimerAppWidgetProvider.class);
     }
 
+    /** Loads and returns the shared TimeCounter data. */
+    // TODO: Share the persistent I/O code with MainActivity.
     static TimeCounter loadTimeCounter(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(MainActivity.TIMER_PREF_FILE,
                 Context.MODE_PRIVATE);
@@ -40,6 +46,21 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
         SharedPreferences.Editor prefsEditor = prefs.edit();
         timer.save(prefsEditor);
         prefsEditor.commit();
+    }
+
+    /** Returns the formatted date (or other secondary text string). */
+    static synchronized String secondaryText() {
+        if (secondaryTextCache == null) {
+            long now = System.currentTimeMillis();
+            secondaryTextCache = DateUtils.formatDateTime(null, now,
+                    DateUtils.FORMAT_SHOW_DATE
+                        | DateUtils.FORMAT_SHOW_WEEKDAY | DateUtils.FORMAT_ABBREV_WEEKDAY);
+        }
+        return secondaryTextCache;
+    }
+
+    static synchronized void clearSecondaryTextCache() {
+        secondaryTextCache = null;
     }
 
     /**
@@ -64,8 +85,7 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
         } else {
             long elapsedTime = timer.getElapsedTime();
             views.setDisplayedChild(R.id.viewFlipper, PAUSED_CHRONOMETER_CHILD);
-            views.setTextViewText(R.id.pausedChronometerTextView,
-                    TimeCounter.formatHhMmSs(elapsedTime));
+            views.setTextViewText(R.id.pausedChronometerText, TimeCounter.formatHhMmSs(elapsedTime));
             // TODO: Preload the button image Bitmap?
             views.setImageViewResource(R.id.remoteStartStopButton, R.drawable.ic_play);
             // Stop the Chronometer in case it'd use battery power even when not displayed.
@@ -74,6 +94,7 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
             views.setChronometer(R.id.chronometer, 0, null, false);
         }
 
+        views.setTextViewText(R.id.secondaryText, secondaryText());
         views.setOnClickPendingIntent(R.id.remoteStartStopButton, startStopIntent);
         views.setOnClickPendingIntent(R.id.viewFlipper, openMainActivityIntent);
 
@@ -86,10 +107,6 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
      */
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
-        // Load persistent state.
-        // TODO: Share the persistent I/O code with MainActivity, or use a ContentProvider or a
-        // bound Service or...
-        // TODO: Ensure this gets up-to-date data.
         TimeCounter timer = loadTimeCounter(context);
 
         updateWidgets(context, appWidgetManager, appWidgetIds, timer);
@@ -100,6 +117,7 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
         ComponentName componentName = getComponentName(context);
         AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
 
+        // Get the array of widget IDs, and if it's not empty, call updateWidgets() to update them.
         if (appWidgetManager != null) {
             int[] appWidgetIds = appWidgetManager.getAppWidgetIds(componentName);
 
@@ -109,11 +127,13 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
         }
     }
 
+    /** Constructs a PendingIntent for the widget to send to open the main Activity. */
     static PendingIntent makeOpenMainActivityIntent(Context context) {
         Intent intent = new Intent(context, MainActivity.class);
         return PendingIntent.getActivity(context, 0, intent, 0);
     }
 
+    /** Constructs a PendingIntent for the widget to send Start/Stop clicks to this Receiver. */
     static PendingIntent makeStartStopIntent(Context context) {
         Intent intent = new Intent(context, TimerAppWidgetProvider.class);
         intent.setAction(ACTION_START_STOP);
@@ -121,14 +141,33 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
     }
 
     /** Receives an Intent, including one for the app widget's button clicks. */
+    //
+    // TODO: Due to Android OS bug https://code.google.com/p/android/issues/detail?id=2880 , after
+    // the clock gets set backwards, the OS won't send ACTION_DATE_CHANGED until the clock catches
+    // up to what was going to be the next day.
+    //
+    // Cf http://stackoverflow.com/questions/21758246/android-action-date-changed-broadcast which
+    // suggests a workaround by implementing a similar alarm.
     @Override
     public void onReceive(Context context, Intent intent) {
         super.onReceive(context, intent);
 
-        if (ACTION_START_STOP.equals(intent.getAction())) {
+        String action = intent.getAction();
+
+        if (ACTION_START_STOP.equals(action)) {
+            // A widget's start/stop button was tapped.
             TimeCounter timer = loadTimeCounter(context);
+
             timer.toggleRunning();
             saveTimeCounter(context, timer);
+            updateAllWidgets(context, timer);
+        } else if (Intent.ACTION_DATE_CHANGED.equals(action)
+                || Intent.ACTION_TIME_CHANGED.equals(action)
+                || Intent.ACTION_TIMEZONE_CHANGED.equals(action)) {
+            // The clock ticked over to the next day or the clock was adjusted.
+            TimeCounter timer = loadTimeCounter(context);
+
+            clearSecondaryTextCache();
             updateAllWidgets(context, timer);
         }
     }
