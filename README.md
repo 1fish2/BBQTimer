@@ -12,13 +12,14 @@ In development. Not ready for alpha test.
 Using Android Studio.
 
 ## TODO
-* Make the widget prettier: margins, translucent frame, background image?
 * Show the date and time in the widget. (Only on the lock screen? Vertically resizable?)
 * When stopped at 0:00, show just the date, time, and start button in the widget?
-* Make the text a little smaller to fit durations > 9 hours? Only when the widget is small?
+* Add a Reset button to the widget.
+* Make the widget prettier: margins, background image?
+* Make the text smaller when the widget is small?
 * Add app icons.
 * Add a widget preview image.
-* In the activity, add images to the Start/Stop/Reset labels?
+* In the activity, add images to the Start/Stop/Reset buttons?
 * Set other AndroidManifest.xml values. (Search info?)
 * Implement Activity#onCreateThumbnail().
 * Provide color feedback when tapping on the time display text view, like the system stopwatch app.
