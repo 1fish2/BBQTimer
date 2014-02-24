@@ -25,7 +25,6 @@ Using Android Studio.
 * Follow system theme colors?
 * Add the alarm feature. On the main activity? Use, replace, or remove the Settings menu.
 * Display a notification for the alarms so people can tell why it beeped.
-* I18N: Tenths of a second needs a localized decimal separator.
 * L10N.
 * Accessibility.
 

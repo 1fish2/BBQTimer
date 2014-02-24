@@ -8,6 +8,9 @@ import android.content.SharedPreferences;
 import android.os.SystemClock;
 import android.text.format.DateUtils;
 
+import java.text.FieldPosition;
+import java.text.NumberFormat;
+
 /**
  * A stopwatch time counter (data model).
  */
@@ -17,10 +20,25 @@ public class TimeCounter {
     public static final String PREF_START_TIME = "startTime";
     public static final String PREF_PAUSE_TIME = "pauseTime";
 
+    // Synchronized on recycledStringBuilder.
+    private static final StringBuilder recycledStringBuilder = new StringBuilder(8);
+
+    // Synchronized on fractionFormatter.
+    private static final NumberFormat fractionFormatter = NumberFormat.getNumberInstance();
+    private static final StringBuffer recycledStringBuffer = new StringBuffer(8);
+    private static final FieldPosition fractionFieldPosition =
+            new FieldPosition(NumberFormat.FRACTION_FIELD);
+
+    static {
+        fractionFormatter.setMinimumIntegerDigits(0);
+        fractionFormatter.setMaximumIntegerDigits(0);
+        fractionFormatter.setMinimumFractionDigits(1);
+        fractionFormatter.setMaximumFractionDigits(1);
+    }
+
     private boolean isRunning;
     private long startTime; // when started, in system elapsed milliseconds
     private long pauseTime; // if !isRunning, when paused, in system elapsed milliseconds
-    private static final StringBuilder recycledStringBuilder = new StringBuilder(8);
 
     public TimeCounter() {
     }
@@ -120,12 +138,15 @@ public class TimeCounter {
         }
     }
 
-    /** Formats a decimal fraction of a second of a millisecond duration, in .f format. */
+    /** Formats a decimal fraction of a second of a millisecond duration, in localized .f format. */
     public static String formatFractionalSeconds(long elapsedMilliseconds) {
-        long elapsedTenths = elapsedMilliseconds / 100;
-        int tenths = (int)(elapsedTenths % 10);
+        double seconds = elapsedMilliseconds / 1000.0;
 
-        return String.format(".%1d", tenths);
+        synchronized (fractionFormatter) {
+            recycledStringBuffer.setLength(0);
+            return fractionFormatter.format(seconds, recycledStringBuffer, fractionFieldPosition)
+                    .toString();
+        }
     }
 
     @Override
