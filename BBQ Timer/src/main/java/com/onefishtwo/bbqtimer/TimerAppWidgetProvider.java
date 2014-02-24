@@ -69,6 +69,8 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
             // TODO: Preload the button image Bitmap?
             views.setImageViewResource(R.id.remoteStartStopButton, R.drawable.ic_play);
             // Stop the Chronometer in case it'd use battery power even when not displayed.
+            // NOTE: A simpler implementation would stop the Chronometer then use it as the
+            // paused TextView, but that relies on it not updating its text.
             views.setChronometer(R.id.chronometer, 0, null, false);
         }
 
