@@ -17,14 +17,14 @@ Using Android Studio.
 * Make the widget prettier and visibly part of BBQ Timer: margins, background image, icon?
 * Add an app icon.
 * Add a widget preview image.
-* In the activity, add images to the Start/Stop/Reset buttons?
 * Add the alarm feature: a chime while running, with a settable period or settable times. Set it in
   the main activity or via the Settings menu?
 * Display a notification for the alarms so people can tell why it chimed.
 * When stopped at 00:00, make the widget instead show the time? Just make the 00:00 white?
   To track the time: Upon ACTION_SCREEN_ON when there are lock screen widgets, register a Service to
   listen for ACTION_TIME_TICK. Unregister upon ACTION_SCREEN_OFF or when the last widget is removed.
-* Make the text smaller when the widget is small?
+* Make the text smaller to fit smaller widgets and longer duration strings. See bug workaround
+  http://stackoverflow.com/questions/17396045/how-to-catch-widget-size-changes-on-devices-where-onappwidgetoptionschanged-not
 * Set other AndroidManifest.xml values. (Search info?)
 * Implement Activity#onCreateThumbnail().
 * Provide color feedback when tapping on the time display text view, like the system stopwatch app.

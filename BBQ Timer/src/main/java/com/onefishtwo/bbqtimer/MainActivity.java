@@ -166,6 +166,8 @@ public class MainActivity extends ActionBarActivity {
         resetButton.setVisibility(running
                 || timer.getElapsedTime() == 0 ? View.INVISIBLE : View.VISIBLE);
         startStopButton.setText(running ? R.string.stop : R.string.start);
+        startStopButton.setCompoundDrawablesWithIntrinsicBounds(
+                running ? R.drawable.ic_pause : R.drawable.ic_play, 0, 0, 0);
     }
 
 }
