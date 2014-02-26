@@ -123,6 +123,17 @@ public class TimeCounter {
         return isRunning;
     }
 
+    /** Cycles the state: Reset -> Running -> Paused -> Reset. */
+    public void cycle() {
+        if (isRunning()) {
+            pause();
+        } else if (getElapsedTime() == 0) {
+            start();
+        } else {
+            reset();
+        }
+    }
+
     /** Stops and resets the timer. */
     public void reset() {
         startTime = pauseTime = 0;

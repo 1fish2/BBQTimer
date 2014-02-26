@@ -22,6 +22,7 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
     private static final int PAUSED_CHRONOMETER_CHILD  = 1;
 
     static final String ACTION_START_STOP = "com.onefishtwo.bbqtimer.ACTION_START_STOP";
+    static final String ACTION_CYCLE      = "com.onefishtwo.bbqtimer.ACTION_CYCLE";
 
     // Synchronized on the class.
     static String secondaryTextCache;
@@ -73,8 +74,8 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
     private static void updateWidgets(Context context, AppWidgetManager appWidgetManager,
             int[] appWidgetIds, TimeCounter timer) {
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.app_widget);
-        PendingIntent startStopIntent = makeStartStopIntent(context);
-        PendingIntent openMainActivityIntent = makeOpenMainActivityIntent(context);
+        PendingIntent startStopIntent = makeActionIntent(context, ACTION_START_STOP);
+        PendingIntent cycleIntent = makeActionIntent(context, ACTION_CYCLE);
 
         if (timer.isRunning()) {
             // Note: setDisplayedChild() requires minSdkVersion 12 (in build.gradle).
@@ -96,7 +97,7 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
 
         views.setTextViewText(R.id.secondaryText, secondaryText());
         views.setOnClickPendingIntent(R.id.remoteStartStopButton, startStopIntent);
-        views.setOnClickPendingIntent(R.id.viewFlipper, openMainActivityIntent);
+        views.setOnClickPendingIntent(R.id.viewFlipper, cycleIntent);
 
         appWidgetManager.updateAppWidget(appWidgetIds, views);
     }
@@ -133,10 +134,10 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
         return PendingIntent.getActivity(context, 0, intent, 0);
     }
 
-    /** Constructs a PendingIntent for the widget to send Start/Stop clicks to this Receiver. */
-    static PendingIntent makeStartStopIntent(Context context) {
+    /** Constructs a PendingIntent for the widget to send an action event to this Receiver. */
+    static PendingIntent makeActionIntent(Context context, String action) {
         Intent intent = new Intent(context, TimerAppWidgetProvider.class);
-        intent.setAction(ACTION_START_STOP);
+        intent.setAction(action);
         return PendingIntent.getBroadcast(context, 0, intent, 0);
     }
 
@@ -155,16 +156,23 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
         String action = intent.getAction();
 
         if (ACTION_START_STOP.equals(action)) {
-            // A widget's start/stop button was tapped.
+            // The user tapped a widget's start/stop button.
             TimeCounter timer = loadTimeCounter(context);
 
             timer.toggleRunning();
             saveTimeCounter(context, timer);
             updateAllWidgets(context, timer);
+        } else if (ACTION_CYCLE.equals(action)) {
+            // The user tapped a widget's time text. Cycle Start/Pause/Reset.
+            TimeCounter timer = loadTimeCounter(context);
+
+            timer.cycle();
+            saveTimeCounter(context, timer);
+            updateAllWidgets(context, timer);
         } else if (Intent.ACTION_DATE_CHANGED.equals(action)
                 || Intent.ACTION_TIME_CHANGED.equals(action)
                 || Intent.ACTION_TIMEZONE_CHANGED.equals(action)) {
-            // The clock ticked over to the next day or the clock was adjusted.
+            // The clock ticked over to the next day or it was adjusted. Update the date display.
             TimeCounter timer = loadTimeCounter(context);
 
             clearSecondaryTextCache();

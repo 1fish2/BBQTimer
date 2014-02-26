@@ -131,7 +131,7 @@ public class MainActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    /** The user clicked the Start/Stop button. */
+    /** The user tapped the Start/Stop button. */
     // TODO: Use listeners to update the Activity UI and app widgets.
     // A Proguard rule keeps all Activity onClick*() methods.
     public void onClickStartStop(View v) {
@@ -141,9 +141,16 @@ public class MainActivity extends ActionBarActivity {
         TimerAppWidgetProvider.updateAllWidgets(this, timer);
     }
 
-    /** The user clicked the Reset button. */
+    /** The user tapped the Reset button. */
     public void onClickReset(View v) {
         timer.reset();
+        updateUI();
+        TimerAppWidgetProvider.updateAllWidgets(this, timer);
+    }
+
+    /** The user tapped the time text: Cycle Reset -> Running -> Paused -> Reset. */
+    public void onClickTimerText(View v) {
+        timer.cycle();
         updateUI();
         TimerAppWidgetProvider.updateAllWidgets(this, timer);
     }
