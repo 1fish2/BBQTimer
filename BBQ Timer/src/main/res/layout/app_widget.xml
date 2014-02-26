@@ -17,12 +17,25 @@
             android:background="@color/translucent_background"
             android:gravity="right">
 
-            <ViewFlipper
-                android:id="@+id/viewFlipper"
+            <ImageButton
+                android:id="@+id/remoteStartStopButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:importantForAccessibility="yes"
+                android:src="@drawable/ic_play"
+                android:layout_gravity="center_vertical"
+                android:contentDescription="@string/start_stop"
+                android:paddingLeft="@dimen/small_button_padding"
+                android:paddingRight="@dimen/small_button_padding"/>
+
+            <ViewFlipper
+                android:id="@+id/viewFlipper"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
                 android:measureAllChildren="false"
-                android:clickable="true">
+                android:clickable="true"
+                android:layout_weight="1"
+                android:layout_marginRight="@dimen/widget_interior_padding">
 
                 <Chronometer
                     android:id="@+id/chronometer"
@@ -32,7 +45,8 @@
                     android:textSize="@dimen/widget_text_size"
                     android:textColor="@color/orange_red_text"
                     android:typeface="sans"
-                    android:ellipsize="end"/>
+                    android:ellipsize="end"
+                    android:gravity="right"/>
 
                 <TextView
                     android:id="@+id/pausedChronometerText"
@@ -42,17 +56,9 @@
                     android:textSize="@dimen/widget_text_size"
                     android:textColor="@color/orange_red_text"
                     android:typeface="sans"
-                    android:ellipsize="end"/>
+                    android:ellipsize="end"
+                    android:gravity="right"/>
             </ViewFlipper>
-
-            <ImageButton
-                android:id="@+id/remoteStartStopButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:importantForAccessibility="yes"
-                android:src="@drawable/ic_play"
-                android:layout_gravity="center_vertical"
-                android:contentDescription="@string/start_stop"/>
 
         </LinearLayout>
 
