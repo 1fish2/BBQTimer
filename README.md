@@ -15,7 +15,7 @@ food has been cooking, however long that takes.
   "CNET How To")
   and [How to Add Lockscreen Widgets to Android 4.4
   KitKat](http://www.gottabemobile.com/2013/11/11/add-lockscreen-widgets-android-4-4-kitkat-nexus-5/
-  "GottaBe Mobile")
+  "GottaBe Mobile").
 * If you have multiple lock screen widgets, you can rearrange them by dragging them left and right.
   Drag the BBQ Timer widget to the rightmost position if you want to make it the one that appears as
   soon as you tap the power button. You can rearrange your lock screen widgets any time you want,
