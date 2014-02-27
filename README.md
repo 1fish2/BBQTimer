@@ -1,9 +1,26 @@
 # BBQTimer Android app
 
 It's a stopwatch with a twist (or two):
-1. It has a lock screen widget so you can check the timer without unlocking your phone.
+1. It has a lock screen widget so you can quickly check the timer without unlocking your phone.
 2. [TODO] It can set alarm times (like a count-down timer) while still counting up the time that the
 food has been cooking, however long that takes.
+
+## Usage tips
+* Tap the stopwatch time to cycle between Reset -> Running -> Paused -> Reset.
+* Put the BBQ Timer widget on the Android lock screen for quick access. This requires Android 4.2
+  Jelly Bean or later. (In Android 4.4 KitKat, you'll need to turn on
+  Settings > Security > Enable Widgets.)
+  Instructions: [Getting started with lock screen widgets on Android Jelly
+  Bean](http://howto.cnet.com/8301-11310_39-57549747-285/getting-started-with-lock-screen-widgets-on-android-jelly-bean/
+  "CNET How To")
+  and [How to Add Lockscreen Widgets to Android 4.4
+  KitKat](http://www.gottabemobile.com/2013/11/11/add-lockscreen-widgets-android-4-4-kitkat-nexus-5/
+  "GottaBe Mobile")
+* If you have multiple lock screen widgets, you can rearrange them by dragging them left and right.
+  Drag the BBQ Timer widget to the rightmost position if you want to make it the one that appears as
+  soon as you tap the power button. You can rearrange your lock screen widgets any time you want,
+  e.g. move BBQ Timer to the right-most position when you're cooking.
+* The BBQ Timer widget also works on the home screen, even in earlier versions of Android.
 
 ## Status
 It works. Development is ongoing.
@@ -12,7 +29,6 @@ It works. Development is ongoing.
 Using Android Studio.
 
 ## TODO
-* Add a Reset button to the widget. Then reconsider what tapping the widget text does.
 * Add a License file to the repo. Rethink the source code copyright text.
 * Make the widget prettier and visibly part of BBQ Timer: margins, background image, icon?
 * Add an app icon.
@@ -20,7 +36,7 @@ Using Android Studio.
 * Add the alarm feature: a chime while running, with a settable period or settable times. Set it in
   the main activity or via the Settings menu?
 * Display a notification for the alarms so people can tell why it chimed.
-* When stopped at 00:00, make the widget instead show the time? Just make the 00:00 white?
+* When stopped at 00:00, make the time small and also show the time?
   To track the time: Upon ACTION_SCREEN_ON when there are lock screen widgets, register a Service to
   listen for ACTION_TIME_TICK. Unregister upon ACTION_SCREEN_OFF or when the last widget is removed.
 * Make the text smaller to fit smaller widgets and longer duration strings. See bug workaround
@@ -32,8 +48,8 @@ Using Android Studio.
 * Reset the timer on boot-up?
 * Test on various OS versions, screen sizes, and pixel densities.
 * L10N.
-* Help info via a menu command: How to install as home & lock screen widgets, what tapping the
-  widget text does, anything else?
+* Tips via a menu command: How to install as home & lock screen widgets, what tapping the widget
+  text does, anything else?
 * Set up optimized release builds.
 * Accessibility.
 

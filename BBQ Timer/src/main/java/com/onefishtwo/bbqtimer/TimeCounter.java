@@ -140,6 +140,11 @@ public class TimeCounter {
         isRunning = false;
     }
 
+    /** Returns true if the TimeCounter is in the Reset state, i.e. Paused at 0:00. */
+    public boolean isReset() {
+        return !isRunning && getElapsedTime() == 0;
+    }
+
     /** Formats a millisecond duration in [hh:]mm:ss format like Chronometer does. */
     public static String formatHhMmSs(long elapsedMilliseconds) {
         long elapsedSeconds = elapsedMilliseconds / 1000;

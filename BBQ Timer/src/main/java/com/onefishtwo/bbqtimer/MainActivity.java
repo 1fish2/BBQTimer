@@ -157,12 +157,17 @@ public class MainActivity extends ActionBarActivity {
 
     /** Updates the display to show the current elapsed time. */
     private void displayTime() {
-        long elapsedTime = timer.getElapsedTime();
-        String formatted = TimeCounter.formatHhMmSs(elapsedTime);
+        long elapsedTime         = timer.getElapsedTime();
+        String formatted         = TimeCounter.formatHhMmSs(elapsedTime);
         String formattedFraction = TimeCounter.formatFractionalSeconds(elapsedTime);
+        int textColorId          = timer.isReset() ? R.color.gray_text : R.color.orange_red_text;
+        int textColor            = getResources().getColor(textColorId);
 
         displayView.setText(formatted);
         fractionDisplayView.setText(formattedFraction);
+
+        displayView.setTextColor(textColor);
+        fractionDisplayView.setTextColor(textColor);
     }
 
     /** Updates the UI for the current state. */
