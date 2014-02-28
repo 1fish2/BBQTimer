@@ -9,6 +9,7 @@
     android:updatePeriodMillis="0"
     android:initialLayout="@layout/app_widget"
     android:initialKeyguardLayout="@layout/app_widget"
+    android:previewImage="@drawable/widget_preview"
     android:resizeMode="horizontal"
     android:widgetCategory="home_screen|keyguard">
 

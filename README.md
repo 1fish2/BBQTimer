@@ -39,7 +39,6 @@ Using Android Studio.
 * Add a License file to the repo. Rethink the source code copyright text.
 * Make the widget prettier and visibly part of BBQ Timer: margins, background image, icon?
 * Add an app icon.
-* Add a widget preview image.
 * Add the alarm feature: a chime while running, with a settable period or settable times. Set it in
   the main activity or via the Settings menu?
 * Display a notification for the alarms so people can tell why it chimed.
@@ -53,7 +52,8 @@ Using Android Studio.
 * Provide color feedback when tapping on the time display text view, like the system stopwatch app.
 * Follow system theme colors?
 * Reset the timer on boot-up?
-* Test on various OS versions, screen sizes, and pixel densities.
+* Test on various OS versions, screen sizes, and pixel densities. (Is the widget preview image
+  needed at multiple resolutions?)
 * L10N.
 * Tips via a menu command: How to install as home & lock screen widgets, what tapping the widget
   text does, anything else?
