@@ -5,25 +5,32 @@ It's a stopwatch with a twist (or two):
 2. [TODO] It can set alarm times (like a count-down timer) while still counting up the time that the
 food has been cooking, however long that takes.
 
+## Status
+It works. Development is ongoing.
+
 ## Usage tips
 * Tap the stopwatch time to cycle between Reset -> Running -> Paused -> Reset.
 * Put the BBQ Timer widget on the Android lock screen for quick access. This requires Android 4.2
-  Jelly Bean or later. (In Android 4.4 KitKat, you'll need to turn on
-  Settings > Security > Enable Widgets.)
-  Instructions: [Getting started with lock screen widgets on Android Jelly
+  Jelly Bean or later.
+* The BBQ Timer widget also works on the home screen, even in earlier versions of Android. You can
+  resize the widget by long-pressing it, then dragging its resize handles.
+
+## How to Use Android Lock Screen Widgets
+* Android lock screen widgets work in Android 4.2 Jelly Bean and later versions.
+* In Android 4.4 KitKat, you'll need to turn on Settings > Security > Enable Widgets.
+* For instructions, see [Getting started with lock screen widgets on Android Jelly
   Bean](http://howto.cnet.com/8301-11310_39-57549747-285/getting-started-with-lock-screen-widgets-on-android-jelly-bean/
   "CNET How To")
   and [How to Add Lockscreen Widgets to Android 4.4
   KitKat](http://www.gottabemobile.com/2013/11/11/add-lockscreen-widgets-android-4-4-kitkat-nexus-5/
   "GottaBe Mobile").
-* If you have multiple lock screen widgets, you can rearrange them by dragging them left and right.
-  Drag the BBQ Timer widget to the rightmost position if you want to make it the one that appears as
-  soon as you tap the power button. You can rearrange your lock screen widgets any time you want,
-  e.g. move BBQ Timer to the right-most position when you're cooking.
-* The BBQ Timer widget also works on the home screen, even in earlier versions of Android.
-
-## Status
-It works. Development is ongoing.
+* You can rearrange your lock screen widgets by dragging them left and right.
+* Drag a widget to the rightmost position to see it as soon as you power on.
+* You can rearrange your lock screen widgets any time you want, e.g. move BBQ Timer to the
+  right-most position when you're cooking, then move the Digital Clock widget to the right-most
+  position until your next BBQ.
+* To add a lock screen widget: power on, then swipe to the right until you see the "+" screen, tap
+  the "+", unlock the phone, pick a widget, then (optionally) drag it further to the right.
 
 ## Build
 Using Android Studio.
@@ -36,7 +43,7 @@ Using Android Studio.
 * Add the alarm feature: a chime while running, with a settable period or settable times. Set it in
   the main activity or via the Settings menu?
 * Display a notification for the alarms so people can tell why it chimed.
-* When stopped at 00:00, make the time small and also show the time?
+* When stopped at 00:00, make the time small and add the time? Or add the time in another line?
   To track the time: Upon ACTION_SCREEN_ON when there are lock screen widgets, register a Service to
   listen for ACTION_TIME_TICK. Unregister upon ACTION_SCREEN_OFF or when the last widget is removed.
 * Make the text smaller to fit smaller widgets and longer duration strings. See bug workaround
