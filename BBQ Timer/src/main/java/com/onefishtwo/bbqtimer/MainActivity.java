@@ -151,6 +151,7 @@ public class MainActivity extends ActionBarActivity {
     /** The user tapped the time text: Cycle Reset -> Running -> Paused -> Reset. */
     public void onClickTimerText(View v) {
         timer.cycle();
+        updateHandler.beginScheduledUpdate();
         updateUI();
         TimerAppWidgetProvider.updateAllWidgets(this, timer);
     }
