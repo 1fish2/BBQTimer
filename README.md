@@ -36,29 +36,31 @@ It works. Development is ongoing.
 Using Android Studio.
 
 ## TODO
-* Add a License file to the repo. Rethink the source code copyright text.
-* Make the widget prettier and visibly part of BBQ Timer: margins, background image, icon?
+* Add a License file to the repo. Change the source code copyright text.
 * Add an app icon.
+* Set up optimized release builds.
 * Add the alarm feature: a chime while running, with a settable period or settable times. Set it in
   the main activity or via the Settings menu?
 * Display a notification for the alarms so people can tell why it chimed.
-* When stopped at 00:00, make the time small and add the time? Or add the time in another line?
-  To track the time: Upon ACTION_SCREEN_ON when there are lock screen widgets, register a Service to
-  listen for ACTION_TIME_TICK. Unregister upon ACTION_SCREEN_OFF or when the last widget is removed.
-* Make the text smaller to fit smaller widgets and longer duration strings. See bug workaround
-  http://stackoverflow.com/questions/17396045/how-to-catch-widget-size-changes-on-devices-where-onappwidgetoptionschanged-not
 * Set other AndroidManifest.xml values. (Search info?)
 * Implement Activity#onCreateThumbnail().
-* Provide color feedback when tapping on the time display text view, like the system stopwatch app.
 * Follow system theme colors?
-* Reset the timer on boot-up?
 * Test on various OS versions, screen sizes, and pixel densities. (Is the widget preview image
   needed at multiple resolutions?)
+* Add unit tests.
 * L10N.
-* Tips via a menu command: How to install as home & lock screen widgets, what tapping the widget
-  text does, anything else?
-* Set up optimized release builds.
 * Accessibility.
+* Show a tip about adding the widget to the lock screen when first running the app.
+* Show tips via a menu command: How to install as home & lock screen widgets. What tapping the
+  widget text does.
+* Provide color feedback when tapping on the timer text, like the system stopwatch app.
+* Make the widget prettier and visibly part of BBQ Timer: margins, background image, icon?
+* Reset the timer on boot-up?
+* When stopped at 00:00, add the time of day? Make the stopwatch text 00:00 small?
+  To track the time: Upon ACTION_SCREEN_ON when there are lock screen widgets, register a Service to
+  listen for ACTION_TIME_TICK. Unregister upon ACTION_SCREEN_OFF or when the last widget is removed.
+* Make the text smaller to fit smaller widgets and longer duration strings? See bug workaround
+  http://stackoverflow.com/questions/17396045/how-to-catch-widget-size-changes-on-devices-where-onappwidgetoptionschanged-not
 
 ## Bugs
 * In the emulator (Nexus 5 KitKat), the Activity's timer sometimes stops.
