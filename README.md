@@ -37,7 +37,6 @@ Using Android Studio.
 
 ## TODO
 * Add a License file to the repo. Change the source code copyright text.
-* Add an app icon.
 * Set up optimized release builds.
 * Add the alarm feature: a chime while running, with a settable period or settable times. Set it in
   the main activity or via the Settings menu?
