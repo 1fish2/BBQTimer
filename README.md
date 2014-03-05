@@ -36,11 +36,12 @@ It works. Development is ongoing.
 Using Android Studio.
 
 ## TODO
-* Add a License file to the repo. Change the source code copyright text.
-* Set up optimized release builds.
 * Add the alarm feature: a chime while running, with a settable period or settable times. Set it in
   the main activity or via the Settings menu?
 * Display a notification for the alarms so people can tell why it chimed.
+
+* Add a License file to the repo. Change the source code copyright text.
+* Set up signed, optimized, deployable release builds.
 * Set other AndroidManifest.xml values. (Search info?)
 * Implement Activity#onCreateThumbnail().
 * Follow system theme colors?
@@ -53,7 +54,8 @@ Using Android Studio.
 * Show tips via a menu command: How to install as home & lock screen widgets. What tapping the
   widget text does.
 * Provide color feedback when tapping on the timer text, like the system stopwatch app.
-* Make the widget prettier and visibly part of BBQ Timer: margins, background image, icon?
+* Deploy to the Play store.
+
 * Reset the timer on boot-up?
 * When stopped at 00:00, add the time of day? Make the stopwatch text 00:00 small?
   To track the time: Upon ACTION_SCREEN_ON when there are lock screen widgets, register a Service to
