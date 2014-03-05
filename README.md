@@ -43,6 +43,7 @@ Using Android Studio.
 * Add a License file to the repo. Change the source code copyright text.
 * Set up signed, optimized, deployable release builds.
 * Set other AndroidManifest.xml values. (Search info?)
+* Experiment with putting the spatula image in the widget's background.
 * Implement Activity#onCreateThumbnail().
 * Follow system theme colors?
 * Test on various OS versions, screen sizes, and pixel densities. (Is the widget preview image
