@@ -10,10 +10,13 @@ It works. Development is ongoing.
 
 ## Usage tips
 * Tap the stopwatch time to cycle between Reset -> Running -> Paused -> Reset.
-* Put the BBQ Timer widget on the Android lock screen for quick access. This requires Android 4.2
-  Jelly Bean or later.
-* The BBQ Timer widget also works on the home screen, even in earlier versions of Android. You can
-  resize the widget by long-pressing it, then dragging its resize handles.
+* Put the BBQ Timer widget on the Android lock screen for quick access. (This requires Android 4.2
+  Jelly Bean or later.)
+* The BBQ Timer widget also works on the home screen, even in earlier versions of Android.
+* You can resize the home screen widget by long-pressing, then dragging its resize handles.
+  In the initial size, it will fit minutes and seconds (e.g. "18:12"). Stretched wider, it will
+  fit hours, minutes, and seconds (e.g. "1:15:09"). If you run the timer into hours, a narrow
+  widget will clip the seconds display.
 
 ## How to Use Android Lock Screen Widgets
 * Android lock screen widgets work in Android 4.2 Jelly Bean and later versions.

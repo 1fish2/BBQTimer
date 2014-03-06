@@ -15,9 +15,9 @@
    id="svg3322"
    version="1.1"
    inkscape:version="0.48.4 r9939"
-   inkscape:export-filename="C:\sourcecontrolled\BBQTimer\source-assets\spatula.png"
-   inkscape:export-xdpi="66.800003"
-   inkscape:export-ydpi="66.800003"
+   inkscape:export-filename="C:\sourcecontrolled\BBQTimer\BBQ Timer\src\main\res\drawable-mdpi\spatula.png"
+   inkscape:export-xdpi="77.14286"
+   inkscape:export-ydpi="77.14286"
    sodipodi:docname="spatula.svg">
   <defs
      id="defs3324">
@@ -114,7 +114,7 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="6"
-     inkscape:cx="58.453999"
+     inkscape:cx="32.453999"
      inkscape:cy="27.536036"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
@@ -142,18 +142,9 @@
      inkscape:groupmode="layer"
      id="layer1"
      transform="translate(0,-994.36218)">
-    <rect
-       style="opacity:0.62999998;fill:#000000;fill-opacity:0.37647059;stroke:none"
-       id="rect3805"
-       width="102"
-       height="58"
-       x="-5.1070259e-015"
-       y="994.36218"
-       rx="0"
-       ry="0" />
     <g
        transform="matrix(0.327677,-0.03106643,0.03108331,0.3274991,-73.447462,948.17482)"
-       style="opacity:0.62999998;display:inline"
+       style="opacity:1;display:inline"
        id="g8732"
        inkscape:transform-center-x="-19.175889"
        inkscape:transform-center-y="-11.230872"
