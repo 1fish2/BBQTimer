@@ -14,7 +14,7 @@
             android:orientation="horizontal"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:background="@color/translucent_background"
+            android:background="@drawable/spatula_background"
             android:gravity="center_vertical|right"
             android:baselineAligned="false">
 
