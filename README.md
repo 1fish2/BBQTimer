@@ -44,7 +44,9 @@ Using Android Studio.
 * Set up signed, optimized, deployable release builds.
 * Set other AndroidManifest.xml values. (Search info?)
 * Experiment with putting the spatula image in the widget's background.
-* Implement Activity#onCreateThumbnail().
+* Provide visual feedback when tapping on the timer text using state list drawables
+  http://developer.android.com/guide/topics/resources/drawable-resource.html#StateList
+* Implement Activity#onCreateThumbnail()?
 * Follow system theme colors?
 * Test on various OS versions, screen sizes, and pixel densities. (Is the widget preview image
   needed at multiple resolutions?)
@@ -54,7 +56,6 @@ Using Android Studio.
 * Show a tip about adding the widget to the lock screen when first running the app.
 * Show tips via a menu command: How to install as home & lock screen widgets. What tapping the
   widget text does.
-* Provide color feedback when tapping on the timer text, like the system stopwatch app.
 * Deploy to the Play store.
 
 * Reset the timer on boot-up?

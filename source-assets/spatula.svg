@@ -10,12 +10,12 @@
    xmlns:xlink="http://www.w3.org/1999/xlink"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="100"
-   height="56"
+   width="102"
+   height="58"
    id="svg3322"
    version="1.1"
    inkscape:version="0.48.4 r9939"
-   inkscape:export-filename="C:\sourcecontrolled\AndroidStudioProjects\BBQTimer\source-assets\spatula.png"
+   inkscape:export-filename="C:\sourcecontrolled\BBQTimer\source-assets\spatula.png"
    inkscape:export-xdpi="66.800003"
    inkscape:export-ydpi="66.800003"
    sodipodi:docname="spatula.svg">
@@ -120,9 +120,9 @@
      inkscape:current-layer="layer1"
      showgrid="false"
      inkscape:window-width="1281"
-     inkscape:window-height="672"
-     inkscape:window-x="190"
-     inkscape:window-y="1367"
+     inkscape:window-height="832"
+     inkscape:window-x="135"
+     inkscape:window-y="1210"
      inkscape:window-maximized="0"
      inkscape:snap-page="true" />
   <metadata
@@ -141,19 +141,18 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(0,-996.36218)">
+     transform="translate(0,-994.36218)">
     <rect
-       style="opacity:0.62999998000000001;fill:#000000;fill-opacity:0.3764706;stroke:none"
+       style="opacity:0.62999998;fill:#000000;fill-opacity:0.37647059;stroke:none"
        id="rect3805"
-       width="100"
-       height="56"
-       x="0"
-       y="0"
-       transform="translate(0,996.36218)"
+       width="102"
+       height="58"
+       x="-5.1070259e-015"
+       y="994.36218"
        rx="0"
        ry="0" />
     <g
-       transform="matrix(0.327677,-0.03106643,0.03108331,0.3274991,-74.447462,949.17482)"
+       transform="matrix(0.327677,-0.03106643,0.03108331,0.3274991,-73.447462,948.17482)"
        style="opacity:0.62999998;display:inline"
        id="g8732"
        inkscape:transform-center-x="-19.175889"
