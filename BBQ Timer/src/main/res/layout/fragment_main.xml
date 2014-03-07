@@ -22,7 +22,7 @@
             android:text="@string/time0"
             android:ellipsize="end"
             android:typeface="sans"
-            android:textColor="@color/orange_red_text"
+            android:textColor="@color/running_timer_colors"
             android:layout_gravity="bottom|right"/>
 
         <TextView
@@ -38,7 +38,7 @@
             android:text="@string/time0_fraction"
             android:ellipsize="end"
             android:typeface="sans"
-            android:textColor="@color/orange_red_text"
+            android:textColor="@color/running_timer_colors"
             android:layout_gravity="bottom|right"/>
     </LinearLayout>
 

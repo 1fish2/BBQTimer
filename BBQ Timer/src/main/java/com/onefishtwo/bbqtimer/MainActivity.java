@@ -2,6 +2,7 @@ package com.onefishtwo.bbqtimer;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -161,14 +162,17 @@ public class MainActivity extends ActionBarActivity {
         long elapsedTime         = timer.getElapsedTime();
         String formatted         = TimeCounter.formatHhMmSs(elapsedTime);
         String formattedFraction = TimeCounter.formatFractionalSeconds(elapsedTime);
-        int textColorId          = timer.isReset() ? R.color.gray_text : R.color.orange_red_text;
-        int textColor            = getResources().getColor(textColorId);
+        int textColorsId         =
+                timer.isRunning() ? R.color.running_timer_colors
+                : timer.isReset() ? R.color.reset_timer_colors
+                : R.color.stopped_timer_colors;
+        ColorStateList textColors = getResources().getColorStateList(textColorsId);
 
         displayView.setText(formatted);
         fractionDisplayView.setText(formattedFraction);
 
-        displayView.setTextColor(textColor);
-        fractionDisplayView.setTextColor(textColor);
+        displayView.setTextColor(textColors);
+        fractionDisplayView.setTextColor(textColors);
     }
 
     /** Updates the UI for the current state. */

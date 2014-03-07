@@ -39,6 +39,12 @@ It works. Development is ongoing.
 Using Android Studio.
 
 ## TODO
+* Provide visual feedback when tapping on the App Widget's timer text via state list drawables, like
+  in the Activity. RemoteViews don't implement `setTextColor(ColorStateList)`. Workaround: Switch
+  between views with different text color drawable properties.
+* Merge the tenths of a second into the hh:mm:ss text field so it all changes color together? Then
+  the tenths will have to be the same text size
+
 * Add the alarm feature: a chime while running, with a settable period or settable times. Set it in
   the main activity or via the Settings menu?
 * Display a notification for the alarms so people can tell why it chimed.
@@ -46,9 +52,6 @@ Using Android Studio.
 * Add a License file to the repo. Change the source code copyright text.
 * Set up signed, optimized, deployable release builds.
 * Set other AndroidManifest.xml values. (Search info?)
-* Experiment with putting the spatula image in the widget's background.
-* Provide visual feedback when tapping on the timer text using state list drawables
-  http://developer.android.com/guide/topics/resources/drawable-resource.html#StateList
 * Implement Activity#onCreateThumbnail()?
 * Follow system theme colors?
 * Test on various OS versions, screen sizes, and pixel densities. (Is the widget preview image
