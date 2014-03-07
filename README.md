@@ -39,9 +39,6 @@ It works. Development is ongoing.
 Using Android Studio.
 
 ## TODO
-* Provide visual feedback when tapping on the App Widget's timer text via state list drawables, like
-  in the Activity. RemoteViews don't implement `setTextColor(ColorStateList)`. Workaround: Switch
-  between views with different text color drawable properties.
 * Merge the tenths of a second into the hh:mm:ss text field so it all changes color together? Then
   the tenths will have to be the same text size
 

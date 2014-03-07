@@ -165,7 +165,7 @@ public class MainActivity extends ActionBarActivity {
         int textColorsId         =
                 timer.isRunning() ? R.color.running_timer_colors
                 : timer.isReset() ? R.color.reset_timer_colors
-                : R.color.stopped_timer_colors;
+                : R.color.paused_timer_colors;
         ColorStateList textColors = getResources().getColorStateList(textColorsId);
 
         displayView.setText(formatted);

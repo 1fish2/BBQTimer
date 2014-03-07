@@ -18,8 +18,10 @@ import android.widget.RemoteViews;
  * The BBQ Timer app widget for the home and lock screens.
  */
 public class TimerAppWidgetProvider extends AppWidgetProvider {
+    // --- R.id.viewFlipper child indexes.
     private static final int RUNNING_CHRONOMETER_CHILD = 0;
     private static final int PAUSED_CHRONOMETER_CHILD  = 1;
+    private static final int RESET_CHRONOMETER_CHILD   = 2;
 
     static final String ACTION_START_STOP = "com.onefishtwo.bbqtimer.ACTION_START_STOP";
     static final String ACTION_CYCLE      = "com.onefishtwo.bbqtimer.ACTION_CYCLE";
@@ -67,9 +69,18 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
     /**
      * Updates the given app widgets' contents to the Timer state.</p>
      *
-     * Unfortunately, a Chronometer view can't accurately set its value when paused. You can compute
-     * (now - desiredTime) but even setting all widgets at once ends up with different displays due
-     * to propagation delays. *SO* when the timer is paused, switch to a text view.
+     * Unfortunately, a Chronometer view can't accurately set its value when paused. You can set it
+     * to (now - desiredTime) but even setting all widgets at once ends up with different displays
+     * due to propagation delays. *SO* when the timer is paused, switch to a TextView.</p>
+     *
+     * NOTE: A simpler implementation would stop the Chronometer then use it as the paused TextView,
+     * but that relies on it not updating its text. Anyway, this code switches between the
+     * Chronometer and two different TextViews to select the right ColorStateList for user feedback
+     * since RemoteViews can't do {@code TextView#setTextColor(ColorStateList)}.</p>
+     *
+     * NOTE: setDisplayedChild() requires minSdkVersion 12 (in build.gradle).</p>
+     *
+     * TODO: Preload the button image Bitmaps? Flip between Buttons?
      */
     private static void updateWidgets(Context context, AppWidgetManager appWidgetManager,
             int[] appWidgetIds, TimeCounter timer) {
@@ -78,24 +89,19 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
         PendingIntent cycleIntent     = makeActionIntent(context, ACTION_CYCLE);
 
         if (timer.isRunning()) {
-            // Note: setDisplayedChild() requires minSdkVersion 12 (in build.gradle).
             views.setDisplayedChild(R.id.viewFlipper, RUNNING_CHRONOMETER_CHILD);
-            // TODO: Preload the button image Bitmap?
             views.setImageViewResource(R.id.remoteStartStopButton, R.drawable.ic_pause);
             views.setChronometer(R.id.chronometer, timer.getStartTime(), null, true);
         } else {
             long elapsedTime = timer.getElapsedTime();
-            int textColorId  = timer.isReset() ? R.color.gray_text : R.color.orange_red_text;
-            int textColor    = context.getResources().getColor(textColorId);
+            int child = timer.isReset() ? RESET_CHRONOMETER_CHILD : PAUSED_CHRONOMETER_CHILD;
+            int textViewId = child == RESET_CHRONOMETER_CHILD ? R.id.resetChronometerText
+                    : R.id.pausedChronometerText;
 
-            views.setDisplayedChild(R.id.viewFlipper, PAUSED_CHRONOMETER_CHILD);
-            views.setTextViewText(R.id.pausedChronometerText, TimeCounter.formatHhMmSs(elapsedTime));
-            views.setTextColor(R.id.pausedChronometerText, textColor);
-            // TODO: Preload the button image Bitmap?
+            views.setDisplayedChild(R.id.viewFlipper, child);
+            views.setTextViewText(textViewId, TimeCounter.formatHhMmSs(elapsedTime));
             views.setImageViewResource(R.id.remoteStartStopButton, R.drawable.ic_play);
             // Stop the Chronometer in case it'd use battery power even when not displayed.
-            // NOTE: A simpler implementation would stop the Chronometer then use it as the
-            // paused TextView, but that relies on it not updating its text.
             views.setChronometer(R.id.chronometer, 0, null, false);
         }
 
