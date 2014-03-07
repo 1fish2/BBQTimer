@@ -65,7 +65,6 @@ public class MainActivity extends ActionBarActivity {
     private Button resetButton;
     private Button startStopButton;
     private TextView displayView;
-    private TextView fractionDisplayView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,7 +75,6 @@ public class MainActivity extends ActionBarActivity {
         resetButton         = (Button) findViewById(R.id.resetButton);
         startStopButton     = (Button) findViewById(R.id.startStopButton);
         displayView         = (TextView) findViewById(R.id.display);
-        fractionDisplayView = (TextView) findViewById(R.id.fractionDisplay);
     }
 
     @Override
@@ -159,20 +157,15 @@ public class MainActivity extends ActionBarActivity {
 
     /** Updates the display to show the current elapsed time. */
     private void displayTime() {
-        long elapsedTime         = timer.getElapsedTime();
-        String formatted         = TimeCounter.formatHhMmSs(elapsedTime);
-        String formattedFraction = TimeCounter.formatFractionalSeconds(elapsedTime);
-        int textColorsId         =
+        String formatted          = timer.formatHhMmSsFraction();
+        int textColorsId          =
                 timer.isRunning() ? R.color.running_timer_colors
                 : timer.isReset() ? R.color.reset_timer_colors
                 : R.color.paused_timer_colors;
         ColorStateList textColors = getResources().getColorStateList(textColorsId);
 
         displayView.setText(formatted);
-        fractionDisplayView.setText(formattedFraction);
-
         displayView.setTextColor(textColors);
-        fractionDisplayView.setTextColor(textColors);
     }
 
     /** Updates the UI for the current state. */

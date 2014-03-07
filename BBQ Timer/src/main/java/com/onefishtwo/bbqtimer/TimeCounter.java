@@ -25,7 +25,7 @@ public class TimeCounter {
 
     // Synchronized on fractionFormatter.
     private static final NumberFormat fractionFormatter = NumberFormat.getNumberInstance();
-    private static final StringBuffer recycledStringBuffer = new StringBuffer(8);
+    private static final StringBuffer recycledStringBuffer = new StringBuffer(10);
     private static final FieldPosition fractionFieldPosition =
             new FieldPosition(NumberFormat.FRACTION_FIELD);
 
@@ -145,6 +145,11 @@ public class TimeCounter {
         return !isRunning && getElapsedTime() == 0;
     }
 
+    /** Formats this TimeCounter's millisecond duration in localized [hh:]mm:ss.f format. */
+    public String formatHhMmSsFraction() {
+        return formatHhMmSsFraction(getElapsedTime());
+    }
+
     /** Formats a millisecond duration in [hh:]mm:ss format like Chronometer does. */
     public static String formatHhMmSs(long elapsedMilliseconds) {
         long elapsedSeconds = elapsedMilliseconds / 1000;
@@ -154,12 +159,14 @@ public class TimeCounter {
         }
     }
 
-    /** Formats a decimal fraction of a second of a millisecond duration, in localized .f format. */
-    public static String formatFractionalSeconds(long elapsedMilliseconds) {
+    /** Formats a millisecond duration in localized [hh:]mm:ss.f format. */
+    public static String formatHhMmSsFraction(long elapsedMilliseconds) {
+        String hhmmss = formatHhMmSs(elapsedMilliseconds);
         double seconds = elapsedMilliseconds / 1000.0;
 
         synchronized (fractionFormatter) {
             recycledStringBuffer.setLength(0);
+            recycledStringBuffer.append(hhmmss);
             return fractionFormatter.format(seconds, recycledStringBuffer, fractionFieldPosition)
                     .toString();
         }

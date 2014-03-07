@@ -39,9 +39,6 @@ It works. Development is ongoing.
 Using Android Studio.
 
 ## TODO
-* Merge the tenths of a second into the hh:mm:ss text field so it all changes color together? Then
-  the tenths will have to be the same text size
-
 * Add the alarm feature: a chime while running, with a settable period or settable times. Set it in
   the main activity or via the Settings menu?
 * Display a notification for the alarms so people can tell why it chimed.

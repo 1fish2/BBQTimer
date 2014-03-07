@@ -27,18 +27,15 @@
       pauses the running timer. -->
     <string name="start_stop">Start/Pause</string>
 
-    <!-- The initial text for a reset timer showing 0 minutes and 0 seconds. This should match the
-      locale's format used by the Android OS utility DateUtils.formatElapsedTime(), BUT the user
-      shouldn't see it since it gets replaced immediately with a string computed by
-      formatElapsedTime().
+    <!-- The initial text for a reset timer showing 0 minutes and 0.0 seconds. This should match the
+      locale's format used by the Android OS utility DateUtils.formatElapsedTime() with appended
+      tenths of a second, but the user shouldn't see it since it gets replaced immediately with a
+      string computed by formatting the duration 0.
+
+      NOTE: If appending the fractional part ".0" is not sufficient for localization, the code needs
+      a format string that lets the localizer control the positions.
 
       In English, the Android OS format is "00:00" even though "0:00" might look better. -->
-    <string name="time0">00:00</string>
-
-    <!-- The initial text for a reset timer's fractional seconds, showing 0 tenths of a second. This
-      should match the locale's format for displaying a decimal number ".0" with NO integer part
-      since that part is displayed by the "time0" string. Like the "time0" string, the user should
-      never see this since it gets replaced immediately with a computed string. -->
-    <string name="time0_fraction">.0</string>
+    <string name="time0">00:00.0</string>
 
 </resources>

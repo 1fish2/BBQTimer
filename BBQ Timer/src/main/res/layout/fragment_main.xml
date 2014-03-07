@@ -3,44 +3,21 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout
-        android:orientation="horizontal"
+    <TextView
+        android:id="@+id/display"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="right">
-
-        <TextView
-            android:id="@+id/display"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:clickable="true"
-            android:textSize="@dimen/display_text_size"
-            android:singleLine="true"
-            android:importantForAccessibility="yes"
-            android:gravity="right"
-            android:onClick="onClickTimerText"
-            android:text="@string/time0"
-            android:ellipsize="end"
-            android:typeface="sans"
-            android:textColor="@color/running_timer_colors"
-            android:layout_gravity="bottom|right"/>
-
-        <TextView
-            android:id="@+id/fractionDisplay"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:clickable="true"
-            android:textSize="@dimen/fraction_text_size"
-            android:singleLine="true"
-            android:importantForAccessibility="yes"
-            android:gravity="right"
-            android:onClick="onClickTimerText"
-            android:text="@string/time0_fraction"
-            android:ellipsize="end"
-            android:typeface="sans"
-            android:textColor="@color/running_timer_colors"
-            android:layout_gravity="bottom|right"/>
-    </LinearLayout>
+        android:clickable="true"
+        android:textSize="@dimen/display_text_size"
+        android:singleLine="true"
+        android:importantForAccessibility="yes"
+        android:gravity="right"
+        android:onClick="onClickTimerText"
+        android:text="@string/time0"
+        android:ellipsize="end"
+        android:typeface="sans"
+        android:textColor="@color/running_timer_colors"
+        android:layout_gravity="right"/>
 
     <RelativeLayout
         android:layout_width="match_parent"
