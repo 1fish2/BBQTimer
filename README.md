@@ -43,6 +43,7 @@ Using Android Studio.
   the main activity or via the Settings menu?
 * Display a notification for the alarms so people can tell why it chimed.
 
+* Make the text auto-resize to fit in the Activity's window.
 * Set up signed, optimized, deployable release builds.
 * Set other AndroidManifest.xml values. (Search info?)
 * Implement Activity#onCreateThumbnail()?
@@ -58,7 +59,8 @@ Using Android Studio.
 * Deploy to the Play store.
 
 * Reset the timer on boot-up?
-* When stopped at 00:00, add the time of day? Make the stopwatch text 00:00 small?
+* When stopped at 00:00, add the time of day? Make the stopwatch text 00:00 small? Switch to the
+  time of day after a few minutes?
   To track the time: Upon ACTION_SCREEN_ON when there are lock screen widgets, register a Service to
   listen for ACTION_TIME_TICK. Unregister upon ACTION_SCREEN_OFF or when the last widget is removed.
 * Make the text smaller to fit smaller widgets and longer duration strings? See bug workaround

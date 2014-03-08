@@ -23,6 +23,7 @@ import android.content.SharedPreferences;
 import android.os.SystemClock;
 import android.text.format.DateUtils;
 
+import java.math.RoundingMode;
 import java.text.FieldPosition;
 import java.text.NumberFormat;
 
@@ -49,6 +50,7 @@ public class TimeCounter {
         fractionFormatter.setMaximumIntegerDigits(0);
         fractionFormatter.setMinimumFractionDigits(1);
         fractionFormatter.setMaximumFractionDigits(1);
+        fractionFormatter.setRoundingMode(RoundingMode.DOWN);
     }
 
     private boolean isRunning;
