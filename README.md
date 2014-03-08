@@ -43,7 +43,6 @@ Using Android Studio.
   the main activity or via the Settings menu?
 * Display a notification for the alarms so people can tell why it chimed.
 
-* Add a License file to the repo. Change the source code copyright text.
 * Set up signed, optimized, deployable release builds.
 * Set other AndroidManifest.xml values. (Search info?)
 * Implement Activity#onCreateThumbnail()?
