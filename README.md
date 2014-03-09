@@ -13,10 +13,9 @@ It works. Development is ongoing.
 * Put the BBQ Timer widget on the Android lock screen for quick access. (This requires Android 4.2
   Jelly Bean or later.)
 * The BBQ Timer widget also works on the home screen, even in earlier versions of Android.
-* You can resize the home screen widget by long-pressing, then dragging its resize handles.
-  In the initial size, it will fit minutes and seconds (e.g. "18:12"). Stretched wider, it will
-  fit hours, minutes, and seconds (e.g. "1:15:09"). If you run the timer into hours, a narrow
-  widget will clip the seconds display.
+* You can resize the home screen widget by long-pressing it, then dragging its resize handles.
+  The initial size fits minutes and seconds (e.g. "18:12"). Stretched wider, it can fit hours,
+  minutes, and seconds (e.g. "1:15:09").
 
 ## How to Use Android Lock Screen Widgets
 * Android lock screen widgets work in Android 4.2 Jelly Bean and later versions.
@@ -43,9 +42,11 @@ Using Android Studio.
   the main activity or via the Settings menu?
 * Display a notification for the alarms so people can tell why it chimed.
 
-* Make the text auto-resize to fit in the Activity's window.
 * Set up signed, optimized, deployable release builds.
 * Set other AndroidManifest.xml values. (Search info?)
+* Use a font-resizing text view fit long durations into the Activity.
+* Use a font-resizing heuristic to fit hours into a minimum width home screen widget without eliding
+  the seconds.
 * Implement Activity#onCreateThumbnail()?
 * Follow system theme colors?
 * Test on various OS versions, screen sizes, and pixel densities. (Is the widget preview image
@@ -59,8 +60,8 @@ Using Android Studio.
 * Deploy to the Play store.
 
 * Reset the timer on boot-up?
-* When stopped at 00:00, add the time of day? Make the stopwatch text 00:00 small? Switch to the
-  time of day after a few minutes?
+* When stopped at 00:00, add the time of day to the widget? Make the stopwatch text 00:00 small?
+  Switch to the time of day after a few minutes?
   To track the time: Upon ACTION_SCREEN_ON when there are lock screen widgets, register a Service to
   listen for ACTION_TIME_TICK. Unregister upon ACTION_SCREEN_OFF or when the last widget is removed.
 * Make the text smaller to fit smaller widgets and longer duration strings? See bug workaround

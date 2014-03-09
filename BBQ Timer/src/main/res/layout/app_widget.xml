@@ -47,7 +47,8 @@
                     android:textColor="@color/running_timer_colors"
                     android:typeface="sans"
                     android:ellipsize="end"
-                    android:gravity="right"/>
+                    android:gravity="right"
+                    android:singleLine="true"/>
 
                 <TextView
                     android:id="@+id/pausedChronometerText"
@@ -58,7 +59,8 @@
                     android:textColor="@color/paused_timer_colors"
                     android:typeface="sans"
                     android:ellipsize="end"
-                    android:gravity="right"/>
+                    android:gravity="right"
+                    android:singleLine="true"/>
 
                 <TextView
                     android:id="@+id/resetChronometerText"
@@ -69,7 +71,8 @@
                     android:textColor="@color/reset_timer_colors"
                     android:typeface="sans"
                     android:ellipsize="end"
-                    android:gravity="right"/>
+                    android:gravity="right"
+                    android:singleLine="true"/>
             </ViewFlipper>
 
         </LinearLayout>
