@@ -35,12 +35,22 @@ import java.util.Formatter;
  */
 public class TimeCounter {
     /** PERSISTENT STATE identifiers. */
-    public static final String PREF_IS_RUNNING = "isRunning";
-    public static final String PREF_START_TIME = "startTime";
-    public static final String PREF_PAUSE_TIME = "pauseTime";
+    static final String PREF_IS_RUNNING = "isRunning";
+    static final String PREF_START_TIME = "startTime";
+    static final String PREF_PAUSE_TIME = "pauseTime";
+
+    /**
+     * The default format string for combining and styling the hh:mm:ss + .f fractional seconds.</p>
+     *
+     * Format arg 1$ is the localized HH:MM:SS string.</p>
+     *
+     * Format arg 2$ is the fractional seconds string. This uses a NumberFormat instead of a string
+     * format %.1d to suppress the integer part and to disable rounding.
+     */
+    public static final String DEFAULT_TIME_STYLE = "%1$s<small><small>%2$s</small></small>";
 
     // Synchronized on recycledStringBuilder.
-    // The buffer is big enough for hhh:mm:ss.f + HTML markup = 11 + 30, rounded up.
+    // The buffer is big enough for hhh:mm:ss.f + HTML markup = 11 + 30, and rounded up.
     private static final StringBuilder recycledStringBuilder = new StringBuilder(44);
     private static final Formatter recycledFormatter = new Formatter(recycledStringBuilder);
 
@@ -185,10 +195,14 @@ public class TimeCounter {
     }
 
     /**
-     * Formats a millisecond duration in localized [hh:]mm:ss.f format <em>with attached styles</em>.
+     * Formats a millisecond duration in localized [hh:]mm:ss.f format <em>with attached
+     * styles</em>.</p>
+     *
+     * QUESTION: Does DEFAULT_TIME_STYLE need to be localized for any locale? I.e. do RTL locales
+     * need to put the fractional part before the HHMMSS part? If so, make the caller get it from
+     * string resource R.string.time_format .
      */
     public static Spanned formatHhMmSsFraction(long elapsedMilliseconds) {
-        final String combinedFormat = "%1$s<small><small>%2$s</small></small>"; // arg 1$ is the localized HH:MM:SS string; 2$ is the fractional seconds
         String hhmmss = formatHhMmSs(elapsedMilliseconds);
         double seconds = elapsedMilliseconds / 1000.0;
         String f;
@@ -202,7 +216,7 @@ public class TimeCounter {
 
         synchronized (recycledStringBuilder) {
             recycledStringBuilder.setLength(0);
-            html = recycledFormatter.format(combinedFormat, hhmmss, f).toString();
+            html = recycledFormatter.format(DEFAULT_TIME_STYLE, hhmmss, f).toString();
         }
 
         return Html.fromHtml(html);
