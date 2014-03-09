@@ -21,11 +21,14 @@ package com.onefishtwo.bbqtimer;
 
 import android.content.SharedPreferences;
 import android.os.SystemClock;
+import android.text.Html;
+import android.text.Spanned;
 import android.text.format.DateUtils;
 
 import java.math.RoundingMode;
 import java.text.FieldPosition;
 import java.text.NumberFormat;
+import java.util.Formatter;
 
 /**
  * A stopwatch time counter (data model).
@@ -37,11 +40,13 @@ public class TimeCounter {
     public static final String PREF_PAUSE_TIME = "pauseTime";
 
     // Synchronized on recycledStringBuilder.
-    private static final StringBuilder recycledStringBuilder = new StringBuilder(8);
+    // The buffer is big enough for hhh:mm:ss.f + HTML markup = 11 + 30, rounded up.
+    private static final StringBuilder recycledStringBuilder = new StringBuilder(44);
+    private static final Formatter recycledFormatter = new Formatter(recycledStringBuilder);
 
     // Synchronized on fractionFormatter.
     private static final NumberFormat fractionFormatter = NumberFormat.getNumberInstance();
-    private static final StringBuffer recycledStringBuffer = new StringBuffer(10);
+    private static final StringBuffer recycledStringBuffer = new StringBuffer(2);
     private static final FieldPosition fractionFieldPosition =
             new FieldPosition(NumberFormat.FRACTION_FIELD);
 
@@ -162,8 +167,11 @@ public class TimeCounter {
         return !isRunning && getElapsedTime() == 0;
     }
 
-    /** Formats this TimeCounter's millisecond duration in localized [hh:]mm:ss.f format. */
-    public String formatHhMmSsFraction() {
+    /**
+     * Formats this TimeCounter's millisecond duration in localized [hh:]mm:ss.f format <em>with
+     * attached styles</em>.
+     */
+    public Spanned formatHhMmSsFraction() {
         return formatHhMmSsFraction(getElapsedTime());
     }
 
@@ -176,17 +184,28 @@ public class TimeCounter {
         }
     }
 
-    /** Formats a millisecond duration in localized [hh:]mm:ss.f format. */
-    public static String formatHhMmSsFraction(long elapsedMilliseconds) {
+    /**
+     * Formats a millisecond duration in localized [hh:]mm:ss.f format <em>with attached styles</em>.
+     */
+    public static Spanned formatHhMmSsFraction(long elapsedMilliseconds) {
+        final String combinedFormat = "%1$s<small><small>%2$s</small></small>"; // arg 1$ is the localized HH:MM:SS string; 2$ is the fractional seconds
         String hhmmss = formatHhMmSs(elapsedMilliseconds);
         double seconds = elapsedMilliseconds / 1000.0;
+        String f;
+        String html;
 
         synchronized (fractionFormatter) {
             recycledStringBuffer.setLength(0);
-            recycledStringBuffer.append(hhmmss);
-            return fractionFormatter.format(seconds, recycledStringBuffer, fractionFieldPosition)
+            f = fractionFormatter.format(seconds, recycledStringBuffer, fractionFieldPosition)
                     .toString();
         }
+
+        synchronized (recycledStringBuilder) {
+            recycledStringBuilder.setLength(0);
+            html = recycledFormatter.format(combinedFormat, hhmmss, f).toString();
+        }
+
+        return Html.fromHtml(html);
     }
 
     @Override

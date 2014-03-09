@@ -26,6 +26,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.ActionBarActivity;
+import android.text.Spanned;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -176,7 +177,7 @@ public class MainActivity extends ActionBarActivity {
 
     /** Updates the display to show the current elapsed time. */
     private void displayTime() {
-        String formatted          = timer.formatHhMmSsFraction();
+        Spanned formatted         = timer.formatHhMmSsFraction();
         int textColorsId          =
                 timer.isRunning() ? R.color.running_timer_colors
                 : timer.isReset() ? R.color.reset_timer_colors
