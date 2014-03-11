@@ -17,7 +17,7 @@
    version="1.1"
    inkscape:version="0.48.4 r9939"
    sodipodi:docname="ic_launcher_web.svg"
-   inkscape:export-filename="C:\sourcecontrolled\AndroidStudioProjects\BBQTimer\BBQ Timer\src\main\ic_launcher-web.png"
+   inkscape:export-filename="C:\sourcecontrolled\BBQTimer\BBQ Timer\src\main\ic_launcher-web.png"
    inkscape:export-xdpi="76.080002"
    inkscape:export-ydpi="76.080002">
   <defs
@@ -946,7 +946,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -1311,11 +1311,11 @@
          sodipodi:cy="191.76218"
          sodipodi:rx="3.8"
          sodipodi:ry="3.8"
-         d="m 335.19999,191.76218 a 3.8,3.8 0 1 1 -7.6,0 3.8,3.8 0 1 1 7.6,0 z"
+         d="m 335.19999,191.76218 c 0,2.09868 -1.70131,3.8 -3.8,3.8 -2.09868,0 -3.8,-1.70132 -3.8,-3.8 0,-2.09869 1.70132,-3.8 3.8,-3.8 2.09869,0 3.8,1.70131 3.8,3.8 z"
          transform="matrix(-0.44353959,-0.60055289,0.60055289,-0.44353959,231.95543,414.60217)" />
       <path
          transform="matrix(-0.44353959,-0.60055289,0.60055289,-0.44353959,244.37454,431.41765)"
-         d="m 335.19999,191.76218 a 3.8,3.8 0 1 1 -7.6,0 3.8,3.8 0 1 1 7.6,0 z"
+         d="m 335.19999,191.76218 c 0,2.09868 -1.70131,3.8 -3.8,3.8 -2.09868,0 -3.8,-1.70132 -3.8,-3.8 0,-2.09869 1.70132,-3.8 3.8,-3.8 2.09869,0 3.8,1.70131 3.8,3.8 z"
          sodipodi:ry="3.8"
          sodipodi:rx="3.8"
          sodipodi:cy="191.76218"
@@ -1355,7 +1355,7 @@
          sodipodi:nodetypes="ccccccssscssscssssssssscssscsssc" />
       <path
          transform="matrix(0.85177395,-0.30373425,0.30373425,0.85177395,47.288139,195.33906)"
-         d="m 335.19999,191.76218 a 3.8,3.8 0 1 1 -7.6,0 3.8,3.8 0 1 1 7.6,0 z"
+         d="m 335.19999,191.76218 c 0,2.09868 -1.70131,3.8 -3.8,3.8 -2.09868,0 -3.8,-1.70132 -3.8,-3.8 0,-2.09869 1.70132,-3.8 3.8,-3.8 2.09869,0 3.8,1.70131 3.8,3.8 z"
          sodipodi:ry="3.8"
          sodipodi:rx="3.8"
          sodipodi:cy="191.76218"
@@ -1371,7 +1371,7 @@
          sodipodi:cy="191.76218"
          sodipodi:rx="3.8"
          sodipodi:ry="3.8"
-         d="m 335.19999,191.76218 a 3.8,3.8 0 1 1 -7.6,0 3.8,3.8 0 1 1 7.6,0 z"
+         d="m 335.19999,191.76218 c 0,2.09868 -1.70131,3.8 -3.8,3.8 -2.09868,0 -3.8,-1.70132 -3.8,-3.8 0,-2.09869 1.70132,-3.8 3.8,-3.8 2.09869,0 3.8,1.70131 3.8,3.8 z"
          transform="matrix(0.85177395,-0.30373425,0.30373425,0.85177395,23.438468,203.84362)" />
     </g>
     <path

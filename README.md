@@ -44,7 +44,9 @@ Using Android Studio.
 
 * Set up signed, optimized, deployable release builds.
 * Set other AndroidManifest.xml values. (Search info?)
-* Use a font-resizing text view fit long durations into the Activity.
+* Use a font-resizing text view fit long durations into the Activity. See
+  http://stackoverflow.com/questions/5033012/auto-scale-textview-text-to-fit-within-bounds/
+  http://stackoverflow.com/questions/2617266/how-to-adjust-text-font-size-to-fit-textview/
 * Use a font-resizing heuristic to fit hours into a minimum width home screen widget without eliding
   the seconds.
 * Implement Activity#onCreateThumbnail()?
