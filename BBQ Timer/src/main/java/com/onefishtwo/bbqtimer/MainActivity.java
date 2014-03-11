@@ -158,6 +158,13 @@ public class MainActivity extends ActionBarActivity {
         updateHandler.beginScheduledUpdate();
         updateUI();
         TimerAppWidgetProvider.updateAllWidgets(this, timer);
+
+        // TODO: More notification management, and open/cancel via the app widget, too.
+        if (timer.isRunning()) {
+            new Notifier().open(this);
+        } else {
+            new Notifier().cancelAll(this);
+        }
     }
 
     /** The user tapped the Reset button. */
