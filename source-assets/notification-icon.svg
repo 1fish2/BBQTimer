@@ -46,8 +46,8 @@
      showgrid="true"
      inkscape:window-width="979"
      inkscape:window-height="762"
-     inkscape:window-x="569"
-     inkscape:window-y="1258"
+     inkscape:window-x="566"
+     inkscape:window-y="1256"
      inkscape:window-maximized="0"
      inkscape:snap-grids="true"
      borderlayer="true"
@@ -81,7 +81,7 @@
      inkscape:groupmode="layer"
      id="layer2"
      inkscape:label="background WHILE EDITING"
-     style="display:none"
+     style="display:inline"
      sodipodi:insensitive="true">
     <rect
        style="fill:#000000;fill-opacity:1;stroke:none"
