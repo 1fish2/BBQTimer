@@ -7,7 +7,7 @@
 # besides a white canvas.
 
 PROJECT="BBQ Timer"
-IMAGE="notification-icon"
+IMAGE="notification_icon"
 INPUT="source-assets/${IMAGE}.svg"
 OUTPUT="${IMAGE}.png"
 MAIN="${PROJECT}/src/main/"
