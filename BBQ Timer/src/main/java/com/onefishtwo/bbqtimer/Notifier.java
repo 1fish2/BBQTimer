@@ -41,25 +41,20 @@ public class Notifier {
     }
 
     /** Opens this app's notification. */
-    public void open() {
-        // TODO: Show the notification only when the activity is stopped and the timer is running.
-        // TODO: Update the notification periodically.
-        // TODO: Control whether the user can clear the notification.
-        // TODO: Play a custom sound when it's time for a periodic chime. MP3 Mono/Stereo 8-320Kbps CBR or VBR.
-        // TODO: Content text, time, a large icon, ...
-        // TODO: Set priority.
+    public void open(TimeCounter timer) {
+        // TODO: Play a custom sound for a periodic chime. MP3 Mono/Stereo 8-320Kbps CBR or VBR.
         // TODO: Large icon: mdpi 64x64 px, hdpi 96x96 px, xhdpi 128x128 px, xxhpdi 192x192 px.
-        // TODO: setWhen() + setUsesChronometer()?
-        // TODO: setTicker() text?
-        // TODO: Button actions to pause/resume/reset the timer?
-        // TODO: Lights?
-        // TODO: Vibrate? (It requires the VIBRATE permission.)
+        // TODO: Add button actions to pause/resume/reset the timer?
+        // TODO: Vibrate with the chime? Upon a user setting? (Requires the VIBRATE permission.)
+        // TODO: Lights with the chime?
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context)
                 .setSmallIcon(R.drawable.notification_icon)
                 .setContentTitle(context.getString(R.string.app_name))
-                .setContentText("n minutes elapsed")
-                .setPriority(PRIORITY_HIGH) // PRIORITY_MAX?
-                .setOngoing(true);
+                // .setContentText("Chime every n minutes") // TODO: Content text?
+                .setPriority(PRIORITY_HIGH) // PRIORITY_MAX when there's a time-critical chime?
+                .setOngoing(true)
+                .setWhen(System.currentTimeMillis() - timer.getElapsedTime())
+                .setUsesChronometer(true);
         Intent activityIntent = new Intent(context, MainActivity.class);
 
         // So navigating back from the Activity goes from the app to the Home screen.

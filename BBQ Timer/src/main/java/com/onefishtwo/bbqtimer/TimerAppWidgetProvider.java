@@ -171,7 +171,7 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
         Notifier notifier = new Notifier(context);
 
         if (timer.isRunning()) {
-            notifier.open();
+            notifier.open(timer);
         } else {
             notifier.cancelAll();
         }

@@ -136,7 +136,7 @@ public class MainActivity extends ActionBarActivity {
         updateHandler.endScheduledUpdates();
 
         if (timer.isRunning()) {
-            notifier.open();
+            notifier.open(timer);
         }
 
         super.onStop();
