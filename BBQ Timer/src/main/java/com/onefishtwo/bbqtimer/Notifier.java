@@ -19,7 +19,6 @@
 
 package com.onefishtwo.bbqtimer;
 
-import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -32,22 +31,35 @@ import android.support.v4.app.TaskStackBuilder;
  */
 public class Notifier {
     private static final int NOTIFICATION_ID = 7;
+    private static final int PRIORITY_HIGH = 1; // Notification.PRIORITY_HIGH added in API level 16
+    private static final int PRIORITY_MAX  = 2;
+
+    private final Context context;
+
+    public Notifier(Context context) {
+        this.context = context;
+    }
 
     /** Opens this app's notification. */
-    public void open(Context context) {
-        // TODO: Only show the notification when the activity is stopped and the timer is running.
+    public void open() {
+        // TODO: Show the notification only when the activity is stopped and the timer is running.
         // TODO: Update the notification periodically.
         // TODO: Control whether the user can clear the notification.
-        // TODO: Only play a sound when it's time for a periodic chime.
-        // TODO: Content text, time, custom sound, a large icon, ...
-        // TODO: setContentIntent() action to open the app.
-        // TODO: Button actions to pause/resume & reset the timer?
-        // TODO: Vibrate? That requires the VIBRATE permission.
+        // TODO: Play a custom sound when it's time for a periodic chime. MP3 Mono/Stereo 8-320Kbps CBR or VBR.
+        // TODO: Content text, time, a large icon, ...
+        // TODO: Set priority.
+        // TODO: Large icon: mdpi 64x64 px, hdpi 96x96 px, xhdpi 128x128 px, xxhpdi 192x192 px.
+        // TODO: setWhen() + setUsesChronometer()?
+        // TODO: setTicker() text?
+        // TODO: Button actions to pause/resume/reset the timer?
+        // TODO: Lights?
+        // TODO: Vibrate? (It requires the VIBRATE permission.)
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context)
                 .setSmallIcon(R.drawable.notification_icon)
                 .setContentTitle(context.getString(R.string.app_name))
-                .setContentText("n minutes remaining...")
-                .setDefaults(Notification.DEFAULT_SOUND);
+                .setContentText("n minutes elapsed")
+                .setPriority(PRIORITY_HIGH) // PRIORITY_MAX?
+                .setOngoing(true);
         Intent activityIntent = new Intent(context, MainActivity.class);
 
         // So navigating back from the Activity goes from the app to the Home screen.
@@ -64,7 +76,7 @@ public class Notifier {
     }
 
     /** Cancels all of this app's notifications. */
-    public void cancelAll(Context context) {
+    public void cancelAll() {
         NotificationManager notificationManager =
                 (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 

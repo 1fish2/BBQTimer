@@ -79,7 +79,7 @@ public class MainActivity extends ActionBarActivity {
     }
 
     private final UpdateHandler updateHandler = new UpdateHandler();
-
+    private final Notifier notifier = new Notifier(this);
     private final TimeCounter timer = new TimeCounter();
 
     private Button resetButton;
@@ -115,6 +115,7 @@ public class MainActivity extends ActionBarActivity {
         timer.load(prefs);
 
         updateUI();
+        notifier.cancelAll();
 
         updateHandler.beginScheduledUpdate();
     }
@@ -133,6 +134,11 @@ public class MainActivity extends ActionBarActivity {
     @Override
     protected void onStop() {
         updateHandler.endScheduledUpdates();
+
+        if (timer.isRunning()) {
+            notifier.open();
+        }
+
         super.onStop();
     }
 
@@ -158,13 +164,6 @@ public class MainActivity extends ActionBarActivity {
         updateHandler.beginScheduledUpdate();
         updateUI();
         TimerAppWidgetProvider.updateAllWidgets(this, timer);
-
-        // TODO: More notification management, and open/cancel via the app widget, too.
-        if (timer.isRunning()) {
-            new Notifier().open(this);
-        } else {
-            new Notifier().cancelAll(this);
-        }
     }
 
     /** The user tapped the Reset button. */
