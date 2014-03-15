@@ -90,9 +90,9 @@ public class TimeCounter {
 
         // Enforce invariants.
         if (isRunning) {
-            if (startTime > elapsedRealtime()) {
+            if (startTime > elapsedRealtimeClock()) {
                 // Must've rebooted.
-                // TODO: How to detect reboot when startTime <= elapsedRealtime()?
+                // TODO: Receive reboot Intents to catch every case?
                 reset();
             }
         } else if (pauseTime < startTime) {
@@ -100,7 +100,7 @@ public class TimeCounter {
         }
     }
 
-    /** Returns the timer's start time, in elapsedRealtime() milliseconds. */
+    /** Returns the timer's start time, in SystemClock.elapsedRealtime() milliseconds. */
     public long getStartTime() {
         return startTime;
     }
@@ -111,7 +111,7 @@ public class TimeCounter {
 
     /** Returns the underlying clock time. */
     // TODO: Inject the clock for testability.
-    long elapsedRealtime() {
+    long elapsedRealtimeClock() {
         return SystemClock.elapsedRealtime();
     }
 
@@ -120,15 +120,15 @@ public class TimeCounter {
         return isRunning;
     }
 
-    /** Returns the running or paused elapsed time, in milliseconds. */
+    /** Returns the timer's [running or paused] elapsed time, in milliseconds. */
     public long getElapsedTime() {
-        return (isRunning ? elapsedRealtime() : pauseTime) - startTime;
+        return (isRunning ? elapsedRealtimeClock() : pauseTime) - startTime;
     }
 
     /** Starts or resumes the timer. */
     public void start() {
         if (!isRunning) {
-            startTime = elapsedRealtime() - (pauseTime - startTime);
+            startTime = elapsedRealtimeClock() - (pauseTime - startTime);
             isRunning = true;
         }
     }
@@ -136,7 +136,7 @@ public class TimeCounter {
     /** Pauses the timer. */
     public void pause() {
         if (isRunning) {
-            pauseTime = elapsedRealtime();
+            pauseTime = elapsedRealtimeClock();
             isRunning = false;
         }
     }
