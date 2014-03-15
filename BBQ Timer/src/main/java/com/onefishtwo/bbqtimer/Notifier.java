@@ -31,9 +31,6 @@ import android.support.v4.app.TaskStackBuilder;
  */
 public class Notifier {
     private static final int NOTIFICATION_ID = 7;
-    private static final int PRIORITY_HIGH = 1; // Notification.PRIORITY_HIGH added in API level 16
-    private static final int PRIORITY_MAX  = 2;
-
     private final Context context;
 
     public Notifier(Context context) {
@@ -43,15 +40,16 @@ public class Notifier {
     /** Opens this app's notification. */
     public void open(TimeCounter timer) {
         // TODO: Play a custom sound for a periodic chime. MP3 Mono/Stereo 8-320Kbps CBR or VBR.
+        // TODO: Lights & optional vibration with the chime. (Requires the VIBRATE permission.)
         // TODO: Large icon: mdpi 64x64 px, hdpi 96x96 px, xhdpi 128x128 px, xxhpdi 192x192 px.
         // TODO: Add button actions to pause/resume/reset the timer?
-        // TODO: Vibrate with the chime? Upon a user setting? (Requires the VIBRATE permission.)
-        // TODO: Lights with the chime?
+        // TODO: builder.setNumber(chimeCount)?
+        // TODO: builder.setContentText()?
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context)
                 .setSmallIcon(R.drawable.notification_icon)
                 .setContentTitle(context.getString(R.string.app_name))
-                // .setContentText("Chime every n minutes") // TODO: Content text?
-                .setPriority(PRIORITY_HIGH) // PRIORITY_MAX when there's a time-critical chime?
+                // Use PRIORITY_MAX when there's a time-critical chime?
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setOngoing(true)
                 .setWhen(System.currentTimeMillis() - timer.getElapsedTime())
                 .setUsesChronometer(true);
