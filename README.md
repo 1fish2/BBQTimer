@@ -38,15 +38,15 @@ It works. Development is ongoing.
 Using Android Studio.
 
 ## TODO
-* Add the alarm feature: a chime while running, with a settable period or settable times. Set it in
-  the main activity or via the Settings menu?
-* Display a notification for the alarms so people can tell why it chimed.
+* Add the alarm feature: a chime while running, with a settable period and settable vibration
+  on/off. Set it in the main activity or via the Settings menu?
 
 * Set up signed, optimized, deployable release builds.
 * Set other AndroidManifest.xml values. (Search info?)
 * Use a font-resizing text view fit long durations into the Activity. See
   http://stackoverflow.com/questions/5033012/auto-scale-textview-text-to-fit-within-bounds/
   http://stackoverflow.com/questions/2617266/how-to-adjust-text-font-size-to-fit-textview/
+  http://stackoverflow.com/questions/17396045/how-to-catch-widget-size-changes-on-devices-where-onappwidgetoptionschanged-not
 * Use a font-resizing heuristic to fit hours into a minimum width home screen widget without eliding
   the seconds.
 * Implement Activity#onCreateThumbnail()?
@@ -66,8 +66,6 @@ Using Android Studio.
   Switch to the time of day after a few minutes?
   To track the time: Upon ACTION_SCREEN_ON when there are lock screen widgets, register a Service to
   listen for ACTION_TIME_TICK. Unregister upon ACTION_SCREEN_OFF or when the last widget is removed.
-* Make the text smaller to fit smaller widgets and longer duration strings? See bug workaround
-  http://stackoverflow.com/questions/17396045/how-to-catch-widget-size-changes-on-devices-where-onappwidgetoptionschanged-not
 
 ## Bugs
 * In the emulator (Nexus 5 KitKat), the Activity's timer sometimes stops.

@@ -35,9 +35,9 @@ import java.util.Formatter;
  */
 public class TimeCounter {
     /** PERSISTENT STATE identifiers. */
-    static final String PREF_IS_RUNNING = "isRunning";
-    static final String PREF_START_TIME = "startTime";
-    static final String PREF_PAUSE_TIME = "pauseTime";
+    static final String PREF_IS_RUNNING = "Timer_isRunning";
+    static final String PREF_START_TIME = "Timer_startTime";
+    static final String PREF_PAUSE_TIME = "Timer_pauseTime";
 
     /**
      * The default format string for combining and styling the hh:mm:ss + .f fractional seconds.</p>

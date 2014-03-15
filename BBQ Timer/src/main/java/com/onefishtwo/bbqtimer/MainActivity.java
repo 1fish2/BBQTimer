@@ -19,8 +19,6 @@
 
 package com.onefishtwo.bbqtimer;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.os.Handler;
@@ -38,9 +36,6 @@ import android.widget.Toast;
  * The BBQ Timer's main activity.
  */
 public class MainActivity extends ActionBarActivity {
-
-    /** PERSISTENT STATE filename. */
-    public static final String TIMER_PREF_FILE = "timer";
 
     /** A Handler for periodic display updates. */
     private class UpdateHandler extends Handler {
@@ -80,7 +75,7 @@ public class MainActivity extends ActionBarActivity {
 
     private final UpdateHandler updateHandler = new UpdateHandler();
     private final Notifier notifier = new Notifier(this);
-    private final TimeCounter timer = new TimeCounter();
+    private TimeCounter timer;
 
     private Button resetButton;
     private Button startStopButton;
@@ -111,8 +106,8 @@ public class MainActivity extends ActionBarActivity {
         super.onStart();
 
         // Load persistent state.
-        SharedPreferences prefs = getSharedPreferences(TIMER_PREF_FILE, Context.MODE_PRIVATE);
-        timer.load(prefs);
+        timer = ApplicationState.getTimeCounter(this);
+        ApplicationState.setMainActivityIsVisible(this, true);
 
         updateUI();
         notifier.cancelAll();
@@ -121,19 +116,12 @@ public class MainActivity extends ActionBarActivity {
     }
 
     @Override
-    protected void onPause() {
-        // Save persistent state.
-        SharedPreferences prefs = getSharedPreferences(TIMER_PREF_FILE, Context.MODE_PRIVATE);
-        SharedPreferences.Editor prefsEditor = prefs.edit();
-        timer.save(prefsEditor);
-        prefsEditor.commit();
-
-        super.onPause();
-    }
-
-    @Override
     protected void onStop() {
         updateHandler.endScheduledUpdates();
+
+        // Update persistent state.
+        ApplicationState.setMainActivityIsVisible(this, false);
+        ApplicationState.saveState(this);
 
         if (timer.isRunning()) {
             notifier.open(timer);

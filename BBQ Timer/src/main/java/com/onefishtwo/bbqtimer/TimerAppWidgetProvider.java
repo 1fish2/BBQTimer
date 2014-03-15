@@ -25,7 +25,6 @@ import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.text.format.DateUtils;
 import android.widget.RemoteViews;
 
@@ -46,24 +45,6 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
 
     static ComponentName getComponentName(Context context) {
         return new ComponentName(context, TimerAppWidgetProvider.class);
-    }
-
-    /** Loads and returns the shared TimeCounter data. */
-    // TODO: Share the persistent I/O code with MainActivity.
-    static TimeCounter loadTimeCounter(Context context) {
-        SharedPreferences prefs = context.getSharedPreferences(MainActivity.TIMER_PREF_FILE,
-                Context.MODE_PRIVATE);
-        TimeCounter timer = new TimeCounter();
-        timer.load(prefs);
-        return timer;
-    }
-
-    static void saveTimeCounter(Context context, TimeCounter timer) {
-        SharedPreferences prefs =
-                context.getSharedPreferences(MainActivity.TIMER_PREF_FILE, Context.MODE_PRIVATE);
-        SharedPreferences.Editor prefsEditor = prefs.edit();
-        timer.save(prefsEditor);
-        prefsEditor.commit();
     }
 
     /** Returns the formatted date (or other secondary text string). */
@@ -133,7 +114,7 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
      */
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
-        TimeCounter timer = loadTimeCounter(context);
+        TimeCounter timer = ApplicationState.getTimeCounter(context);
 
         updateWidgets(context, appWidgetManager, appWidgetIds, timer);
     }
@@ -193,25 +174,27 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
 
         if (ACTION_START_STOP.equals(action)) {
             // The user tapped a widget's start/stop button.
-            TimeCounter timer = loadTimeCounter(context);
+            TimeCounter timer = ApplicationState.getTimeCounter(context);
 
             timer.toggleRunning();
-            saveTimeCounter(context, timer);
+            ApplicationState.saveState(context);
+
             updateAllWidgets(context, timer);
             updateNotifications(context, timer);
         } else if (ACTION_CYCLE.equals(action)) {
             // The user tapped a widget's time text. Cycle Start/Pause/Reset.
-            TimeCounter timer = loadTimeCounter(context);
+            TimeCounter timer = ApplicationState.getTimeCounter(context);
 
             timer.cycle();
-            saveTimeCounter(context, timer);
+            ApplicationState.saveState(context);
+
             updateAllWidgets(context, timer);
             updateNotifications(context, timer);
         } else if (Intent.ACTION_DATE_CHANGED.equals(action)
                 || Intent.ACTION_TIME_CHANGED.equals(action)
                 || Intent.ACTION_TIMEZONE_CHANGED.equals(action)) {
             // The clock ticked over to the next day or it was adjusted. Update the date display.
-            TimeCounter timer = loadTimeCounter(context);
+            TimeCounter timer = ApplicationState.getTimeCounter(context);
 
             clearSecondaryTextCache();
             updateAllWidgets(context, timer);
