@@ -38,8 +38,8 @@ It works. Development is ongoing.
 Using Android Studio.
 
 ## TODO
-* Add the alarm feature: a chime while running, with a settable period and settable vibration
-  on/off. Set it in the main activity or via the Settings menu?
+* Add the alarm feature: a settable periodic chime and settable vibration on/off. Set it in the main
+  activity or via the Settings menu? Use a custom chime sound.
 
 * Set up signed, optimized, deployable release builds.
 * Set other AndroidManifest.xml values. (Search info?)
@@ -72,6 +72,15 @@ Using Android Studio.
 * Due to Android OS bug https://code.google.com/p/android/issues/detail?id=2880 if the clock gets
 set backwards, the widget's date won't update until the clock catches up to what was going to be the
 next day.
+
+## Dedication
+Dedicated to open source software developers.
+
+Open source software used in building this app includes: Android, Android Studio, Gimp, git,
+git gui, Inkscape, Java, MinGW, Proguard, and probably much more that we don't even think about,
+like zlib.
+
+The app's icon borrows from a public domain image on openclipart.org.
 
 ## Implementation notes
 * The lock screen widget pretty much needs to use a Chronometer view for the ticking time display.
