@@ -43,8 +43,8 @@ public class Notifier {
     }
 
     /**
-     * Builder-style setter: Whether {@link #open(TimeCounter)} should display the notification in
-     * the notification area and drawer. Default = true.
+     * Builder-style setter: Whether {@link #openOrCancel(TimeCounter)} should display the
+     * notification in the notification area and drawer. Default = true.
      */
     public Notifier setShowNotification(boolean showNotification) {
         this.showNotification = showNotification;
@@ -52,8 +52,8 @@ public class Notifier {
     }
 
     /**
-     * Builder-style setter: Whether {@link #open(TimeCounter)} should play a notification chime,
-     * light flash, and optionally vibrate. Default = false.
+     * Builder-style setter: Whether {@link #openOrCancel(TimeCounter)} should play a notification
+     * chime, light flash, and optionally vibrate. Default = false.
      */
     public Notifier setPlayChime(boolean playChime) {
         this.playChime = playChime;
@@ -76,7 +76,7 @@ public class Notifier {
      *
      * @param timer -- the TimeCounter state to display.
      */
-    public void open(TimeCounter timer) {
+    public void openOrCancel(TimeCounter timer) {
         if (!(showNotification || playChime)) {
             cancelAll();
         }

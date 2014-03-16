@@ -81,6 +81,6 @@ public class AlarmReceiver extends BroadcastReceiver {
         Notifier notifier = new Notifier(context).setPlayChime(true);
 
         notifier.setShowNotification(!isMainActivityVisible);
-        notifier.open(timer);
+        notifier.openOrCancel(timer);
     }
 }
