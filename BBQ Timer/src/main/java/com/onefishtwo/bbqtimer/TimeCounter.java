@@ -111,7 +111,7 @@ public class TimeCounter {
 
     /** Returns the underlying clock time. */
     // TODO: Inject the clock for testability.
-    long elapsedRealtimeClock() {
+    public long elapsedRealtimeClock() {
         return SystemClock.elapsedRealtime();
     }
 

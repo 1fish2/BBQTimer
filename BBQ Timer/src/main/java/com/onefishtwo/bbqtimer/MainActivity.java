@@ -190,7 +190,7 @@ public class MainActivity extends ActionBarActivity {
             boolean isMainActivityVisible = ApplicationState.isMainActivityVisible(this);
 
             notifier.setShowNotification(!isMainActivityVisible).openOrCancel(timer);
-            AlarmReceiver.scheduleNextChime(this);
+            AlarmReceiver.scheduleNextChime(this, timer);
         } else {
             notifier.cancelAll();
             AlarmReceiver.cancelChimes(this);

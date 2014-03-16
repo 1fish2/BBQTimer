@@ -150,7 +150,7 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
 
         if (timer.isRunning()) {
             notifier.openOrCancel(timer);
-            AlarmReceiver.scheduleNextChime(context);
+            AlarmReceiver.scheduleNextChime(context, timer);
         } else {
             notifier.cancelAll();
             AlarmReceiver.cancelChimes(context);

@@ -24,13 +24,13 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.os.SystemClock;
 
 /**
  * Uses AlarmManager to perform periodic reminder chimes.
  */
 public class AlarmReceiver extends BroadcastReceiver {
     static final long PERIOD_MS = 5 * 60 * 1000L; // TODO: User-settable, including "never".
+    static final long WINDOW_MS = 50L; // Allow some time flexibility to save battery power.
 
     public AlarmReceiver() {
     }
@@ -44,15 +44,20 @@ public class AlarmReceiver extends BroadcastReceiver {
     }
 
     /** Schedules the next chime via an AlarmManager Intent. */
-    public static void scheduleNextChime(Context context) {
+    public static void scheduleNextChime(Context context, TimeCounter timer) {
         AlarmManager alarmMgr = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
         PendingIntent pendingIntent = makeAlarmPendingIntent(context);
+        long timed = timer.getElapsedTime();
+        long untilNextChime = PERIOD_MS - (timed % PERIOD_MS);
+        long now = timer.elapsedRealtimeClock();
+        long nextChime = now + untilNextChime;
 
-        // TODO: Schedule once via .setWindow() android.os.Build.VERSION.SDK_INT >= 19, or via
-        // .set() on earlier Android versions.
-        // TODO: Schedule per the timer's elapsed time modulo the period.
-        alarmMgr.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
-                SystemClock.elapsedRealtime() + PERIOD_MS, PERIOD_MS, pendingIntent);
+        if (android.os.Build.VERSION.SDK_INT >= 19) {
+            alarmMgr.setWindow(AlarmManager.ELAPSED_REALTIME_WAKEUP, nextChime - WINDOW_MS,
+                    WINDOW_MS, pendingIntent);
+        } else {
+            alarmMgr.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, nextChime, pendingIntent);
+        }
     }
 
     /** Cancels any outstanding chimes via an AlarmManager Intent. */
@@ -65,9 +70,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 
     /**
      * Plays a chime via the Notifier when an AlarmManager Intent arrives. The notification includes
-     * a visible notification iff the main activity is currently invisible.</p>
-     *
-     * TODO: Reschedule the next alarm.
+     * a visible notification iff the main activity is currently invisible.
      */
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -82,5 +85,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 
         notifier.setShowNotification(!isMainActivityVisible);
         notifier.openOrCancel(timer);
+
+        scheduleNextChime(context, timer);
     }
 }
