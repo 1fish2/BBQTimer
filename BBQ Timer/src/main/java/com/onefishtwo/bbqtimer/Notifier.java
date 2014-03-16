@@ -44,8 +44,7 @@ public class Notifier {
 
     /**
      * Builder-style setter: Whether {@link #open(TimeCounter)} should display the notification in
-     * the notification area and drawer. Default = true. {@link #open(TimeCounter)} requires
-     * {@code showNotification || playChime}.
+     * the notification area and drawer. Default = true.
      */
     public Notifier setShowNotification(boolean showNotification) {
         this.showNotification = showNotification;
@@ -54,8 +53,7 @@ public class Notifier {
 
     /**
      * Builder-style setter: Whether {@link #open(TimeCounter)} should play a notification chime,
-     * light flash, and optionally vibrate. Default = false. {@link #open(TimeCounter)} requires
-     * {@code showNotification || playChime}.
+     * light flash, and optionally vibrate. Default = false.
      */
     public Notifier setPlayChime(boolean playChime) {
         this.playChime = playChime;
@@ -71,22 +69,23 @@ public class Notifier {
     }
 
     /**
-     * Opens this app's notification. Use {@link #setShowNotification(boolean)},
-     * {@link #setPlayChime(boolean)}, and {@link #setVibrateWithChime(boolean)} to control the
-     * notification's content.
+     * <em>Opens</em> this app's notification with visible, audible, and/or tactile content
+     * depending on {@link #setShowNotification(boolean)}, {@link #setPlayChime(boolean)}, and
+     * {@link #setVibrateWithChime(boolean)}, <em>or cancels</em> the app's notification if
+     * showNotification and playChime are both false.
      *
      * @param timer -- the TimeCounter state to display.
      */
     public void open(TimeCounter timer) {
         if (!(showNotification || playChime)) {
-            throw new IllegalArgumentException("Notifier requires showNotification || playChime");
+            cancelAll();
         }
 
+        // TODO: builder.setNumber(chimeCount)?
+        // TODO: builder.setContentText("n reminder chimes")? "chime every n minutes"?
         // TODO: Play a custom chime sound. OGG/MP3 Mono/Stereo 8-320Kbps CBR or VBR.
         // TODO: Large icon: mdpi 64x64 px, hdpi 96x96 px, xhdpi 128x128 px, xxhpdi 192x192 px.
         // TODO: Add button actions to pause/resume/reset the timer?
-        // TODO: builder.setNumber(chimeCount)?
-        // TODO: builder.setContentText()?
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context)
                 // Use PRIORITY_MAX when there's a time-critical chime?
                 .setPriority(NotificationCompat.PRIORITY_HIGH);

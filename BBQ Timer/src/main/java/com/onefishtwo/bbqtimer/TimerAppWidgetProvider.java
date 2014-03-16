@@ -134,12 +134,6 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
         }
     }
 
-    /** Constructs a PendingIntent for the widget to send to open the main Activity. */
-    static PendingIntent makeOpenMainActivityIntent(Context context) {
-        Intent intent = new Intent(context, MainActivity.class);
-        return PendingIntent.getActivity(context, 0, intent, 0);
-    }
-
     /** Constructs a PendingIntent for the widget to send an action event to this Receiver. */
     static PendingIntent makeActionIntent(Context context, String action) {
         Intent intent = new Intent(context, TimerAppWidgetProvider.class);
@@ -147,14 +141,19 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
         return PendingIntent.getBroadcast(context, 0, intent, 0);
     }
 
-    /** Updates the app's Android Notifications for the running/paused timer state. */
+    /**
+     * Updates the app's Android Notifications and scheduled periodic chime Notifications for the
+     * running/paused timer state.
+     */
     private void updateNotifications(Context context, TimeCounter timer) {
         Notifier notifier = new Notifier(context);
 
         if (timer.isRunning()) {
             notifier.open(timer);
+            AlarmReceiver.scheduleNextChime(context);
         } else {
             notifier.cancelAll();
+            AlarmReceiver.cancelChimes(context);
         }
     }
 

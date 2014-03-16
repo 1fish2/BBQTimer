@@ -54,7 +54,7 @@ public class MainActivity extends ActionBarActivity {
             }
         }
 
-        /** Schedules the next display update if the timer is running. */
+        /** Schedules the next Activity display update if the timer is running. */
         private void scheduleNextUpdate() {
             if (timer.isRunning()) {
                 sendEmptyMessageDelayed(MSG_UPDATE, UPDATE_INTERVAL);
@@ -101,6 +101,7 @@ public class MainActivity extends ActionBarActivity {
         return true;
     }
 
+    /** The Activity is now visible. */
     @Override
     protected void onStart() {
         super.onStart();
@@ -110,11 +111,11 @@ public class MainActivity extends ActionBarActivity {
         ApplicationState.setMainActivityIsVisible(this, true);
 
         updateUI();
-        notifier.cancelAll();
 
         updateHandler.beginScheduledUpdate();
     }
 
+    /** The Activity is no longer visible. */
     @Override
     protected void onStop() {
         updateHandler.endScheduledUpdates();
@@ -123,9 +124,7 @@ public class MainActivity extends ActionBarActivity {
         ApplicationState.setMainActivityIsVisible(this, false);
         ApplicationState.saveState(this);
 
-        if (timer.isRunning()) {
-            notifier.open(timer);
-        }
+        updateNotifications();
 
         super.onStop();
     }
@@ -182,7 +181,23 @@ public class MainActivity extends ActionBarActivity {
         displayView.setTextColor(textColors);
     }
 
-    /** Updates the UI for the current state. */
+    /**
+     * Updates the app's Android Notifications and scheduled periodic chime Notifications for the
+     * visible/invisible activity state and the running/paused timer state.
+     */
+    private void updateNotifications() {
+        if (timer.isRunning()) {
+            boolean isMainActivityVisible = ApplicationState.isMainActivityVisible(this);
+
+            notifier.setShowNotification(!isMainActivityVisible).open(timer);
+            AlarmReceiver.scheduleNextChime(this);
+        } else {
+            notifier.cancelAll();
+            AlarmReceiver.cancelChimes(this);
+        }
+    }
+
+    /** Updates the UI and its notifications for the current state. */
     private void updateUI() {
         boolean running = timer.isRunning();
 
@@ -192,6 +207,8 @@ public class MainActivity extends ActionBarActivity {
         startStopButton.setText(running ? R.string.stop : R.string.start);
         startStopButton.setCompoundDrawablesWithIntrinsicBounds(
                 running ? R.drawable.ic_pause : R.drawable.ic_play, 0, 0, 0);
+
+        updateNotifications();
     }
 
 }
