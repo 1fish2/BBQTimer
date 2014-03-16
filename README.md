@@ -76,7 +76,7 @@ next day.
 ## Dedication
 Dedicated to open source software developers.
 
-Open source software used in building this app includes: Android, Android Studio, Gimp, git,
+Open source software used in building this app includes: Android, Android Studio, Chrome, Gimp, git,
 git gui, Inkscape, Java, MinGW, Proguard, and probably much more that we don't even think about,
 like zlib.
 

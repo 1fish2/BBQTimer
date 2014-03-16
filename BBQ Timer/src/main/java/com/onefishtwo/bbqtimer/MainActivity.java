@@ -182,7 +182,7 @@ public class MainActivity extends ActionBarActivity {
     }
 
     /**
-     * Updates the app's Android Notifications and scheduled periodic chime Notifications for the
+     * Updates the app's Android Notifications and scheduled periodic reminder Notifications for the
      * visible/invisible activity state and the running/paused timer state.
      */
     private void updateNotifications() {
@@ -190,10 +190,10 @@ public class MainActivity extends ActionBarActivity {
             boolean isMainActivityVisible = ApplicationState.isMainActivityVisible(this);
 
             notifier.setShowNotification(!isMainActivityVisible).openOrCancel(timer);
-            AlarmReceiver.scheduleNextChime(this, timer);
+            AlarmReceiver.scheduleNextReminder(this, timer);
         } else {
             notifier.cancelAll();
-            AlarmReceiver.cancelChimes(this);
+            AlarmReceiver.cancelReminders(this);
         }
     }
 

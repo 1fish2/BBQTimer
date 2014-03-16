@@ -26,7 +26,7 @@ import android.content.Context;
 import android.content.Intent;
 
 /**
- * Uses AlarmManager to perform periodic reminder chimes.
+ * Uses AlarmManager to perform periodic reminder notifications.
  */
 public class AlarmReceiver extends BroadcastReceiver {
     static final long PERIOD_MS = 5 * 60 * 1000L; // TODO: User-settable, including "never".
@@ -43,25 +43,34 @@ public class AlarmReceiver extends BroadcastReceiver {
                 PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
-    /** Schedules the next chime via an AlarmManager Intent. */
-    public static void scheduleNextChime(Context context, TimeCounter timer) {
+    /** Returns the SystemClock.elapsedRealtime() for the next reminder notification. */
+    //
+    // TODO: If the user changes the period without resetting the timer, maybe this should compute
+    // future reminders relative to the previous reminder rather than 0:00. E.g. after a 7 minute
+    // reminder you change it to 4 minutes, it would next alert at 0:11:00 rather than 0:08:00.
+    private static long nextReminderTime(TimeCounter timer) {
+        long timed = timer.getElapsedTime();
+        long untilNextReminder = PERIOD_MS - (timed % PERIOD_MS);
+        long now = timer.elapsedRealtimeClock();
+        return now + untilNextReminder;
+    }
+
+    /** Schedules the next reminder Notification via an AlarmManager Intent. */
+    public static void scheduleNextReminder(Context context, TimeCounter timer) {
         AlarmManager alarmMgr = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
         PendingIntent pendingIntent = makeAlarmPendingIntent(context);
-        long timed = timer.getElapsedTime();
-        long untilNextChime = PERIOD_MS - (timed % PERIOD_MS);
-        long now = timer.elapsedRealtimeClock();
-        long nextChime = now + untilNextChime;
+        long nextReminder = nextReminderTime(timer);
 
         if (android.os.Build.VERSION.SDK_INT >= 19) {
-            alarmMgr.setWindow(AlarmManager.ELAPSED_REALTIME_WAKEUP, nextChime - WINDOW_MS,
+            alarmMgr.setWindow(AlarmManager.ELAPSED_REALTIME_WAKEUP, nextReminder - WINDOW_MS,
                     WINDOW_MS, pendingIntent);
         } else {
-            alarmMgr.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, nextChime, pendingIntent);
+            alarmMgr.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, nextReminder, pendingIntent);
         }
     }
 
-    /** Cancels any outstanding chimes via an AlarmManager Intent. */
-    public static void cancelChimes(Context context) {
+    /** Cancels any outstanding reminders via an AlarmManager Intent. */
+    public static void cancelReminders(Context context) {
         AlarmManager alarmMgr = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
         PendingIntent pendingIntent = makeAlarmPendingIntent(context);
 
@@ -69,8 +78,9 @@ public class AlarmReceiver extends BroadcastReceiver {
     }
 
     /**
-     * Plays a chime via the Notifier when an AlarmManager Intent arrives. The notification includes
-     * a visible notification iff the main activity is currently invisible.
+     * Handles an AlarmManager Intent: Plays a reminder chime and/or vibration via the Notifier. The
+     * Notification is also visible in the notification area and drawer iff the main activity is not
+     * currently visible.
      */
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -81,11 +91,11 @@ public class AlarmReceiver extends BroadcastReceiver {
         }
 
         boolean isMainActivityVisible = ApplicationState.isMainActivityVisible(context);
-        Notifier notifier = new Notifier(context).setPlayChime(true);
+        Notifier notifier = new Notifier(context).setPlayChime(true).setVibrate(true);
 
         notifier.setShowNotification(!isMainActivityVisible);
         notifier.openOrCancel(timer);
 
-        scheduleNextChime(context, timer);
+        scheduleNextReminder(context, timer);
     }
 }

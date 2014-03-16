@@ -36,7 +36,7 @@ public class Notifier {
     private final Context context;
     private boolean showNotification = true;
     private boolean playChime = false;
-    private boolean vibrateWithChime = true;
+    private boolean vibrate = false;
 
     public Notifier(Context context) {
         this.context = context;
@@ -53,7 +53,7 @@ public class Notifier {
 
     /**
      * Builder-style setter: Whether {@link #openOrCancel(TimeCounter)} should play a notification
-     * chime, light flash, and optionally vibrate. Default = false.
+     * chime and flash the notification light. Default = false.
      */
     public Notifier setPlayChime(boolean playChime) {
         this.playChime = playChime;
@@ -61,28 +61,28 @@ public class Notifier {
     }
 
     /**
-     * Builder-style setter: Whether to vibrate when playing a notification chime. Default = true.
+     * Builder-style setter: Whether to vibrate and flash the notification light. Default = true.
      */
-    public Notifier setVibrateWithChime(boolean vibrateWithChime) {
-        this.vibrateWithChime = vibrateWithChime;
+    public Notifier setVibrate(boolean vibrate) {
+        this.vibrate = vibrate;
         return this;
     }
 
     /**
      * <em>Opens</em> this app's notification with visible, audible, and/or tactile content
      * depending on {@link #setShowNotification(boolean)}, {@link #setPlayChime(boolean)}, and
-     * {@link #setVibrateWithChime(boolean)}, <em>or cancels</em> the app's notification if
-     * showNotification and playChime are both false.
+     * {@link #setVibrate(boolean)}, <em>or cancels</em> the app's notification if they're all
+     * false.
      *
      * @param timer -- the TimeCounter state to display.
      */
     public void openOrCancel(TimeCounter timer) {
-        if (!(showNotification || playChime)) {
+        if (!(showNotification || playChime || vibrate)) {
             cancelAll();
         }
 
-        // TODO: builder.setNumber(chimeCount)?
-        // TODO: builder.setContentText("n reminder chimes")? "chime every n minutes"?
+        // TODO: builder.setNumber(reminder chime/vibration count)?
+        // TODO: builder.setContentText("reminder every n minutes")?
         // TODO: Play a custom chime sound. OGG/MP3 Mono/Stereo 8-320Kbps CBR or VBR.
         // TODO: Large icon: mdpi 64x64 px, hdpi 96x96 px, xhdpi 128x128 px, xxhpdi 192x192 px.
         // TODO: Add button actions to pause/resume/reset the timer?
@@ -109,14 +109,16 @@ public class Notifier {
             builder.setContentIntent(activityPendingIntent);
         }
 
-        if (playChime) {
+        if (playChime || vibrate) {
             int defaults = Notification.DEFAULT_LIGHTS;
 
-            defaults |= Notification.DEFAULT_SOUND; // TODO: builder.setSound() instead.
-            // Uri chimeUri = Uri.parse("android.resource://" + context.getPackageName() + "/" + R.raw.tone);
-            // builder.setSound(chimeUri);
+            if (playChime) {
+                defaults |= Notification.DEFAULT_SOUND; // TODO: builder.setSound() instead.
+                // Uri chimeUri = Uri.parse("android.resource://" + context.getPackageName() + "/" + R.raw.tone);
+                // builder.setSound(chimeUri);
+            }
 
-            if (vibrateWithChime) {
+            if (vibrate) {
                 defaults |= Notification.DEFAULT_VIBRATE;
             }
             builder.setDefaults(defaults);

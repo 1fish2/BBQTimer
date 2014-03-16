@@ -142,7 +142,7 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
     }
 
     /**
-     * Updates the app's Android Notifications and scheduled periodic chime Notifications for the
+     * Updates the app's Android Notifications and scheduled periodic reminder Notifications for the
      * running/paused timer state.
      */
     private void updateNotifications(Context context, TimeCounter timer) {
@@ -150,10 +150,10 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
 
         if (timer.isRunning()) {
             notifier.openOrCancel(timer);
-            AlarmReceiver.scheduleNextChime(context, timer);
+            AlarmReceiver.scheduleNextReminder(context, timer);
         } else {
             notifier.cancelAll();
-            AlarmReceiver.cancelChimes(context);
+            AlarmReceiver.cancelReminders(context);
         }
     }
 
