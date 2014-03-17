@@ -1,26 +1,27 @@
 # BBQTimer Android app
 
 It's a stopwatch with a twist (or two):
+
 1. It has a lock screen widget so you can quickly check the timer without unlocking your phone.
-2. [TODO] It can set alarm times (like a count-down timer) while still counting up the time that the
-food has been cooking, however long that takes.
+2. [TODO] It can play periodic reminder alarms (like a count-down timer) while still counting up the
+time that the food has been cooking, however long that takes.
 
 ## Status
 It works. Development is ongoing.
 
 ## Usage tips
-* Tap the stopwatch time to cycle between Reset -> Running -> Paused -> Reset.
 * Put the BBQ Timer widget on the Android lock screen for quick access. (This requires Android 4.2
   Jelly Bean or later.)
 * The BBQ Timer widget also works on the home screen, even in earlier versions of Android.
 * You can resize the home screen widget by long-pressing it, then dragging its resize handles.
   The initial size fits minutes and seconds (e.g. "18:12"). Stretched wider, it can fit hours,
   minutes, and seconds (e.g. "1:15:09").
+* Tap the stopwatch time display to cycle between Reset -> Running -> Paused -> Reset.
 
 ## How to Use Android Lock Screen Widgets
-* Android lock screen widgets work in Android 4.2 Jelly Bean and later versions.
+* Android supports lock screen widgets in Android 4.2 Jelly Bean and later versions.
 * In Android 4.4 KitKat, you'll need to turn on Settings > Security > Enable Widgets.
-* For instructions, see [Getting started with lock screen widgets on Android Jelly
+* For how-to instructions, see [Getting started with lock screen widgets on Android Jelly
   Bean](http://howto.cnet.com/8301-11310_39-57549747-285/getting-started-with-lock-screen-widgets-on-android-jelly-bean/
   "CNET How To")
   and [How to Add Lockscreen Widgets to Android 4.4
@@ -35,7 +36,7 @@ It works. Development is ongoing.
   the "+", unlock the phone, pick a widget, then (optionally) drag it further to the right.
 
 ## Build
-Using Android Studio.
+Using [Android Studio](http://developer.android.com/sdk/installing/studio.html) (an awesome tool!).
 
 ## TODO
 * Add the alarm feature: a settable periodic chime and settable vibration on/off. Set it in the main
