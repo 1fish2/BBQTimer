@@ -33,10 +33,12 @@ public class ApplicationState {
 
     /** PERSISTENT STATE identifiers. */
     static final String PREF_MAIN_ACTIVITY_IS_VISIBLE = "App_mainActivityIsVisible";
+    static final String PREF_ENABLE_REMINDERS = "App_enableReminders";
 
     /** Application state. It's cached iff timeCounter != null. */
     private static TimeCounter timeCounter;
     private static boolean mainActivityIsVisible; // between onStart() .. onStop()
+    private static boolean enableReminders;
 
     /** Loads persistent state on demand. */
     private static void loadState(Context context) {
@@ -47,6 +49,7 @@ public class ApplicationState {
 
             timeCounter.load(prefs);
             mainActivityIsVisible = prefs.getBoolean(PREF_MAIN_ACTIVITY_IS_VISIBLE, false);
+            enableReminders       = prefs.getBoolean(PREF_ENABLE_REMINDERS, false);
         }
     }
 
@@ -58,28 +61,53 @@ public class ApplicationState {
 
         timeCounter.save(prefsEditor);
         prefsEditor.putBoolean(PREF_MAIN_ACTIVITY_IS_VISIBLE, mainActivityIsVisible);
+        prefsEditor.putBoolean(PREF_ENABLE_REMINDERS, enableReminders);
         prefsEditor.commit();
     }
 
-    /** Gets the shared TimeCounter instance, using context to load app state if needed. */
+    /** Gets the shared TimeCounter instance, using context to load the app state if needed. */
     static TimeCounter getTimeCounter(Context context) {
         loadState(context);
         return timeCounter;
     }
 
-    /** Gets isMainActivityVisible, using context to load app state if needed. */
+    /**
+     * Gets a boolean indicating whether MainActivity is visible [it's between
+     * onStart() .. onStop()], using context to load the app state if needed.
+     */
     static boolean isMainActivityVisible(Context context) {
         loadState(context);
         return mainActivityIsVisible;
     }
 
     /**
-     * Sets isMainActivityVisible, using context to load app state if needed.</p>
+     * Sets a boolean indicating whether MainActivity is visible, using context to load the app
+     * state if needed.</p>
      *
      * Call {@link #saveState(android.content.Context)} to save it.
      */
     public static void setMainActivityIsVisible(Context context, boolean mainActivityIsVisible) {
         loadState(context);
         ApplicationState.mainActivityIsVisible = mainActivityIsVisible;
+    }
+
+    /**
+     * Gets a boolean indicating whether periodic reminders are enabled, using context to load the
+     * app state if needed.
+     */
+    public static boolean isEnableReminders(Context context) {
+        loadState(context);
+        return enableReminders;
+    }
+
+    /**
+     * Sets a boolean indicating whether periodic reminders are enabled, using context to load the
+     * app state if needed.</p>
+     *
+     * Call {@link #saveState(android.content.Context)} to save it.
+     */
+    public static void setEnableReminders(Context context, boolean enableReminders) {
+        loadState(context);
+        ApplicationState.enableReminders = enableReminders;
     }
 }

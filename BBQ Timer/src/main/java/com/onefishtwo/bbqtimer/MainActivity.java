@@ -29,6 +29,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -80,6 +81,7 @@ public class MainActivity extends ActionBarActivity {
     private Button resetButton;
     private Button startStopButton;
     private TextView displayView;
+    private CompoundButton enableRemindersToggle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,9 +89,10 @@ public class MainActivity extends ActionBarActivity {
 
         setContentView(R.layout.activity_main);
 
-        resetButton         = (Button) findViewById(R.id.resetButton);
-        startStopButton     = (Button) findViewById(R.id.startStopButton);
-        displayView         = (TextView) findViewById(R.id.display);
+        resetButton           = (Button) findViewById(R.id.resetButton);
+        startStopButton       = (Button) findViewById(R.id.startStopButton);
+        displayView           = (TextView) findViewById(R.id.display);
+        enableRemindersToggle = (CompoundButton) findViewById(R.id.enableReminders);
     }
 
     @Override
@@ -124,7 +127,7 @@ public class MainActivity extends ActionBarActivity {
         ApplicationState.setMainActivityIsVisible(this, false);
         ApplicationState.saveState(this);
 
-        updateNotifications();
+        updateNotifications(); // after setMainActivityIsVisible()
 
         super.onStop();
     }
@@ -168,6 +171,13 @@ public class MainActivity extends ActionBarActivity {
         TimerAppWidgetProvider.updateAllWidgets(this, timer);
     }
 
+    /** The user clicked the enable/disable periodic-reminders toggle switch/checkbox. */
+    public void onClickEnableRemindersToggle(View v) {
+        ApplicationState.setEnableReminders(this, enableRemindersToggle.isChecked());
+        ApplicationState.saveState(this);
+        updateNotifications();
+    }
+
     /** Updates the display to show the current elapsed time. */
     private void displayTime() {
         Spanned formatted         = timer.formatHhMmSsFraction();
@@ -182,17 +192,23 @@ public class MainActivity extends ActionBarActivity {
     }
 
     /**
-     * Updates the app's Android Notifications and scheduled periodic reminder Notifications for the
-     * visible/invisible activity state and the running/paused timer state.
+     * Updates the app's Android Notifications area/drawer and scheduled periodic reminder
+     * Notifications for the visible/invisible activity state, the running/paused timer state, and
+     * the reminders-enabled state.
      */
     private void updateNotifications() {
-        if (timer.isRunning()) {
-            boolean isMainActivityVisible = ApplicationState.isMainActivityVisible(this);
+        boolean isMainActivityVisible = ApplicationState.isMainActivityVisible(this);
+        boolean isRunning = timer.isRunning();
 
+        if (isRunning) {
             notifier.setShowNotification(!isMainActivityVisible).openOrCancel(timer);
-            AlarmReceiver.scheduleNextReminder(this, timer);
         } else {
             notifier.cancelAll();
+        }
+
+        if (isRunning && ApplicationState.isEnableReminders(this)) {
+            AlarmReceiver.scheduleNextReminder(this, timer);
+        } else {
             AlarmReceiver.cancelReminders(this);
         }
     }
@@ -207,6 +223,7 @@ public class MainActivity extends ActionBarActivity {
         startStopButton.setText(running ? R.string.stop : R.string.start);
         startStopButton.setCompoundDrawablesWithIntrinsicBounds(
                 running ? R.drawable.ic_pause : R.drawable.ic_play, 0, 0, 0);
+        enableRemindersToggle.setChecked(ApplicationState.isEnableReminders(this));
 
         updateNotifications();
     }

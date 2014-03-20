@@ -52,4 +52,19 @@
             android:drawableLeft="@drawable/ic_reset"
             android:drawablePadding="@dimen/button_drawable_padding" />
     </RelativeLayout>
+
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/enableReminders"
+        android:layout_gravity="center_horizontal"
+        android:singleLine="true"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:layout_marginBottom="@dimen/widget_margin"
+        android:checked="false"
+        android:ellipsize="end"
+        android:importantForAccessibility="yes"
+        android:padding="@dimen/small_button_padding"
+        android:text="@string/reminder_switch"
+        android:onClick="onClickEnableRemindersToggle"/>
 </LinearLayout>
