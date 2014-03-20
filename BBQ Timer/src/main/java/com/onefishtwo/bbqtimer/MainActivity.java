@@ -211,14 +211,14 @@ public class MainActivity extends ActionBarActivity {
 
     /** Updates the UI and its notifications for the current state. */
     private void updateUI() {
-        boolean running = timer.isRunning();
+        boolean isRunning = timer.isRunning();
 
         displayTime();
-        resetButton.setVisibility(running
+        resetButton.setVisibility(isRunning
                 || timer.getElapsedTime() == 0 ? View.INVISIBLE : View.VISIBLE);
-        startStopButton.setText(running ? R.string.stop : R.string.start);
+        startStopButton.setText(isRunning ? R.string.stop : R.string.start);
         startStopButton.setCompoundDrawablesWithIntrinsicBounds(
-                running ? R.drawable.ic_pause : R.drawable.ic_play, 0, 0, 0);
+                isRunning ? R.drawable.ic_pause : R.drawable.ic_play, 0, 0, 0);
         enableRemindersToggle.setChecked(ApplicationState.isEnableReminders(this));
 
         updateNotifications();
