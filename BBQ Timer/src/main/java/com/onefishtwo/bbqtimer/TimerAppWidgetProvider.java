@@ -146,13 +146,15 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
      * running/paused timer state.
      */
     private void updateNotifications(Context context, TimeCounter timer) {
+        boolean enableReminders = ApplicationState.isEnableReminders(context);
+        boolean isRunning = timer.isRunning();
         Notifier notifier = new Notifier(context);
 
-        if (timer.isRunning()) {
-            notifier.openOrCancel(timer);
+        notifier.setShowNotification(isRunning).openOrCancel(timer);
+
+        if (isRunning && enableReminders) {
             AlarmReceiver.scheduleNextReminder(context, timer);
         } else {
-            notifier.cancelAll();
             AlarmReceiver.cancelReminders(context);
         }
     }

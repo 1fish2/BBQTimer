@@ -198,11 +198,12 @@ public class MainActivity extends ActionBarActivity {
      */
     private void updateNotifications() {
         boolean isMainActivityVisible = ApplicationState.isMainActivityVisible(this);
+        boolean enableReminders = ApplicationState.isEnableReminders(this);
         boolean isRunning = timer.isRunning();
 
         notifier.setShowNotification(isRunning && !isMainActivityVisible).openOrCancel(timer);
 
-        if (isRunning && ApplicationState.isEnableReminders(this)) {
+        if (isRunning && enableReminders) {
             AlarmReceiver.scheduleNextReminder(this, timer);
         } else {
             AlarmReceiver.cancelReminders(this);
