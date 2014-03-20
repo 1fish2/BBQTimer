@@ -59,12 +59,13 @@
         android:id="@+id/enableReminders"
         android:layout_gravity="center_horizontal"
         android:singleLine="true"
-        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:layout_marginTop="@dimen/controls_top_margin"
         android:layout_marginBottom="@dimen/widget_margin"
         android:checked="false"
         android:ellipsize="end"
         android:importantForAccessibility="yes"
         android:padding="@dimen/small_button_padding"
         android:text="@string/reminder_switch"
-        android:onClick="onClickEnableRemindersToggle"/>
+        android:onClick="onClickEnableRemindersToggle"
+        android:textSize="@dimen/controls_text_size"/>
 </LinearLayout>
