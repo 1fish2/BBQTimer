@@ -34,11 +34,13 @@ public class ApplicationState {
     /** PERSISTENT STATE identifiers. */
     static final String PREF_MAIN_ACTIVITY_IS_VISIBLE = "App_mainActivityIsVisible";
     static final String PREF_ENABLE_REMINDERS = "App_enableReminders";
+    static final String PREF_SECONDS_PER_REMINDER = "App_secondsPerReminder";
 
     /** Application state. It's cached iff timeCounter != null. */
     private static TimeCounter timeCounter;
     private static boolean mainActivityIsVisible; // between onStart() .. onStop()
     private static boolean enableReminders;
+    private static int secondsPerReminder;
 
     /** Loads persistent state on demand. */
     private static void loadState(Context context) {
@@ -50,6 +52,7 @@ public class ApplicationState {
             timeCounter.load(prefs);
             mainActivityIsVisible = prefs.getBoolean(PREF_MAIN_ACTIVITY_IS_VISIBLE, false);
             enableReminders       = prefs.getBoolean(PREF_ENABLE_REMINDERS, false);
+            secondsPerReminder    = prefs.getInt(PREF_SECONDS_PER_REMINDER, 5 * 60);
         }
     }
 
@@ -62,6 +65,7 @@ public class ApplicationState {
         timeCounter.save(prefsEditor);
         prefsEditor.putBoolean(PREF_MAIN_ACTIVITY_IS_VISIBLE, mainActivityIsVisible);
         prefsEditor.putBoolean(PREF_ENABLE_REMINDERS, enableReminders);
+        prefsEditor.putInt(PREF_SECONDS_PER_REMINDER, secondsPerReminder);
         prefsEditor.commit();
     }
 
@@ -109,5 +113,25 @@ public class ApplicationState {
     public static void setEnableReminders(Context context, boolean enableReminders) {
         loadState(context);
         ApplicationState.enableReminders = enableReminders;
+    }
+
+    /**
+     * Gets the number of seconds between periodic reminders, using context to load the app state if
+     * needed.
+     */
+    public static int getSecondsPerReminder(Context context) {
+        loadState(context);
+        return secondsPerReminder;
+    }
+
+    /**
+     * Sets the number of seconds between periodic reminders, using context to load the app state if
+     * needed.</p>
+     *
+     * Call {@link #saveState(android.content.Context)} to save it.
+     */
+    public static void setSecondsPerReminder(Context context, int secondsPerReminder) {
+        loadState(context);
+        ApplicationState.secondsPerReminder = secondsPerReminder;
     }
 }

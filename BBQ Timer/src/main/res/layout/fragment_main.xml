@@ -24,10 +24,10 @@
         android:layout_height="wrap_content" >
 
         <Button
+            android:id="@+id/startStopButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/start"
-            android:id="@+id/startStopButton"
             android:importantForAccessibility="yes"
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
@@ -38,10 +38,10 @@
             android:drawablePadding="@dimen/button_drawable_padding" />
 
         <Button
+            android:id="@+id/resetButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/reset"
-            android:id="@+id/resetButton"
             android:importantForAccessibility="yes"
             android:layout_alignParentTop="true"
             android:layout_alignParentRight="true"
@@ -54,9 +54,9 @@
     </RelativeLayout>
 
     <CheckBox
+        android:id="@+id/enableReminders"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/enableReminders"
         android:layout_gravity="center_horizontal"
         android:singleLine="true"
         android:layout_marginTop="@dimen/controls_top_margin"
@@ -68,4 +68,11 @@
         android:text="@string/reminder_switch"
         android:onClick="onClickEnableRemindersToggle"
         android:textSize="@dimen/controls_text_size"/>
+
+    <NumberPicker
+        android:id="@+id/minutesPicker"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:importantForAccessibility="yes" />
 </LinearLayout>

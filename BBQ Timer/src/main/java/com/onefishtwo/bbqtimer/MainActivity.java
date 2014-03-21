@@ -30,13 +30,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.NumberPicker;
 import android.widget.TextView;
 import android.widget.Toast;
 
 /**
  * The BBQ Timer's main activity.
  */
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends ActionBarActivity implements NumberPicker.OnValueChangeListener {
 
     /** A Handler for periodic display updates. */
     private class UpdateHandler extends Handler {
@@ -82,6 +83,7 @@ public class MainActivity extends ActionBarActivity {
     private Button startStopButton;
     private TextView displayView;
     private CompoundButton enableRemindersToggle;
+    private NumberPicker minutesPicker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,6 +95,9 @@ public class MainActivity extends ActionBarActivity {
         startStopButton       = (Button) findViewById(R.id.startStopButton);
         displayView           = (TextView) findViewById(R.id.display);
         enableRemindersToggle = (CompoundButton) findViewById(R.id.enableReminders);
+        minutesPicker         = (NumberPicker) findViewById(R.id.minutesPicker);
+
+        minutesPicker.setOnValueChangedListener(this);
     }
 
     @Override
@@ -114,6 +119,8 @@ public class MainActivity extends ActionBarActivity {
         ApplicationState.setMainActivityIsVisible(this, true);
 
         updateUI();
+
+        // Defocus minutesPicker?
 
         updateHandler.beginScheduledUpdate();
     }
@@ -176,6 +183,16 @@ public class MainActivity extends ActionBarActivity {
         ApplicationState.setEnableReminders(this, enableRemindersToggle.isChecked());
         ApplicationState.saveState(this);
         updateNotifications();
+        minutesPicker.setEnabled(ApplicationState.isEnableReminders(this));
+    }
+
+    /** A NumberPicker (minutesPicker) value changed. */
+    @Override
+    public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+        ApplicationState.setSecondsPerReminder(this, newVal * 60);
+        ApplicationState.saveState(this);
+        // TODO: Make this value affect reminder notifications.
+        updateNotifications();
     }
 
     /** Updates the display to show the current elapsed time. */
@@ -215,12 +232,20 @@ public class MainActivity extends ActionBarActivity {
         boolean isRunning = timer.isRunning();
 
         displayTime();
+
         resetButton.setVisibility(isRunning
                 || timer.getElapsedTime() == 0 ? View.INVISIBLE : View.VISIBLE);
         startStopButton.setText(isRunning ? R.string.stop : R.string.start);
         startStopButton.setCompoundDrawablesWithIntrinsicBounds(
                 isRunning ? R.drawable.ic_pause : R.drawable.ic_play, 0, 0, 0);
+
         enableRemindersToggle.setChecked(ApplicationState.isEnableReminders(this));
+
+        minutesPicker.setMinValue(1);
+        minutesPicker.setMaxValue(99);
+        minutesPicker.setWrapSelectorWheel(false);
+        minutesPicker.setValue(ApplicationState.getSecondsPerReminder(this) / 60);
+        minutesPicker.setEnabled(ApplicationState.isEnableReminders(this));
 
         updateNotifications();
     }
