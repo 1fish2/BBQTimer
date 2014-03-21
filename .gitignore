@@ -1,8 +1,11 @@
-# Gradle temp files?
+# Gradle temp files
 .gradle/
 
 # Android Studio
 /.idea/workspace.xml
+
+# Unused source assets. They may get used later.
+/source-assets/unused/
 
 
 #################
