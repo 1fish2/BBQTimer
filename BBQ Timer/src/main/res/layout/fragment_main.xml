@@ -53,26 +53,34 @@
             android:drawablePadding="@dimen/button_drawable_padding" />
     </RelativeLayout>
 
-    <CheckBox
-        android:id="@+id/enableReminders"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:singleLine="true"
-        android:layout_marginTop="@dimen/controls_top_margin"
-        android:layout_marginBottom="@dimen/widget_margin"
-        android:checked="false"
-        android:ellipsize="end"
-        android:importantForAccessibility="yes"
-        android:padding="@dimen/small_button_padding"
-        android:text="@string/reminder_switch"
-        android:onClick="onClickEnableRemindersToggle"
-        android:textSize="@dimen/controls_text_size"/>
+        android:layout_marginTop="@dimen/controls_top_margin">
 
-    <NumberPicker
-        android:id="@+id/minutesPicker"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:importantForAccessibility="yes" />
+        <CheckBox
+            android:id="@+id/enableReminders"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:singleLine="false"
+            android:ellipsize="end"
+            android:importantForAccessibility="yes"
+            android:padding="@dimen/small_button_padding"
+            android:text="@string/reminder_switch"
+            android:onClick="onClickEnableRemindersToggle"
+            android:textSize="@dimen/controls_text_size"
+            android:layout_weight="6"
+            android:layout_margin="@dimen/widget_margin" />
+
+        <NumberPicker
+            android:id="@+id/minutesPicker"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal|left"
+            android:importantForAccessibility="yes"
+            android:layout_weight="1"/>
+    </LinearLayout>
+
 </LinearLayout>

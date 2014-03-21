@@ -11,7 +11,7 @@
     <!-- Widget margin is overridden in values-v14 for API levels >= 14. -->
     <dimen name="widget_margin">8dp</dimen>
     <dimen name="widget_spacing">4dp</dimen>
-    <dimen name="controls_top_margin">32dp</dimen>
+    <dimen name="controls_top_margin">12dp</dimen>
 
     <!-- Text sizes. -->
     <dimen name="display_text_size">70sp</dimen>

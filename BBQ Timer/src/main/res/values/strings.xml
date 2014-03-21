@@ -27,8 +27,9 @@
       pauses the running timer. -->
     <string name="start_stop">Start/Pause</string>
 
-    <!-- Label for the switch that enables/disables periodic reminder chimes/vibrations. -->
-    <string name="reminder_switch">Periodic reminders</string>
+    <!-- Label for the switch that enables/disables periodic reminder chimes/vibrations AND ALSO the
+      label for the number picker widget for picking the number of minutes between reminders. -->
+    <string name="reminder_switch">Reminders every n minutes:</string>
 
     <!-- The initial text for a reset timer showing 0 minutes and 0.0 seconds. This should match the
       locale's format used by the Android OS utility DateUtils.formatElapsedTime() with appended
@@ -47,7 +48,7 @@
       "<small>" HTML markup to make it less distracting on the activity's display and to make it fit
       better on the screen. This way, "12:34:56.7" fits on a Galaxy Nexus screen.
 
-      The "<![CDATA[ ... ]]>" part is needed to quote the HTML markup so it can be in strings.xml
+      The "<![CDATA[ ... ]]>" wrapper quotes the HTML markup so it can be in strings.xml
       and get through to the application code at run time.
 
       In localization, this can put the entire "<small><small>%2$s</small></small>" part before the
