@@ -186,7 +186,6 @@ public class MainActivity extends ActionBarActivity implements NumberPicker.OnVa
         ApplicationState.setEnableReminders(this, enableRemindersToggle.isChecked());
         ApplicationState.saveState(this);
         updateNotifications();
-        minutesPicker.setEnabled(ApplicationState.isEnableReminders(this));
     }
 
     /** A NumberPicker value changed. */
@@ -246,7 +245,6 @@ public class MainActivity extends ActionBarActivity implements NumberPicker.OnVa
         enableRemindersToggle.setChecked(ApplicationState.isEnableReminders(this));
 
         minutesPicker.setValue(ApplicationState.getSecondsPerReminder(this) / 60);
-        minutesPicker.setEnabled(ApplicationState.isEnableReminders(this));
 
         updateNotifications();
     }
