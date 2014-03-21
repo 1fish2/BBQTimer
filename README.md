@@ -3,8 +3,8 @@
 It's a stopwatch with a twist (or two):
 
 1. It has a lock screen widget so you can quickly check the timer without unlocking your phone.
-2. [TODO] It can play periodic reminder alarms (like a count-down timer) while still counting up the
-time that the food has been cooking, however long that takes.
+2. It can play periodic reminder alarms (similar to a count-down timer) while still counting up the
+   time that the food has been cooking, however long that takes.
 
 ## Status
 It works. Development is ongoing.
@@ -39,8 +39,10 @@ It works. Development is ongoing.
 Using [Android Studio](http://developer.android.com/sdk/installing/studio.html) (an awesome tool!).
 
 ## TODO
-* Add the alarm feature: a settable periodic chime and settable vibration on/off. Set it in the main
-  activity or via the Settings menu? Use a custom chime sound.
+* Make the reminder controls prettier.
+* Add a Settings dialog to pick {chime, vibrate, both, neither} for reminders.
+* A custom chime sound and maybe a matching vibration pattern. (OGG/MP3 Mono/Stereo 8-320Kbps CBR or
+  VBR.)
 
 * Set up signed, optimized, deployable release builds.
 * Set other AndroidManifest.xml values. (Search info?)
@@ -61,6 +63,12 @@ Using [Android Studio](http://developer.android.com/sdk/installing/studio.html) 
 * Show tips via a menu command: How to install as home & lock screen widgets. What tapping the
   widget text does.
 * Deploy to the Play store.
+
+* Add button actions (pause/resume/reset) to the notification area?
+* Add a reminder count to the notification area? [builder.setNumber()]
+* Set the notification's content text? [builder.setContentText("reminder every n minutes")]
+* Add a large icon to the notification area: mdpi 64x64 px, hdpi 96x96 px, xhdpi 128x128 px,
+  xxhpdi 192x192 px.
 
 * Reset the timer on boot-up?
 * When stopped at 00:00, add the time of day to the widget? Make the stopwatch text 00:00 small?

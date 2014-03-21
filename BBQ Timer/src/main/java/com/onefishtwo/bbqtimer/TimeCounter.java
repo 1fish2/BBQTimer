@@ -92,7 +92,6 @@ public class TimeCounter {
         if (isRunning) {
             if (startTime > elapsedRealtimeClock()) {
                 // Must've rebooted.
-                // TODO: Receive reboot Intents to catch every case?
                 reset();
             }
         } else if (pauseTime < startTime) {

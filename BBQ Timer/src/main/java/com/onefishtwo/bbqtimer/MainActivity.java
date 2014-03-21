@@ -195,7 +195,6 @@ public class MainActivity extends ActionBarActivity implements NumberPicker.OnVa
         if (picker == minutesPicker) {
             ApplicationState.setSecondsPerReminder(this, newVal * 60);
             ApplicationState.saveState(this);
-            // TODO: Make this value affect reminder notifications.
             updateNotifications();
         }
     }

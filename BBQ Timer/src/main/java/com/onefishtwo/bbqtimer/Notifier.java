@@ -81,11 +81,6 @@ public class Notifier {
             cancelAll();
         }
 
-        // TODO: builder.setNumber(reminder chime/vibration count)?
-        // TODO: builder.setContentText("reminder every n minutes")?
-        // TODO: Play a custom chime sound. OGG/MP3 Mono/Stereo 8-320Kbps CBR or VBR.
-        // TODO: Large icon: mdpi 64x64 px, hdpi 96x96 px, xhdpi 128x128 px, xxhpdi 192x192 px.
-        // TODO: Add button actions to pause/resume/reset the timer?
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context)
                 // Use PRIORITY_MAX when there's a time-critical chime?
                 .setPriority(NotificationCompat.PRIORITY_HIGH);

@@ -29,7 +29,6 @@ import android.content.Intent;
  * Uses AlarmManager to perform periodic reminder notifications.
  */
 public class AlarmReceiver extends BroadcastReceiver {
-    static final long PERIOD_MS = 5 * 60 * 1000L; // TODO: User-settable, including "never".
     static final long WINDOW_MS = 50L; // Allow some time flexibility to save battery power.
 
     public AlarmReceiver() {
@@ -45,21 +44,23 @@ public class AlarmReceiver extends BroadcastReceiver {
 
     /** Returns the SystemClock.elapsedRealtime() for the next reminder notification. */
     //
-    // TODO: If the user changes the period without resetting the timer, maybe this should compute
-    // future reminders relative to the previous reminder rather than 0:00. E.g. after a 7 minute
-    // reminder you change it to 4 minutes, it would next alert at 0:11:00 rather than 0:08:00.
-    private static long nextReminderTime(TimeCounter timer) {
+    // TODO: If the user changes the period without resetting the timer, compute future reminders
+    // relative to the previous reminder rather than 0:00? E.g. after a 7 minute reminder you change
+    // it to 4 minutes, then it would next alert at 0:11:00 rather than 0:08:00.
+    private static long nextReminderTime(Context context, TimeCounter timer) {
+        long periodMs = ApplicationState.getSecondsPerReminder(context) * 1000L;
         long timed = timer.getElapsedTime();
-        long untilNextReminder = PERIOD_MS - (timed % PERIOD_MS);
+        long untilNextReminder = periodMs - (timed % periodMs);
         long now = timer.elapsedRealtimeClock();
+
         return now + untilNextReminder;
     }
 
-    /** Schedules the next reminder Notification via an AlarmManager Intent. */
+    /** (Re)schedules the next reminder Notification via an AlarmManager Intent. */
     public static void scheduleNextReminder(Context context, TimeCounter timer) {
         AlarmManager alarmMgr = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
         PendingIntent pendingIntent = makeAlarmPendingIntent(context);
-        long nextReminder = nextReminderTime(timer);
+        long nextReminder = nextReminderTime(context, timer);
 
         if (android.os.Build.VERSION.SDK_INT >= 19) {
             alarmMgr.setWindow(AlarmManager.ELAPSED_REALTIME_WAKEUP, nextReminder - WINDOW_MS,
