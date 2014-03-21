@@ -97,6 +97,9 @@ public class MainActivity extends ActionBarActivity implements NumberPicker.OnVa
         enableRemindersToggle = (CompoundButton) findViewById(R.id.enableReminders);
         minutesPicker         = (NumberPicker) findViewById(R.id.minutesPicker);
 
+        minutesPicker.setMinValue(1);
+        minutesPicker.setMaxValue(99);
+        minutesPicker.setWrapSelectorWheel(false);
         minutesPicker.setOnValueChangedListener(this);
     }
 
@@ -186,13 +189,15 @@ public class MainActivity extends ActionBarActivity implements NumberPicker.OnVa
         minutesPicker.setEnabled(ApplicationState.isEnableReminders(this));
     }
 
-    /** A NumberPicker (minutesPicker) value changed. */
+    /** A NumberPicker value changed. */
     @Override
     public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-        ApplicationState.setSecondsPerReminder(this, newVal * 60);
-        ApplicationState.saveState(this);
-        // TODO: Make this value affect reminder notifications.
-        updateNotifications();
+        if (picker == minutesPicker) {
+            ApplicationState.setSecondsPerReminder(this, newVal * 60);
+            ApplicationState.saveState(this);
+            // TODO: Make this value affect reminder notifications.
+            updateNotifications();
+        }
     }
 
     /** Updates the display to show the current elapsed time. */
@@ -241,9 +246,6 @@ public class MainActivity extends ActionBarActivity implements NumberPicker.OnVa
 
         enableRemindersToggle.setChecked(ApplicationState.isEnableReminders(this));
 
-        minutesPicker.setMinValue(1);
-        minutesPicker.setMaxValue(99);
-        minutesPicker.setWrapSelectorWheel(false);
         minutesPicker.setValue(ApplicationState.getSecondsPerReminder(this) / 60);
         minutesPicker.setEnabled(ApplicationState.isEnableReminders(this));
 
