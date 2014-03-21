@@ -29,7 +29,7 @@
 
     <!-- Label for the switch that enables/disables periodic reminder chimes/vibrations AND ALSO the
       label for the number picker widget for picking the number of minutes between reminders. -->
-    <string name="reminder_switch">Reminders every n minutes:</string>
+    <string name="reminder_switch">Periodic reminders, every this many minutes:</string>
 
     <!-- The initial text for a reset timer showing 0 minutes and 0.0 seconds. This should match the
       locale's format used by the Android OS utility DateUtils.formatElapsedTime() with appended
