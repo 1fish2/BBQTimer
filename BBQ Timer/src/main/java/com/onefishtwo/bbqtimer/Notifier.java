@@ -92,6 +92,13 @@ public class Notifier {
                     .setWhen(System.currentTimeMillis() - timer.getElapsedTime())
                     .setUsesChronometer(true);
 
+            if (ApplicationState.isEnableReminders(context)) {
+                int minutes        = ApplicationState.getSecondsPerReminder(context) / 60;
+                String contentText = context.getString(R.string.notification_body, minutes);
+
+                builder.setContentText(contentText);
+            }
+
             // Make an Intent to launch the Activity from the notification.
             Intent activityIntent = new Intent(context, MainActivity.class);
 

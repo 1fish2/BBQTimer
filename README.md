@@ -64,7 +64,6 @@ Using [Android Studio](http://developer.android.com/sdk/installing/studio.html) 
 
 * Add button actions (pause/resume/reset) to the notification area?
 * Add a reminder count to the notification area? [builder.setNumber()]
-* Set the notification's content text? [builder.setContentText("Reminder alarm every n minutes")]
 * Add a large icon to the notification area: mdpi 64x64 px, hdpi 96x96 px, xhdpi 128x128 px,
   xxhpdi 192x192 px.
 
