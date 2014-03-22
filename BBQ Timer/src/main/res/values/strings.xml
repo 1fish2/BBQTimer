@@ -27,9 +27,9 @@
       pauses the running timer. -->
     <string name="start_stop">Start/Pause</string>
 
-    <!-- Label for the switch that enables/disables periodic reminder chimes/vibrations AND ALSO the
-      label for the number picker widget for picking the number of minutes between reminders. -->
-    <string name="reminder_switch">Periodic reminders this many minutes apart:</string>
+    <!-- Label for the switch that enables/disables periodic reminder alarms AND ALSO the label for
+      the widget for setting the number of minutes between reminders. -->
+    <string name="reminder_switch">Reminder alarms this many minutes apart:</string>
 
     <!-- The initial text for a reset timer showing 0 minutes and 0.0 seconds. This should match the
       locale's format used by the Android OS utility DateUtils.formatElapsedTime() with appended

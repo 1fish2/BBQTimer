@@ -2,12 +2,12 @@
 
 It's a stopwatch with a twist (or two):
 
-1. It has a lock screen widget so you can quickly check the timer without unlocking your phone.
-2. It can play periodic reminder alarms (similar to a count-down timer) while still counting up the
-   time that the food has been cooking, however long that takes.
+1. It has a lock screen widget so you can quickly operate the timer without unlocking your phone.
+2. It can play periodic reminder alarms (like count-down timers) while still counting up the elapsed
+   cooking time, however long it takes.
 
 ## Status
-It works. Development is ongoing.
+The features have been implemented. Ongoing development. See **TODO**, below.
 
 ## Usage tips
 * Put the BBQ Timer widget on the Android lock screen for quick access. (This requires Android 4.2
@@ -39,10 +39,8 @@ It works. Development is ongoing.
 Using [Android Studio](http://developer.android.com/sdk/installing/studio.html) (an awesome tool!).
 
 ## TODO
-* Make the reminder controls prettier.
 * Add a Settings dialog to pick {chime, vibrate, both, neither} for reminders.
-* A custom chime sound and maybe a matching vibration pattern. (OGG/MP3 Mono/Stereo 8-320Kbps CBR or
-  VBR.)
+* A custom sound and maybe a matching vibration pattern. (OGG/MP3 Mono/Stereo 8-320Kbps CBR or VBR.)
 
 * Set up signed, optimized, deployable release builds.
 * Set other AndroidManifest.xml values. (Search info?)
@@ -66,7 +64,7 @@ Using [Android Studio](http://developer.android.com/sdk/installing/studio.html) 
 
 * Add button actions (pause/resume/reset) to the notification area?
 * Add a reminder count to the notification area? [builder.setNumber()]
-* Set the notification's content text? [builder.setContentText("reminder every n minutes")]
+* Set the notification's content text? [builder.setContentText("Reminder alarm every n minutes")]
 * Add a large icon to the notification area: mdpi 64x64 px, hdpi 96x96 px, xhdpi 128x128 px,
   xxhpdi 192x192 px.
 
