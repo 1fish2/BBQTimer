@@ -141,24 +141,6 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
         return PendingIntent.getBroadcast(context, 0, intent, 0);
     }
 
-    /**
-     * Updates the app's Android Notifications and scheduled periodic reminder Notifications for the
-     * running/paused timer state.
-     */
-    private void updateNotifications(Context context, TimeCounter timer) {
-        boolean enableReminders = ApplicationState.isEnableReminders(context);
-        boolean isRunning = timer.isRunning();
-        Notifier notifier = new Notifier(context);
-
-        notifier.setShowNotification(isRunning).openOrCancel(timer);
-
-        if (isRunning && enableReminders) {
-            AlarmReceiver.scheduleNextReminder(context, timer);
-        } else {
-            AlarmReceiver.cancelReminders(context);
-        }
-    }
-
     /** Receives an Intent, including one for the app widget's button clicks. */
     //
     // TODO: Due to Android OS bug https://code.google.com/p/android/issues/detail?id=2880 , after
@@ -181,7 +163,7 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
             ApplicationState.saveState(context);
 
             updateAllWidgets(context, timer);
-            updateNotifications(context, timer);
+            AlarmReceiver.updateNotifications(context);
         } else if (ACTION_CYCLE.equals(action)) {
             // The user tapped a widget's time text. Cycle Start/Pause/Reset.
             TimeCounter timer = ApplicationState.getTimeCounter(context);
@@ -190,7 +172,7 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
             ApplicationState.saveState(context);
 
             updateAllWidgets(context, timer);
-            updateNotifications(context, timer);
+            AlarmReceiver.updateNotifications(context);
         } else if (Intent.ACTION_DATE_CHANGED.equals(action)
                 || Intent.ACTION_TIME_CHANGED.equals(action)
                 || Intent.ACTION_TIMEZONE_CHANGED.equals(action)) {

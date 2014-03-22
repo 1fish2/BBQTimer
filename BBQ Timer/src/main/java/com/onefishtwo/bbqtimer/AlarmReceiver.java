@@ -70,6 +70,27 @@ public class AlarmReceiver extends BroadcastReceiver {
         }
     }
 
+    /**
+     * Updates the app's Android Notifications area/drawer and scheduled periodic reminder
+     * Notifications for the visible/invisible activity state, the running/paused timer state, and
+     * the reminders-enabled state.
+     */
+    public static void updateNotifications(Context context) {
+        boolean isMainActivityVisible = ApplicationState.isMainActivityVisible(context);
+        boolean enableReminders       = ApplicationState.isEnableReminders(context);
+        TimeCounter timer             = ApplicationState.getTimeCounter(context);
+        boolean isRunning             = timer.isRunning();
+        Notifier notifier             = new Notifier(context);
+
+        notifier.setShowNotification(isRunning && !isMainActivityVisible).openOrCancel(timer);
+
+        if (isRunning && enableReminders) {
+            scheduleNextReminder(context, timer);
+        } else {
+            cancelReminders(context);
+        }
+    }
+
     /** Cancels any outstanding reminders via an AlarmManager Intent. */
     public static void cancelReminders(Context context) {
         AlarmManager alarmMgr = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);

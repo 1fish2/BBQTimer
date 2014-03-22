@@ -76,7 +76,6 @@ public class MainActivity extends ActionBarActivity implements NumberPicker.OnVa
     }
 
     private final UpdateHandler updateHandler = new UpdateHandler();
-    private final Notifier notifier = new Notifier(this);
     private TimeCounter timer;
 
     private Button resetButton;
@@ -137,7 +136,7 @@ public class MainActivity extends ActionBarActivity implements NumberPicker.OnVa
         ApplicationState.setMainActivityIsVisible(this, false);
         ApplicationState.saveState(this);
 
-        updateNotifications(); // after setMainActivityIsVisible()
+        AlarmReceiver.updateNotifications(this); // after setMainActivityIsVisible()
 
         super.onStop();
     }
@@ -185,7 +184,7 @@ public class MainActivity extends ActionBarActivity implements NumberPicker.OnVa
     public void onClickEnableRemindersToggle(View v) {
         ApplicationState.setEnableReminders(this, enableRemindersToggle.isChecked());
         ApplicationState.saveState(this);
-        updateNotifications();
+        AlarmReceiver.updateNotifications(this);
     }
 
     /** A NumberPicker value changed. */
@@ -194,7 +193,7 @@ public class MainActivity extends ActionBarActivity implements NumberPicker.OnVa
         if (picker == minutesPicker) {
             ApplicationState.setSecondsPerReminder(this, newVal * 60);
             ApplicationState.saveState(this);
-            updateNotifications();
+            AlarmReceiver.updateNotifications(this);
         }
     }
 
@@ -209,25 +208,6 @@ public class MainActivity extends ActionBarActivity implements NumberPicker.OnVa
 
         displayView.setText(formatted);
         displayView.setTextColor(textColors);
-    }
-
-    /**
-     * Updates the app's Android Notifications area/drawer and scheduled periodic reminder
-     * Notifications for the visible/invisible activity state, the running/paused timer state, and
-     * the reminders-enabled state.
-     */
-    private void updateNotifications() {
-        boolean isMainActivityVisible = ApplicationState.isMainActivityVisible(this);
-        boolean enableReminders = ApplicationState.isEnableReminders(this);
-        boolean isRunning = timer.isRunning();
-
-        notifier.setShowNotification(isRunning && !isMainActivityVisible).openOrCancel(timer);
-
-        if (isRunning && enableReminders) {
-            AlarmReceiver.scheduleNextReminder(this, timer);
-        } else {
-            AlarmReceiver.cancelReminders(this);
-        }
     }
 
     /** Updates the UI and its notifications for the current state. */
@@ -246,7 +226,7 @@ public class MainActivity extends ActionBarActivity implements NumberPicker.OnVa
 
         minutesPicker.setValue(ApplicationState.getSecondsPerReminder(this) / 60);
 
-        updateNotifications();
+        AlarmReceiver.updateNotifications(this);
     }
 
 }
