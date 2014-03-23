@@ -96,10 +96,16 @@ public class Notifier {
                     .setUsesChronometer(true);
 
             if (ApplicationState.isEnableReminders(context)) {
-                int minutes        = ApplicationState.getSecondsPerReminder(context) / 60;
+                int reminderSecs   = ApplicationState.getSecondsPerReminder(context);
+                int minutes        = reminderSecs / 60;
                 String contentText = context.getString(R.string.notification_body, minutes);
+                long elapsedMs     = timer.getElapsedTime();
+                int numReminders   = (int)(elapsedMs / (reminderSecs * 1000L));
 
                 builder.setContentText(contentText);
+                if (numReminders > 0) {
+                    builder.setNumber(numReminders);
+                }
             }
 
             // Make an Intent to launch the Activity from the notification.
