@@ -39,8 +39,7 @@ The features have been implemented. Ongoing development. See **TODO**, below.
 Using [Android Studio](http://developer.android.com/sdk/installing/studio.html) (an awesome tool!).
 
 ## TODO
-* Add a Settings dialog to pick {chime, vibrate, both, neither} for reminders.
-* A custom sound and maybe a matching vibration pattern. (OGG/MP3 Mono/Stereo 8-320Kbps CBR or VBR.)
+* Add a Settings dialog to pick {sound, vibrate, both, disable} for reminder alarms.
 
 * Set up signed, optimized, deployable release builds.
 * Set other AndroidManifest.xml values. (Search info?)
@@ -64,6 +63,7 @@ Using [Android Studio](http://developer.android.com/sdk/installing/studio.html) 
 
 * Add button actions (pause/resume/reset) to the notification area?
 * Add a reminder count to the notification area? [builder.setNumber()]
+* Simplify the app's launcher icon.
 * Add a large icon to the notification area: mdpi 64x64 px, hdpi 96x96 px, xhdpi 128x128 px,
   xxhpdi 192x192 px.
 
@@ -82,11 +82,14 @@ next day.
 ## Dedication
 Dedicated to open source software developers.
 
-Open source software used in building this app includes: Android, Android Studio, Chrome, Gimp, git,
-git gui, Inkscape, Java, MinGW, Proguard, and probably much more that we don't even think about,
+Open source software used for this project includes: Android, Android Studio, Audacity, Chrome,
+Gimp, git, git gui, Inkscape, Java, MinGW, Proguard, and much more that we don't even think about,
 like zlib.
 
-The app's icon borrows from a public domain image on openclipart.org.
+## Sources
+Sampled sounds used by permission of Phil Burk, Mobileer.com, Copyright (c) 2014.
+
+The launcher icon uses shapes from a public domain image on openclipart.org.
 
 ## Implementation notes
 * The lock screen widget pretty much needs to use a Chronometer view for the ticking time display.

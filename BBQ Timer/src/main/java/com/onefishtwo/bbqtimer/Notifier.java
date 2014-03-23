@@ -24,6 +24,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 
@@ -32,6 +33,8 @@ import android.support.v4.app.TaskStackBuilder;
  */
 public class Notifier {
     private static final int NOTIFICATION_ID = 7;
+
+    private static final long[] VIBRATE_PATTERN = {150, 82, 180, 96}; // ms off, ms on, ms off, ...
 
     private final Context context;
     private boolean showNotification = true;
@@ -115,13 +118,13 @@ public class Notifier {
             int defaults = Notification.DEFAULT_LIGHTS;
 
             if (playChime) {
-                defaults |= Notification.DEFAULT_SOUND; // TODO: builder.setSound() instead.
-                // Uri chimeUri = Uri.parse("android.resource://" + context.getPackageName() + "/" + R.raw.tone);
-                // builder.setSound(chimeUri);
+                Uri soundUri = Uri.parse(
+                        "android.resource://" + context.getPackageName() + "/" + R.raw.cowbell4);
+                builder.setSound(soundUri);
             }
 
             if (vibrate) {
-                defaults |= Notification.DEFAULT_VIBRATE;
+                builder.setVibrate(VIBRATE_PATTERN);
             }
             builder.setDefaults(defaults);
         }
