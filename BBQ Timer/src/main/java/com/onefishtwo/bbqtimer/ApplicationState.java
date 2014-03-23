@@ -24,7 +24,13 @@ import android.content.SharedPreferences;
 
 /**
  * Provides access to the application's state. The state is kept in shared preferences and cached in
- * static variables.
+ * static variables.</p>
+ *
+ * This class is only responsible for accessing the state. It does not currently support listener
+ * notifications.</p>
+ *
+ * This class' setters update the shared state in memory. Call
+ * {@link #saveState(android.content.Context)} to persist the updates.
  */
 public class ApplicationState {
 
@@ -69,14 +75,19 @@ public class ApplicationState {
         prefsEditor.commit();
     }
 
-    /** Gets the shared TimeCounter instance, using context to load the app state if needed. */
+    /**
+     * Returns the shared TimeCounter instance, using context to load the app state if needed.</p>
+     *
+     * NOTE: The TimeCounter is a shared, mutable object. The caller can update it then call
+     * {@link #saveState(android.content.Context)} to store the updated data.
+     */
     static TimeCounter getTimeCounter(Context context) {
         loadState(context);
         return timeCounter;
     }
 
     /**
-     * Gets a boolean indicating whether MainActivity is visible [it's between
+     * Returns a boolean indicating whether MainActivity is visible [it's between
      * onStart() .. onStop()], using context to load the app state if needed.
      */
     static boolean isMainActivityVisible(Context context) {
@@ -96,8 +107,8 @@ public class ApplicationState {
     }
 
     /**
-     * Gets a boolean indicating whether periodic reminders are enabled, using context to load the
-     * app state if needed.
+     * Returns a boolean indicating whether periodic reminders are enabled, using context to load
+     * the app state if needed.
      */
     public static boolean isEnableReminders(Context context) {
         loadState(context);
@@ -116,12 +127,20 @@ public class ApplicationState {
     }
 
     /**
-     * Gets the number of seconds between periodic reminders, using context to load the app state if
-     * needed.
+     * Returns the number of seconds between periodic reminders, using context to load the app state
+     * if needed.
      */
     public static int getSecondsPerReminder(Context context) {
         loadState(context);
         return secondsPerReminder;
+    }
+
+    /**
+     * Returns the number of milliseconds between periodic reminders, using context to load the app
+     * state if needed.
+     */
+    public static long getMillisecondsPerReminder(Context context) {
+        return getSecondsPerReminder(context) * 1000L;
     }
 
     /**

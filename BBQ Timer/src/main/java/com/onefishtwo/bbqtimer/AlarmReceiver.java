@@ -48,7 +48,7 @@ public class AlarmReceiver extends BroadcastReceiver {
     // relative to the previous reminder rather than 0:00? E.g. after a 7 minute reminder you change
     // it to 4 minutes, then it would next alert at 0:11:00 rather than 0:08:00.
     private static long nextReminderTime(Context context, TimeCounter timer) {
-        long periodMs = ApplicationState.getSecondsPerReminder(context) * 1000L;
+        long periodMs = ApplicationState.getMillisecondsPerReminder(context);
         long timed = timer.getElapsedTime();
         long untilNextReminder = periodMs - (timed % periodMs);
         long now = timer.elapsedRealtimeClock();
