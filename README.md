@@ -41,36 +41,36 @@ Using [Android Studio](http://developer.android.com/sdk/installing/studio.html) 
 ## TODO
 * Add a Settings dialog to pick {sound, vibrate, both, disable} for reminder alarms.
 
-* Set up signed, optimized, deployable release builds.
+* Set up signed, optimized release builds.
 * Set other AndroidManifest.xml values. (Search info?)
+* Test on various OS versions, screen sizes, and pixel densities. (Is the widget preview image
+  needed at multiple resolutions?)
+* Follow system theme colors?
+* Show a tip about adding the widget to the lock screen when first running the app.
+* Show tips via a menu command: How to install as home & lock screen widgets. What tapping the
+  widget text does.
+* Simplify the app's launcher icon.
+* Deploy to the Play store.
+
+* L10N.
+* Accessibility.
 * Use a font-resizing text view fit long durations into the Activity. See
   http://stackoverflow.com/questions/5033012/auto-scale-textview-text-to-fit-within-bounds/
   http://stackoverflow.com/questions/2617266/how-to-adjust-text-font-size-to-fit-textview/
   http://stackoverflow.com/questions/17396045/how-to-catch-widget-size-changes-on-devices-where-onappwidgetoptionschanged-not
 * Use a font-resizing heuristic to fit hours into a minimum width home screen widget without eliding
   the seconds.
-* Implement Activity#onCreateThumbnail()?
-* Follow system theme colors?
-* Test on various OS versions, screen sizes, and pixel densities. (Is the widget preview image
-  needed at multiple resolutions?)
-* Add unit tests.
-* L10N.
-* Accessibility.
-* Show a tip about adding the widget to the lock screen when first running the app.
-* Show tips via a menu command: How to install as home & lock screen widgets. What tapping the
-  widget text does.
-* Deploy to the Play store.
-
-* Add button actions (pause/resume/reset) to the notification area?
-* Simplify the app's launcher icon.
-* Add a large icon to the notification area: mdpi 64x64 px, hdpi 96x96 px, xhdpi 128x128 px,
-  xxhpdi 192x192 px.
-
-* Reset the timer on boot-up?
 * When stopped at 00:00, add the time of day to the widget? Make the stopwatch text 00:00 small?
   Switch to the time of day after a few minutes?
   To track the time: Upon ACTION_SCREEN_ON when there are lock screen widgets, register a Service to
   listen for ACTION_TIME_TICK. Unregister upon ACTION_SCREEN_OFF or when the last widget is removed.
+
+* Add unit tests.
+* Refactor ApplicationState to use a (mostly) singleton instance.
+* Add button actions (pause/resume/reset) to the notification area?
+* Add a large icon to the notification area: mdpi 64x64 px, hdpi 96x96 px, xhdpi 128x128 px,
+  xxhpdi 192x192 px.
+* Reset the timer on boot-up?
 
 ## Bugs
 * In the emulator (Nexus 5 KitKat), the Activity's timer sometimes stops.
