@@ -28,6 +28,8 @@ import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 
+import com.onefishtwo.bbqtimer.state.ApplicationState;
+
 /**
  * Manages the app's Android Notifications.
  */

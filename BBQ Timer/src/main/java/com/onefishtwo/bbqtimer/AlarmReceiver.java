@@ -25,6 +25,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
+import com.onefishtwo.bbqtimer.state.ApplicationState;
+
 /**
  * Uses AlarmManager to perform periodic reminder notifications.
  */

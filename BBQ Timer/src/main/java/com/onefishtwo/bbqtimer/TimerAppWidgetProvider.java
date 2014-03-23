@@ -28,6 +28,8 @@ import android.content.Intent;
 import android.text.format.DateUtils;
 import android.widget.RemoteViews;
 
+import com.onefishtwo.bbqtimer.state.ApplicationState;
+
 /**
  * The BBQ Timer app widget for the home and lock screens.
  */

@@ -17,20 +17,21 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-package com.onefishtwo.bbqtimer;
+package com.onefishtwo.bbqtimer.state;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.onefishtwo.bbqtimer.TimeCounter;
+
 /**
- * Provides access to the application's state. The state is kept in shared preferences and cached in
- * static variables.</p>
+ * Stores the application's state persistently in SharedPreferences and caches it in static
+ * variables while the process is in memory.</p>
  *
- * This class is only responsible for accessing the state. It does not currently support listener
- * notifications.</p>
+ * This does not currently provide listener notifications.</p>
  *
- * This class' setters update the shared state in memory. Call
- * {@link #saveState(android.content.Context)} to persist the updates.
+ * The setters only update the state in memory. Call {@link #saveState(android.content.Context)} to
+ * make the changes persistent.
  */
 public class ApplicationState {
 
@@ -63,7 +64,7 @@ public class ApplicationState {
     }
 
     /** Saves persistent state. */
-    static void saveState(Context context) {
+    public static void saveState(Context context) {
         SharedPreferences prefs =
                 context.getSharedPreferences(APPLICATION_PREF_FILE, Context.MODE_PRIVATE);
         SharedPreferences.Editor prefsEditor = prefs.edit();
@@ -81,7 +82,7 @@ public class ApplicationState {
      * NOTE: The TimeCounter is a shared, mutable object. The caller can update it then call
      * {@link #saveState(android.content.Context)} to store the updated data.
      */
-    static TimeCounter getTimeCounter(Context context) {
+    public static TimeCounter getTimeCounter(Context context) {
         loadState(context);
         return timeCounter;
     }
@@ -90,7 +91,7 @@ public class ApplicationState {
      * Returns a boolean indicating whether MainActivity is visible [it's between
      * onStart() .. onStop()], using context to load the app state if needed.
      */
-    static boolean isMainActivityVisible(Context context) {
+    public static boolean isMainActivityVisible(Context context) {
         loadState(context);
         return mainActivityIsVisible;
     }

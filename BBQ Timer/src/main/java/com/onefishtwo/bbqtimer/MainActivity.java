@@ -34,6 +34,8 @@ import android.widget.NumberPicker;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.onefishtwo.bbqtimer.state.ApplicationState;
+
 /**
  * The BBQ Timer's main activity.
  */
