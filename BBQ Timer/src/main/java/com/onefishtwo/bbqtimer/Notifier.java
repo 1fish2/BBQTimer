@@ -98,7 +98,9 @@ public class Notifier {
             if (ApplicationState.isEnableReminders(context)) {
                 int reminderSecs   = ApplicationState.getSecondsPerReminder(context);
                 int minutes        = reminderSecs / 60;
-                String contentText = context.getString(R.string.notification_body, minutes);
+                String contentText = minutes > 1
+                        ? context.getString(R.string.notification_body, minutes)
+                        : context.getString(R.string.notification_body_singular);
                 long elapsedMs     = timer.getElapsedTime();
                 int numReminders   = (int)(elapsedMs / (reminderSecs * 1000L));
 
