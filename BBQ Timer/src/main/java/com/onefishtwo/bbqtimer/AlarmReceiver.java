@@ -49,8 +49,9 @@ public class AlarmReceiver extends BroadcastReceiver {
     // TODO: If the user changes the period without resetting the timer, compute future reminders
     // relative to the previous reminder rather than 0:00? E.g. after a 7 minute reminder you change
     // it to 4 minutes, then it would next alert at 0:11:00 rather than 0:08:00.
-    private static long nextReminderTime(Context context, TimeCounter timer) {
-        long periodMs = ApplicationState.getMillisecondsPerReminder(context);
+    private static long nextReminderTime(ApplicationState state) {
+        TimeCounter timer = state.getTimeCounter();
+        long periodMs     = state.getMillisecondsPerReminder();
         long timed = timer.getElapsedTime();
         long untilNextReminder = periodMs - (timed % periodMs);
         long now = timer.elapsedRealtimeClock();
@@ -59,10 +60,10 @@ public class AlarmReceiver extends BroadcastReceiver {
     }
 
     /** (Re)schedules the next reminder Notification via an AlarmManager Intent. */
-    public static void scheduleNextReminder(Context context, TimeCounter timer) {
+    public static void scheduleNextReminder(Context context, ApplicationState state) {
         AlarmManager alarmMgr = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
         PendingIntent pendingIntent = makeAlarmPendingIntent(context);
-        long nextReminder = nextReminderTime(context, timer);
+        long nextReminder = nextReminderTime(state);
 
         if (android.os.Build.VERSION.SDK_INT >= 19) {
             alarmMgr.setWindow(AlarmManager.ELAPSED_REALTIME_WAKEUP, nextReminder - WINDOW_MS,
@@ -78,16 +79,17 @@ public class AlarmReceiver extends BroadcastReceiver {
      * the reminders-enabled state.
      */
     public static void updateNotifications(Context context) {
-        boolean isMainActivityVisible = ApplicationState.isMainActivityVisible(context);
-        boolean enableReminders       = ApplicationState.isEnableReminders(context);
-        TimeCounter timer             = ApplicationState.getTimeCounter(context);
+        ApplicationState state        = ApplicationState.sharedInstance(context);
+        boolean isMainActivityVisible = state.isMainActivityVisible();
+        boolean enableReminders       = state.isEnableReminders();
+        TimeCounter timer             = state.getTimeCounter();
         boolean isRunning             = timer.isRunning();
         Notifier notifier             = new Notifier(context);
 
-        notifier.setShowNotification(isRunning && !isMainActivityVisible).openOrCancel(timer);
+        notifier.setShowNotification(isRunning && !isMainActivityVisible).openOrCancel(state);
 
         if (isRunning && enableReminders) {
-            scheduleNextReminder(context, timer);
+            scheduleNextReminder(context, state);
         } else {
             cancelReminders(context);
         }
@@ -108,18 +110,19 @@ public class AlarmReceiver extends BroadcastReceiver {
      */
     @Override
     public void onReceive(Context context, Intent intent) {
-        TimeCounter timer = ApplicationState.getTimeCounter(context);
+        ApplicationState state = ApplicationState.sharedInstance(context);
+        TimeCounter timer      = state.getTimeCounter();
 
         if (!timer.isRunning()) {
             return;
         }
 
-        boolean isMainActivityVisible = ApplicationState.isMainActivityVisible(context);
+        boolean isMainActivityVisible = state.isMainActivityVisible();
         Notifier notifier = new Notifier(context).setPlayChime(true).setVibrate(true);
 
         notifier.setShowNotification(!isMainActivityVisible);
-        notifier.openOrCancel(timer);
+        notifier.openOrCancel(state);
 
-        scheduleNextReminder(context, timer);
+        scheduleNextReminder(context, state);
     }
 }

@@ -25,13 +25,12 @@ import android.content.SharedPreferences;
 import com.onefishtwo.bbqtimer.TimeCounter;
 
 /**
- * Stores the application's state persistently in SharedPreferences and caches it in static
- * variables while the process is in memory.</p>
+ * Saves the application's state persistently in SharedPreferences and caches it in a static
+ * variable while the process is in memory.</p>
  *
  * This does not currently provide listener notifications.</p>
  *
- * The setters only update the state in memory. Call {@link #saveState(android.content.Context)} to
- * make the changes persistent.
+ * The setters only update the state in memory. Call {@link #save} to persist the changes.
  */
 public class ApplicationState {
 
@@ -43,28 +42,49 @@ public class ApplicationState {
     static final String PREF_ENABLE_REMINDERS = "App_enableReminders";
     static final String PREF_SECONDS_PER_REMINDER = "App_secondsPerReminder";
 
-    /** Application state. It's cached iff timeCounter != null. */
-    private static TimeCounter timeCounter;
-    private static boolean mainActivityIsVisible; // between onStart() .. onStop()
-    private static boolean enableReminders;
-    private static int secondsPerReminder;
+    private static ApplicationState sharedInstance;
 
-    /** Loads persistent state on demand. */
-    private static void loadState(Context context) {
-        if (timeCounter == null) {
-            timeCounter = new TimeCounter();
-            SharedPreferences prefs =
-                    context.getSharedPreferences(APPLICATION_PREF_FILE, Context.MODE_PRIVATE);
+    private final TimeCounter timeCounter = new TimeCounter();
+    private boolean mainActivityIsVisible; // between onStart() .. onStop()
+    private boolean enableReminders;
+    private int secondsPerReminder;
 
-            timeCounter.load(prefs);
-            mainActivityIsVisible = prefs.getBoolean(PREF_MAIN_ACTIVITY_IS_VISIBLE, false);
-            enableReminders       = prefs.getBoolean(PREF_ENABLE_REMINDERS, false);
-            secondsPerReminder    = prefs.getInt(PREF_SECONDS_PER_REMINDER, 5 * 60);
+    /**
+     * Returns the shared instance, using context to load the persistent state if needed.</p>
+     *
+     * NOTE: After updating the shared instance, call {@link #save(android.content.Context)} to
+     * save it persistently.
+     */
+    public static ApplicationState sharedInstance(Context context) {
+        if (sharedInstance == null) {
+            ApplicationState state = new ApplicationState();
+            state.load(context);
+            sharedInstance = state;
         }
+
+        return sharedInstance;
     }
 
-    /** Saves persistent state. */
-    public static void saveState(Context context) {
+    /**
+     * Package-scoped constructor for tests to access or override while the rest of the app is
+     * limited to {@link #sharedInstance}.
+     */
+    ApplicationState() {
+    }
+
+    /** Loads persistent state using context. Overridable for tests. */
+    void load(Context context) {
+        SharedPreferences prefs =
+                context.getSharedPreferences(APPLICATION_PREF_FILE, Context.MODE_PRIVATE);
+
+        timeCounter.load(prefs);
+        mainActivityIsVisible = prefs.getBoolean(PREF_MAIN_ACTIVITY_IS_VISIBLE, false);
+        enableReminders       = prefs.getBoolean(PREF_ENABLE_REMINDERS, false);
+        secondsPerReminder    = prefs.getInt(PREF_SECONDS_PER_REMINDER, 5 * 60);
+    }
+
+    /** Saves persistent state using context. */
+    public void save(Context context) {
         SharedPreferences prefs =
                 context.getSharedPreferences(APPLICATION_PREF_FILE, Context.MODE_PRIVATE);
         SharedPreferences.Editor prefsEditor = prefs.edit();
@@ -77,81 +97,57 @@ public class ApplicationState {
     }
 
     /**
-     * Returns the shared TimeCounter instance, using context to load the app state if needed.</p>
+     * Returns the shared TimeCounter instance.</p>
      *
-     * NOTE: The TimeCounter is a shared, mutable object. The caller can update it then call
-     * {@link #saveState(android.content.Context)} to store the updated data.
+     * NOTE: The TimeCounter is a shared, mutable object. After updating it, call {@link #save} to
+     * save it persistently.
      */
-    public static TimeCounter getTimeCounter(Context context) {
-        loadState(context);
+    public TimeCounter getTimeCounter() {
         return timeCounter;
     }
 
     /**
      * Returns a boolean indicating whether MainActivity is visible [it's between
-     * onStart() .. onStop()], using context to load the app state if needed.
+     * onStart() .. onStop()].
      */
-    public static boolean isMainActivityVisible(Context context) {
-        loadState(context);
+    public boolean isMainActivityVisible() {
         return mainActivityIsVisible;
     }
 
     /**
-     * Sets a boolean indicating whether MainActivity is visible, using context to load the app
-     * state if needed.</p>
-     *
-     * Call {@link #saveState(android.content.Context)} to save it.
+     * Sets a boolean to remember whether MainActivity is visible. Call {@link #save} to save it.
      */
-    public static void setMainActivityIsVisible(Context context, boolean mainActivityIsVisible) {
-        loadState(context);
-        ApplicationState.mainActivityIsVisible = mainActivityIsVisible;
+    public void setMainActivityIsVisible(boolean mainActivityIsVisible) {
+        this.mainActivityIsVisible = mainActivityIsVisible;
     }
 
-    /**
-     * Returns a boolean indicating whether periodic reminders are enabled, using context to load
-     * the app state if needed.
-     */
-    public static boolean isEnableReminders(Context context) {
-        loadState(context);
+    /** Returns a boolean indicating whether periodic reminders are enabled. */
+    public boolean isEnableReminders() {
         return enableReminders;
     }
 
     /**
-     * Sets a boolean indicating whether periodic reminders are enabled, using context to load the
-     * app state if needed.</p>
-     *
-     * Call {@link #saveState(android.content.Context)} to save it.
+     * Sets a boolean indicating whether periodic reminder alarms are enabled. Call {@link #save} to
+     * save it.
      */
-    public static void setEnableReminders(Context context, boolean enableReminders) {
-        loadState(context);
-        ApplicationState.enableReminders = enableReminders;
+    public void setEnableReminders(boolean enableReminders) {
+        this.enableReminders = enableReminders;
     }
 
-    /**
-     * Returns the number of seconds between periodic reminders, using context to load the app state
-     * if needed.
-     */
-    public static int getSecondsPerReminder(Context context) {
-        loadState(context);
+    /** Returns the number of seconds between periodic reminder alarms. */
+    public int getSecondsPerReminder() {
         return secondsPerReminder;
     }
 
-    /**
-     * Returns the number of milliseconds between periodic reminders, using context to load the app
-     * state if needed.
-     */
-    public static long getMillisecondsPerReminder(Context context) {
-        return getSecondsPerReminder(context) * 1000L;
+    /** Returns the number of milliseconds between periodic reminder alarms. */
+    public long getMillisecondsPerReminder() {
+        return getSecondsPerReminder() * 1000L;
     }
 
     /**
-     * Sets the number of seconds between periodic reminders, using context to load the app state if
-     * needed.</p>
-     *
-     * Call {@link #saveState(android.content.Context)} to save it.
+     * Sets the number of seconds between periodic reminder alarms. Call {@link #save} to save it.
      */
-    public static void setSecondsPerReminder(Context context, int secondsPerReminder) {
-        loadState(context);
-        ApplicationState.secondsPerReminder = secondsPerReminder;
+    public void setSecondsPerReminder(int secondsPerReminder) {
+        this.secondsPerReminder = secondsPerReminder;
     }
 }

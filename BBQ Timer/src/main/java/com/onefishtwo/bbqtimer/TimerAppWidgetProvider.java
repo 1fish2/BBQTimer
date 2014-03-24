@@ -81,7 +81,8 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
      * TODO: Preload the button image Bitmaps? Flip between Buttons?
      */
     private static void updateWidgets(Context context, AppWidgetManager appWidgetManager,
-            int[] appWidgetIds, TimeCounter timer) {
+            int[] appWidgetIds, ApplicationState state) {
+        TimeCounter timer = state.getTimeCounter();
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.app_widget);
         PendingIntent startStopIntent = makeActionIntent(context, ACTION_START_STOP);
         PendingIntent cycleIntent     = makeActionIntent(context, ACTION_CYCLE);
@@ -116,13 +117,13 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
      */
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
-        TimeCounter timer = ApplicationState.getTimeCounter(context);
+        ApplicationState state = ApplicationState.sharedInstance(context);
 
-        updateWidgets(context, appWidgetManager, appWidgetIds, timer);
+        updateWidgets(context, appWidgetManager, appWidgetIds, state);
     }
 
     /** Updates the contents of all of this provider's app widgets. */
-    static void updateAllWidgets(Context context, TimeCounter timer) {
+    static void updateAllWidgets(Context context, ApplicationState state) {
         ComponentName componentName = getComponentName(context);
         AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
 
@@ -131,7 +132,7 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
             int[] appWidgetIds = appWidgetManager.getAppWidgetIds(componentName);
 
             if (appWidgetIds.length > 0) {
-                updateWidgets(context, appWidgetManager, appWidgetIds, timer);
+                updateWidgets(context, appWidgetManager, appWidgetIds, state);
             }
         }
     }
@@ -155,34 +156,30 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
     public void onReceive(Context context, Intent intent) {
         super.onReceive(context, intent);
 
-        String action = intent.getAction();
+        String action          = intent.getAction();
+        ApplicationState state = ApplicationState.sharedInstance(context);
+        TimeCounter timer      = state.getTimeCounter();
 
         if (ACTION_START_STOP.equals(action)) {
             // The user tapped a widget's start/stop button.
-            TimeCounter timer = ApplicationState.getTimeCounter(context);
-
             timer.toggleRunning();
-            ApplicationState.saveState(context);
+            state.save(context);
 
-            updateAllWidgets(context, timer);
+            updateAllWidgets(context, state);
             AlarmReceiver.updateNotifications(context);
         } else if (ACTION_CYCLE.equals(action)) {
             // The user tapped a widget's time text. Cycle Start/Pause/Reset.
-            TimeCounter timer = ApplicationState.getTimeCounter(context);
-
             timer.cycle();
-            ApplicationState.saveState(context);
+            state.save(context);
 
-            updateAllWidgets(context, timer);
+            updateAllWidgets(context, state);
             AlarmReceiver.updateNotifications(context);
         } else if (Intent.ACTION_DATE_CHANGED.equals(action)
                 || Intent.ACTION_TIME_CHANGED.equals(action)
                 || Intent.ACTION_TIMEZONE_CHANGED.equals(action)) {
             // The clock ticked over to the next day or it was adjusted. Update the date display.
-            TimeCounter timer = ApplicationState.getTimeCounter(context);
-
             clearSecondaryTextCache();
-            updateAllWidgets(context, timer);
+            updateAllWidgets(context, state);
         }
     }
 }

@@ -29,15 +29,15 @@
 
     <!-- Label for the switch that enables/disables periodic reminder alarms AND ALSO the label for
       the widget for setting the number of minutes between reminders. -->
-    <string name="reminder_switch">Reminder alarms this many minutes apart:</string>
+    <string name="reminder_switch">Periodic alarms this many minutes apart:</string>
 
     <!-- Notification body message. Parameter 1$ is the number of minutes between periodic
       reminder alarms. This is the plural case, i.e. multiple minutes. -->
-    <string name="notification_body">Reminder alarms every %1$d minutes</string>
+    <string name="notification_body">Alarm every %1$d minutes</string>
 
     <!-- Notification body message. This is the singular case for 1 minute between periodic
       reminder alarms. -->
-    <string name="notification_body_singular">Reminder alarms every minute</string>
+    <string name="notification_body_singular">Alarm every minute</string>
 
     <!-- The initial text for a reset timer showing 0 minutes and 0.0 seconds. This should match the
       locale's format used by the Android OS utility DateUtils.formatElapsedTime() with appended

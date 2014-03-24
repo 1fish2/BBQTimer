@@ -48,8 +48,8 @@ public class Notifier {
     }
 
     /**
-     * Builder-style setter: Whether {@link #openOrCancel(TimeCounter)} should display the
-     * notification in the notification area and drawer. Default = true.
+     * Builder-style setter: Whether {@link #openOrCancel} should display the notification in the
+     * notification area and drawer. Default = true.
      */
     public Notifier setShowNotification(boolean showNotification) {
         this.showNotification = showNotification;
@@ -57,8 +57,8 @@ public class Notifier {
     }
 
     /**
-     * Builder-style setter: Whether {@link #openOrCancel(TimeCounter)} should play a notification
-     * chime and flash the notification light. Default = false.
+     * Builder-style setter: Whether {@link #openOrCancel} should play a notification chime.
+     * Default = false.
      */
     public Notifier setPlayChime(boolean playChime) {
         this.playChime = playChime;
@@ -79,9 +79,9 @@ public class Notifier {
      * {@link #setVibrate(boolean)}, <em>or cancels</em> the app's notification if they're all
      * false.
      *
-     * @param timer -- the TimeCounter state to display.
+     * @param state -- the ApplicationState state to display.
      */
-    public void openOrCancel(TimeCounter timer) {
+    public void openOrCancel(ApplicationState state) {
         if (!(showNotification || playChime || vibrate)) {
             cancelAll();
         }
@@ -91,14 +91,16 @@ public class Notifier {
                 .setPriority(NotificationCompat.PRIORITY_HIGH);
 
         if (showNotification) {
+            TimeCounter timer = state.getTimeCounter();
+
             builder.setSmallIcon(R.drawable.notification_icon)
                     .setContentTitle(context.getString(R.string.app_name))
                     .setOngoing(true)
                     .setWhen(System.currentTimeMillis() - timer.getElapsedTime())
                     .setUsesChronometer(true);
 
-            if (ApplicationState.isEnableReminders(context)) {
-                int reminderSecs   = ApplicationState.getSecondsPerReminder(context);
+            if (state.isEnableReminders()) { // show reminder alarm info in the notification body
+                int reminderSecs   = state.getSecondsPerReminder();
                 int minutes        = reminderSecs / 60;
                 String contentText = minutes > 1
                         ? context.getString(R.string.notification_body, minutes)

@@ -78,6 +78,7 @@ public class MainActivity extends ActionBarActivity implements NumberPicker.OnVa
     }
 
     private final UpdateHandler updateHandler = new UpdateHandler();
+    private ApplicationState state;
     private TimeCounter timer;
 
     private Button resetButton;
@@ -119,8 +120,9 @@ public class MainActivity extends ActionBarActivity implements NumberPicker.OnVa
         super.onStart();
 
         // Load persistent state.
-        timer = ApplicationState.getTimeCounter(this);
-        ApplicationState.setMainActivityIsVisible(this, true);
+        state = ApplicationState.sharedInstance(this);
+        timer = state.getTimeCounter();
+        state.setMainActivityIsVisible(true);
 
         updateUI();
 
@@ -135,8 +137,8 @@ public class MainActivity extends ActionBarActivity implements NumberPicker.OnVa
         updateHandler.endScheduledUpdates();
 
         // Update persistent state.
-        ApplicationState.setMainActivityIsVisible(this, false);
-        ApplicationState.saveState(this);
+        state.setMainActivityIsVisible(false);
+        state.save(this);
 
         AlarmReceiver.updateNotifications(this); // after setMainActivityIsVisible()
 
@@ -164,14 +166,14 @@ public class MainActivity extends ActionBarActivity implements NumberPicker.OnVa
         timer.toggleRunning();
         updateHandler.beginScheduledUpdate();
         updateUI();
-        TimerAppWidgetProvider.updateAllWidgets(this, timer);
+        TimerAppWidgetProvider.updateAllWidgets(this, state);
     }
 
     /** The user tapped the Reset button. */
     public void onClickReset(View v) {
         timer.reset();
         updateUI();
-        TimerAppWidgetProvider.updateAllWidgets(this, timer);
+        TimerAppWidgetProvider.updateAllWidgets(this, state);
     }
 
     /** The user tapped the time text: Cycle Reset -> Running -> Paused -> Reset. */
@@ -179,13 +181,13 @@ public class MainActivity extends ActionBarActivity implements NumberPicker.OnVa
         timer.cycle();
         updateHandler.beginScheduledUpdate();
         updateUI();
-        TimerAppWidgetProvider.updateAllWidgets(this, timer);
+        TimerAppWidgetProvider.updateAllWidgets(this, state);
     }
 
     /** The user clicked the enable/disable periodic-reminders toggle switch/checkbox. */
     public void onClickEnableRemindersToggle(View v) {
-        ApplicationState.setEnableReminders(this, enableRemindersToggle.isChecked());
-        ApplicationState.saveState(this);
+        state.setEnableReminders(enableRemindersToggle.isChecked());
+        state.save(this);
         AlarmReceiver.updateNotifications(this);
     }
 
@@ -193,8 +195,8 @@ public class MainActivity extends ActionBarActivity implements NumberPicker.OnVa
     @Override
     public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
         if (picker == minutesPicker) {
-            ApplicationState.setSecondsPerReminder(this, newVal * 60);
-            ApplicationState.saveState(this);
+            state.setSecondsPerReminder(newVal * 60);
+            state.save(this);
             AlarmReceiver.updateNotifications(this);
         }
     }
@@ -224,9 +226,9 @@ public class MainActivity extends ActionBarActivity implements NumberPicker.OnVa
         startStopButton.setCompoundDrawablesWithIntrinsicBounds(
                 isRunning ? R.drawable.ic_pause : R.drawable.ic_play, 0, 0, 0);
 
-        enableRemindersToggle.setChecked(ApplicationState.isEnableReminders(this));
+        enableRemindersToggle.setChecked(state.isEnableReminders());
 
-        minutesPicker.setValue(ApplicationState.getSecondsPerReminder(this) / 60);
+        minutesPicker.setValue(state.getSecondsPerReminder() / 60);
 
         AlarmReceiver.updateNotifications(this);
     }

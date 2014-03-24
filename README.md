@@ -72,11 +72,11 @@ Using [Android Studio](http://developer.android.com/sdk/installing/studio.html) 
   xxhpdi 192x192 px.
 * Reset the timer on boot-up?
 
-## Bugs
-* In the emulator (Nexus 5 KitKat), the Activity's timer sometimes stops.
+## Known Issues
 * Due to Android OS bug https://code.google.com/p/android/issues/detail?id=2880 if the clock gets
-set backwards, the widget's date won't update until the clock catches up to what was going to be the
-next day.
+  set backwards, the widget's date won't update until the clock catches up to what was going to be
+  the next day.
+* In the emulator (Nexus 5 KitKat), the Activity's timer sometimes stops.
 
 ## Dedication
 Dedicated to open source software developers.
