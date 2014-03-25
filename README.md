@@ -2,12 +2,13 @@
 
 It's a stopwatch with a twist (or two):
 
-1. It has a lock screen widget so you can quickly operate the timer without unlocking your phone.
+1. A lock screen widget lets you quickly operate the timer without unlocking your phone.
 2. It can play periodic reminder alarms (like count-down timers) while still counting up the elapsed
-   cooking time, however long it takes.
+   time, however long it takes.
 
 ## Status
-The features have been implemented. Ongoing development. See **TODO**, below.
+All features have been implemented. Next up is testing on various OS versions and screen
+sizes, and pushing a release to the Play store. See **TODO**, below.
 
 ## Usage tips
 * Put the BBQ Timer widget on the Android lock screen for quick access. (This requires Android 4.2
@@ -39,12 +40,10 @@ The features have been implemented. Ongoing development. See **TODO**, below.
 Using [Android Studio](http://developer.android.com/sdk/installing/studio.html) (an awesome tool!).
 
 ## TODO
-* Add a Settings dialog to pick {sound, vibrate, both, disable} for reminder alarms.
-
+* Test on various OS versions, screen sizes, and pixel densities. (Need ae widget preview image at
+  multiple resolutions?)
 * Set up signed, optimized release builds.
 * Set other AndroidManifest.xml values. (Search info?)
-* Test on various OS versions, screen sizes, and pixel densities. (Is the widget preview image
-  needed at multiple resolutions?)
 * Follow system theme colors?
 * Show a tip about adding the widget to the lock screen when first running the app.
 * Show tips via a menu command: How to install as home & lock screen widgets. What tapping the
@@ -64,9 +63,9 @@ Using [Android Studio](http://developer.android.com/sdk/installing/studio.html) 
   Switch to the time of day after a few minutes?
   To track the time: Upon ACTION_SCREEN_ON when there are lock screen widgets, register a Service to
   listen for ACTION_TIME_TICK. Unregister upon ACTION_SCREEN_OFF or when the last widget is removed.
+* Add a Settings dialog to pick {sound, vibrate, both, disable} for reminder alarms.
 
-* Add unit tests.
-* Refactor ApplicationState to use a (mostly) singleton instance.
+* Unit tests.
 * Add button actions (pause/resume/reset) to the notification area?
 * Add a large icon to the notification area: mdpi 64x64 px, hdpi 96x96 px, xhdpi 128x128 px,
   xxhpdi 192x192 px.
@@ -86,7 +85,8 @@ Gimp, git, git gui, Inkscape, Java, MinGW, Proguard, and much more that we don't
 like zlib.
 
 ## Sources
-Sampled sounds used by permission of Phil Burk, Mobileer.com, Copyright (c) 2014.
+Notification sound composed from sampled cowbell sounds, used by permission from Phil Burk,
+Copyright (c) 2014 Mobileer Inc.
 
 The launcher icon uses shapes from a public domain image on openclipart.org.
 
