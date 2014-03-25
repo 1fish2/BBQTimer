@@ -93,7 +93,7 @@ public class ApplicationState {
         prefsEditor.putBoolean(PREF_MAIN_ACTIVITY_IS_VISIBLE, mainActivityIsVisible);
         prefsEditor.putBoolean(PREF_ENABLE_REMINDERS, enableReminders);
         prefsEditor.putInt(PREF_SECONDS_PER_REMINDER, secondsPerReminder);
-        prefsEditor.commit();
+        prefsEditor.apply();
     }
 
     /**

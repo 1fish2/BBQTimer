@@ -90,6 +90,9 @@ Copyright (c) 2014 Mobileer Inc.
 
 The launcher icon uses shapes from a public domain image on openclipart.org.
 
+## Keywords
+Alarm, cooking, home screen widget, lock screen widget, stopwatch, timer.
+
 ## Implementation notes
 * The lock screen widget pretty much needs to use a Chronometer view for the ticking time display.
 Using a Text view would show clock skew between multiple widgets and would use more CPU time and
