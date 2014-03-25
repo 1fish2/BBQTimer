@@ -47,20 +47,4 @@
       The Android OS standard format is "00:00" in English even though "0:00" would look better. -->
     <string name="time0">00:00.0</string>
 
-    <!-- The format string for assembling and HTML-styling a timer duration.
-
-      "%1$s" is a placeholder for the already-localized "00:00" part that came from
-      DateUtils.formatElapsedTime().
-
-      "%2$s" is a placeholder for the already-localized fraction part ".0". It's wrapped in
-      "<small>" HTML markup to make it less distracting on the activity's display and to make it fit
-      better on the screen. This way, "12:34:56.7" fits on a Galaxy Nexus screen.
-
-      The "<![CDATA[ ... ]]>" wrapper quotes the HTML markup so it can be in strings.xml
-      and get through to the application code at run time.
-
-      In localization, this can put the entire "<small><small>%2$s</small></small>" part before the
-      "%1$s". Do RTL locales need to do that??? -->
-    <string name="time_format"><![CDATA[%1$s<small><small>%2$s</small></small>]]></string>
-
 </resources>

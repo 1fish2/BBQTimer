@@ -31,10 +31,7 @@ import com.onefishtwo.bbqtimer.state.ApplicationState;
  * Uses AlarmManager to perform periodic reminder notifications.
  */
 public class AlarmReceiver extends BroadcastReceiver {
-    static final long WINDOW_MS = 50L; // Allow some time flexibility to save battery power.
-
-    public AlarmReceiver() {
-    }
+    private static final long WINDOW_MS = 50L; // Allow some time flexibility to save battery power.
 
     /** Constructs a PendingIntent for the AlarmManager to invoke AlarmReceiver. */
     private static PendingIntent makeAlarmPendingIntent(Context context) {
@@ -60,7 +57,7 @@ public class AlarmReceiver extends BroadcastReceiver {
     }
 
     /** (Re)schedules the next reminder Notification via an AlarmManager Intent. */
-    public static void scheduleNextReminder(Context context, ApplicationState state) {
+    static void scheduleNextReminder(Context context, ApplicationState state) {
         AlarmManager alarmMgr = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
         PendingIntent pendingIntent = makeAlarmPendingIntent(context);
         long nextReminder = nextReminderTime(state);

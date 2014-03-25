@@ -40,8 +40,8 @@ sizes, and pushing a release to the Play store. See **TODO**, below.
 Using [Android Studio](http://developer.android.com/sdk/installing/studio.html) (an awesome tool!).
 
 ## TODO
-* Test on various OS versions, screen sizes, and pixel densities. (Need ae widget preview image at
-  multiple resolutions?)
+* Test on various OS versions, screen sizes, and pixel densities.
+* Snapshot widget_preview.png at multiple resolutions.
 * Set up signed, optimized release builds.
 * Set other AndroidManifest.xml values. (Search info?)
 * Follow system theme colors?

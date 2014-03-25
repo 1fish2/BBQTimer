@@ -40,12 +40,16 @@ public class TimeCounter {
     static final String PREF_PAUSE_TIME = "Timer_pauseTime";
 
     /**
-     * The default format string for combining and styling the hh:mm:ss + .f fractional seconds.</p>
+     * The default format string for assembling and HTML-styling a timer duration.</p>
      *
-     * Format arg 1$ is the localized HH:MM:SS string.</p>
+     * Format arg %1$s is a placeholder for the already-localized HH:MM:SS string from
+     * DateUtils.formatElapsedTime(), e.g. "00:00" or "0:00:00".</p>
      *
-     * Format arg 2$ is the fractional seconds string. This uses a NumberFormat instead of a string
-     * format %.1d to suppress the integer part and to disable rounding.
+     * Format arg %2$s is a placeholder for the already-localized fractional seconds string, e.g.
+     * ".0". The code uses a NumberFormat to format that string instead of an inline format %.1d to
+     * suppress the integer part and disable rounding. It's wrapped in @{code <small>} HTML tags to
+     * make the rapidly changing fractional part less distracting and to make it fit better on
+     * screen. This way, "12:34:56.7" fits on a Galaxy Nexus screen.
      */
     public static final String DEFAULT_TIME_STYLE = "%1$s<small><small>%2$s</small></small>";
 
@@ -197,9 +201,9 @@ public class TimeCounter {
      * Formats a millisecond duration in localized [hh:]mm:ss.f format <em>with attached
      * styles</em>.</p>
      *
-     * QUESTION: Does DEFAULT_TIME_STYLE need to be localized for any locale? I.e. do RTL locales
-     * need to put the fractional part before the HHMMSS part? If so, make the caller get it from
-     * string resource R.string.time_format .
+     * QUESTION: Does {@link #DEFAULT_TIME_STYLE} need to be localized for any locale? Do RTL
+     * locales need to put the fractional part before the HHMMSS part? If so, make the caller get it
+     * from a string resource.
      */
     public static Spanned formatHhMmSsFraction(long elapsedMilliseconds) {
         String hhmmss = formatHhMmSs(elapsedMilliseconds);

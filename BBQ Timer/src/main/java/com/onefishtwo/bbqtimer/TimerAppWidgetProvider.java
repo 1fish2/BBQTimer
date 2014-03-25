@@ -43,7 +43,7 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
     static final String ACTION_CYCLE      = "com.onefishtwo.bbqtimer.ACTION_CYCLE";
 
     // Synchronized on the class.
-    static String secondaryTextCache;
+    private static String secondaryTextCache;
 
     static ComponentName getComponentName(Context context) {
         return new ComponentName(context, TimerAppWidgetProvider.class);

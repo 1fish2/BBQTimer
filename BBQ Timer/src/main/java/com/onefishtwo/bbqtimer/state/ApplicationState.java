@@ -35,7 +35,7 @@ import com.onefishtwo.bbqtimer.TimeCounter;
 public class ApplicationState {
 
     /** PERSISTENT STATE filename. */
-    public static final String APPLICATION_PREF_FILE = "BBQ_Timer_Prefs";
+    static final String APPLICATION_PREF_FILE = "BBQ_Timer_Prefs";
 
     /** PERSISTENT STATE identifiers. */
     static final String PREF_MAIN_ACTIVITY_IS_VISIBLE = "App_mainActivityIsVisible";

@@ -5,6 +5,8 @@
     package="com.onefishtwo.bbqtimer"
     android:installLocation="internalOnly">
 
+    <uses-permission android:name="android.permission.VIBRATE" />
+
     <application
         android:allowBackup="true"
         android:description="@string/app_description"
@@ -40,7 +42,5 @@
             android:exported="false" >
         </receiver>
     </application>
-
-    <uses-permission android:name="android.permission.VIBRATE" />
 
 </manifest>
