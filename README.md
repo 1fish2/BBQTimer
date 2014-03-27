@@ -6,37 +6,40 @@ It's a stopwatch with a twist (or two):
 2. It can play periodic reminder alarms (like count-down timers) while still counting up the elapsed
    time, however long it takes.
 
-## Status
-All features have been implemented. Next up is testing on various OS versions and screen
-sizes, and pushing a release to the Play store. See **TODO**, below.
+It needs very few permissions. No network access. No ads.
 
-## Usage tips
-* Put the BBQ Timer widget on the Android lock screen for quick access. (This requires Android 4.2
-  Jelly Bean or later.)
-* The BBQ Timer widget also works on the home screen, even in earlier versions of Android.
+## Status
+All features have been implemented. Next up is testing on various OS versions and screen sizes.
+See the **TODO** list, below.
+
+## Usage Tips
+* Put the BBQ Timer widget on the Android lock screen for quick access (if you have Android 4.2
+  Jelly Bean or later).
+* The BBQ Timer widget also works on the home screen (even in earlier versions of Android).
 * You can resize the home screen widget by long-pressing it, then dragging its resize handles.
   The initial size fits minutes and seconds (e.g. "18:12"). Stretched wider, it can fit hours,
-  minutes, and seconds (e.g. "1:15:09").
+  minutes, and seconds (e.g. "1:15:09"). This may vary with your screen size and font size settings.
 * Tap the stopwatch time display to cycle between Reset -> Running -> Paused -> Reset.
 
 ## How to Use Android Lock Screen Widgets
-* Android supports lock screen widgets in Android 4.2 Jelly Bean and later versions.
-* In Android 4.4 KitKat, you'll need to turn on Settings > Security > Enable Widgets.
-* For how-to instructions, see [Getting started with lock screen widgets on Android Jelly
+* Android 4.2 Jelly Bean and later versions support lock screen widgets.
+* In Android 4.4 KitKat, you must turn on Settings > Security > Enable Widgets to use that feature.
+* For step-by-step instructions, see [Getting started with lock screen widgets on Android Jelly
   Bean](http://howto.cnet.com/8301-11310_39-57549747-285/getting-started-with-lock-screen-widgets-on-android-jelly-bean/
   "CNET How To")
   and [How to Add Lockscreen Widgets to Android 4.4
   KitKat](http://www.gottabemobile.com/2013/11/11/add-lockscreen-widgets-android-4-4-kitkat-nexus-5/
   "GottaBe Mobile").
-* You can rearrange your lock screen widgets by dragging them left and right.
-* Drag a widget to the rightmost position to see it as soon as you power on.
-* You can rearrange your lock screen widgets any time you want, e.g. move BBQ Timer to the
-  right-most position when you're cooking, then move the Digital Clock widget to the right-most
+* In short: To add a lock screen widget: wake the screen, then swipe rightwards until you see the
+  "+" screen, tap the "+", unlock the phone, pick a widget, then (optionally) drag it further to the
+  right.
+* To rearrange your lock screen widgets, long-press on one and drag it left or right.
+* The rightmost widget appears as soon as you wake up the screen.
+* You can rearrange your lock screen widgets any time you want. Example: Move BBQ Timer to the
+  rightmost position when you're cooking, then move the Digital Clock widget to the rightmost
   position until your next BBQ.
-* To add a lock screen widget: power on, then swipe to the right until you see the "+" screen, tap
-  the "+", unlock the phone, pick a widget, then (optionally) drag it further to the right.
 
-## Build
+## Building from Source Code
 Using [Android Studio](http://developer.android.com/sdk/installing/studio.html) (an awesome tool!).
 
 ## TODO
@@ -54,9 +57,9 @@ Using [Android Studio](http://developer.android.com/sdk/installing/studio.html) 
 * L10N.
 * Accessibility.
 * Use a font-resizing text view fit long durations into the Activity. See
-  http://stackoverflow.com/questions/5033012/auto-scale-textview-text-to-fit-within-bounds/
-  http://stackoverflow.com/questions/2617266/how-to-adjust-text-font-size-to-fit-textview/
-  http://stackoverflow.com/questions/17396045/how-to-catch-widget-size-changes-on-devices-where-onappwidgetoptionschanged-not
+  [Stack Overflow auto-scale-textview-text-to-fit-within-bounds](http://stackoverflow.com/questions/5033012/auto-scale-textview-text-to-fit-within-bounds/),
+  [Stack Overflow how-to-adjust-text-font-size-to-fit-textview](http://stackoverflow.com/questions/2617266/how-to-adjust-text-font-size-to-fit-textview/),
+  [Stack Overflow how-to-catch-widget-size-changes-on-devices-where-onappwidgetoptionschanged-not](http://stackoverflow.com/questions/17396045/how-to-catch-widget-size-changes-on-devices-where-onappwidgetoptionschanged-not)
 * Use a font-resizing heuristic to fit hours into a minimum width home screen widget without eliding
   the seconds.
 * When stopped at 00:00, add the time of day to the widget? Make the stopwatch text 00:00 small?
@@ -81,17 +84,19 @@ Using [Android Studio](http://developer.android.com/sdk/installing/studio.html) 
 Dedicated to open source software developers.
 
 Open source software used for this project includes: Android, Android Studio, Audacity, Chrome,
-Gimp, git, git gui, Inkscape, Java, MinGW, Proguard, and much more that we don't even think about,
-like zlib.
+Gimp, git, git gui, Inkscape, Java, MinGW, Proguard, and much more that we use without thinking
+about, like zlib.
+
+Don't get me wrong -- commercial software is also great!
 
 ## Sources
 Notification sound composed from sampled cowbell sounds, used by permission from Phil Burk,
 Copyright (c) 2014 Mobileer Inc.
 
-The launcher icon uses shapes from a public domain image on openclipart.org.
+The launcher icon is derived from a public domain image on [openclipart.org](openclipart.org).
 
 ## Keywords
-Alarm, cooking, home screen widget, lock screen widget, stopwatch, timer.
+Alarm, cook, cooking, home screen widget, lock screen widget, stopwatch, timer.
 
 ## Implementation notes
 * The lock screen widget pretty much needs to use a Chronometer view for the ticking time display.
