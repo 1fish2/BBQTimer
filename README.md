@@ -1,16 +1,20 @@
 # BBQTimer Android app
 
-It's a stopwatch with a twist (or two):
+A stopwatch with a twist (or two):
 
 1. A lock screen widget lets you quickly operate the timer without unlocking your phone.
-2. It can play periodic reminder alarms (like count-down timers) while still counting up the elapsed
-   time, however long it takes.
+2. Periodic reminder alarms (like count-down timers) while counting up the elapsed time.
+   Remind you to check the food, however long it actually takes to cook.
 
-It needs very few permissions. No network access. No ads.
+Requires very few permissions. No network access. No ads.
 
 ## Status
-All features have been implemented.
+Not yet tested on various OS releases and screen sizes.
 See the **TODO** list, below.
+
+BBQ Timer is for Android 3.1 (HONEYCOMB_MR1) and later. If it has problems on your phone or tablet
+running Android 3.1 or later, send me the details (device type, Android version, screen size,
+problem symptom, and ideally an Android "Bug Report" file).
 
 ## Usage Tips
 * Put the BBQ Timer widget on the Android lock screen for quick access (if you have Android 4.2
@@ -94,7 +98,7 @@ Copyright (c) 2014 Mobileer Inc.
 The launcher icon is derived from a public domain image on [openclipart.org](openclipart.org).
 
 ## Keywords
-Alarm, cook, cooking, home screen widget, lock screen widget, stopwatch, timer.
+Alarm, cook, cooking, home screen widget, interval timer, lock screen widget, stopwatch.
 
 ## Implementation notes
 * The lock screen widget pretty much needs to use a Chronometer view for the ticking time display.
