@@ -161,7 +161,7 @@ public class MainActivity extends ActionBarActivity implements NumberPicker.OnVa
 
     /** The user tapped the Start/Stop button. */
     // TODO: Use listeners to update the Activity UI and app widgets.
-    // A Proguard rule keeps all Activity onClick*() methods.
+    // A Proguard rule keeps all Activity *(View) methods.
     public void onClickStartStop(View v) {
         timer.toggleRunning();
         updateHandler.beginScheduledUpdate();

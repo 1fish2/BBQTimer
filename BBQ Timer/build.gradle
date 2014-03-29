@@ -10,12 +10,40 @@ android {
         versionCode 2
         versionName "1.0 alpha 1"
     }
+
+    signingConfigs {
+        releaseSigning {
+            // The dummy passwords complete the signingConfigs so the other tasks can work without
+            // asking for passwords when not needed.
+            storeFile file(System.getenv("HOME") + "/.android/1fish2_keystore.jks")
+            storePassword "notTheRealPassword"
+            keyAlias "BBQTimer"
+            keyPassword "notTheRealPassword"
+        }
+    }
+
     buildTypes {
         release {
             runProguard true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.txt'
+            signingConfig signingConfigs.releaseSigning
             zipAlign true
         }
+    }
+}
+
+task askForPasswords << {
+    // Construct a String because readPassword() returns char[] and using that fails silently.
+    def storePw = new String(System.console().readPassword("\nKeystore password: "))
+    def keyPw   = new String(System.console().readPassword("\nKey password: "))
+
+    android.signingConfigs.releaseSigning.storePassword = storePw
+    android.signingConfigs.releaseSigning.keyPassword = keyPw
+}
+
+tasks.whenTaskAdded { theTask ->
+    if (theTask.name.equals("packageRelease")) {
+        theTask.dependsOn "askForPasswords"
     }
 }
 
