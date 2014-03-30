@@ -103,6 +103,7 @@ public class MainActivity extends ActionBarActivity implements NumberPicker.OnVa
         minutesPicker.setMaxValue(99);
         minutesPicker.setWrapSelectorWheel(false);
         minutesPicker.setOnValueChangedListener(this);
+        minutesPicker.setFocusableInTouchMode(true);
     }
 
     @Override
@@ -126,9 +127,15 @@ public class MainActivity extends ActionBarActivity implements NumberPicker.OnVa
 
         updateUI();
 
-        // Defocus minutesPicker?
-
         updateHandler.beginScheduledUpdate();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // Take focus from minutesPicker's EditText child.
+        minutesPicker.requestFocus();
     }
 
     /** The Activity is no longer visible. */

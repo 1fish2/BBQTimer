@@ -14,7 +14,7 @@ See the **TODO** list, below.
 
 BBQ Timer is for Android 3.1 (HONEYCOMB_MR1) and later. If it has problems on your phone or tablet
 running Android 3.1 or later, send me the details (device type, Android version, screen size,
-problem symptom, and ideally an Android "Bug Report" file).
+problem symptom, and an Android "Bug Report" file if the app crashed).
 
 ## Usage Tips
 * Put the BBQ Timer widget on the Android lock screen for quick access (if you have Android 4.2
@@ -24,6 +24,7 @@ problem symptom, and ideally an Android "Bug Report" file).
   The initial size fits minutes and seconds (e.g. "18:12"). Stretched wider, it can fit hours,
   minutes, and seconds (e.g. "1:15:09"). This may vary with your screen size and font size settings.
 * Tap the stopwatch time display to cycle between Reset -> Running -> Paused -> Reset.
+* Tap the "Periodic alarms this many minutes apart" number if you want to set it by typing a number.
 
 ## How to Use Android Lock Screen Widgets
 * Android 4.2 Jelly Bean and later versions support lock screen widgets.
@@ -53,7 +54,6 @@ Using [Android Studio](http://developer.android.com/sdk/installing/studio.html) 
 * Show a tip about adding the widget to the lock screen when first running the app.
 * Show tips via a menu command: How to install as home & lock screen widgets. What tapping the
   widget text does.
-* Make MainActivity not prefocus the NumberPicker number.
 * Set other AndroidManifest.xml values. (Search info?)
 * Simplify the app's launcher icon.
 * Add a large icon to the notification area: mdpi 64x64 px, hdpi 96x96 px, xhdpi 128x128 px,
