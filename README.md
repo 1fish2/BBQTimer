@@ -49,6 +49,7 @@ Using [Android Studio](http://developer.android.com/sdk/installing/studio.html) 
 
 ## TODO
 * Deploy to the Play store.
+* Explicitly request a Holo theme `android:theme="@android:style/Theme.Holo"`.
 * Test on various OS versions, screen sizes, and pixel densities.
 * Snapshot widget_preview.png at multiple resolutions.
 * Show a tip about adding the widget to the lock screen when first running the app.
@@ -58,7 +59,6 @@ Using [Android Studio](http://developer.android.com/sdk/installing/studio.html) 
 * Simplify the app's launcher icon.
 * Add a large icon to the notification area: mdpi 64x64 px, hdpi 96x96 px, xhdpi 128x128 px,
   xxhpdi 192x192 px.
-* Follow system theme colors?
 
 * Use a font-resizing text view fit long durations into the Activity. See
   [Stack Overflow auto-scale-textview-text-to-fit-within-bounds](http://stackoverflow.com/questions/5033012/auto-scale-textview-text-to-fit-within-bounds/),
