@@ -7,8 +7,8 @@
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
         <option name="modules">
           <set>
-            <option value="C:\sourcecontrolled\BBQTimer" />
-            <option value="C:\sourcecontrolled\BBQTimer\BBQ Timer" />
+            <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/BBQ Timer" />
           </set>
         </option>
       </GradleProjectSettings>
