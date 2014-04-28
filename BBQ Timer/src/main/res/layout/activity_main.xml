@@ -92,7 +92,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal|left"
                 android:importantForAccessibility="yes"
-                android:layout_weight="1"/>
+                android:layout_weight="0"/>
         </LinearLayout>
 
     </LinearLayout>

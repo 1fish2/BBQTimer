@@ -44,12 +44,8 @@ problem symptom, and an Android "Bug Report" file if the app crashed).
   rightmost position when you're cooking, then move the Digital Clock widget to the rightmost
   position until your next BBQ.
 
-## Building from Source Code
-Using [Android Studio](http://developer.android.com/sdk/installing/studio.html) (an awesome tool!).
-
 ## TODO
 * Deploy to the Play store.
-* Explicitly request a Holo theme `android:theme="@android:style/Theme.Holo"`.
 * Test on various OS versions, screen sizes, and pixel densities.
 * Snapshot widget_preview.png at multiple resolutions.
 * Show a tip about adding the widget to the lock screen when first running the app.
@@ -59,7 +55,9 @@ Using [Android Studio](http://developer.android.com/sdk/installing/studio.html) 
 * Simplify the app's launcher icon.
 * Add a large icon to the notification area: mdpi 64x64 px, hdpi 96x96 px, xhdpi 128x128 px,
   xxhpdi 192x192 px.
+* Add a Settings dialog to pick {sound, vibrate, both, disable} for reminder alarms.
 
+* Support Android Wear.
 * Use a font-resizing text view fit long durations into the Activity. See
   [Stack Overflow auto-scale-textview-text-to-fit-within-bounds](http://stackoverflow.com/questions/5033012/auto-scale-textview-text-to-fit-within-bounds/),
   [Stack Overflow how-to-adjust-text-font-size-to-fit-textview](http://stackoverflow.com/questions/2617266/how-to-adjust-text-font-size-to-fit-textview/),
@@ -69,7 +67,6 @@ Using [Android Studio](http://developer.android.com/sdk/installing/studio.html) 
 * When stopped at 00:00, add the time of day to the widget? ... after a few minutes?
   To track the time: Upon ACTION_SCREEN_ON when there are lock screen widgets, register a Service to
   listen for ACTION_TIME_TICK. Unregister upon ACTION_SCREEN_OFF or when the last widget is removed.
-* Add a Settings dialog to pick {sound, vibrate, both, disable} for reminder alarms.
 * L10N.
 * Accessibility.
 
@@ -81,6 +78,9 @@ Using [Android Studio](http://developer.android.com/sdk/installing/studio.html) 
   set backwards, the widget's date won't update until the clock catches up to what was going to be
   the next day.
 * In the emulator (Nexus 5 KitKat), the Activity's timer sometimes stops.
+
+## To Build from Source Code
+Using [Android Studio](http://developer.android.com/sdk/installing/studio.html) (an awesome tool!).
 
 ## Dedication
 Dedicated to open source software developers.
