@@ -39,14 +39,14 @@
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
      inkscape:zoom="20"
-     inkscape:cx="8.194231"
+     inkscape:cx="7.2193396"
      inkscape:cy="12"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="true"
-     inkscape:window-width="979"
+     inkscape:window-width="1332"
      inkscape:window-height="762"
-     inkscape:window-x="566"
+     inkscape:window-x="213"
      inkscape:window-y="1256"
      inkscape:window-maximized="0"
      inkscape:snap-grids="true"
@@ -140,5 +140,13 @@
        inkscape:transform-center-x="-4.2488993"
        sodipodi:nodetypes="ccsssccccsssssssssssssssssssss"
        inkscape:transform-center-y="-4.877113" />
+    <rect
+       style="fill:#ffffff;fill-opacity:1;stroke:none"
+       id="rect2994"
+       width="2"
+       height="1.9999826"
+       x="726.75018"
+       y="732.6499"
+       transform="matrix(0.71335479,0.70080307,-0.70080307,0.71335479,0,0)" />
   </g>
 </svg>
