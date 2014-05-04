@@ -6,7 +6,7 @@ A stopwatch with a twist (or two):
 2. Periodic reminder alarms (like count-down timers) while counting up the elapsed time.
    Remind you to check the food, however long it actually takes to cook.
 
-Requires very few permissions. No network access. No ads.
+Requires few permissions. No network access. No ads.
 
 ## Status
 Not yet tested on various OS releases and screen sizes.
@@ -52,8 +52,7 @@ problem symptom, and an Android "Bug Report" file if the app crashed).
 * Show tips via a menu command: How to install as home & lock screen widgets. What tapping the
   widget text does.
 * Set other AndroidManifest.xml values. (Search info?)
-* Simplify the app's launcher icon.
-* Add a large icon to the notification area: mdpi 64x64 px, hdpi 96x96 px, xhdpi 128x128 px,
+* Add a large notification icon: mdpi 64x64 px, hdpi 96x96 px, xhdpi 128x128 px,
   xxhpdi 192x192 px.
 * Add a Settings dialog to pick {sound, vibrate, both, disable} for reminder alarms.
 
@@ -65,18 +64,19 @@ problem symptom, and an Android "Bug Report" file if the app crashed).
 * Use a font-resizing heuristic to fit hours into a minimum width home screen widget without eliding
   the seconds.
 * When stopped at 00:00, add the time of day to the widget? ... after a few minutes?
-  To track the time: Upon ACTION_SCREEN_ON when there are lock screen widgets, register a Service to
-  listen for ACTION_TIME_TICK. Unregister upon ACTION_SCREEN_OFF or when the last widget is removed.
+  (To track the time: Upon ACTION_SCREEN_ON when there are lock screen widgets, register a Service to
+  listen for ACTION_TIME_TICK. Unregister upon ACTION_SCREEN_OFF or when the last widget is removed.)
 * L10N.
 * Accessibility.
 
 * Unit tests.
+* Add a Settings dialog to pick the reminder alarm sound.
 * Add button actions (pause/resume/reset) to the notification area?
 
 ## Known Issues
 * Due to Android OS bug https://code.google.com/p/android/issues/detail?id=2880 if the clock gets
-  set backwards, the widget's date won't update until the clock catches up to what was going to be
-  the next day.
+  set backwards, the widget's date might not update until the clock catches up to what was going to
+  be the next day.
 * In the emulator (Nexus 5 KitKat), the Activity's timer sometimes stops.
 
 ## To Build from Source Code

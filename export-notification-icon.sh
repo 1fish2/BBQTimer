@@ -3,8 +3,8 @@
 #
 # NOTE: Save the doc with the "background WHILE EDITING" layer hidden, then export, then make
 # that layer visible again so the icon doesn't look (invisible) white on white.
-# Unfortunately, Inkscape can't set the doc background to transparent and display it over something
-# besides a white canvas.
+# Unfortunately, Inkscape can't set the doc background to transparent and display it over a
+# non-white canvas.
 
 PROJECT="BBQ Timer"
 IMAGE="notification_icon"
