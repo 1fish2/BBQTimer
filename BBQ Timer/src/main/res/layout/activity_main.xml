@@ -31,9 +31,11 @@
             android:textColor="@color/running_timer_colors"
             android:layout_gravity="right"/>
 
-        <RelativeLayout
+        <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical|right">
 
             <Button
                 android:id="@+id/startStopButton"
@@ -41,7 +43,6 @@
                 android:layout_height="wrap_content"
                 android:text="@string/start"
                 android:importantForAccessibility="yes"
-                android:layout_alignParentTop="true"
                 android:paddingLeft="@dimen/button_padding"
                 android:paddingRight="@dimen/button_padding"
                 android:onClick="onClickStartStop"
@@ -54,15 +55,14 @@
                 android:layout_height="wrap_content"
                 android:text="@string/reset"
                 android:importantForAccessibility="yes"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentRight="true"
                 android:paddingLeft="@dimen/button_padding"
                 android:paddingRight="@dimen/button_padding"
                 android:visibility="invisible"
                 android:onClick="onClickReset"
                 android:drawableLeft="@drawable/ic_reset"
-                android:drawablePadding="@dimen/button_drawable_padding"/>
-        </RelativeLayout>
+                android:drawablePadding="@dimen/button_drawable_padding"
+                android:layout_marginLeft="@dimen/button_padding"/>
+        </LinearLayout>
 
         <LinearLayout
             android:orientation="horizontal"
