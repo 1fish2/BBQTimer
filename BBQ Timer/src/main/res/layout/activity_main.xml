@@ -42,7 +42,6 @@
                 android:text="@string/start"
                 android:importantForAccessibility="yes"
                 android:layout_alignParentTop="true"
-                android:layout_centerHorizontal="true"
                 android:paddingLeft="@dimen/button_padding"
                 android:paddingRight="@dimen/button_padding"
                 android:onClick="onClickStartStop"
