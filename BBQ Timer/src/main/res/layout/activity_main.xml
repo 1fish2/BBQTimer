@@ -33,12 +33,16 @@
 
         <LinearLayout
             android:orientation="horizontal"
-            android:layout_width="match_parent"
+            style="?android:attr/buttonBarStyle"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical|right">
+            android:layout_gravity="right"
+            android:gravity="center_vertical|right"
+            android:background="@drawable/abc_ab_bottom_solid_dark_holo">
 
             <Button
                 android:id="@+id/startStopButton"
+                style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/start"
@@ -51,6 +55,7 @@
 
             <Button
                 android:id="@+id/resetButton"
+                style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/reset"
@@ -60,8 +65,7 @@
                 android:visibility="invisible"
                 android:onClick="onClickReset"
                 android:drawableLeft="@drawable/ic_reset"
-                android:drawablePadding="@dimen/button_drawable_padding"
-                android:layout_marginLeft="@dimen/button_padding"/>
+                android:drawablePadding="@dimen/button_drawable_padding"/>
         </LinearLayout>
 
         <LinearLayout

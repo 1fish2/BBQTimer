@@ -45,7 +45,7 @@ problem symptom, and an Android "Bug Report" file if the app crashed).
   position until your next BBQ.
 
 ## TODO
-* Test on various OS versions, screen sizes, and pixel densities.
+* Test on various OS versions.
 * Set other AndroidManifest.xml values? (Search info?)
 * Deploy to the Play store.
 
@@ -57,6 +57,8 @@ problem symptom, and an Android "Bug Report" file if the app crashed).
 * Add a Settings dialog to pick {sound, vibrate, both, disable} for reminder alarms.
 * Add a Settings dialog to pick the reminder alarm sound.
 * Add button actions (pause/resume/reset) to the notification area?
+* Adapt the activity layout to tablet screens (esp. landscape). Subclass Checkbox so it doesn't grow
+  wider than needed for the box + label?
 
 * Support Android Wear.
 
