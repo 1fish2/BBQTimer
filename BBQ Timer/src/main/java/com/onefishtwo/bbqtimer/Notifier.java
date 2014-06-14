@@ -88,7 +88,6 @@ public class Notifier {
         }
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context)
-                // Use PRIORITY_MAX when there's a time-critical chime?
                 .setPriority(NotificationCompat.PRIORITY_HIGH);
 
         if (showNotification) {

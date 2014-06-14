@@ -80,9 +80,8 @@ problem symptom, and an Android "Bug Report" file if the app crashed).
   set backwards, the widget's date might not update until the clock catches up to when it was going
   to be the next day.
 * In the emulator (Nexus 5 KitKat), the Activity's timer sometimes stops.
-* On Android emulator v12 (HONEYCOMB_MR1), trying to show the alarm count in the notification area
-  crashes. This is a bug in the NotificationCompat library. To work around this, I made the app not
-  try to display the count on builds older than v15 (ICE_CREAM_SANDWICH_MR1), where it works fine.
+* On Android OS versions older than API v15 (ICE_CREAM_SANDWICH_MR1), the app omits the alarm
+  count from the notification area. This avoids an Android crash.
 * On Android emulator builds v12 to v16 (JELLY_BEAN), the checkbox overlaps its label
   "Periodic alarms this many minutes apart:". Just an emulator bug?
 * On Android emulator v12, the notification area tries to show black text on a black background.
