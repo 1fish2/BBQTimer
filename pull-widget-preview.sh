@@ -2,4 +2,5 @@
 # Pulls the BBQ Timer's widget preview image (snapshotted by the Widget Preview app) from the
 # Android emulator.
 
-adb -e pull sdcard/Download/BBQ_Timer_ori_portrait.png BBQ\ Timer/src/main/res/drawable/widget_preview.png
+adb -e pull sdcard/Download/BBQ_Timer_ori_portrait.png widget_preview.png
+echo 'Now move widget_preview.png to BBQ\ Timer/src/main/res/drawable-???/'
