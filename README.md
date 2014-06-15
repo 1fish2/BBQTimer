@@ -5,7 +5,7 @@ A stopwatch with a twist (or two):
 1. A lock screen widget lets you access the timer quickly, without unlocking your phone or tablet.
 2. Periodic alarms remind you to check the food, however long it ends up taking to cook.
 
-Requires few permissions. No network access. No ads.
+Requires few permissions. No network access. No ads. No data gathering.
 
 Of course you can use this app to time more things than BBQ cooking.
 
@@ -17,6 +17,10 @@ size, problem symptom) and an Android "Bug Report" file if the app crashed.
 
 ## Status
 Beta test ready.
+
+## License
+
+The [MIT License](https://github.com/1fish2/BBQTimer/blob/master/LICENSE.md) applies.
 
 ## Usage Tips
 * Put the BBQ Timer widget on the Android lock screen for quick access (if you have Android 4.2
@@ -99,7 +103,7 @@ Beta test ready.
   the notification area. It might be possible to work around this at a cost in battery power. When
   you want to see precise times, open the application screen.
 
-## To Build from Source Code
+## Building from Source Code
 Use [Android Studio](http://developer.android.com/sdk/installing/studio.html) (an awesome tool!).
 
 ## Dedication
@@ -111,7 +115,7 @@ about, like zlib.
 
 Don't get me wrong -- commercial software is also great!
 
-## Sources
+## Media Asset Sources
 Notification sound composed from sampled cowbell sounds which are used by permission from Phil Burk,
 Copyright (c) 2014 Mobileer Inc.
 
