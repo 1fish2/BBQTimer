@@ -2,10 +2,12 @@
 
 A stopwatch with a twist (or two):
 
-1. A *lock screen widget* lets you access the timer without unlocking your phone or tablet.
-2. *Periodic alarms* remind you to check the food, however long it cooks.
+1. A *lock screen widget* lets you access the stopwatch quickly, without unlocking your phone or
+   tablet.
+2. *Periodic alarms* remind you to check the food, however long it takes to cook. It's a count-down
+   timer and a count-up stopwatch at the same time.
 
-Requires few permissions. No network access. No ads. No data gathering.
+Requires few permissions. No network access. No ads. Gathers no data.
 
 Of course it can time more things than BBQ cooking.
 
