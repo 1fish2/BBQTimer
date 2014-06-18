@@ -7,15 +7,15 @@ A stopwatch with a twist (or two):
 2. *Periodic alarms* remind you to check the food, however long it takes to cook. It's a count-down
    timer and a count-up stopwatch at the same time.
 
-Requires few permissions. No network access. No ads. Gathers no data.
+Requires few permissions. No network access. No ads. No private data gathering.
 
 Of course it can time more things than BBQ cooking.
 
 ## System Requirements
 
-BBQ Timer is for phones and tablets running Android 3.1 (Honeycomb MR1, Android API v12) and later.
-If it has problems on your Android device, send me the details (device model, Android version,
-screen size, problem symptom).
+BBQ Timer is for phones and tablets running Android 3.1 (Honeycomb MR1, Android API level 12) and
+later. If it has problems on your Android device, send me the details (device model, Android
+version, screen size, problem symptom).
 
 ## Status
 Beta test ready.
@@ -65,21 +65,22 @@ Beta test ready.
   BBQ Timer to the rightmost position; afterwards, move the Digital Clock there.
 
 ## Known Issues
+* The app doesn't install in external storage (SD card) because when you use USB to share files with
+  a computer, Android forces external storage apps to exit and deletes their lock/home screen
+  widgets.
 * Due to [Android OS bug 2880](https://code.google.com/p/android/issues/detail?id=2880), if the
   clock gets set backwards, the widget's date display might not update until the clock catches up to
   what was going to be the next day.
-* The app is configured to never install on the SD card so Android won't delete its lock/home screen
-  widgets when you enable USB mass storage to share files with a computer.
 * In the emulator (Nexus 5 Kit Kat), the Activity's timer sometimes stops.
-* On Android OS versions older than API v15 (ICE_CREAM_SANDWICH_MR1), the app omits the alarm
+* On Android OS versions older than API level 15 (ICE_CREAM_SANDWICH_MR1), the app omits the alarm
   count from the notification area. This avoids an Android crash.
-* On Android emulator builds v12 to v16 (JELLY_BEAN), the checkbox overlaps its label
+* On Android emulator builds API level 12 to level 16 (JELLY_BEAN), the checkbox overlaps its label
   "Periodic alarms this many minutes apart:". Just an emulator bug?
-* On Android emulator v12, the notification area shows black text on a black background.
+* On Android emulator API level 12, the notification area shows black text on a black background.
   Just an emulator bug?
-* On Android emulator v15 (ICE_CREAM_SANDWICH_MR1), the notification area displays the stopwatch's
-  start time instead of its elapsed time.
-* Not yet tested on Android v13 (HONEYCOMB_MR2) or Android v14 (ICE_CREAM_SANDWICH) (where the
+* On Android emulator API level 15 (ICE_CREAM_SANDWICH_MR1), the notification area displays the
+  stopwatch's start time instead of its elapsed time.
+* Not yet tested on Android API level 13 (HONEYCOMB_MR2) or level 14 (ICE_CREAM_SANDWICH) (where the
   emulator takes most of an hour to launch, then croaks, every time). If you're on these versions of
   Android, let me know how it goes.
 * There may be a fraction of a second clock skew between the stopwatch time displayed in the widget
