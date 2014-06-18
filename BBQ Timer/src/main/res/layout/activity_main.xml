@@ -70,13 +70,15 @@
 
         <LinearLayout
             android:orientation="horizontal"
-            android:layout_width="fill_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/controls_top_margin">
+            android:layout_marginTop="@dimen/controls_top_margin"
+            android:layout_gravity="right">
 
             <CheckBox
                 android:id="@+id/enableReminders"
                 android:layout_width="wrap_content"
+                android:maxWidth="@dimen/max_checkbox_width"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:singleLine="false"

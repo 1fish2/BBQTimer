@@ -7,6 +7,9 @@
 
     <uses-permission android:name="android.permission.VIBRATE" />
 
+    <supports-screens android:largeScreens="true"
+                      android:xlargeScreens="true"/>
+
     <application
         android:allowBackup="true"
         android:description="@string/app_description"

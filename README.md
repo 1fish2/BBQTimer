@@ -89,7 +89,6 @@ Beta test ready.
 
 ## TODO
 * Deploy to the Google Play store.
-* Set other AndroidManifest.xml values? (Search info?)
 
 * Show a tip about adding the widget to the lock screen when first running the app.
 * Show tips via a menu command: How to install widgets. What tapping the widget text does.
@@ -98,12 +97,12 @@ Beta test ready.
 * Add a Settings dialog to pick {sound, vibrate, both, disable} for reminders.
 * Add a Settings dialog to pick the reminder alarm sound.
 * Add pause/resume/reset buttons to the notification area.
-* Improve the activity layout on tablet screens (esp. landscape).
 * Localize into several languages.
 * When stopped at 00:00, add the time of day to the widget? ... after a few minutes?
   (To track the time: Upon ACTION_SCREEN_ON when there are lock screen widgets, register a Service to
   listen for ACTION_TIME_TICK. Unregister upon ACTION_SCREEN_OFF or when the last widget is removed.)
 * Accessibility.
+* Display the time larger in the activity when the screen is wide and tall enough.
 * Use a font-resizing text view fit long durations in the Activity. See
   [Stack Overflow auto-scale-textview-text-to-fit-within-bounds](http://stackoverflow.com/questions/5033012/auto-scale-textview-text-to-fit-within-bounds/),
   [Stack Overflow how-to-adjust-text-font-size-to-fit-textview](http://stackoverflow.com/questions/2617266/how-to-adjust-text-font-size-to-fit-textview/),

@@ -7,6 +7,7 @@
     <dimen name="button_drawable_padding">9dp</dimen>
     <dimen name="small_button_padding">8dp</dimen>
     <dimen name="widget_interior_padding">3dp</dimen>
+    <dimen name="max_checkbox_width">300dp</dimen>
 
     <!-- Widget margin is overridden in values-v14 for API levels >= 14. -->
     <dimen name="widget_margin">8dp</dimen>
