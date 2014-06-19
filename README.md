@@ -7,10 +7,10 @@ A stopwatch with a twist (or two):
 2. *Periodic alarms* remind you to check the food, however long it takes to cook. It's a count-down
    timer and a count-up stopwatch at the same time.
 
+Of course it can time more things than BBQ cooking.
+
 Requires few permissions. No network access. No ads. No private data gathering.
 Simple and focused. Free.
-
-Of course it can time more things than BBQ cooking.
 
 [Note: The app doesn't install in external storage (SD card) because when you use USB to share files
 with a computer, Android forces external storage apps to exit and deletes their lock/home screen
