@@ -70,14 +70,14 @@ Beta test.
   BBQ Timer to the rightmost position; afterwards, move the Digital Clock there.
 
 ## Known Issues
+* On Android emulator builds API level 12 to level 16 (JELLY_BEAN), the checkbox overlaps its label
+  "Periodic alarms this many minutes apart:". Also on Nexus S hardware Android 4.1.2 (JB level 16).
 * Due to [Android OS bug 2880](https://code.google.com/p/android/issues/detail?id=2880), if the
   clock gets set backwards, the widget's date display might not update until the clock catches up to
   what was going to be the next day.
 * In the emulator (Nexus 5 Kit Kat), the Activity's timer sometimes stops.
 * On Android OS versions older than API level 15 (ICE_CREAM_SANDWICH_MR1), the app omits the alarm
   count from the notification area. This avoids an Android crash.
-* On Android emulator builds API level 12 to level 16 (JELLY_BEAN), the checkbox overlaps its label
-  "Periodic alarms this many minutes apart:". Just an emulator bug?
 * On Android emulator API level 12, the notification area shows black text on a black background.
   Just an emulator bug?
 * On Android emulator API level 15 (ICE_CREAM_SANDWICH_MR1), the notification area displays the
