@@ -70,8 +70,6 @@ Beta test.
   BBQ Timer to the rightmost position; afterwards, move the Digital Clock there.
 
 ## Known Issues
-* On Android emulator builds API level 12 to level 16 (JELLY_BEAN), the checkbox overlaps its label
-  "Periodic alarms this many minutes apart:". Also on Nexus S hardware Android 4.1.2 (JB level 16).
 * Due to [Android OS bug 2880](https://code.google.com/p/android/issues/detail?id=2880), if the
   clock gets set backwards, the widget's date display might not update until the clock catches up to
   what was going to be the next day.

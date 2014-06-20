@@ -84,12 +84,13 @@
                 android:singleLine="false"
                 android:ellipsize="end"
                 android:importantForAccessibility="yes"
-                android:padding="@dimen/small_button_padding"
                 android:text="@string/reminder_switch"
                 android:onClick="onClickEnableRemindersToggle"
                 android:textSize="@dimen/controls_text_size"
                 android:layout_weight="6"
-                android:layout_margin="@dimen/widget_margin"/>
+                android:layout_margin="@dimen/widget_margin"
+                android:paddingTop="@dimen/small_button_padding"
+                android:paddingBottom="@dimen/small_button_padding"/>
 
             <NumberPicker
                 android:id="@+id/minutesPicker"
