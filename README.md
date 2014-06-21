@@ -88,13 +88,13 @@ Beta test.
   When you want to see precise times, go to the application's main screen.
 
 ## TODO
+* Add pause/resume/reset buttons to the notification area.
 * Show a tip about adding the widget to the lock screen when first running the app.
 * Show tips via a menu command: How to install widgets. What tapping the widget text does.
 * Add a large notification icon: mdpi 64x64 px, hdpi 96x96 px, xhdpi 128x128 px,
   xxhpdi 192x192 px.
 * Add a Settings dialog to pick {sound, vibrate, both, disable} for reminders.
 * Add a Settings dialog to pick the reminder alarm sound.
-* Add pause/resume/reset buttons to the notification area.
 * Localize into several languages.
 * When stopped at 00:00, add the time of day to the widget? ... after a few minutes?
   (To track the time: Upon ACTION_SCREEN_ON when there are lock screen widgets, register a Service to
