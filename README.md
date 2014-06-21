@@ -30,18 +30,18 @@ Beta test.
 [MIT License](https://github.com/1fish2/BBQTimer/blob/master/LICENSE.md).
 
 ## Usage Tips
-* Put the BBQ Timer widget on the Android lock screen for quick access. (This requires Android 4.2
-  Jelly Bean or later.)
+* Put the BBQ Timer widget on the Android lock screen for quick access. (This feature requires
+  Android 4.2 Jelly Bean or later.)
 * The BBQ Timer widget also works on the home screen (even in earlier versions of Android).
 * To resize the home screen widget, long-press on it then drag its resize handles.
   The initial size fits minutes and seconds (e.g. "18:12"). Stretched wider, it can fit hours,
   minutes, and seconds (e.g. "1:15:09") depending on your screen size and font size setting.
 * To remove the widget, long-press it, then drag it onto "X Remove".
 * Tap the stopwatch time display to cycle between *reset* -> *running* -> *paused* -> *reset.*
-* The app's main screen displays the stopwatch with more precsion (e.g. "18:12.6").
+* The app's main screen displays the stopwatch with more precision (e.g. "18:12.6") than the widget.
 * On the app's main screen, tap the checkbox to enable/disable periodic reminder alarms.
 * On the app's main screen, you can adjust the interval between periodic reminder alarms by
-  dragging the number widget. Or tap the number then type in a number.
+  dragging the number widget. Or tap the number then type in a new number.
 
 ## How to Use Android Lock Screen Widgets
 * This feature requires Android 4.2 Jelly Bean or later.
