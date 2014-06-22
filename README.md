@@ -3,9 +3,9 @@
 A stopwatch with a twist (or two):
 
 1. A *lock screen widget* lets you access the stopwatch quickly, without unlocking your phone or
-   tablet.
-2. *Periodic alarms* remind you to check the food, however long it takes to cook. It's a count-down
-   timer and a count-up stopwatch at the same time.
+   tablet. (This requires Android 4.2 Jelly Bean or later.)
+2. *Periodic alarms* remind you to check the food, however long it takes to cook. You get a
+   count-down timer and a count-up stopwatch at the same time.
 
 Of course it can time more things than BBQ cooking.
 
@@ -54,11 +54,13 @@ Beta test.
   KitKat](http://www.gottabemobile.com/2013/11/11/add-lockscreen-widgets-android-4-4-kitkat-nexus-5/
   "GottaBe Mobile").
 * In short, to add a lock screen widget:
-    * Wake the screen,
-    * swipe from the left edge of the screen to the right until you see the "+" screen,
-    * tap "+",
-    * unlock the phone,
-    * tap the BBQ Timer widget.
+    * Requires Android 4.2 Jelly Bean or later.
+    * On Android 4.4 KitKat, turn on Settings > Security > Enable Widgets.
+    * Wake the screen.
+    * Swipe from the left edge of the screen to the right until you see the "+" screen.
+    * Tap "+".
+    * Unlock the phone.
+    * Tap the BBQ Timer widget.
     * (Optional) To move the BBQ Timer widget to the *main* (rightmost) lock screen position, swipe
       down over it to select it, then long-press it and drag it to the right, past the other
       widgets.
