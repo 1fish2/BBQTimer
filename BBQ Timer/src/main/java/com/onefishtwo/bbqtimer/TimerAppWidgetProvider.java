@@ -40,6 +40,7 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
     private static final int RESET_CHRONOMETER_CHILD   = 2;
 
     static final String ACTION_START_STOP = "com.onefishtwo.bbqtimer.ACTION_START_STOP";
+    static final String ACTION_PAUSE      = "com.onefishtwo.bbqtimer.ACTION_PAUSE";
     static final String ACTION_CYCLE      = "com.onefishtwo.bbqtimer.ACTION_CYCLE";
 
     // Synchronized on the class.
@@ -144,7 +145,7 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
         return PendingIntent.getBroadcast(context, 0, intent, 0);
     }
 
-    /** Receives an Intent, including one for the app widget's button clicks. */
+    /** Receives an Intent, including those from the app widget buttons and notification actions. */
     //
     // TODO: Due to Android OS bug https://code.google.com/p/android/issues/detail?id=2880 , after
     // the clock gets set backwards, the OS won't send ACTION_DATE_CHANGED until the clock catches
@@ -163,6 +164,13 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
         if (ACTION_START_STOP.equals(action)) {
             // The user tapped a widget's start/stop button.
             timer.toggleRunning();
+            state.save(context);
+
+            updateAllWidgets(context, state);
+            AlarmReceiver.updateNotifications(context);
+        } else if (ACTION_PAUSE.equals(action)) {
+            // The user tapped a notification's pause button.
+            timer.pause();
             state.save(context);
 
             updateAllWidgets(context, state);
