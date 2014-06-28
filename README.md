@@ -90,7 +90,6 @@ Beta test.
   When you want to see precise times, go to the application's main screen.
 
 ## TODO
-* Add pause/resume/reset buttons to the notification area.
 * Show a tip about adding the widget to the lock screen when first running the app.
 * Show tips via a menu command: How to install widgets. What tapping the widget text does.
 * Add a large notification icon: mdpi 64x64 px, hdpi 96x96 px, xhdpi 128x128 px,
