@@ -1,5 +1,7 @@
 # BBQTimer Android app
 
+[Google Play store listing](https://play.google.com/store/apps/details?id=com.onefishtwo.bbqtimer)
+
 A stopwatch with a twist (or two):
 
 1. A *lock screen widget* lets you access the stopwatch quickly, without unlocking your phone or
