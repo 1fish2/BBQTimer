@@ -1,6 +1,6 @@
 # BBQTimer Android app
 
-[Google Play store listing](https://play.google.com/store/apps/details?id=com.onefishtwo.bbqtimer)
+[See it in the Google Play store](https://play.google.com/store/apps/details?id=com.onefishtwo.bbqtimer)
 
 A stopwatch with a twist (or two):
 
