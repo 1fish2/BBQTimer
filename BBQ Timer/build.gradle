@@ -8,7 +8,7 @@ android {
         minSdkVersion 12
         targetSdkVersion 19
         versionCode 8
-        versionName "1.1 beta 1"
+        versionName "1.1"
     }
 
     signingConfigs {

@@ -90,6 +90,8 @@ Beta test.
   When you want to see precise times, go to the application's main screen.
 
 ## TODO
+* When Android L is released, test and move to buildToolsVersion '20.0.0', targetSdkVersion 20.
+* Support Android Wear. Requires Android 4.3, API level 18+.
 * Show a tip about adding the widget to the lock screen when first running the app.
 * Show tips via a menu command: How to install widgets. What tapping the widget text does.
 * Add a Settings dialog to pick {sound, vibrate, both, disable} for reminders.
@@ -108,7 +110,6 @@ Beta test.
   the seconds.
 
 * Unit tests.
-* Support Android Wear.
 
 ## Building from Source Code
 Use [Android Studio](http://developer.android.com/sdk/installing/studio.html) (an awesome tool!).
