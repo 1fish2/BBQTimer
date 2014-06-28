@@ -24,6 +24,8 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.support.v4.app.NotificationCompat;
@@ -92,8 +94,11 @@ public class Notifier {
 
         if (showNotification) {
             TimeCounter timer = state.getTimeCounter();
+            Bitmap largeIcon = BitmapFactory.decodeResource(context.getResources(),
+                    R.drawable.ic_large_notification);
 
             builder.setSmallIcon(R.drawable.notification_icon)
+                    .setLargeIcon(largeIcon)
                     .setContentTitle(context.getString(R.string.app_name))
                     .setOngoing(true)
                     .setWhen(System.currentTimeMillis() - timer.getElapsedTime())

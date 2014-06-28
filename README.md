@@ -92,8 +92,6 @@ Beta test.
 ## TODO
 * Show a tip about adding the widget to the lock screen when first running the app.
 * Show tips via a menu command: How to install widgets. What tapping the widget text does.
-* Add a large notification icon: mdpi 64x64 px, hdpi 96x96 px, xhdpi 128x128 px,
-  xxhpdi 192x192 px.
 * Add a Settings dialog to pick {sound, vibrate, both, disable} for reminders.
 * Add a Settings dialog to pick the reminder alarm sound.
 * Localize into several languages.
