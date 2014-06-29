@@ -25,7 +25,7 @@ later. If it has problems on your Android device, send me the details (device mo
 version, screen size, problem symptom).
 
 ## Status
-Beta test.
+Released.
 
 ## License
 
