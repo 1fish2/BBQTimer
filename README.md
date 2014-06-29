@@ -46,7 +46,7 @@ Beta test.
   dragging the number widget. Or tap the number then type in a new number.
 
 ## How to Use Android Lock Screen Widgets
-* This feature requires Android 4.2 Jelly Bean or later.
+* This feature requires Android 4.2 Jelly Bean through Android 4.4 KitKat.
 * On Android 4.4 KitKat, you must turn on Settings > Security > Enable Widgets to enable this
   feature.
 * For step-by-step instructions, see [Getting started with lock screen widgets on Android Jelly
@@ -56,7 +56,7 @@ Beta test.
   KitKat](http://www.gottabemobile.com/2013/11/11/add-lockscreen-widgets-android-4-4-kitkat-nexus-5/
   "GottaBe Mobile").
 * In short, to add a lock screen widget:
-    * Requires Android 4.2 Jelly Bean or later.
+    * Requires Android 4.2 Jelly Bean through Android 4.4 KitKat.
     * On Android 4.4 KitKat, turn on Settings > Security > Enable Widgets.
     * Wake the screen.
     * Swipe from the left edge of the screen to the right until you see the "+" screen.
@@ -74,6 +74,8 @@ Beta test.
   BBQ Timer to the rightmost position; afterwards, move the Digital Clock there.
 
 ## Known Issues
+* The Android L preview emulator's Sans font used for the timer has different widths for
+  "3", "5", and "6" vs. the other digits. This makes the ticking chronometer a little jerky.
 * Due to [Android OS bug 2880](https://code.google.com/p/android/issues/detail?id=2880), if the
   clock gets set backwards, the widget's date display might not update until the clock catches up to
   what was going to be the next day.
@@ -93,7 +95,14 @@ Beta test.
 
 ## TODO
 * When Android L is released, test and move to buildToolsVersion '20.0.0', targetSdkVersion 20.
+* Android L: Use the new MediaStyle template to convert notification actions to compact buttons in
+  an app media playback notification (since Android L doesn't support lock-screen widgets)? See
+  http://developer.android.com/preview/api-overview.html#MediaPlaybackControl
+* Android L: Call Notification.Builder.setVisibility(VISIBILITY_PUBLIC) [the default?] so the
+  notification will appear on the lock-screen, and .setCategory(Notification.CATEGORY_ALARM).
+  Note: These methods are not yet in the API.
 * Support Android Wear. Requires Android 4.3, API level 18+.
+* Support Material Design?
 * Show a tip about adding the widget to the lock screen when first running the app.
 * Show tips via a menu command: How to install widgets. What tapping the widget text does.
 * Add a Settings dialog to pick {sound, vibrate, both, disable} for reminders.
