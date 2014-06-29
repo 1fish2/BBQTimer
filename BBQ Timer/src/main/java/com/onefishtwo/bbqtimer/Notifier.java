@@ -87,6 +87,7 @@ public class Notifier {
     public void openOrCancel(ApplicationState state) {
         if (!(showNotification || playChime || vibrate)) {
             cancelAll();
+            return;
         }
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context)
