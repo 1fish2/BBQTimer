@@ -76,6 +76,8 @@ Released.
 ## Known Issues
 * The Android L preview emulator's Sans font used for the timer has different widths for
   "3", "5", and "6" vs. the other digits. This makes the ticking chronometer a little jerky.
+* Android L Nexus 5 makes the home-screen widget tall enough to see a clipped date in the widget.
+  This needs a workaround.
 * Due to [Android OS bug 2880](https://code.google.com/p/android/issues/detail?id=2880), if the
   clock gets set backwards, the widget's date display might not update until the clock catches up to
   what was going to be the next day.
