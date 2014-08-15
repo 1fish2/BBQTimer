@@ -76,6 +76,7 @@ Released.
 ## Known Issues
 * The Android L preview emulator's Sans font used for the timer has different widths for
   "3", "5", and "6" vs. the other digits. This makes the ticking chronometer a little jerky.
+  [Android Issue 330.]
 * Android L Nexus 5 makes the home-screen widget tall enough to see a clipped date in the widget.
   This needs a workaround.
 * Due to [Android OS bug 2880](https://code.google.com/p/android/issues/detail?id=2880), if the
@@ -96,7 +97,9 @@ Released.
   When you want to see precise times, go to the application's main screen.
 
 ## TODO
+* Add a menu of recipes to set the reminder alarm time and suggest the cooking temp.
 * When Android L is released, test and move to buildToolsVersion '20.0.0', targetSdkVersion 20.
+* Android L: Support extended, lock-screen notifications.
 * Android L: Use the new MediaStyle template to convert notification actions to compact buttons in
   an app media playback notification (since Android L doesn't support lock-screen widgets)? See
   http://developer.android.com/preview/api-overview.html#MediaPlaybackControl
