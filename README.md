@@ -76,14 +76,13 @@ Released.
 ## Known Issues
 * The Android L preview emulator's Sans font used for the timer has different widths for
   "3", "5", and "6" vs. the other digits. This makes the ticking chronometer a little jerky.
+  The fix is in the pipeline.
 * Android L Nexus 5 makes the home-screen widget tall enough to see a clipped date in the widget.
   This needs a workaround.
 * Due to [Android OS bug 2880](https://code.google.com/p/android/issues/detail?id=2880), if the
   clock gets set backwards, the widget's date display might not update until the clock catches up to
   what was going to be the next day.
 * In the emulator (Nexus 5 Kit Kat), the Activity's timer sometimes stops.
-* On Android OS versions older than API level 15 (ICE_CREAM_SANDWICH_MR1), the app omits the alarm
-  count from the notification area. This avoids an Android crash.
 * On Android emulator API level 12, the notification area shows black text on a black background.
   Just an emulator bug?
 * On Android emulator API level 15 (ICE_CREAM_SANDWICH_MR1), the notification area displays the
@@ -93,10 +92,11 @@ Released.
   Android, let me know how it goes.
 * There may be a fraction of a second clock skew between the stopwatch time displayed in the widget
   vs. the notification area. It might be possible to work around this at a cost in battery power.
-  When you want to see precise times, go to the application's main screen.
+  When you want to see precise times, open the application's main screen.
 
 ## TODO
 * When Android L is released, test and move to buildToolsVersion '20.0.0', targetSdkVersion 20.
+* Android L: Support Android L notifications.
 * Android L: Use the new MediaStyle template to convert notification actions to compact buttons in
   an app media playback notification (since Android L doesn't support lock-screen widgets)? See
   http://developer.android.com/preview/api-overview.html#MediaPlaybackControl
@@ -121,7 +121,6 @@ Released.
   [Stack Overflow how-to-catch-widget-size-changes-on-devices-where-onappwidgetoptionschanged-not](http://stackoverflow.com/questions/17396045/how-to-catch-widget-size-changes-on-devices-where-onappwidgetoptionschanged-not)
 * Use a font-resizing heuristic to fit hours in a minimum width home screen widget without eliding
   the seconds.
-
 * Unit tests.
 
 ## Building from Source Code
