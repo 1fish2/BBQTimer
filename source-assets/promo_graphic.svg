@@ -1,0 +1,314 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="180"
+   height="120"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.48.4 r9939"
+   sodipodi:docname="promo_graphic.svg"
+   inkscape:export-filename="C:\sourcecontrolled\BBQTimer\Play-assets\promo_graphic.png"
+   inkscape:export-xdpi="90"
+   inkscape:export-ydpi="90">
+  <defs
+     id="defs4">
+    <linearGradient
+       id="linearGradient3755">
+      <stop
+         style="stop-color:#4b843e;stop-opacity:1;"
+         offset="0"
+         id="stop3757" />
+      <stop
+         style="stop-color:#081605;stop-opacity:1;"
+         offset="1"
+         id="stop3759" />
+    </linearGradient>
+    <radialGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient3755"
+       id="radialGradient3761"
+       cx="378.12076"
+       cy="241.71347"
+       fx="378.12076"
+       fy="241.71347"
+       r="513"
+       gradientTransform="matrix(0.21217743,0.06684412,-0.01999659,0.12296357,-5.2727576,930.16508)"
+       gradientUnits="userSpaceOnUse" />
+    <filter
+       id="filter8196"
+       inkscape:label="Bubbly Bumps"
+       inkscape:menu="Bumps"
+       inkscape:menu-tooltip="Flexible bubbles effect with some displacement"
+       color-interpolation-filters="sRGB">
+      <feGaussianBlur
+         id="feGaussianBlur8198"
+         result="result0"
+         in="SourceGraphic"
+         stdDeviation="0.5" />
+      <feTurbulence
+         id="feTurbulence8200"
+         baseFrequency="0.2"
+         seed="300"
+         numOctaves="10"
+         result="result1"
+         type="fractalNoise" />
+      <feGaussianBlur
+         id="feGaussianBlur8202"
+         stdDeviation="0.5"
+         result="result8" />
+      <feDisplacementMap
+         id="feDisplacementMap8204"
+         in2="result8"
+         result="result7"
+         scale="5"
+         in="result0"
+         xChannelSelector="R"
+         yChannelSelector="A" />
+      <feComposite
+         id="feComposite8206"
+         in2="result1"
+         result="result2"
+         operator="in"
+         in="result7" />
+      <feComposite
+         id="feComposite8208"
+         in2="result2"
+         k3="3"
+         in="result0"
+         operator="arithmetic"
+         result="result9"
+         k1="0"
+         k2="0"
+         k4="0" />
+      <feBlend
+         id="feBlend8210"
+         in2="result2"
+         result="fbSourceGraphic"
+         mode="multiply" />
+      <feColorMatrix
+         id="feColorMatrix8212"
+         values="1 0 0 -1 0 1 0 1 -1 0 1 0 0 -1 0 -1.8 -0.5 0 5.7 -3.5 "
+         in="fbSourceGraphic"
+         result="fbSourceGraphicAlpha" />
+      <feGaussianBlur
+         id="feGaussianBlur8214"
+         stdDeviation="0.5"
+         in="fbSourceGraphicAlpha"
+         result="result0" />
+      <feSpecularLighting
+         id="feSpecularLighting8216"
+         result="result6"
+         surfaceScale="5"
+         specularExponent="3">
+        <feDistantLight
+           id="feDistantLight8218"
+           azimuth="225"
+           elevation="10" />
+      </feSpecularLighting>
+      <feComposite
+         id="feComposite8220"
+         in2="fbSourceGraphicAlpha"
+         in="result6"
+         result="result2"
+         operator="in" />
+      <feComposite
+         id="feComposite8222"
+         in2="result2"
+         in="fbSourceGraphic"
+         result="result4"
+         operator="arithmetic"
+         k2="1"
+         k3="0.7"
+         k1="0"
+         k4="0" />
+    </filter>
+    <filter
+       id="filter8224"
+       inkscape:label="Ridged border"
+       inkscape:menu="Bevels"
+       inkscape:menu-tooltip="Ridged border with inner bevel"
+       color-interpolation-filters="sRGB">
+      <feMorphology
+         id="feMorphology8226"
+         radius="4.3"
+         in="SourceAlpha"
+         result="result91" />
+      <feComposite
+         id="feComposite8228"
+         in2="result91"
+         operator="out"
+         in="SourceGraphic" />
+      <feGaussianBlur
+         id="feGaussianBlur8230"
+         result="result0"
+         stdDeviation="1.2" />
+      <feDiffuseLighting
+         id="feDiffuseLighting8232"
+         diffuseConstant="1"
+         result="result92">
+        <feDistantLight
+           id="feDistantLight8234"
+           elevation="66"
+           azimuth="225" />
+      </feDiffuseLighting>
+      <feBlend
+         id="feBlend8236"
+         in2="SourceGraphic"
+         mode="multiply"
+         result="result93" />
+      <feComposite
+         id="feComposite8238"
+         in2="SourceAlpha"
+         operator="in" />
+    </filter>
+    <filter
+       id="filter8240"
+       inkscape:label="Ridged border"
+       inkscape:menu="Bevels"
+       inkscape:menu-tooltip="Ridged border with inner bevel"
+       color-interpolation-filters="sRGB">
+      <feMorphology
+         id="feMorphology8242"
+         radius="4.3"
+         in="SourceAlpha"
+         result="result91" />
+      <feComposite
+         id="feComposite8244"
+         in2="result91"
+         operator="out"
+         in="SourceGraphic" />
+      <feGaussianBlur
+         id="feGaussianBlur8246"
+         result="result0"
+         stdDeviation="1.2" />
+      <feDiffuseLighting
+         id="feDiffuseLighting8248"
+         diffuseConstant="1"
+         result="result92">
+        <feDistantLight
+           id="feDistantLight8250"
+           elevation="66"
+           azimuth="225" />
+      </feDiffuseLighting>
+      <feBlend
+         id="feBlend8252"
+         in2="SourceGraphic"
+         mode="multiply"
+         result="result93" />
+      <feComposite
+         id="feComposite8254"
+         in2="SourceAlpha"
+         operator="in" />
+    </filter>
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="2"
+     inkscape:cx="186.23346"
+     inkscape:cy="0.29187337"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="true"
+     inkscape:showpageshadow="true"
+     inkscape:window-width="1600"
+     inkscape:window-height="878"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     gridtolerance="5"
+     objecttolerance="10">
+    <inkscape:grid
+       type="xygrid"
+       id="grid3782"
+       empspacing="5"
+       visible="true"
+       enabled="false"
+       snapvisiblegridlinesonly="true"
+       spacingx="50px"
+       spacingy="50px"
+       dotted="false" />
+  </sodipodi:namedview>
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(0,-932.36218)">
+    <rect
+       style="fill:url(#radialGradient3761);fill-opacity:1;stroke:none"
+       id="rect2985"
+       width="180"
+       height="120"
+       x="0"
+       y="932.36218" />
+    <image
+       y="946.41388"
+       x="-11.5"
+       id="image3771"
+       xlink:href="file:///C:/sourcecontrolled/BBQTimer/source-assets/perspective-lock-screen-snaphot.png"
+       height="320.64584"
+       width="173.34576" />
+    <flowRoot
+       xml:space="preserve"
+       id="flowRoot4703"
+       style="font-size:11.11687469px;font-style:normal;font-variant:normal;font-weight:600;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#ff4317;fill-opacity:1;stroke:none;filter:url(#filter8224);font-family:Adobe Fan Heiti Std B;-inkscape-font-specification:Adobe Fan Heiti Std B Semi-Bold"
+       transform="matrix(1.4392534,0,0,1.4392534,-593.84163,720.92441)"><flowRegion
+         id="flowRegion4705"><rect
+           id="rect4707"
+           width="370"
+           height="56"
+           x="480"
+           y="204"
+           style="font-size:11.11687469px;font-style:normal;font-variant:normal;font-weight:600;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#ff4317;fill-opacity:1;font-family:Adobe Fan Heiti Std B;-inkscape-font-specification:Adobe Fan Heiti Std B Semi-Bold" /></flowRegion><flowPara
+         id="flowPara4709">        timer/</flowPara><flowPara
+         id="flowPara3807">stopwatch</flowPara></flowRoot>    <flowRoot
+       xml:space="preserve"
+       id="flowRoot4703-1"
+       style="font-size:11.11687469px;font-style:normal;font-variant:normal;font-weight:600;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#ff4317;fill-opacity:1;stroke:none;filter:url(#filter8240);font-family:Adobe Fan Heiti Std B;-inkscape-font-specification:Adobe Fan Heiti Std B Semi-Bold"
+       transform="matrix(1.4392534,0,0,1.4392534,-681.34163,646.42441)"><flowRegion
+         id="flowRegion4705-7"><rect
+           id="rect4707-4"
+           width="370"
+           height="56"
+           x="480"
+           y="204"
+           style="font-size:11.11687469px;font-style:normal;font-variant:normal;font-weight:600;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#ff4317;fill-opacity:1;font-family:Adobe Fan Heiti Std B;-inkscape-font-specification:Adobe Fan Heiti Std B Semi-Bold" /></flowRegion><flowPara
+         id="flowPara4709-0">lock screen</flowPara></flowRoot>    <flowRoot
+       transform="matrix(1.4392534,0,0,1.4392534,-623.84163,672.42441)"
+       style="font-size:15.28570271px;font-style:normal;font-variant:normal;font-weight:600;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#ff4317;fill-opacity:1;stroke:none;filter:url(#filter8240);font-family:Adobe Fan Heiti Std B;-inkscape-font-specification:Adobe Fan Heiti Std B Semi-Bold"
+       id="flowRoot3799"
+       xml:space="preserve"><flowRegion
+         id="flowRegion3801"><rect
+           style="font-size:15.28570271px;font-style:normal;font-variant:normal;font-weight:600;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#ff4317;fill-opacity:1;font-family:Adobe Fan Heiti Std B;-inkscape-font-specification:Adobe Fan Heiti Std B Semi-Bold"
+           y="204"
+           x="480"
+           height="56"
+           width="370"
+           id="rect3803" /></flowRegion><flowPara
+         id="flowPara3805">BBQ Timer</flowPara></flowRoot>  </g>
+</svg>
