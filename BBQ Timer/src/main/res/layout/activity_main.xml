@@ -38,7 +38,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="right"
             android:gravity="center_vertical|right"
-            android:background="@color/like_primary_material_dark">
+            android:background="@color/grayer">
 
             <Button
                 android:id="@+id/startStopButton"
