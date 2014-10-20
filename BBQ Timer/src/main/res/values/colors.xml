@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="gray_text">#999</color>
+    <color name="like_primary_material_dark">#ff212121</color>
     <color name="orange_red_text">#ff4317</color>
     <color name="to_go_text">#06c212</color>
     <color name="to_reset_text">#646464</color>

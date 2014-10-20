@@ -73,39 +73,28 @@ Released.
   BBQ Timer to the rightmost position; afterwards, move the Digital Clock there.
 
 ## Known Issues
-* The Android L preview emulator's Sans font used for the timer has different widths for
-  "3", "5", and "6" vs. the other digits. This makes the ticking chronometer a little jerky.
-  [Android Issue 330.] The fix is in the pipeline.
-* Android L Nexus 5 makes the home-screen widget tall enough to see a clipped date in the widget.
-  This needs a workaround.
 * Due to [Android OS bug 2880](https://code.google.com/p/android/issues/detail?id=2880), if the
   clock gets set backwards, the widget's date display might not update until the clock catches up to
   what was going to be the next day.
-* In the emulator (Nexus 5 Kit Kat), the Activity's timer sometimes stops.
-* On Android emulator API level 12, the notification area shows black text on a black background.
-  Just an emulator bug?
-* On Android emulator API level 15 (ICE_CREAM_SANDWICH_MR1), the notification area displays the
-  stopwatch's start time instead of its elapsed time.
 * Not yet tested on Android API level 13 (HONEYCOMB_MR2) or level 14 (ICE_CREAM_SANDWICH) (where the
   emulator takes most of an hour to launch, then croaks, every time). If you're on these versions of
   Android, let me know how it goes.
 * There may be a fraction of a second clock skew between the stopwatch time displayed in the widget
   vs. the notification area. It might be possible to work around this at a cost in battery power.
   When you want to see precise times, open the application's main screen.
+* Android emulator bugs: The app's timer display sometimes stops changing. In emulator API level 12,
+  the notification area shows black text on a black background. In emulator API level 15
+  (ICE_CREAM_SANDWICH_MR1), the notification area displays the stopwatch's start time instead of
+  elapsed time.
 
 ## TODO
 * Add a menu of recipes to set the reminder alarm time and suggest the cooking temp.
-* When Android L is released, test and move to buildToolsVersion '20.0.0', targetSdkVersion 20.
-* Android L: Support Android L notifications.
-* Android L: Support extended, lock-screen notifications.
-* Android L: Use the new MediaStyle template to convert notification actions to compact buttons in
-  an app media playback notification (since Android L doesn't support lock-screen widgets)? See
-  http://developer.android.com/preview/api-overview.html#MediaPlaybackControl
-* Android L: Call Notification.Builder.setVisibility(VISIBILITY_PUBLIC) [the default?] so the
-  notification will appear on the lock-screen, and .setCategory(Notification.CATEGORY_ALARM).
-  Note: These methods are not yet in the API.
-* Support Android Wear. Requires Android 4.3, API level 18+.
-* Support Material Design?
+* Android Lollipop: Call Notification.Builder.setVisibility(VISIBILITY_PUBLIC) and
+  .setCategory(Notification.CATEGORY_ALARM).
+* Android Lollipop: Support extended, lock-screen notifications. More adaptations?
+* Android Lollipop: Use the new MediaStyle template to convert notification actions to compact
+  buttons in an app media playback notification (since Android L doesn't support lock-screen
+  widgets)? See http://developer.android.com/preview/api-overview.html#MediaPlaybackControl
 * Show a tip about adding the widget to the lock screen when first running the app.
 * Show tips via a menu command: How to install widgets. What tapping the widget text does.
 * Add a Settings dialog to pick {sound, vibrate, both, disable} for reminders.
