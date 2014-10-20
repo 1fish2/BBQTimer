@@ -5,7 +5,7 @@
 A stopwatch with a twist (or two):
 
 1. A *lock screen widget* lets you access the stopwatch quickly, without unlocking your phone or
-   tablet. (This requires Android 4.2 Jelly Bean or later.)
+   tablet. (This requires Android 4.2 Jelly Bean or KitKat.)
 2. *Periodic alarms* remind you to check the food, however long it takes to cook. You get a
    count-down timer and a count-up stopwatch at the same time.
 
@@ -15,12 +15,13 @@ Requires few permissions. No network access. No ads. No private data gathering.
 Simple and focused. Free.
 
 [Note: The app won't install in external storage (SD card) because when you use USB to share files
-with a computer, Android deletes their lock/home screen widgets.]
+with a computer, Android deletes the lock/home screen widgets of apps installed in external
+storage.]
 
 ## System Requirements
 
 BBQ Timer is for phones and tablets running Android 3.1 (Honeycomb MR1, Android API level 12) and
-later. If it has problems on your Android device, send me the details (device model, Android
+later. If it has problems on your Android device, email the details to me (device model, Android
 version, screen size, problem symptom).
 
 ## Status
@@ -32,20 +33,20 @@ Released.
 
 ## Usage Tips
 * Put the BBQ Timer widget on the Android lock screen for quick access. (This feature requires
-  Android 4.2 Jelly Bean or later.)
-* The BBQ Timer widget also works on the home screen (even in earlier versions of Android).
+  Android 4.2 Jelly Bean or KitKat.)
+* The widget also works on the home screen (even in earlier versions of Android).
 * To resize the home screen widget, long-press on it then drag its resize handles.
-  The initial size fits minutes and seconds (e.g. "18:12"). Stretched wider, it can fit hours,
-  minutes, and seconds (e.g. "1:15:09") depending on your screen size and font size setting.
+  Stretched wider, it can show longer time intervals (e.g. "2:15:09", depending on your screen size
+  and font size setting).
 * To remove the widget, long-press it, then drag it onto "X Remove".
 * Tap the stopwatch time display to cycle between *reset* -> *running* -> *paused* -> *reset.*
-* The app's main screen displays the stopwatch with more precision (e.g. "18:12.6") than the widget.
 * On the app's main screen, tap the checkbox to enable/disable periodic reminder alarms.
-* On the app's main screen, you can adjust the interval between periodic reminder alarms by
+* On the app's main screen, adjust the interval between periodic reminder alarms by
   dragging the number widget. Or tap the number then type in a new number.
 
 ## How to Use Android Lock Screen Widgets
-* This feature requires Android 4.2 Jelly Bean through Android 4.4 KitKat.
+* This feature requires Android 4.2 Jelly Bean through Android 4.4 KitKat. (Android Lollipop
+  automatically shows the running BBQ Timer's notification.)
 * On Android 4.4 KitKat, you must turn on Settings > Security > Enable Widgets to enable this
   feature.
 * For step-by-step instructions, see [Getting started with lock screen widgets on Android Jelly
@@ -88,13 +89,14 @@ Released.
   elapsed time.
 
 ## TODO
-* Add a menu of recipes to set the reminder alarm time and suggest the cooking temp.
-* Android Lollipop: Call Notification.Builder.setVisibility(VISIBILITY_PUBLIC) and
-  .setCategory(Notification.CATEGORY_ALARM).
-* Android Lollipop: Support extended, lock-screen notifications. More adaptations?
+* Android Lollipop: Is is possible to show actions in the lock-screen notifications? If not, make
+  the content action pause the timer, or pause/resume/reset with a delay before closing the
+  notification.
 * Android Lollipop: Use the new MediaStyle template to convert notification actions to compact
   buttons in an app media playback notification (since Android L doesn't support lock-screen
   widgets)? See http://developer.android.com/preview/api-overview.html#MediaPlaybackControl
+  (MediaStyle is not supported by NotificationCompat.)
+* Add a menu of recipes to set the reminder alarm time and suggest the cooking temp.
 * Show a tip about adding the widget to the lock screen when first running the app.
 * Show tips via a menu command: How to install widgets. What tapping the widget text does.
 * Add a Settings dialog to pick {sound, vibrate, both, disable} for reminders.
