@@ -2,6 +2,8 @@
   <dictionary name="Jerry">
     <words>
       <w>overridable</w>
+      <w>reimplement</w>
+      <w>reimplements</w>
       <w>unschedule</w>
     </words>
   </dictionary>

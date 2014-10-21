@@ -19,6 +19,7 @@
 
 package com.onefishtwo.bbqtimer;
 
+import android.annotation.TargetApi;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -45,6 +46,103 @@ public class Notifier {
     private boolean showNotification = true;
     private boolean playChime = false;
     private boolean vibrate = false;
+
+    /**
+     * A conditionally-loaded class to build notifications using the API v21 MediaStyle feature
+     * that's missing from the app support library's NotificationCompat. See
+     * <a href="https://code.google.com/p/android-developer-preview/issues/detail?id=1659">Issue
+     * 1659</a>.
+     *<p/>
+     * TODO: Remove this workaround when NotificationCompat.Builder supports MediaStyle.
+     *</p>
+     * ASSUMES: Build.VERSION.SDK_INT >= 21.
+     */
+    @TargetApi(21)
+    private class API21Workaround {
+
+        /**
+         * API level 21+ notification builder.
+         *</p>
+         * Since NotificationCompat.Builder won't work, this reimplements the whole job using
+         * Notification.Builder, not just the one added line.
+         *<p/>
+         * TODO: Better yet, define a notification compat builder interface with the MediaStyle
+         * feature, and make buildNotification() call one of two implementations.
+         */
+        protected Notification buildNotification(ApplicationState state) {
+            Notification.Builder builder = new Notification.Builder(context)
+                    .setPriority(Notification.PRIORITY_HIGH)
+                    .setCategory(Notification.CATEGORY_ALARM)
+                    .setVisibility(Notification.VISIBILITY_PUBLIC);
+
+            if (showNotification) {
+                TimeCounter timer = state.getTimeCounter();
+                Bitmap largeIcon = BitmapFactory.decodeResource(context.getResources(),
+                        R.drawable.ic_large_notification);
+
+                builder.setSmallIcon(R.drawable.notification_icon)
+                        .setLargeIcon(largeIcon)
+                        .setContentTitle(context.getString(R.string.app_name))
+                        .setOngoing(true)
+                        .setWhen(System.currentTimeMillis() - timer.getElapsedTime())
+                        .setUsesChronometer(true);
+
+                if (state.isEnableReminders()) { // show reminder alarm info in the body
+                    int reminderSecs   = state.getSecondsPerReminder();
+                    int minutes        = reminderSecs / 60;
+                    String contentText = minutes > 1
+                            ? context.getString(R.string.notification_body, minutes)
+                            : context.getString(R.string.notification_body_singular);
+                    long elapsedMs     = timer.getElapsedTime();
+                    int numReminders   = (int)(elapsedMs / (reminderSecs * 1000L));
+
+                    builder.setContentText(contentText);
+
+                    if (numReminders > 0) {
+                        builder.setNumber(numReminders);
+                    }
+                }
+
+                // Make an Intent to launch the Activity from the notification.
+                Intent activityIntent = new Intent(context, MainActivity.class);
+
+                // So navigating back from the Activity goes from the app to the Home screen.
+                TaskStackBuilder stackBuilder = TaskStackBuilder.create(context)
+                        .addParentStack(MainActivity.class)
+                        .addNextIntent(activityIntent);
+                PendingIntent activityPendingIntent =
+                        stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+                builder.setContentIntent(activityPendingIntent);
+
+                // Add an action Intent to pause the timer from the notification.
+                PendingIntent pauseIntent = TimerAppWidgetProvider.makeActionIntent(context,
+                        TimerAppWidgetProvider.ACTION_PAUSE);
+                builder.addAction(R.drawable.ic_action_pause, context.getString(R.string.stop),
+                        pauseIntent);
+
+                // === API v21 ===
+                // Show action #0 (Pause) in MediaStyle's compact notification view, which is the
+                // view that appears on the lock screen.
+                new Notification.MediaStyle(builder).setShowActionsInCompactView(0);
+                // ======
+            }
+
+            if (playChime || vibrate) {
+                int defaults = Notification.DEFAULT_LIGHTS;
+
+                if (playChime) {
+                    builder.setSound(getSoundUri(R.raw.cowbell4));
+                }
+
+                if (vibrate) {
+                    builder.setVibrate(VIBRATE_PATTERN);
+                }
+                builder.setDefaults(defaults);
+            }
+
+            return builder.build();
+        }
+    }
 
     public Notifier(Context context) {
         this.context = context;
@@ -76,6 +174,10 @@ public class Notifier {
         return this;
     }
 
+    private Uri getSoundUri(int soundId) {
+        return Uri.parse("android.resource://" + context.getPackageName() + "/" + soundId);
+    }
+
     /**
      * <em>Opens</em> this app's notification with visible, audible, and/or tactile content
      * depending on {@link #setShowNotification(boolean)}, {@link #setPlayChime(boolean)}, and
@@ -90,6 +192,23 @@ public class Notifier {
             return;
         }
 
+        Notification notification;
+        if (Build.VERSION.SDK_INT >= 21) {
+            // Load the workaround class only if the OS can load it.
+            API21Workaround workaround = new API21Workaround();
+            notification = workaround.buildNotification(state);
+        } else {
+            notification = buildNotification(state);
+        }
+
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
+        notificationManager.notify(NOTIFICATION_ID, notification);
+    }
+
+    /**
+     * API level < 21 notification builder.
+     */
+    protected Notification buildNotification(ApplicationState state) {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setCategory(NotificationCompat.CATEGORY_ALARM)
@@ -153,9 +272,7 @@ public class Notifier {
             int defaults = Notification.DEFAULT_LIGHTS;
 
             if (playChime) {
-                Uri soundUri = Uri.parse(
-                        "android.resource://" + context.getPackageName() + "/" + R.raw.cowbell4);
-                builder.setSound(soundUri);
+                builder.setSound(getSoundUri(R.raw.cowbell4));
             }
 
             if (vibrate) {
@@ -164,8 +281,7 @@ public class Notifier {
             builder.setDefaults(defaults);
         }
 
-        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
-        notificationManager.notify(NOTIFICATION_ID, builder.build());
+       return builder.build();
     }
 
     /** Cancels all of this app's notifications. */
