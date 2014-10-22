@@ -26,10 +26,8 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 
-/**
- * Notification Builder for API level 20-, implemented via NotificationCompat.Builder.
- */
-public class V20Builder implements NotificationBuilder {
+/** Notification Builder for API level 20-, implemented via NotificationCompat.Builder. */
+class V20Builder implements NotificationBuilder {
     private NotificationCompat.Builder builder;
 
     public V20Builder(Context context) {

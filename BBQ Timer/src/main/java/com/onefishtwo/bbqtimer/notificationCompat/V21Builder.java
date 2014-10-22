@@ -33,7 +33,7 @@ import android.net.Uri;
  * ASSUMES: Build.VERSION.SDK_INT >= 21. Conditionally load this class.
  */
 @TargetApi(21)
-public class V21Builder implements NotificationBuilder {
+class V21Builder implements NotificationBuilder {
     private Notification.Builder builder;
 
     public V21Builder(Context context) {

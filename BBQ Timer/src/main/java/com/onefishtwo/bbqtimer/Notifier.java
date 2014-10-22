@@ -32,8 +32,7 @@ import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.app.TaskStackBuilder;
 
 import com.onefishtwo.bbqtimer.notificationCompat.NotificationBuilder;
-import com.onefishtwo.bbqtimer.notificationCompat.V20Builder;
-import com.onefishtwo.bbqtimer.notificationCompat.V21Builder;
+import com.onefishtwo.bbqtimer.notificationCompat.NotificationBuilderFactory;
 import com.onefishtwo.bbqtimer.state.ApplicationState;
 
 /**
@@ -104,16 +103,8 @@ public class Notifier {
 
     /** Builds a notification. */
     protected Notification buildNotification(ApplicationState state) {
-        NotificationBuilder builder;
-
-        if (Build.VERSION.SDK_INT >= 21) {
-            // Load the API V21 class only if the OS can load it.
-            builder = new V21Builder(context);
-        } else {
-            builder = new V20Builder(context);
-        }
-
-        builder.setPriority(NotificationCompat.PRIORITY_HIGH)
+        NotificationBuilder builder = NotificationBuilderFactory.builder(context)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setCategory(NotificationCompat.CATEGORY_ALARM)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
 
