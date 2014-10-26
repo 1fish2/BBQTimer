@@ -22,7 +22,6 @@
             android:clickable="true"
             android:textSize="@dimen/display_text_size"
             android:singleLine="true"
-            android:importantForAccessibility="yes"
             android:gravity="right"
             android:onClick="onClickTimerText"
             android:text="@string/time0"
@@ -46,7 +45,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/start"
-                android:importantForAccessibility="yes"
                 android:paddingLeft="@dimen/button_padding"
                 android:paddingRight="@dimen/button_padding"
                 android:onClick="onClickStartStop"
@@ -59,7 +57,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/reset"
-                android:importantForAccessibility="yes"
                 android:paddingLeft="@dimen/button_padding"
                 android:paddingRight="@dimen/button_padding"
                 android:visibility="invisible"
@@ -83,7 +80,6 @@
                 android:layout_gravity="center_vertical"
                 android:singleLine="false"
                 android:ellipsize="end"
-                android:importantForAccessibility="yes"
                 android:text="@string/reminder_switch"
                 android:onClick="onClickEnableRemindersToggle"
                 android:textSize="@dimen/controls_text_size"
@@ -97,7 +93,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal|left"
-                android:importantForAccessibility="yes"
                 android:layout_weight="0"/>
         </LinearLayout>
 
