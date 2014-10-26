@@ -154,7 +154,7 @@ public class Notifier {
                     stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
             builder.setContentIntent(activityPendingIntent);
 
-            // Add an action Intent to pause the timer from the notification.
+            // Add action Intent #0 to pause the timer from the notification.
             PendingIntent pauseIntent = TimerAppWidgetProvider.makeActionIntent(context,
                     TimerAppWidgetProvider.ACTION_PAUSE);
             builder.addAction(R.drawable.ic_action_pause, context.getString(R.string.stop),
