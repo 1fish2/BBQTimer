@@ -126,8 +126,7 @@ public class Notifier {
                 String contentText = minutes > 1
                         ? context.getString(R.string.notification_body, minutes)
                         : context.getString(R.string.notification_body_singular);
-                long elapsedMs     = timer.getElapsedTime();
-                int numReminders   = (int)(elapsedMs / (reminderSecs * 1000L));
+                int numReminders   = AlarmReceiver.numRemindersSoFar(state);
 
                 builder.setContentText(contentText);
 

@@ -31,7 +31,9 @@ import com.onefishtwo.bbqtimer.state.ApplicationState;
  * Uses AlarmManager to perform periodic reminder notifications.
  */
 public class AlarmReceiver extends BroadcastReceiver {
-    private static final long WINDOW_MS = 50L; // Allow some time flexibility to save battery power.
+    /* Allow wakeup time flexibility to save battery power on supporting OS levels. */
+    private static final boolean ALLOW_WAKEUP_FLEXIBILITY = android.os.Build.VERSION.SDK_INT >= 19;
+    private static final long WAKEUP_WINDOW_MS = ALLOW_WAKEUP_FLEXIBILITY ? 50L : 0L;
 
     /** Constructs a PendingIntent for the AlarmManager to invoke AlarmReceiver. */
     private static PendingIntent makeAlarmPendingIntent(Context context) {
@@ -49,25 +51,46 @@ public class AlarmReceiver extends BroadcastReceiver {
     private static long nextReminderTime(ApplicationState state) {
         TimeCounter timer = state.getTimeCounter();
         long periodMs     = state.getMillisecondsPerReminder();
-        long timed = timer.getElapsedTime();
+        long now          = timer.elapsedRealtimeClock();
+        long timed        = timer.getElapsedTime();
         long untilNextReminder = periodMs - (timed % periodMs);
-        long now = timer.elapsedRealtimeClock();
+
+        // Don't (re)schedule within the wakeup window. That'd double-trigger the notification.
+        // (Maybe don't even schedule within the alarm sound's duration.)
+        if (untilNextReminder <= WAKEUP_WINDOW_MS) {
+            untilNextReminder += periodMs;
+        }
 
         return now + untilNextReminder;
     }
 
-    /** (Re)schedules the next reminder Notification via an AlarmManager Intent. */
+    /**
+     * (Re)schedules the next reminder Notification via an AlarmManager Intent.
+     * Gives AlarmManager time flexibility to save battery power.
+     */
     static void scheduleNextReminder(Context context, ApplicationState state) {
         AlarmManager alarmMgr = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
         PendingIntent pendingIntent = makeAlarmPendingIntent(context);
         long nextReminder = nextReminderTime(state);
 
         if (android.os.Build.VERSION.SDK_INT >= 19) {
-            alarmMgr.setWindow(AlarmManager.ELAPSED_REALTIME_WAKEUP, nextReminder - WINDOW_MS,
-                    WINDOW_MS, pendingIntent);
+            alarmMgr.setWindow(AlarmManager.ELAPSED_REALTIME_WAKEUP,
+                    nextReminder - WAKEUP_WINDOW_MS, WAKEUP_WINDOW_MS, pendingIntent);
         } else {
             alarmMgr.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, nextReminder, pendingIntent);
         }
+    }
+
+    /**
+     * Returns the number of reminder alarms that happened by "now," allowing for the wakeup time
+     * flexibility where alarms may arrive a little early.
+     */
+    static int numRemindersSoFar(ApplicationState state) {
+        TimeCounter timer        = state.getTimeCounter();
+        long elapsedMsWithWindow = timer.getElapsedTime() + WAKEUP_WINDOW_MS;
+        long reminderMs          = state.getSecondsPerReminder() * 1000L;
+
+        return (int)(elapsedMsWithWindow / reminderMs);
     }
 
     /**
