@@ -18,15 +18,17 @@ function large_notification_icon() {
 inkscape --shell <<COMMANDS
   --export-png "${MAIN}ic_launcher-web.png"         -w 512 "${INPUT}"
 
-  `launcher_icon m    48`
-  `launcher_icon h    72`
-  `launcher_icon xh   96`
-  `launcher_icon xxh 144`
+  `launcher_icon m     48`
+  `launcher_icon h     72`
+  `launcher_icon xh    96`
+  `launcher_icon xxh  144`
+  `launcher_icon xxxh 192`
 
-  `large_notification_icon m    64`
-  `large_notification_icon h    96`
-  `large_notification_icon xh  128`
-  `large_notification_icon xxh 192`
+  `large_notification_icon m     64`
+  `large_notification_icon h     96`
+  `large_notification_icon xh   128`
+  `large_notification_icon xxh  192`
+  `large_notification_icon xxxh 256`
 
   quit
 COMMANDS

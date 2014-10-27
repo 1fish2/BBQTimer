@@ -15,9 +15,10 @@ RES="${MAIN}res/"
 DRAWABLE="${RES}/drawable"
 
 inkscape --shell <<COMMANDS
-  --export-png "${DRAWABLE}-mdpi/${OUTPUT}"   -w  24 "${INPUT}"
-  --export-png "${DRAWABLE}-hdpi/${OUTPUT}"   -w  36 "${INPUT}"
-  --export-png "${DRAWABLE}-xhdpi/${OUTPUT}"  -w  48 "${INPUT}"
-  --export-png "${DRAWABLE}-xxhdpi/${OUTPUT}" -w  72 "${INPUT}"
+  --export-png "${DRAWABLE}-mdpi/${OUTPUT}"    -w  24 "${INPUT}"
+  --export-png "${DRAWABLE}-hdpi/${OUTPUT}"    -w  36 "${INPUT}"
+  --export-png "${DRAWABLE}-xhdpi/${OUTPUT}"   -w  48 "${INPUT}"
+  --export-png "${DRAWABLE}-xxhdpi/${OUTPUT}"  -w  72 "${INPUT}"
+  --export-png "${DRAWABLE}-xxxhdpi/${OUTPUT}" -w  96 "${INPUT}"
 quit
 COMMANDS
