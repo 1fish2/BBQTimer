@@ -24,9 +24,13 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 
-/** Notification Builder for API level 20-, implemented via NotificationCompat.Builder. */
+/**
+ * Notification Builder for API level 20-, implemented via NotificationCompat.Builder plus
+ * additional OS bug workarounds.
+ */
 class V20Builder implements NotificationBuilder {
     private NotificationCompat.Builder builder;
 
@@ -66,7 +70,17 @@ class V20Builder implements NotificationBuilder {
 
     @Override
     public NotificationBuilder setNumber(int number) {
-        builder.setNumber(number);
+        // WORKAROUND: On Android level 12 HONEYCOMB_MR1, setNumber() will later crash with
+        // Resources$NotFoundException "Resource ID #0x1050019" from
+        // Resources.getDimensionPixelSize(). It works on API v15.
+        //
+        // On older builds, calling builder.setContentInfo() would be a workaround but it's a noop.
+        //
+        // TODO: Test API level 13 - 14. Those emulators take most of an hour to launch, then croak.
+        if (Build.VERSION.SDK_INT >= 15) {
+            builder.setNumber(number);
+        }
+
         return this;
     }
 
@@ -78,7 +92,15 @@ class V20Builder implements NotificationBuilder {
 
     @Override
     public NotificationBuilder setLargeIcon(Bitmap icon) {
-        builder.setLargeIcon(icon);
+        // WORKAROUND: On Android level 12, setLargeIcon() will later crash with "FATAL EXCEPTION:
+        // main android.app.RemoteServiceException: Bad notification posted ...: Couldn't expand
+        // RemoteViews for: StatusBarNotification(...)".
+        //
+        // TODO: What about Android level 13-14?
+        if (Build.VERSION.SDK_INT >= 15) {
+            builder.setLargeIcon(icon);
+        }
+
         return this;
     }
 

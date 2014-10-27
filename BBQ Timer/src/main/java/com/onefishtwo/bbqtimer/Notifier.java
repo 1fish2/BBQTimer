@@ -26,7 +26,6 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.app.TaskStackBuilder;
@@ -130,16 +129,8 @@ public class Notifier {
 
                 builder.setContentText(contentText);
 
-                // WORKAROUND: On Android v12 HONEYCOMB_MR1, setNumber() will later crash with
-                // Resources$NotFoundException "Resource ID #0x1050019" from
-                // Resources.getDimensionPixelSize(). It works on API v15.
-                //
-                // On older builds, calling builder.setContentInfo() is a candidate workaround
-                // except in fact it has no visible impact.
                 if (numReminders > 0) {
-                    if (Build.VERSION.SDK_INT >= 15) { // TODO: Test Android versions 13 .. 14.
-                        builder.setNumber(numReminders);
-                    }
+                    builder.setNumber(numReminders);
                 }
             }
 
