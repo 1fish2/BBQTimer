@@ -28,7 +28,8 @@
             android:ellipsize="end"
             android:typeface="sans"
             android:textColor="@color/running_timer_colors"
-            android:layout_gravity="right"/>
+            android:layout_gravity="right"
+            android:focusable="true"/>
 
         <LinearLayout
             android:orientation="horizontal"
@@ -49,7 +50,8 @@
                 android:paddingRight="@dimen/button_padding"
                 android:onClick="onClickStartStop"
                 android:drawableLeft="@drawable/ic_play"
-                android:drawablePadding="@dimen/button_drawable_padding"/>
+                android:drawablePadding="@dimen/button_drawable_padding"
+                android:focusable="true"/>
 
             <Button
                 android:id="@+id/resetButton"
@@ -59,10 +61,11 @@
                 android:text="@string/reset"
                 android:paddingLeft="@dimen/button_padding"
                 android:paddingRight="@dimen/button_padding"
-                android:visibility="invisible"
                 android:onClick="onClickReset"
                 android:drawableLeft="@drawable/ic_reset"
-                android:drawablePadding="@dimen/button_drawable_padding"/>
+                android:drawablePadding="@dimen/button_drawable_padding"
+                android:focusable="true"
+                android:nextFocusForward="@+id/enableReminders"/>
         </LinearLayout>
 
         <LinearLayout
@@ -86,14 +89,16 @@
                 android:layout_weight="6"
                 android:layout_margin="@dimen/widget_margin"
                 android:paddingTop="@dimen/small_button_padding"
-                android:paddingBottom="@dimen/small_button_padding"/>
+                android:paddingBottom="@dimen/small_button_padding"
+                android:focusable="true"/>
 
             <NumberPicker
                 android:id="@+id/minutesPicker"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal|left"
-                android:layout_weight="0"/>
+                android:layout_weight="0"
+                android:focusable="true"/>
         </LinearLayout>
 
     </LinearLayout>
