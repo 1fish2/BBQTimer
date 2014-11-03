@@ -132,6 +132,8 @@ public class Notifier {
                 if (numReminders > 0) {
                     builder.setNumber(numReminders);
                 }
+            } else {
+                builder.setContentText(context.getString(R.string.timer_running));
             }
 
             // Make an Intent to launch the Activity from the notification.
