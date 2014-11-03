@@ -39,6 +39,9 @@
       reminder alarms. -->
     <string name="notification_body_singular">Alarm every minute</string>
 
+    <!-- Notification body message. The timer is running with no reminder alarms. -->
+    <string name="timer_running">BBQ Timer running</string>
+
     <!-- The initial text for a reset timer showing 0 minutes and 0.0 seconds. This should match the
       locale's format used by the Android OS utility DateUtils.formatElapsedTime() with appended
       tenths of a second, BUT it doesn't really matter since it gets replaced immediately with a
