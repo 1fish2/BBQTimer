@@ -158,7 +158,7 @@ public class TimeCounter {
         return isRunning;
     }
 
-    /** Cycles the state: Reset -> Running -> Paused -> Reset. */
+    /** Cycles the state: Reset -> Running -> Paused -> Reset. Reset means Paused at 0:00. */
     public void cycle() {
         if (isRunning()) {
             pause();
