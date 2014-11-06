@@ -32,10 +32,14 @@ import java.util.Formatter;
 
 /**
  * A stopwatch time counter (data model).
+ * <p/>
+ * The run states are {Running, Paused, Stopped}, where Paused is like Stopped plus an ongoing
+ * Notification so it can be viewed and resumed on the Android Lollipop lock screen.
  */
 public class TimeCounter {
     /** PERSISTENT STATE identifiers. */
     static final String PREF_IS_RUNNING = "Timer_isRunning";
+    static final String PREF_IS_PAUSED  = "Timer_isPaused";  // new in app versionCode 10
     static final String PREF_START_TIME = "Timer_startTime";
     static final String PREF_PAUSE_TIME = "Timer_pauseTime";
 
@@ -73,8 +77,9 @@ public class TimeCounter {
     }
 
     private boolean isRunning;
-    private long startTime; // when started, in system elapsed milliseconds
-    private long pauseTime; // if !isRunning, when paused, in system elapsed milliseconds
+    private boolean isPaused;  // distinguishes Paused from Stopped (if !isRunning)
+    private long startTime; // elapsedRealtimeClock() when the timer was started
+    private long pauseTime; // elapsedRealtimeClock() when the timer was paused
 
     public TimeCounter() {
     }
@@ -82,6 +87,7 @@ public class TimeCounter {
     /** Saves state to a preferences editor. */
     public void save(SharedPreferences.Editor prefsEditor) {
         prefsEditor.putBoolean(PREF_IS_RUNNING, isRunning);
+        prefsEditor.putBoolean(PREF_IS_PAUSED, isPaused);
         prefsEditor.putLong(PREF_START_TIME, startTime);
         prefsEditor.putLong(PREF_PAUSE_TIME, pauseTime);
     }
@@ -89,17 +95,18 @@ public class TimeCounter {
     /** Loads state from a preferences object. */
     public void load(SharedPreferences prefs) {
         isRunning = prefs.getBoolean(PREF_IS_RUNNING, false);
+        isPaused  = prefs.getBoolean(PREF_IS_PAUSED, false);  // absent in older data
         startTime = prefs.getLong(PREF_START_TIME, 0);
         pauseTime = prefs.getLong(PREF_PAUSE_TIME, 0);
 
-        // Enforce invariants.
+        // Enforce invariants and normalize the state.
         if (isRunning) {
-            if (startTime > elapsedRealtimeClock()) {
-                // Must've rebooted.
-                reset();
+            isPaused = false;
+            if (startTime > elapsedRealtimeClock()) { // Must've rebooted.
+                stop();
             }
-        } else if (pauseTime < startTime) {
-            reset();
+        } else if (pauseTime < startTime || !isPaused) {
+            stop();
         }
     }
 
@@ -118,14 +125,46 @@ public class TimeCounter {
         return SystemClock.elapsedRealtime();
     }
 
-    /** Returns true if the timer is running (not paused/stopped). */
+    /** Returns true if the timer is Running (not Stopped/Paused). */
     public boolean isRunning() {
         return isRunning;
     }
 
-    /** Returns the timer's [running or paused] elapsed time, in milliseconds. */
+    /** Returns true if the timer is Paused (not Stopped/Running). */
+    public boolean isPaused() {
+        return !isRunning && isPaused;
+    }
+
+    /** Returns true if the timer is Stopped (not Running/Paused). */
+    public boolean isStopped() {
+        return !isRunning && !isPaused;
+    }
+
+    /**
+     * Returns the Timer's Running/Paused/Stopped state for debugging. Not localized.
+     *
+     * @see com.onefishtwo.bbqtimer.Notifier#timerRunState(TimeCounter)
+     */
+    public String runState() {
+        if (isRunning) {
+            return "Running";
+        } else if (isPaused) {
+            return "Paused";
+        } else {
+            return "Stopped";
+        }
+    }
+
+    /** Returns the timer's (Stopped/Paused/Running) elapsed time, in milliseconds. */
     public long getElapsedTime() {
         return (isRunning ? elapsedRealtimeClock() : pauseTime) - startTime;
+    }
+
+    /** Stops and resets the timer to 0:00. */
+    public void stop() {
+        startTime = pauseTime = 0;
+        isRunning = false;
+        isPaused  = false;
     }
 
     /** Starts or resumes the timer. */
@@ -133,6 +172,7 @@ public class TimeCounter {
         if (!isRunning) {
             startTime = elapsedRealtimeClock() - (pauseTime - startTime);
             isRunning = true;
+            isPaused  = false;
         }
     }
 
@@ -142,14 +182,15 @@ public class TimeCounter {
             pauseTime = elapsedRealtimeClock();
             isRunning = false;
         }
+        isPaused = true;
     }
 
     /**
-     * Starts or pauses, i.e. toggles the running state.
+     * Toggles the state to Running or Paused.
      *
      * @return true if the timer is now running.
      */
-    public boolean toggleRunning() {
+    public boolean toggleRunPause() {
         if (isRunning) {
             pause();
         } else {
@@ -158,24 +199,30 @@ public class TimeCounter {
         return isRunning;
     }
 
-    /** Cycles the state: Reset -> Running -> Paused -> Reset. Reset means Paused at 0:00. */
+    /**
+     * Cycles the state: Stopped -> Running -> Paused -> Stopped (treating Paused at 0:00 the same
+     * as Stopped).
+     */
     public void cycle() {
         if (isRunning()) {
             pause();
-        } else if (getElapsedTime() == 0) {
+        } else if (isStopped() || isReset()) {
             start();
         } else {
-            reset();
+            stop();
         }
     }
 
-    /** Stops and resets the timer. */
+    /** Resets the timer to 0:00; pausing if it was Running or letting it remain Stopped. */
     public void reset() {
         startTime = pauseTime = 0;
-        isRunning = false;
+        if (isRunning) {
+            isRunning = false;
+            isPaused  = true;
+        } // else remain Paused or Stopped
     }
 
-    /** Returns true if the TimeCounter is in the Reset state, i.e. Paused at 0:00. */
+    /** Returns true if the TimeCounter is Stopped/Paused at 0:00. */
     public boolean isReset() {
         return !isRunning && getElapsedTime() == 0;
     }
@@ -227,7 +274,6 @@ public class TimeCounter {
 
     @Override
     public String toString() {
-        return (isRunning ? "TimeCounter running @ " : "TimeCounter paused @ ")
-                + formatHhMmSs(getElapsedTime());
+        return "TimeCounter " + runState() + " @ " + formatHhMmSs(getElapsedTime());
     }
 }

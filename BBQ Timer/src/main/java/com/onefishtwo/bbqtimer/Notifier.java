@@ -61,8 +61,8 @@ public class Notifier {
     }
 
     /**
-     * Builder-style setter: Whether {@link #openOrCancel} should play a notification chime.
-     * Default = false.
+     * Builder-style setter: Whether {@link #openOrCancel} should play a notification chime for a
+     * reminder. Default = false.
      */
     public Notifier setPlayChime(boolean playChime) {
         this.playChime = playChime;
@@ -70,7 +70,7 @@ public class Notifier {
     }
 
     /**
-     * Builder-style setter: Whether to vibrate and flash the notification light. Default = true.
+     * Builder-style setter: Whether to vibrate and flash the notification light. Default = false.
      */
     public Notifier setVibrate(boolean vibrate) {
         this.vibrate = vibrate;
@@ -79,6 +79,17 @@ public class Notifier {
 
     private Uri getSoundUri(int soundId) {
         return Uri.parse("android.resource://" + context.getPackageName() + "/" + soundId);
+    }
+
+    /** Returns a localized description of the timer's Running/Paused/Stopped state. */
+    public String timerRunState(TimeCounter timer) {
+        if (timer.isRunning()) {
+            return context.getString(R.string.timer_running);
+        } else if (timer.isPaused()) {
+            return context.getString(R.string.timer_paused);
+        } else {
+            return context.getString(R.string.timer_stopped);
+        }
     }
 
     /**
@@ -115,11 +126,11 @@ public class Notifier {
             builder.setSmallIcon(R.drawable.notification_icon)
                     .setLargeIcon(largeIcon)
                     .setContentTitle(context.getString(R.string.app_name))
-                    .setOngoing(true)
-                    .setWhen(System.currentTimeMillis() - timer.getElapsedTime())
+                    .setWhen(System.currentTimeMillis() - timer.getElapsedTime()) // TODO: Freeze this if paused
                     .setUsesChronometer(true);
 
-            if (state.isEnableReminders()) { // show reminder alarm info in the notification body
+            // Set the notification body text to explain the run state.
+            if (timer.isRunning() && state.isEnableReminders()) {
                 int reminderSecs   = state.getSecondsPerReminder();
                 int minutes        = reminderSecs / 60;
                 String contentText = minutes > 1
@@ -133,7 +144,12 @@ public class Notifier {
                     builder.setNumber(numReminders);
                 }
             } else {
-                builder.setContentText(context.getString(R.string.timer_running));
+                builder.setContentText(timerRunState(timer));
+                if (timer.isPaused()) {
+                    builder.setSubText(context.getString(R.string.dismiss_tip));
+                } else if (timer.isRunning()) {
+                    builder.setSubText(context.getString(R.string.no_reminders_tip));
+                }
             }
 
             // Make an Intent to launch the Activity from the notification.
@@ -147,16 +163,41 @@ public class Notifier {
                     stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
             builder.setContentIntent(activityPendingIntent);
 
-            // Add action Intent #0 to pause the timer from the notification.
+            // Action button to run the timer.
+            PendingIntent runIntent = TimerAppWidgetProvider.makeActionIntent(context,
+                    TimerAppWidgetProvider.ACTION_RUN);
+            if (!timer.isRunning()) {
+                builder.addAction(R.drawable.ic_action_play, context.getString(R.string.start),
+                        runIntent);
+            }
+
+            // Action button to pause the timer.
             PendingIntent pauseIntent = TimerAppWidgetProvider.makeActionIntent(context,
                     TimerAppWidgetProvider.ACTION_PAUSE);
-            builder.addAction(R.drawable.ic_action_pause, context.getString(R.string.stop),
-                    pauseIntent);
+            if (!timer.isPaused()) {
+                builder.addAction(R.drawable.ic_action_pause, context.getString(R.string.pause),
+                        pauseIntent);
+            }
+
+            // Action button to stop the timer.
+            PendingIntent stopIntent = TimerAppWidgetProvider.makeActionIntent(context,
+                    TimerAppWidgetProvider.ACTION_STOP);
+            if (!timer.isStopped()) {
+                builder.addAction(R.drawable.ic_action_stop, context.getString(R.string.stop),
+                        stopIntent);
+            }
+
+            // Allow stopping via dismissing the notification (unless it's "ongoing").
+            builder.setDeleteIntent(stopIntent);
 
             // --- Introduced in API V21 Lollipop ---
-            // Show action #0 (Pause) in MediaStyle's compact notification view, which is what
-            // appears in lock screen notifications.
-            builder.setMediaStyleActionsInCompactView(0);
+            // Show 2 actions in MediaStyle's compact notification view (the view that appears in
+            // lock screen notifications).
+            builder.setMediaStyleActionsInCompactView(0, 1);
+
+            if (timer.isRunning()) {
+                builder.setOngoing(true);
+            }
         }
 
         if (playChime || vibrate) {

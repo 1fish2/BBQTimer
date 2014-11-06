@@ -69,6 +69,12 @@ class V20Builder implements NotificationBuilder {
     }
 
     @Override
+    public NotificationBuilder setSubText(CharSequence text) {
+        builder.setSubText(text);
+        return this;
+    }
+
+    @Override
     public NotificationBuilder setNumber(int number) {
         // WORKAROUND: On Android level 12 HONEYCOMB_MR1, setNumber() will later crash with
         // Resources$NotFoundException "Resource ID #0x1050019" from
@@ -87,6 +93,12 @@ class V20Builder implements NotificationBuilder {
     @Override
     public NotificationBuilder setContentIntent(PendingIntent intent) {
         builder.setContentIntent(intent);
+        return this;
+    }
+
+    @Override
+    public NotificationBuilder setDeleteIntent(PendingIntent intent) {
+        builder.setDeleteIntent(intent);
         return this;
     }
 

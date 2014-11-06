@@ -83,6 +83,7 @@ public class MainActivity extends ActionBarActivity implements NumberPicker.OnVa
 
     private Button resetButton;
     private Button startStopButton;
+    private Button stopButton;
     private TextView displayView;
     private CompoundButton enableRemindersToggle;
     private NumberPicker minutesPicker;
@@ -95,6 +96,7 @@ public class MainActivity extends ActionBarActivity implements NumberPicker.OnVa
 
         resetButton           = (Button) findViewById(R.id.resetButton);
         startStopButton       = (Button) findViewById(R.id.startStopButton);
+        stopButton            = (Button) findViewById(R.id.stopButton);
         displayView           = (TextView) findViewById(R.id.display);
         enableRemindersToggle = (CompoundButton) findViewById(R.id.enableReminders);
         minutesPicker         = (NumberPicker) findViewById(R.id.minutesPicker);
@@ -166,11 +168,11 @@ public class MainActivity extends ActionBarActivity implements NumberPicker.OnVa
         return super.onOptionsItemSelected(item);
     }
 
-    /** The user tapped the Start/Stop button. */
+    /** The user tapped the Run/Pause button. */
     // TODO: Use listeners to update the Activity UI and app widgets.
     // A Proguard rule keeps all Activity *(View) methods.
     public void onClickStartStop(View v) {
-        timer.toggleRunning();
+        timer.toggleRunPause();
         updateHandler.beginScheduledUpdate();
         updateUI();
         TimerAppWidgetProvider.updateAllWidgets(this, state);
@@ -179,6 +181,13 @@ public class MainActivity extends ActionBarActivity implements NumberPicker.OnVa
     /** The user tapped the Reset button. */
     public void onClickReset(View v) {
         timer.reset();
+        updateUI();
+        TimerAppWidgetProvider.updateAllWidgets(this, state);
+    }
+
+    /** The user tapped the Stop button. */
+    public void onClickStop(View v) {
+        timer.stop();
         updateUI();
         TimerAppWidgetProvider.updateAllWidgets(this, state);
     }
@@ -227,11 +236,11 @@ public class MainActivity extends ActionBarActivity implements NumberPicker.OnVa
 
         displayTime();
 
-        resetButton.setVisibility(isRunning
-                || timer.getElapsedTime() == 0 ? View.INVISIBLE : View.VISIBLE);
-        startStopButton.setText(isRunning ? R.string.stop : R.string.start);
+        resetButton.setVisibility(isRunning || timer.isReset() ? View.INVISIBLE : View.VISIBLE);
+        startStopButton.setText(isRunning ? R.string.pause : R.string.start);
         startStopButton.setCompoundDrawablesWithIntrinsicBounds(
                 isRunning ? R.drawable.ic_pause : R.drawable.ic_play, 0, 0, 0);
+        stopButton.setVisibility(timer.isStopped() ? View.INVISIBLE : View.VISIBLE);
 
         enableRemindersToggle.setChecked(state.isEnableReminders());
 

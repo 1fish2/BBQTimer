@@ -71,6 +71,12 @@ class V21Builder implements NotificationBuilder {
     }
 
     @Override
+    public NotificationBuilder setSubText(CharSequence text) {
+        builder.setSubText(text);
+        return this;
+    }
+
+    @Override
     public NotificationBuilder setNumber(int number) {
         builder.setNumber(number);
         return this;
@@ -79,6 +85,12 @@ class V21Builder implements NotificationBuilder {
     @Override
     public NotificationBuilder setContentIntent(PendingIntent intent) {
         builder.setContentIntent(intent);
+        return this;
+    }
+
+    @Override
+    public NotificationBuilder setDeleteIntent(PendingIntent intent) {
+        builder.setDeleteIntent(intent);
         return this;
     }
 

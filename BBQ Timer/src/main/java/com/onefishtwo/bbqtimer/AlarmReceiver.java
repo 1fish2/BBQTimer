@@ -103,19 +103,19 @@ public class AlarmReceiver extends BroadcastReceiver {
         boolean isMainActivityVisible = state.isMainActivityVisible();
         boolean enableReminders       = state.isEnableReminders();
         TimeCounter timer             = state.getTimeCounter();
-        boolean isRunning             = timer.isRunning();
+        boolean isActive              = !timer.isStopped();
         Notifier notifier             = new Notifier(context);
 
-        notifier.setShowNotification(isRunning && !isMainActivityVisible).openOrCancel(state);
+        notifier.setShowNotification(isActive && !isMainActivityVisible).openOrCancel(state);
 
-        if (isRunning && enableReminders) {
+        if (isActive && enableReminders) {
             scheduleNextReminder(context, state);
         } else {
             cancelReminders(context);
         }
     }
 
-    /** Cancels any outstanding reminders via an AlarmManager Intent. */
+    /** Cancels any outstanding reminders by canceling the AlarmManager Intent. */
     public static void cancelReminders(Context context) {
         AlarmManager alarmMgr = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
         PendingIntent pendingIntent = makeAlarmPendingIntent(context);

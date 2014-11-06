@@ -18,10 +18,12 @@
     <!-- Label for the button that starts or resumes the stopped timer. -->
     <string name="start">Start</string>
 
-    <!-- Label for the button that pauses the running timer. This stops the timer without resetting
-      the timer, and the timer can be resumed after this, so "pause" is a more fitting term than
-      "stop" in English. -->
-    <string name="stop">Pause</string>
+    <!-- Label for the button that pauses the running timer. This doesn't reset the timer nor hide
+      its notification. -->
+    <string name="pause">Pause</string>
+
+    <!-- Label for the button that stops and resets the timer and hides its notification. -->
+    <string name="stop">Stop</string>
 
     <!-- Accessibility description for the button that starts or resumes the stopped timer or else
       pauses the running timer. -->
@@ -39,8 +41,26 @@
       reminder alarms. -->
     <string name="notification_body_singular">Alarm every minute</string>
 
-    <!-- Notification body message. The timer is running with no reminder alarms. -->
+    <!-- Notification body message: The timer is running with no reminder alarms. This message must
+       be short enough to fit in one line of the notification drawer area. -->
     <string name="timer_running">Running</string>
+
+    <!-- Notification body message: The timer is paused. This message must be short enough to fit in
+       one line of the notification drawer area. -->
+    <string name="timer_paused">Paused</string>
+
+    <!-- Notification body message: The timer is stopped. This message must be short enough to fit
+       in one line of the notification drawer area. -->
+    <string name="timer_stopped">Stopped</string>
+
+    <!-- Notification body third line of text: a tip on how to dismiss the notification. This
+       message must be short enough to fit in one line of the notification drawer area. -->
+    <string name="dismiss_tip">(Tip: Swipe to stop)</string>
+
+    <!-- Notification body third line of text: a tip on how to add periodic reminder alarms
+      (thus indicating that reminders are off). This message must be short enough to fit in one line
+      of the notification drawer area. -->
+    <string name="no_reminders_tip">(Tip: Try periodic alarms)</string>
 
     <!-- The initial text for a reset timer showing 0 minutes and 0.0 seconds. This should match the
       locale's format used by the Android OS utility DateUtils.formatElapsedTime() with appended

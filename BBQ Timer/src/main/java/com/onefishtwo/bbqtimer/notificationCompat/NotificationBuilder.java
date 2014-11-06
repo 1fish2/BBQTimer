@@ -37,8 +37,10 @@ public interface NotificationBuilder {
     public NotificationBuilder setSmallIcon(int icon);
     public NotificationBuilder setContentTitle(CharSequence title);
     public NotificationBuilder setContentText(CharSequence text);
+    public NotificationBuilder setSubText(CharSequence text);
     public NotificationBuilder setNumber(int number);
     public NotificationBuilder setContentIntent(PendingIntent intent);
+    public NotificationBuilder setDeleteIntent(PendingIntent intent);
     public NotificationBuilder setLargeIcon(Bitmap icon);
     public NotificationBuilder setSound(Uri sound);
     public NotificationBuilder setVibrate(long[] pattern);

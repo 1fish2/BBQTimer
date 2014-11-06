@@ -39,8 +39,10 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
     private static final int PAUSED_CHRONOMETER_CHILD  = 1;
     private static final int RESET_CHRONOMETER_CHILD   = 2;
 
-    static final String ACTION_START_STOP = "com.onefishtwo.bbqtimer.ACTION_START_STOP";
+    static final String ACTION_RUN_PAUSE  = "com.onefishtwo.bbqtimer.ACTION_RUN_PAUSE";
+    static final String ACTION_RUN        = "com.onefishtwo.bbqtimer.ACTION_RUN";
     static final String ACTION_PAUSE      = "com.onefishtwo.bbqtimer.ACTION_PAUSE";
+    static final String ACTION_STOP       = "com.onefishtwo.bbqtimer.ACTION_STOP";
     static final String ACTION_CYCLE      = "com.onefishtwo.bbqtimer.ACTION_CYCLE";
 
     // Synchronized on the class.
@@ -85,7 +87,7 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
             int[] appWidgetIds, ApplicationState state) {
         TimeCounter timer = state.getTimeCounter();
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.app_widget);
-        PendingIntent startStopIntent = makeActionIntent(context, ACTION_START_STOP);
+        PendingIntent runPauseIntent  = makeActionIntent(context, ACTION_RUN_PAUSE);
         PendingIntent cycleIntent     = makeActionIntent(context, ACTION_CYCLE);
 
         if (timer.isRunning()) {
@@ -106,7 +108,7 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
         }
 
         views.setTextViewText(R.id.secondaryText, secondaryText());
-        views.setOnClickPendingIntent(R.id.remoteStartStopButton, startStopIntent);
+        views.setOnClickPendingIntent(R.id.remoteStartStopButton, runPauseIntent);
         views.setOnClickPendingIntent(R.id.viewFlipper, cycleIntent);
 
         appWidgetManager.updateAppWidget(appWidgetIds, views);
@@ -161,27 +163,21 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
         ApplicationState state = ApplicationState.sharedInstance(context);
         TimeCounter timer      = state.getTimeCounter();
 
-        if (ACTION_START_STOP.equals(action)) {
-            // The user tapped a widget's start/stop button.
-            timer.toggleRunning();
-            state.save(context);
-
-            updateAllWidgets(context, state);
-            AlarmReceiver.updateNotifications(context);
-        } else if (ACTION_PAUSE.equals(action)) {
-            // The user tapped a notification's pause button.
+        if (ACTION_RUN_PAUSE.equals(action)) { // The user tapped a Run/Pause button.
+            timer.toggleRunPause();
+            saveStateAndUpdateUI(context, state);
+        } else if (ACTION_RUN.equals(action)) { // The user tapped a Run (aka Play) button.
+            timer.start();
+            saveStateAndUpdateUI(context, state);
+        } else if (ACTION_PAUSE.equals(action)) { // The user tapped a Pause button.
             timer.pause();
-            state.save(context);
-
-            updateAllWidgets(context, state);
-            AlarmReceiver.updateNotifications(context);
-        } else if (ACTION_CYCLE.equals(action)) {
-            // The user tapped a widget's time text. Cycle Start/Pause/Reset.
+            saveStateAndUpdateUI(context, state);
+        } else if (ACTION_STOP.equals(action)) { // The user tapped a Stop button.
+            timer.stop();
+            saveStateAndUpdateUI(context, state);
+        } else if (ACTION_CYCLE.equals(action)) { // The user tapped the time text.
             timer.cycle();
-            state.save(context);
-
-            updateAllWidgets(context, state);
-            AlarmReceiver.updateNotifications(context);
+            saveStateAndUpdateUI(context, state);
         } else if (Intent.ACTION_DATE_CHANGED.equals(action)
                 || Intent.ACTION_TIME_CHANGED.equals(action)
                 || Intent.ACTION_TIMEZONE_CHANGED.equals(action)) {
@@ -189,5 +185,13 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
             clearSecondaryTextCache();
             updateAllWidgets(context, state);
         }
+    }
+
+    /** Saves app state then updates the Widgets and Notifications. */
+    private void saveStateAndUpdateUI(Context context, ApplicationState state) {
+        state.save(context);
+
+        updateAllWidgets(context, state);
+        AlarmReceiver.updateNotifications(context);
     }
 }

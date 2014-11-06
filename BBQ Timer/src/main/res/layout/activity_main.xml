@@ -64,6 +64,17 @@
                 android:onClick="onClickReset"
                 android:drawableLeft="@drawable/ic_reset"
                 android:drawablePadding="@dimen/button_drawable_padding"
+                android:focusable="true"/>
+
+            <Button
+                android:id="@+id/stopButton"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="@dimen/button_padding"
+                android:paddingRight="@dimen/button_padding"
+                android:onClick="onClickStop"
+                android:drawableLeft="@drawable/ic_action_stop"
                 android:focusable="true"
                 android:nextFocusForward="@+id/enableReminders"/>
         </LinearLayout>
