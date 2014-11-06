@@ -33,6 +33,7 @@ import android.net.Uri;
  */
 public interface NotificationBuilder {
     public NotificationBuilder setWhen(long when);
+    public NotificationBuilder setShowWhen(boolean show);
     public NotificationBuilder setUsesChronometer(boolean b);
     public NotificationBuilder setSmallIcon(int icon);
     public NotificationBuilder setContentTitle(CharSequence title);

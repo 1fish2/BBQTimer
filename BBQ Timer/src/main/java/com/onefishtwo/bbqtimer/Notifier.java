@@ -81,12 +81,12 @@ public class Notifier {
         return Uri.parse("android.resource://" + context.getPackageName() + "/" + soundId);
     }
 
-    /** Returns a localized description of the timer's Running/Paused/Stopped state. */
+    /** Returns a localized description of the timer's run state, e.g. "Paused 00:12.3". */
     public String timerRunState(TimeCounter timer) {
         if (timer.isRunning()) {
             return context.getString(R.string.timer_running);
         } else if (timer.isPaused()) {
-            return context.getString(R.string.timer_paused);
+            return context.getString(R.string.timer_paused, timer.formatHhMmSsFraction());
         } else {
             return context.getString(R.string.timer_stopped);
         }
@@ -120,17 +120,22 @@ public class Notifier {
 
         if (showNotification) {
             TimeCounter timer = state.getTimeCounter();
+            boolean isRunning = timer.isRunning();
             Bitmap largeIcon = BitmapFactory.decodeResource(context.getResources(),
                     R.drawable.ic_large_notification);
 
             builder.setSmallIcon(R.drawable.notification_icon)
                     .setLargeIcon(largeIcon)
-                    .setContentTitle(context.getString(R.string.app_name))
-                    .setWhen(System.currentTimeMillis() - timer.getElapsedTime()) // TODO: Freeze this if paused
-                    .setUsesChronometer(true);
+                    .setContentTitle(context.getString(R.string.app_name));
+
+            if (isRunning) {
+                builder.setWhen(System.currentTimeMillis() - timer.getElapsedTime())
+                        .setUsesChronometer(true);
+            } // else let it default to non-chronometer Now showing the time of day when pause
+            // occurred. OR maybe change it to call builder.setShowWhen(false).
 
             // Set the notification body text to explain the run state.
-            if (timer.isRunning() && state.isEnableReminders()) {
+            if (isRunning && state.isEnableReminders()) {
                 int reminderSecs   = state.getSecondsPerReminder();
                 int minutes        = reminderSecs / 60;
                 String contentText = minutes > 1
@@ -147,7 +152,7 @@ public class Notifier {
                 builder.setContentText(timerRunState(timer));
                 if (timer.isPaused()) {
                     builder.setSubText(context.getString(R.string.dismiss_tip));
-                } else if (timer.isRunning()) {
+                } else if (isRunning) {
                     builder.setSubText(context.getString(R.string.no_reminders_tip));
                 }
             }
@@ -166,7 +171,7 @@ public class Notifier {
             // Action button to run the timer.
             PendingIntent runIntent = TimerAppWidgetProvider.makeActionIntent(context,
                     TimerAppWidgetProvider.ACTION_RUN);
-            if (!timer.isRunning()) {
+            if (!isRunning) {
                 builder.addAction(R.drawable.ic_action_play, context.getString(R.string.start),
                         runIntent);
             }
@@ -195,7 +200,7 @@ public class Notifier {
             // lock screen notifications).
             builder.setMediaStyleActionsInCompactView(0, 1);
 
-            if (timer.isRunning()) {
+            if (isRunning) {
                 builder.setOngoing(true);
             }
         }

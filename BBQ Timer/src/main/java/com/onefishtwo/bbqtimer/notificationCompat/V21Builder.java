@@ -47,6 +47,12 @@ class V21Builder implements NotificationBuilder {
     }
 
     @Override
+    public NotificationBuilder setShowWhen(boolean show) {
+        builder.setShowWhen(show);
+        return this;
+    }
+
+    @Override
     public NotificationBuilder setUsesChronometer(boolean b) {
         builder.setUsesChronometer(b);
         return this;
