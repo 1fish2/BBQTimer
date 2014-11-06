@@ -41,6 +41,7 @@ public class Notifier {
     private static final int NOTIFICATION_ID = 7;
 
     private static final long[] VIBRATE_PATTERN = {150, 82, 180, 96}; // ms off, ms on, ms off, ...
+    private static final int[][] ACTION_INDICES = {{}, {0}, {0, 1}, {0, 1, 2}, {0, 1, 2}};
 
     private final Context context;
     private boolean showNotification = true;
@@ -131,8 +132,12 @@ public class Notifier {
             if (isRunning) {
                 builder.setWhen(System.currentTimeMillis() - timer.getElapsedTime())
                         .setUsesChronometer(true);
-            } // else let it default to non-chronometer Now showing the time of day when pause
-            // occurred. OR maybe change it to call builder.setShowWhen(false).
+            } else {
+                // Hide the "when" field, which isn't useful while paused, so it doesn't take space
+                // in the compact view along with 3 action buttons (Reset, Start, Stop). (The
+                // alternative is to let Android show the time of day when pause occurred.)
+                builder.setShowWhen(false);
+            }
 
             // Set the notification body text to explain the run state.
             if (isRunning && state.isEnableReminders()) {
@@ -168,12 +173,24 @@ public class Notifier {
                     stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
             builder.setContentIntent(activityPendingIntent);
 
+            int numActions = 0;
+
+            // Action button to reset the timer.
+            PendingIntent resetIntent = TimerAppWidgetProvider.makeActionIntent(context,
+                    TimerAppWidgetProvider.ACTION_RESET);
+            if (timer.isPaused() && !timer.isReset()) {
+                builder.addAction(R.drawable.ic_action_replay, context.getString(R.string.reset),
+                        resetIntent);
+                ++numActions;
+            }
+
             // Action button to run the timer.
             PendingIntent runIntent = TimerAppWidgetProvider.makeActionIntent(context,
                     TimerAppWidgetProvider.ACTION_RUN);
             if (!isRunning) {
                 builder.addAction(R.drawable.ic_action_play, context.getString(R.string.start),
                         runIntent);
+                ++numActions;
             }
 
             // Action button to pause the timer.
@@ -182,6 +199,7 @@ public class Notifier {
             if (!timer.isPaused()) {
                 builder.addAction(R.drawable.ic_action_pause, context.getString(R.string.pause),
                         pauseIntent);
+                ++numActions;
             }
 
             // Action button to stop the timer.
@@ -190,6 +208,7 @@ public class Notifier {
             if (!timer.isStopped()) {
                 builder.addAction(R.drawable.ic_action_stop, context.getString(R.string.stop),
                         stopIntent);
+                ++numActions;
             }
 
             // Allow stopping via dismissing the notification (unless it's "ongoing").
@@ -198,7 +217,7 @@ public class Notifier {
             // --- Introduced in API V21 Lollipop ---
             // Show 2 actions in MediaStyle's compact notification view (the view that appears in
             // lock screen notifications).
-            builder.setMediaStyleActionsInCompactView(0, 1);
+            builder.setMediaStyleActionsInCompactView(ACTION_INDICES[numActions]);
 
             if (isRunning) {
                 builder.setOngoing(true);

@@ -42,6 +42,7 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
     static final String ACTION_RUN_PAUSE  = "com.onefishtwo.bbqtimer.ACTION_RUN_PAUSE";
     static final String ACTION_RUN        = "com.onefishtwo.bbqtimer.ACTION_RUN";
     static final String ACTION_PAUSE      = "com.onefishtwo.bbqtimer.ACTION_PAUSE";
+    static final String ACTION_RESET      = "com.onefishtwo.bbqtimer.ACTION_RESET";
     static final String ACTION_STOP       = "com.onefishtwo.bbqtimer.ACTION_STOP";
     static final String ACTION_CYCLE      = "com.onefishtwo.bbqtimer.ACTION_CYCLE";
 
@@ -171,6 +172,9 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
             saveStateAndUpdateUI(context, state);
         } else if (ACTION_PAUSE.equals(action)) { // The user tapped a Pause button.
             timer.pause();
+            saveStateAndUpdateUI(context, state);
+        } else if (ACTION_RESET.equals(action)) { // The user tapped a Reset button.
+            timer.reset();
             saveStateAndUpdateUI(context, state);
         } else if (ACTION_STOP.equals(action)) { // The user tapped a Stop button.
             timer.stop();
