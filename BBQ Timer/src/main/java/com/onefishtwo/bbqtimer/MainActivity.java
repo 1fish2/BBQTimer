@@ -237,9 +237,8 @@ public class MainActivity extends ActionBarActivity implements NumberPicker.OnVa
         displayTime();
 
         resetButton.setVisibility(isRunning || timer.isReset() ? View.INVISIBLE : View.VISIBLE);
-        startStopButton.setText(isRunning ? R.string.pause : R.string.start);
         startStopButton.setCompoundDrawablesWithIntrinsicBounds(
-                isRunning ? R.drawable.ic_pause : R.drawable.ic_play, 0, 0, 0);
+                isRunning ? R.drawable.ic_action_pause : R.drawable.ic_action_play, 0, 0, 0);
         stopButton.setVisibility(timer.isStopped() ? View.INVISIBLE : View.VISIBLE);
 
         enableRemindersToggle.setChecked(state.isEnableReminders());
