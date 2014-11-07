@@ -100,15 +100,14 @@ public class AlarmReceiver extends BroadcastReceiver {
      */
     public static void updateNotifications(Context context) {
         ApplicationState state        = ApplicationState.sharedInstance(context);
-        boolean isMainActivityVisible = state.isMainActivityVisible();
         boolean enableReminders       = state.isEnableReminders();
         TimeCounter timer             = state.getTimeCounter();
-        boolean isActive              = !timer.isStopped();
+        boolean isRunning             = timer.isRunning();
         Notifier notifier             = new Notifier(context);
 
-        notifier.setShowNotification(isActive && !isMainActivityVisible).openOrCancel(state);
+        notifier.openOrCancel(state);
 
-        if (isActive && enableReminders) {
+        if (isRunning && enableReminders) {
             scheduleNextReminder(context, state);
         } else {
             cancelReminders(context);
@@ -137,10 +136,8 @@ public class AlarmReceiver extends BroadcastReceiver {
             return;
         }
 
-        boolean isMainActivityVisible = state.isMainActivityVisible();
         Notifier notifier = new Notifier(context).setPlayChime(true).setVibrate(true);
 
-        notifier.setShowNotification(!isMainActivityVisible);
         notifier.openOrCancel(state);
 
         scheduleNextReminder(context, state);

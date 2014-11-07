@@ -40,26 +40,29 @@ import com.onefishtwo.bbqtimer.state.ApplicationState;
 public class Notifier {
     private static final int NOTIFICATION_ID = 7;
 
+    /**
+     * On API 21+, show Paused notifications with Reset/Stop/Start buttons and enrich Running
+     * notifications with a Stop button (as well as Pause), mainly so the user can control the timer
+     * from a lock screen notification. Otherwise, don't distinguish Stopped from Paused in the UI.
+     * TODO: Also remove the Stop button from MainActivity.
+     * <p/>
+     * Due to OS bugs in API 17 - 20, changing a notification to Paused would still show a running
+     * chronometer [despite calling setShowWhen(false) and not calling setUsesChronometer(true)] and
+     * sometimes also the notification time of day, both confusing. API < 16 has no action buttons
+     * so it has no payoff in Paused notifications.
+     */
+    private static final boolean RICH_NOTIFICATIONS = android.os.Build.VERSION.SDK_INT >= 21;
+
     private static final long[] VIBRATE_PATTERN = {150, 82, 180, 96}; // ms off, ms on, ms off, ...
     private static final int[][] ACTION_INDICES = {{}, {0}, {0, 1}, {0, 1, 2}};
 
     private final Context context;
-    private boolean showNotification = true;
     private boolean playChime = false;
     private boolean vibrate = false;
     private int numActions; // the number of action buttons added to the notification
 
     public Notifier(Context context) {
         this.context = context;
-    }
-
-    /**
-     * Builder-style setter: Whether {@link #openOrCancel} should display the notification in the
-     * notification area and drawer. Default = true.
-     */
-    public Notifier setShowNotification(boolean showNotification) {
-        this.showNotification = showNotification;
-        return this;
     }
 
     /**
@@ -125,35 +128,35 @@ public class Notifier {
 
     /**
      * <em>Opens</em> this app's notification with visible, audible, and/or tactile content
-     * depending on {@link #setShowNotification(boolean)}, {@link #setPlayChime(boolean)}, and
-     * {@link #setVibrate(boolean)}, <em>or cancels</em> the app's notification if they're all
-     * false.
+     * depending on {@code state}, {@link #setPlayChime(boolean)}, and {@link #setVibrate(boolean)},
+     * <em>or cancels</em> the app's notification if there's nothing to show or sound.
      *
      * @param state -- the ApplicationState state to display.
      */
     public void openOrCancel(ApplicationState state) {
-        if (!(showNotification || playChime || vibrate)) {
+        boolean isMainActivityVisible = state.isMainActivityVisible();
+        TimeCounter timer             = state.getTimeCounter();
+        boolean showableNotification  = RICH_NOTIFICATIONS ? !timer.isStopped() : timer.isRunning();
+        boolean show                  = showableNotification && !isMainActivityVisible;
+
+        if (!(show || playChime || vibrate)) {
             cancelAll();
             return;
         }
 
-        Notification notification = buildNotification(state);
+        Notification notification = buildNotification(state, show);
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
         notificationManager.notify(NOTIFICATION_ID, notification);
     }
 
     /** Builds a notification. */
-    // TODO: Workaround: Close the notification in Pause mode on API < 21 due to an OS bug where
-    // changing the ongoing notification doesn't work. And API < 16 has no action buttons so there's
-    // no point in paused notifications. On API < 21, don't distinguish Stopped from Paused, and
-    // remove the Stop button from MainActivity.
-    protected Notification buildNotification(ApplicationState state) {
+    protected Notification buildNotification(ApplicationState state, boolean show) {
         NotificationBuilder builder = NotificationBuilderFactory.builder(context)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setCategory(NotificationCompat.CATEGORY_ALARM)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
 
-        if (showNotification) {
+        if (show) {
             TimeCounter timer = state.getTimeCounter();
             boolean isRunning = timer.isRunning();
             Bitmap largeIcon = BitmapFactory.decodeResource(context.getResources(),
@@ -167,10 +170,11 @@ public class Notifier {
                 builder.setWhen(System.currentTimeMillis() - timer.getElapsedTime())
                         .setUsesChronometer(true); // added in API 17
             } else {
-                // Hide the "when" field, which isn't useful while paused, so it doesn't take space
+                // Hide the "when" field, which isn't useful while Paused, so it doesn't take space
                 // in the compact view along with 3 action buttons (Reset, Start, Stop).
-                // This doesn't actually work in API 17-18, so in API 18- it falls back to showing
-                // the time of day when built, or worse.
+                // This doesn't actually work in API 17-18, so in API 18- it'd show the time of day
+                // when the notification is built, but it's even more broken after changing the
+                // "When" info in an open notification.
                 builder.setShowWhen(false);
             }
 
@@ -230,7 +234,7 @@ public class Notifier {
 
             // Action button to stop the timer.
             PendingIntent stopIntent = makeActionIntent(TimerAppWidgetProvider.ACTION_STOP);
-            if (!timer.isStopped()) {
+            if (RICH_NOTIFICATIONS && !timer.isStopped()) {
                 addAction(builder, R.drawable.ic_action_stop, R.string.stop, stopIntent);
             }
 
