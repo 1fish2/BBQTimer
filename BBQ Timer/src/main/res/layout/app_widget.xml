@@ -22,7 +22,7 @@
                 android:id="@+id/remoteStartStopButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_play"
+                android:src="@drawable/ic_action_play"
                 android:layout_gravity="center_vertical"
                 android:contentDescription="@string/start_stop"
                 android:paddingLeft="@dimen/small_button_padding"

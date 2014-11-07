@@ -93,7 +93,7 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
 
         if (timer.isRunning()) {
             views.setDisplayedChild(R.id.viewFlipper, RUNNING_CHRONOMETER_CHILD);
-            views.setImageViewResource(R.id.remoteStartStopButton, R.drawable.ic_pause);
+            views.setImageViewResource(R.id.remoteStartStopButton, R.drawable.ic_action_pause);
             views.setChronometer(R.id.chronometer, timer.getStartTime(), null, true);
         } else {
             long elapsedTime = timer.getElapsedTime();
@@ -103,7 +103,7 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
 
             views.setDisplayedChild(R.id.viewFlipper, child);
             views.setTextViewText(textViewId, TimeCounter.formatHhMmSs(elapsedTime));
-            views.setImageViewResource(R.id.remoteStartStopButton, R.drawable.ic_play);
+            views.setImageViewResource(R.id.remoteStartStopButton, R.drawable.ic_action_play);
             // Stop the Chronometer in case it'd use battery power even when not displayed.
             views.setChronometer(R.id.chronometer, 0, null, false);
         }
