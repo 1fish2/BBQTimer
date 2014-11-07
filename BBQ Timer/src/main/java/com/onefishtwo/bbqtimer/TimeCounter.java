@@ -199,10 +199,7 @@ public class TimeCounter {
         return isRunning;
     }
 
-    /**
-     * Cycles the state: Stopped -> Running -> Paused -> Stopped (treating Paused at 0:00 the same
-     * as Stopped).
-     */
+    /** Cycles the state: Paused at 0:00 or Stopped -> Running -> Paused -> Stopped. */
     public void cycle() {
         if (isRunning()) {
             pause();

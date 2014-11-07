@@ -44,12 +44,23 @@ class V20Builder implements NotificationBuilder {
         return this;
     }
 
+    /**
+     * NOTE: This is supposed to work in API 17+ but it doesn't work right in API 17-18.
+     */
     @Override
     public NotificationBuilder setShowWhen(boolean show) {
         builder.setShowWhen(show);
         return this;
     }
 
+    /**
+     * NOTE: In API 17+.
+     *</p>
+     * NOTE: Updating an existing notification to/from UsesChronometer only works in API 21+. In
+     * API 19, going from chronometer to hide-the-time continues the running chronometer. In
+     * API 16 - 18, hiding the When field doesn't actually work, and the changing to/from a
+     * chronometer shows BOTH the time and the chronometer.
+     */
     @Override
     public NotificationBuilder setUsesChronometer(boolean b) {
         builder.setUsesChronometer(b);
