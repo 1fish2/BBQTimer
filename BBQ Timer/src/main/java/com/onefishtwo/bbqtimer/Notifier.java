@@ -41,12 +41,13 @@ public class Notifier {
     private static final int NOTIFICATION_ID = 7;
 
     private static final long[] VIBRATE_PATTERN = {150, 82, 180, 96}; // ms off, ms on, ms off, ...
-    private static final int[][] ACTION_INDICES = {{}, {0}, {0, 1}, {0, 1, 2}, {0, 1, 2}};
+    private static final int[][] ACTION_INDICES = {{}, {0}, {0, 1}, {0, 1, 2}};
 
     private final Context context;
     private boolean showNotification = true;
     private boolean playChime = false;
     private boolean vibrate = false;
+    private int numActions; // the number of action buttons added to the notification
 
     public Notifier(Context context) {
         this.context = context;
@@ -82,8 +83,37 @@ public class Notifier {
         return Uri.parse("android.resource://" + context.getPackageName() + "/" + soundId);
     }
 
+    /** Constructs a PendingIntent to use as a Notification Action. */
+    private PendingIntent makeActionIntent(String action) {
+        return TimerAppWidgetProvider.makeActionIntent(context, action);
+    }
+
+    /**
+     * Adds an action button to the given NotificationBuilder and to the
+     * {@link #setMediaStyleActionsInCompactView} list.
+     */
+    private void addAction(NotificationBuilder builder, int iconId, int titleId,
+            PendingIntent intent) {
+        builder.addAction(iconId, context.getString(titleId), intent);
+        ++numActions;
+    }
+
+    /**
+     * Makes the first 3 added {@link #addAction} actions appear in MediaStyle's compact
+     * notification view (which is the view that appears in lock screen notifications in API V21
+     * Lollipop). No-op before API 21.
+     */
+    private void setMediaStyleActionsInCompactView(NotificationBuilder builder) {
+        int num = Math.min(numActions, ACTION_INDICES.length - 1);
+
+        if (num < 1) {
+            return;
+        }
+        builder.setMediaStyleActionsInCompactView(ACTION_INDICES[num]);
+    }
+
     /** Returns a localized description of the timer's run state, e.g. "Paused 00:12.3". */
-    public String timerRunState(TimeCounter timer) {
+    String timerRunState(TimeCounter timer) {
         if (timer.isRunning()) {
             return context.getString(R.string.timer_running);
         } else if (timer.isPaused()) {
@@ -178,51 +208,36 @@ public class Notifier {
                     stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
             builder.setContentIntent(activityPendingIntent);
 
-            int numActions = 0;
+            numActions = 0;
 
             // Action button to reset the timer.
-            PendingIntent resetIntent = TimerAppWidgetProvider.makeActionIntent(context,
-                    TimerAppWidgetProvider.ACTION_RESET);
+            PendingIntent resetIntent = makeActionIntent(TimerAppWidgetProvider.ACTION_RESET);
             if (timer.isPaused() && !timer.isReset()) {
-                builder.addAction(R.drawable.ic_action_replay, context.getString(R.string.reset),
-                        resetIntent);
-                ++numActions;
+                addAction(builder, R.drawable.ic_action_replay, R.string.reset, resetIntent);
             }
 
-            // Action button to run the timer.
-            PendingIntent runIntent = TimerAppWidgetProvider.makeActionIntent(context,
-                    TimerAppWidgetProvider.ACTION_RUN);
+            // Action button to run (start) the timer.
+            PendingIntent runIntent = makeActionIntent(TimerAppWidgetProvider.ACTION_RUN);
             if (!isRunning) {
-                builder.addAction(R.drawable.ic_action_play, context.getString(R.string.start),
-                        runIntent);
-                ++numActions;
+                addAction(builder, R.drawable.ic_action_play, R.string.start, runIntent);
             }
 
             // Action button to pause the timer.
-            PendingIntent pauseIntent = TimerAppWidgetProvider.makeActionIntent(context,
-                    TimerAppWidgetProvider.ACTION_PAUSE);
+            PendingIntent pauseIntent = makeActionIntent(TimerAppWidgetProvider.ACTION_PAUSE);
             if (!timer.isPaused()) {
-                builder.addAction(R.drawable.ic_action_pause, context.getString(R.string.pause),
-                        pauseIntent);
-                ++numActions;
+                addAction(builder, R.drawable.ic_action_pause, R.string.pause, pauseIntent);
             }
 
             // Action button to stop the timer.
-            PendingIntent stopIntent = TimerAppWidgetProvider.makeActionIntent(context,
-                    TimerAppWidgetProvider.ACTION_STOP);
+            PendingIntent stopIntent = makeActionIntent(TimerAppWidgetProvider.ACTION_STOP);
             if (!timer.isStopped()) {
-                builder.addAction(R.drawable.ic_action_stop, context.getString(R.string.stop),
-                        stopIntent);
-                ++numActions;
+                addAction(builder, R.drawable.ic_action_stop, R.string.stop, stopIntent);
             }
 
             // Allow stopping via dismissing the notification (unless it's "ongoing").
             builder.setDeleteIntent(stopIntent);
 
-            // --- Introduced in API V21 Lollipop ---
-            // Show 2 actions in MediaStyle's compact notification view (the view that appears in
-            // lock screen notifications).
-            builder.setMediaStyleActionsInCompactView(ACTION_INDICES[numActions]);
+            setMediaStyleActionsInCompactView(builder);
 
             if (isRunning) {
                 builder.setOngoing(true);
