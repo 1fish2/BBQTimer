@@ -40,6 +40,8 @@ import com.onefishtwo.bbqtimer.state.ApplicationState;
  * The BBQ Timer's main activity.
  */
 public class MainActivity extends ActionBarActivity implements NumberPicker.OnValueChangeListener {
+    /** Hide the Stop feature (that distinguishes Stop from Paused) on older OS versions. */
+    static final boolean HIDE_STOP_FEATURE = !Notifier.PAUSEABLE_NOTIFICATIONS;
 
     /** A Handler for periodic display updates. */
     private class UpdateHandler extends Handler {
@@ -239,7 +241,9 @@ public class MainActivity extends ActionBarActivity implements NumberPicker.OnVa
         resetButton.setVisibility(isRunning || timer.isReset() ? View.INVISIBLE : View.VISIBLE);
         startStopButton.setCompoundDrawablesWithIntrinsicBounds(
                 isRunning ? R.drawable.ic_action_pause : R.drawable.ic_action_play, 0, 0, 0);
-        stopButton.setVisibility(timer.isStopped() ? View.INVISIBLE : View.VISIBLE);
+        stopButton.setVisibility(HIDE_STOP_FEATURE ? View.GONE
+                : timer.isStopped() ? View.INVISIBLE
+                : View.VISIBLE);
 
         enableRemindersToggle.setChecked(state.isEnableReminders());
 

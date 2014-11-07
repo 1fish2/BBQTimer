@@ -41,17 +41,16 @@ public class Notifier {
     private static final int NOTIFICATION_ID = 7;
 
     /**
-     * On API 21+, show Paused notifications with Reset/Stop/Start buttons and enrich Running
-     * notifications with a Stop button (as well as Pause), mainly so the user can control the timer
-     * from a lock screen notification. Otherwise, don't distinguish Stopped from Paused in the UI.
-     * TODO: Also remove the Stop button from MainActivity.
+     * On API 21+, allow Paused notifications with Reset/Stop/Start buttons and Running
+     * notifications with Pause/Stop buttons, mainly so the user can control the timer from a lock
+     * screen notification. Distinguish Stopped from Paused in the UI.
      * <p/>
-     * Due to OS bugs in API 17 - 20, changing a notification to Paused would still show a running
-     * chronometer [despite calling setShowWhen(false) and not calling setUsesChronometer(true)] and
-     * sometimes also the notification time of day, both confusing. API < 16 has no action buttons
-     * so it has no payoff in Paused notifications.
+     * Due to OS bugs in API 17 - 20, changing a notification to Paused would continue showing a
+     * running chronometer [despite calling setShowWhen(false) and not calling
+     * setUsesChronometer(true)] and sometimes also the notification time of day, both confusing.
+     * API < 16 has no action buttons so it has no payoff in Paused notifications.
      */
-    private static final boolean RICH_NOTIFICATIONS = android.os.Build.VERSION.SDK_INT >= 21;
+    static final boolean PAUSEABLE_NOTIFICATIONS = android.os.Build.VERSION.SDK_INT >= 21;
 
     private static final long[] VIBRATE_PATTERN = {150, 82, 180, 96}; // ms off, ms on, ms off, ...
     private static final int[][] ACTION_INDICES = {{}, {0}, {0, 1}, {0, 1, 2}};
@@ -136,8 +135,8 @@ public class Notifier {
     public void openOrCancel(ApplicationState state) {
         boolean isMainActivityVisible = state.isMainActivityVisible();
         TimeCounter timer             = state.getTimeCounter();
-        boolean showableNotification  = RICH_NOTIFICATIONS ? !timer.isStopped() : timer.isRunning();
-        boolean show                  = showableNotification && !isMainActivityVisible;
+        boolean showable = PAUSEABLE_NOTIFICATIONS ? !timer.isStopped() : timer.isRunning();
+        boolean show                  = showable && !isMainActivityVisible;
 
         if (!(show || playChime || vibrate)) {
             cancelAll();
@@ -234,7 +233,7 @@ public class Notifier {
 
             // Action button to stop the timer.
             PendingIntent stopIntent = makeActionIntent(TimerAppWidgetProvider.ACTION_STOP);
-            if (RICH_NOTIFICATIONS && !timer.isStopped()) {
+            if (PAUSEABLE_NOTIFICATIONS && !timer.isStopped()) {
                 addAction(builder, R.drawable.ic_action_stop, R.string.stop, stopIntent);
             }
 
