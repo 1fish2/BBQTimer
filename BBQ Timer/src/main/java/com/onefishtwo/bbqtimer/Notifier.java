@@ -113,6 +113,10 @@ public class Notifier {
     }
 
     /** Builds a notification. */
+    // TODO: Workaround: Close the notification in Pause mode on API < 21 due to an OS bug where
+    // changing the ongoing notification doesn't work. And API < 16 has no action buttons so there's
+    // no point in paused notifications. On API < 21, don't distinguish Stopped from Paused, and
+    // remove the Stop button from MainActivity.
     protected Notification buildNotification(ApplicationState state) {
         NotificationBuilder builder = NotificationBuilderFactory.builder(context)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
@@ -131,11 +135,12 @@ public class Notifier {
 
             if (isRunning) {
                 builder.setWhen(System.currentTimeMillis() - timer.getElapsedTime())
-                        .setUsesChronometer(true);
+                        .setUsesChronometer(true); // added in API 17
             } else {
                 // Hide the "when" field, which isn't useful while paused, so it doesn't take space
-                // in the compact view along with 3 action buttons (Reset, Start, Stop). (The
-                // alternative is to let Android show the time of day when pause occurred.)
+                // in the compact view along with 3 action buttons (Reset, Start, Stop).
+                // This doesn't actually work in API 17-18, so in API 18- it falls back to showing
+                // the time of day when built, or worse.
                 builder.setShowWhen(false);
             }
 
