@@ -4,29 +4,32 @@
 
 A stopwatch with a twist (or two):
 
-1. *lock screen notifications* (on Android Lollipop) for quick access without unlocking your phone
-   or tablet and a *lock screen widget* (on Android Jelly Bean and KitKat).
-2. *Periodic alarms* remind you to check the food -- however long it takes to cook. It's like a
-   count-down timer and a count-up stopwatch at the same time.
+1. *Lock screen notifications* (on Android Lollipop) and a *lock screen widget* (on Jelly Bean and
+   KitKat) for quick access without unlocking your phone or tablet.
+2. *Periodic alarms* remind you to check the food -- rather than a one-shot alarm that assumes the
+   food will be done. It's a count-up stopwatch with count-down timers.
 
 Of course it can time more things than cooking.
 
-Requires few permissions. No network access. No ads. No private data gathering.
-Simple and focused. Free.
-
-[Note: The app won't install in external storage (SD card) because when you use USB to share files
-with a computer, Android deletes the lock/home screen widgets of apps that are in external
-storage.]
+Requires few permissions.<br/>
+No network access.<br/>
+No ads.<br/>
+No data gathering.<br/>
+Simple and focused.<br/>
+Free.
 
 ## System Requirements
 
-BBQ Timer is for phones and tablets running Android 3.1 (Honeycomb MR1, Android API level 12) and
-later.
+BBQ Timer is for phones and tablets running Android 3.1 (Honeycomb MR1) and later.
 
 If it has problems on your Android device, email me the details (device model, Android
 version, screen size, problem symptom).
 
+[Note: The app won't install in external storage (SD card) because when you use USB to share files
+with a computer, Android deletes the widgets of apps in external storage.]
+
 ## Status
+
 Released.
 
 ## License
@@ -34,22 +37,21 @@ Released.
 [MIT License](https://github.com/1fish2/BBQTimer/blob/master/LICENSE.md).
 
 ## Usage Tips
-* Put the BBQ Timer widget on your lock screen for quick access (on Android Jelly Bean and KitKat).
-* On Android Lollipop, BBQ Timer automatically shows the running stopwatch as a lock screen
-  notification. The Lollipop tradeoff means you don't have to place the widget on your lock screen,
-  but it only shows up while the stopwatch is running, so you can't start it from the lock screen.
-* The widget also works on the home screen (in most Android versions).
+* On Android Lollipop, just start or pause BBQ Timer. Then you can operate it from the notification
+  drawer and the lock screen.
+* On Jelly Bean and KitKat, place the BBQ Timer widget on your lock screen for quick access.
+* The widget also works on the home screen.
 * To resize the home screen widget, long-press on it then drag its resize handles.
-  Stretched wider, it can show longer time intervals (e.g. "2:15:09", depending on your screen size
-  and font size setting).
+  Stretched wider, it can show longer durations.
 * To remove the widget, long-press it then drag it onto "X Remove".
-* Tap the stopwatch time display to cycle *reset* -> *running* -> *paused* -> *reset.*
-* On the app's main screen, tap the checkbox to enable/disable periodic reminder alarms.
+* Tap the stopwatch time display to cycle between *stopped* -> *running* -> *paused* -> *stopped.*
+* On the app's main screen, tap the checkbox to turn on periodic reminder alarms.
 * On the app's main screen, set the interval between periodic reminder alarms by
-  dragging the number widget, or tap the number then type in a new number.
+  dragging the number widget, or tap the number then type in a new number, or tap and hold on the
+  number above or below the current setting.
 
 ## How to Use Android Lock Screen Widgets
-* This feature requires Android 4.2 Jelly Bean through Android 4.4 KitKat.
+* This feature requires Android 4.2 Jelly Bean MR1 through Android 4.4 KitKat. Not Lollipop.
 * On KitKat, you must turn on Settings > Security > Enable Widgets to enable this feature.
 * For step-by-step instructions, see [Getting started with lock screen widgets on Android Jelly
   Bean](http://howto.cnet.com/8301-11310_39-57549747-285/getting-started-with-lock-screen-widgets-on-android-jelly-bean/
@@ -69,37 +71,29 @@ Released.
       widgets.
 * When you wake the Android screen, it shows the main (rightmost) lock screen widget.
   To access your other lock screen widgets, swipe rightwards.
-  To access the camera, swipe leftwards.
 * To rearrange your lock screen widgets, long-press one and drag it left or right.
-* You can rearrange lock screen widgets whenever you want. Example: When you start cooking, Move
-  BBQ Timer to the rightmost position; afterwards, move the Digital Clock there.
+* You can rearrange lock screen widgets when you cook (moving BBQ Timer to the rightmost
+  position) and afterwards, move the Digital Clock there.
 
 ## Known Issues
 * Due to [Android OS bug 2880](https://code.google.com/p/android/issues/detail?id=2880), if the
   clock gets set backwards, the widget's date display might not update until the clock catches up to
   what was going to be the next day.
-* Not yet tested on Android API level 13 (HONEYCOMB_MR2) or level 14 (ICE_CREAM_SANDWICH) (where the
-  emulator takes most of an hour to launch, then croaks). If you have those versions of
+* Not yet tested on Android API level 13 (HONEYCOMB_MR2) or level 14 (ICE_CREAM_SANDWICH) where the
+  emulator takes most of an hour to launch, then croaks. If you have those versions of
   Android, let me know how it goes.
 * There's a fraction of a second clock skew between the stopwatch time displayed in widgets vs. the
   notification area. To see precise times, open the application's main screen.
 * Android emulator bugs: The app's timer display sometimes stops changing. In emulator API level 12,
-  the notification area shows black text on a black background. In emulator API level 15
-  (ICE_CREAM_SANDWICH_MR1), the notification area displays the stopwatch's start time instead of
-  elapsed time.
+  the notification area shows black text on a black background.
 
 ## TODO
 * Add a menu of recipes to set the reminder alarm time and suggest the cooking temp.
-* Show a tip about adding the widget to the lock screen when first running the app.
-* Show tips via a menu command: How to install widgets. What tapping the widget text does.
 * Add a Setting to pick {sound, vibrate, both, disable} for reminders.
 * Add a Setting to pick the reminder alarm sound.
 * Localize into several languages.
-* When stopped at 00:00, add the time of day to the widget? ... after a few minutes?
-  (To track the time: Upon ACTION_SCREEN_ON when there are lock screen widgets, register a Service to
-  listen for ACTION_TIME_TICK. Unregister upon ACTION_SCREEN_OFF or when the last widget is removed.)
 * Accessibility.
-* Display the time larger in the activity when the screen is wide and tall enough.
+* Display the time larger in the activity when the screen is large enough.
 * Use a font-resizing text view fit long durations in the Activity. See
   [Stack Overflow auto-scale-textview-text-to-fit-within-bounds](http://stackoverflow.com/questions/5033012/auto-scale-textview-text-to-fit-within-bounds/),
   [Stack Overflow how-to-adjust-text-font-size-to-fit-textview](http://stackoverflow.com/questions/2617266/how-to-adjust-text-font-size-to-fit-textview/),
@@ -109,7 +103,7 @@ Released.
 * Unit tests.
 
 ## Building from Source Code
-Use [Android Studio](http://developer.android.com/sdk/installing/studio.html) (an awesome tool!).
+Use [Android Studio](http://developer.android.com/sdk/installing/studio.html) (an excellent tool!).
 
 ## Dedication
 Dedicated to open source software developers.
@@ -130,15 +124,13 @@ Launcher icon derived from a public domain image on [openclipart.org](http://ope
 Cooking, interval timer, lock screen widget, reminder alarm, stopwatch.
 
 ## Implementation notes
-* The lock screen widget pretty much needs to use a Chronometer view for the ticking time display.
-Using a Text view would show clock skew between multiple widgets and would use more CPU time and
-battery power.
-* When paused, a Chronometer view can't show a well-determined time value because its API doesn't
+* The lock screen widget and notification need to use a Chronometer view to show the ticking time
+display without using a lot of battery power.
+* When paused, a Chronometer view can't show the right time value because its API doesn't
 accommodate that case. You could fake it by sending it a start time that's about the right amount of
-time ago but you can't control how long until it reads the system clock. Consequently, multiple
-widgets would display different paused time values. The workaround is to switch the display from a
-Chronometer view to a Text view when paused.
+time ago but you can't control how long until it reads the system clock. Multiple widgets would
+display different paused time values. The workaround is to switch to a Text view when paused.
 * Formatting the elapsed time like 0:12 would look nicer than 00:12 but Android's Chronometer view
-only does the latter. The app's main screen and its paused text widget match that for consistency.
+always does the latter. The app's main screen and its paused text widget match it for consistency.
 * The widget's ViewFlipper must explicitly set android:measureAllChildren="false", otherwise
 flipping its subviews will resize the adjacent ImageButton on Galaxy Nexus Jelly Bean. (Why?)
