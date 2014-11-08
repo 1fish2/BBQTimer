@@ -6,26 +6,6 @@
       <root url="jar://$PROJECT_DIR$/BBQ Timer/build/intermediates/exploded-aar/com.android.support/support-v4/21.0.0/classes.jar!/" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES>
-      <root url="file://C:/opt/Android/sdk/extras/android/support/v4/src/ics" />
-      <root url="file://C:/opt/Android/sdk/extras/android/support/v4/src/java" />
-      <root url="file://C:/opt/Android/sdk/extras/android/support/v4/src/api20" />
-      <root url="file://C:/opt/Android/sdk/extras/android/support/v4/src/api21" />
-      <root url="file://C:/opt/Android/sdk/extras/android/support/v4/src/donut" />
-      <root url="file://C:/opt/Android/sdk/extras/android/support/v4/src/froyo" />
-      <root url="file://C:/opt/Android/sdk/extras/android/support/v4/src/tests/java" />
-      <root url="file://C:/opt/Android/sdk/extras/android/support/v4/src/eclair" />
-      <root url="file://C:/opt/Android/sdk/extras/android/support/v4/src/kitkat" />
-      <root url="file://C:/opt/Android/sdk/extras/android/support/v4/src/ics-mr1" />
-      <root url="file://C:/opt/Android/sdk/extras/android/support/v4/src/honeycomb" />
-      <root url="file://C:/opt/Android/sdk/extras/android/support/v4/src/jellybean" />
-      <root url="file://C:/opt/Android/sdk/extras/android/support/v4/src/eclair-mr1" />
-      <root url="file://C:/opt/Android/sdk/extras/android/support/v4/src/gingerbread" />
-      <root url="file://C:/opt/Android/sdk/extras/android/support/v4/src/honeycomb_mr1" />
-      <root url="file://C:/opt/Android/sdk/extras/android/support/v4/src/honeycomb_mr2" />
-      <root url="file://C:/opt/Android/sdk/extras/android/support/v4/src/jellybean-mr1" />
-      <root url="file://C:/opt/Android/sdk/extras/android/support/v4/src/jellybean-mr2" />
-      <root url="file://C:/opt/Android/sdk/extras/android/support/v4/src/java" />
-    </SOURCES>
+    <SOURCES />
   </library>
 </component>
