@@ -115,7 +115,8 @@ public class MainActivity extends ActionBarActivity implements NumberPicker.OnVa
         super.onCreateOptionsMenu(menu);
 
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
+        // TODO: Inflate the menu once it has useful items:
+        // getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
 
