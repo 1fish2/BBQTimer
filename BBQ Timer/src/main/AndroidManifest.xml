@@ -1,14 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-    <!-- installLocation=internalOnly so enabling USB mass storage to share files
-      with a computer won't delete the lock/home screen widgets. -->
+<!--
+ installLocation=internalOnly so enabling USB mass storage to share files
+      with a computer won't delete the lock/home screen widgets.
+-->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.onefishtwo.bbqtimer"
-    android:installLocation="internalOnly">
+    android:installLocation="internalOnly" >
 
     <uses-permission android:name="android.permission.VIBRATE" />
 
-    <supports-screens android:largeScreens="true"
-                      android:xlargeScreens="true"/>
+    <supports-screens
+        android:largeScreens="true"
+        android:xlargeScreens="true" />
 
     <application
         android:allowBackup="true"
@@ -16,19 +19,18 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
-
-        <activity android:name=".MainActivity"
+        <activity
+            android:name="com.onefishtwo.bbqtimer.MainActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize|mcc|mnc"
             android:label="@string/app_name"
-            android:windowSoftInputMode="stateHidden">
+            android:windowSoftInputMode="stateHidden" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <receiver android:name=".TimerAppWidgetProvider" >
+        <receiver android:name="com.onefishtwo.bbqtimer.TimerAppWidgetProvider" >
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
                 <action android:name="android.intent.action.DATE_CHANGED" />
@@ -41,9 +43,19 @@
                 android:resource="@xml/app_widget_info" />
         </receiver>
 
-        <receiver android:name=".AlarmReceiver"
+        <receiver
+            android:name="com.onefishtwo.bbqtimer.AlarmReceiver"
             android:enabled="true"
             android:exported="false" >
+        </receiver>
+
+        <receiver
+            android:name="com.onefishtwo.bbqtimer.UpgradeReceiver"
+            android:enabled="true"
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+            </intent-filter>
         </receiver>
     </application>
 

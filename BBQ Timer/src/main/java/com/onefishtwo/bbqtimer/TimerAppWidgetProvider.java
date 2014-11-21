@@ -148,8 +148,10 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
         return PendingIntent.getBroadcast(context, 0, intent, 0);
     }
 
-    /** Receives an Intent, including those from the app widget buttons and notification actions. */
-    //
+    /**
+     * Receives an Intent, including those from the app widget buttons, notification actions,
+     * and system clock changes.
+     */
     // TODO: Due to Android OS bug https://code.google.com/p/android/issues/detail?id=2880 , after
     // the clock gets set backwards, the OS won't send ACTION_DATE_CHANGED until the clock catches
     // up to what was going to be the next day.

@@ -10,7 +10,7 @@
     <string name="app_name">BBQ Timer</string>
 
     <!-- The application's description. This goes into the AndroidManifest. -->
-    <string name="app_description">A stopwatch with a lock-screen widget so you can use it without unlocking your phone.</string>
+    <string name="app_description">A stopwatch that you can use on the lock-screen.</string>
 
     <!-- Label for the button that resets the timer to be stopped at 00:00. -->
     <string name="reset">Reset</string>
