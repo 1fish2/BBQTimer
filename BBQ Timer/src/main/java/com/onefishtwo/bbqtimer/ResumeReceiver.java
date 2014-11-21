@@ -25,19 +25,28 @@ import android.content.Intent;
 import android.util.Log;
 
 /**
- * A BroadcastReceiver that resumes any running timer and notification after an app upgrade.
- * <p/>
- *
- * TODO: Also listen for <a
+ * A BroadcastReceiver to resume the if-running timer and notification after an app upgrade
+ * (MY_PACKAGE_REPLACED action).
+ *<p/>
+ * TODO: Consider also watching for <a
  * href="http://developer.android.com/reference/android/content/Intent.html#ACTION_BOOT_COMPLETED">
- * ACTION_BOOT_COMPLETED</a>?
+ * ACTION_BOOT_COMPLETED</a> to either resume running (although that requires saving the wall clock
+ * start time) or to set the saved state to "stopped."
+ *<p/>
+ * BTW the OS doesn't send broadcasts to "stopped" applications. See
+ * <a href="http://developer.android.com/about/versions/android-3.1.html#launchcontrols">Launch
+ * Controls</a>.
  */
-public class UpgradeReceiver extends BroadcastReceiver {
+public class ResumeReceiver extends BroadcastReceiver {
+    private static final String TAG = "ResumeReceiver";
 
     /** Handles an incoming Intent. */
     @Override
     public void onReceive(Context context, Intent intent) {
-        // TODO: ...
-        Log.w("UpgradeReceiver", "****** Intent: " + intent + "******");
+        Log.i(TAG, "*** " + intent.getAction() + " ***");
+        AlarmReceiver.updateNotifications(context);
+
+        // NOTE: The widgets should stay in the right state but if that doesn't always work:
+        // TimerAppWidgetProvider.updateAllWidgets(context, state);
     }
 }

@@ -50,7 +50,7 @@
         </receiver>
 
         <receiver
-            android:name="com.onefishtwo.bbqtimer.UpgradeReceiver"
+            android:name="com.onefishtwo.bbqtimer.ResumeReceiver"
             android:enabled="true"
             android:exported="true" >
             <intent-filter>
