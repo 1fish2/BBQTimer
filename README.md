@@ -20,8 +20,8 @@ Free.
 
 BBQ Timer is for phones and tablets running Android 3.1 (Honeycomb MR1) and later.
 
-If it has problems on your Android device, email me the details (device model, Android
-version, screen size, problem symptom).
+If it encounters problems on your Android device, email me the details (device model, Android
+version, screen size, problem symptom, Android "bugreport" file).
 
 [Note: The app can’t install in external storage (SD card) because Android deletes
 external storage app widgets every time you use USB to share files with a computer.]
@@ -35,8 +35,9 @@ Released.
 [MIT License](https://github.com/1fish2/BBQTimer/blob/master/LICENSE.md).
 
 ## Usage Tips
-* On Android Lollipop, just start or pause BBQ Timer. Then you can operate it from the notification
-  drawer and the lock screen.
+* On Android Lollipop, just start or pause BBQ Timer from the application or its home screen widget.
+  You can operate it from the notification drawer and the lock screen as long as it's running or
+  paused.
 * On Jelly Bean and KitKat, place the BBQ Timer widget on your lock screen for quick access.
 * The widget also works on the home screen.
 * To resize the home screen widget, long-press on it then drag its resize handles.
@@ -87,12 +88,12 @@ Released.
 
 ## TODO
 * Use available space on tablets. Add screen shots for 10" tablets.
+* Display the time larger in the activity when the screen is large enough.
 * Add a menu of recipes to set the reminder alarm time and suggest the cooking temp.
 * Add a Setting to pick {sound, vibrate, both, disable} for reminders.
 * Add a Setting to pick the reminder alarm sound.
 * Localize into several languages.
 * Accessibility.
-* Display the time larger in the activity when the screen is large enough.
 * Use a font-resizing text view fit long durations in the Activity. See
   [Stack Overflow auto-scale-textview-text-to-fit-within-bounds](http://stackoverflow.com/questions/5033012/auto-scale-textview-text-to-fit-within-bounds/),
   [Stack Overflow how-to-adjust-text-font-size-to-fit-textview](http://stackoverflow.com/questions/2617266/how-to-adjust-text-font-size-to-fit-textview/),
