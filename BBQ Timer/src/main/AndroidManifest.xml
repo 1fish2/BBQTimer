@@ -2,7 +2,7 @@
 <!--
  installLocation=internalOnly so enabling USB mass storage to share files
       with a computer won't delete the lock/home screen widgets.
--->
+ -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.onefishtwo.bbqtimer"
     android:installLocation="internalOnly" >

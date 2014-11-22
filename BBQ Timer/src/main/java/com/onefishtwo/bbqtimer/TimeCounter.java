@@ -92,22 +92,39 @@ public class TimeCounter {
         prefsEditor.putLong(PREF_PAUSE_TIME, pauseTime);
     }
 
-    /** Loads state from a preferences object. */
-    public void load(SharedPreferences prefs) {
+    /**
+     * Loads state from a preferences object. Enforces invariants and normalizes the state.
+     *
+     * @return true if the caller should {@link #save} the normalized state to ensure consistent
+     * results. That happens when the state was running/paused with future startTime, indicating a
+     * reboot. That check only helps when {@link #load} runs within startTime after reboot so it's
+     * important to save the normalized state.
+     */
+    public boolean load(SharedPreferences prefs) {
         isRunning = prefs.getBoolean(PREF_IS_RUNNING, false);
         isPaused  = prefs.getBoolean(PREF_IS_PAUSED, false);  // absent in older data
         startTime = prefs.getLong(PREF_START_TIME, 0);
         pauseTime = prefs.getLong(PREF_PAUSE_TIME, 0);
+
+        boolean needToSave = false;
 
         // Enforce invariants and normalize the state.
         if (isRunning) {
             isPaused = false;
             if (startTime > elapsedRealtimeClock()) { // Must've rebooted.
                 stop();
+                needToSave = true;
             }
-        } else if (pauseTime < startTime || !isPaused) {
+        } else if (isPaused) {
+            if (startTime > pauseTime || startTime > elapsedRealtimeClock()) {
+                stop();
+                needToSave = true;
+            }
+        } else {
             stop();
         }
+
+        return needToSave;
     }
 
     /** Returns the timer's start time, in SystemClock.elapsedRealtime() milliseconds. */

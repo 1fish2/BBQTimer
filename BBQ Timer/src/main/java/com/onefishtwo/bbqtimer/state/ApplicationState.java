@@ -21,6 +21,7 @@ package com.onefishtwo.bbqtimer.state;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import com.onefishtwo.bbqtimer.TimeCounter;
 
@@ -33,6 +34,7 @@ import com.onefishtwo.bbqtimer.TimeCounter;
  * The setters only update the state in memory. Call {@link #save} to persist the changes.
  */
 public class ApplicationState {
+    private static final String TAG = "ApplicationState";
 
     /** PERSISTENT STATE filename. */
     static final String APPLICATION_PREF_FILE = "BBQ_Timer_Prefs";
@@ -50,15 +52,22 @@ public class ApplicationState {
     private int secondsPerReminder;
 
     /**
-     * Returns the shared instance, using context to load the persistent state if needed.</p>
-     *
-     * NOTE: After updating the shared instance, call {@link #save(android.content.Context)} to
-     * save it persistently.
+     * Returns the shared instance, using context to load the persistent state if needed and to save
+     * the normalized-loaded state if needed. (See {@link TimeCounter#load} and
+     * {@link com.onefishtwo.bbqtimer.ResumeReceiver}.)
+     *<p/>
+     * NOTE: After updating the shared instance, call {@link #save} to save it persistently.
      */
     public static ApplicationState sharedInstance(Context context) {
         if (sharedInstance == null) {
             ApplicationState state = new ApplicationState();
-            state.load(context);
+            boolean needToSave     = state.load(context);
+
+            if (needToSave) {
+                state.save(context);
+                Log.i(TAG, "*** Loaded, reset, and saved the timer ***");
+            }
+
             sharedInstance = state;
         }
 
@@ -72,15 +81,22 @@ public class ApplicationState {
     ApplicationState() {
     }
 
-    /** Loads persistent state using context. Overridable for tests. */
-    void load(Context context) {
+    /**
+     * Loads persistent state using context. Overridable for tests.
+     *
+     * @return true if the caller should {@link #save} the normalized state to ensure consistent
+     * results. (See {@link TimeCounter#load}.)
+     */
+    boolean load(Context context) {
         SharedPreferences prefs =
                 context.getSharedPreferences(APPLICATION_PREF_FILE, Context.MODE_PRIVATE);
 
-        timeCounter.load(prefs);
+        boolean needToSave    = timeCounter.load(prefs);
         mainActivityIsVisible = prefs.getBoolean(PREF_MAIN_ACTIVITY_IS_VISIBLE, false);
         enableReminders       = prefs.getBoolean(PREF_ENABLE_REMINDERS, false);
         secondsPerReminder    = prefs.getInt(PREF_SECONDS_PER_REMINDER, 5 * 60);
+
+        return needToSave;
     }
 
     /** Saves persistent state using context. */

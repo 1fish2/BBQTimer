@@ -25,13 +25,18 @@ import android.content.Intent;
 import android.util.Log;
 
 /**
- * A BroadcastReceiver to resume the if-running timer and notification after an app upgrade
- * (MY_PACKAGE_REPLACED action).
+ * A BroadcastReceiver to resume the running timer and notification after an app upgrade
+ * (MY_PACKAGE_REPLACED Intent action).
  *<p/>
- * TODO: Consider also watching for <a
- * href="http://developer.android.com/reference/android/content/Intent.html#ACTION_BOOT_COMPLETED">
- * ACTION_BOOT_COMPLETED</a> to either resume running (although that requires saving the wall clock
- * start time) or to set the saved state to "stopped."
+ * TODO: Maybe stop the timer in a ACTION_BOOT_COMPLETED BroadcastReceiver. That requires another
+ * permission and would only help a narrow case: If the device reboots when the timer was running or
+ * paused, the app won't have an active notification or alarm. If the app has any widgets, they'll
+ * get updated shortly after boot (at least sometimes before ACTION_BOOT_COMPLETED), detect that the
+ * timer's start time is in the future, and reset the timer. This also happens after unlock at least
+ * sometimes on 5.0 even without widgets. Otherwise starting the Activity will either stop the timer
+ * (if its start time is in the future) or else restore the alarm and later the notification. The
+ * last case looks broken since the timer doesn't restore until the user opens the Activity, and if
+ * the timer is running, its duration will be smaller than it was when the device powered down.
  *<p/>
  * BTW the OS doesn't send broadcasts to "stopped" applications. See
  * <a href="http://developer.android.com/about/versions/android-3.1.html#launchcontrols">Launch

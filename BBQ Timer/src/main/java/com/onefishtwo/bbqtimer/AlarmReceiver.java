@@ -95,8 +95,8 @@ public class AlarmReceiver extends BroadcastReceiver {
 
     /**
      * Updates the app's Android Notifications area/drawer and scheduled periodic reminder
-     * Notifications for the visible/invisible activity state, the running/paused timer state, and
-     * the reminders-enabled state.
+     * Notification alarms for the visible/invisible activity state, the running/paused timer state,
+     * and the reminders-enabled state.
      */
     public static void updateNotifications(Context context) {
         ApplicationState state        = ApplicationState.sharedInstance(context);

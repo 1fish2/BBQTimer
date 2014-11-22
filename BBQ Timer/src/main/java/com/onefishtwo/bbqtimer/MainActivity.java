@@ -178,21 +178,18 @@ public class MainActivity extends ActionBarActivity implements NumberPicker.OnVa
         timer.toggleRunPause();
         updateHandler.beginScheduledUpdate();
         updateUI();
-        TimerAppWidgetProvider.updateAllWidgets(this, state);
     }
 
     /** The user tapped the Reset button. */
     public void onClickReset(View v) {
         timer.reset();
         updateUI();
-        TimerAppWidgetProvider.updateAllWidgets(this, state);
     }
 
     /** The user tapped the Stop button. */
     public void onClickStop(View v) {
         timer.stop();
         updateUI();
-        TimerAppWidgetProvider.updateAllWidgets(this, state);
     }
 
     /** The user tapped the time text: Cycle Reset -> Running -> Paused -> Reset. */
@@ -200,7 +197,6 @@ public class MainActivity extends ActionBarActivity implements NumberPicker.OnVa
         timer.cycle();
         updateHandler.beginScheduledUpdate();
         updateUI();
-        TimerAppWidgetProvider.updateAllWidgets(this, state);
     }
 
     /** The user clicked the enable/disable periodic-reminders toggle switch/checkbox. */
@@ -220,7 +216,7 @@ public class MainActivity extends ActionBarActivity implements NumberPicker.OnVa
         }
     }
 
-    /** Updates the display to show the current elapsed time. */
+    /** Updates the display of the elapsed time. */
     private void displayTime() {
         Spanned formatted         = timer.formatHhMmSsFraction();
         int textColorsId          =
@@ -233,24 +229,23 @@ public class MainActivity extends ActionBarActivity implements NumberPicker.OnVa
         displayView.setTextColor(textColors);
     }
 
-    /** Updates the UI and its notifications for the current state. */
+    /** Updates the whole UI for the current state: Activity, Notifications, alarms, and widgets. */
     private void updateUI() {
         boolean isRunning = timer.isRunning();
 
         displayTime();
-
         resetButton.setVisibility(isRunning || timer.isReset() ? View.INVISIBLE : View.VISIBLE);
         startStopButton.setCompoundDrawablesWithIntrinsicBounds(
                 isRunning ? R.drawable.ic_action_pause : R.drawable.ic_action_play, 0, 0, 0);
         stopButton.setVisibility(HIDE_STOP_FEATURE ? View.GONE
                 : timer.isStopped() ? View.INVISIBLE
                 : View.VISIBLE);
-
         enableRemindersToggle.setChecked(state.isEnableReminders());
-
         minutesPicker.setValue(state.getSecondsPerReminder() / 60);
 
         AlarmReceiver.updateNotifications(this);
+
+        TimerAppWidgetProvider.updateAllWidgets(this, state);
     }
 
 }
