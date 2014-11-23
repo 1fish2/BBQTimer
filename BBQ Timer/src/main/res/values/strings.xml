@@ -33,13 +33,13 @@
       the widget for setting the number of minutes between reminders. -->
     <string name="reminder_switch">Periodic alarms this many minutes apart:</string>
 
-    <!-- Notification body message. Parameter 1$ is the number of minutes between periodic
-      reminder alarms. This is the plural case, i.e. multiple minutes. -->
-    <string name="notification_body">Alarm every %1$d minutes</string>
-
-    <!-- Notification body message. This is the singular case for 1 minute between periodic
-      reminder alarms. -->
-    <string name="notification_body_singular">Alarm every minute</string>
+    <!-- Notification body message: The number of minutes (parameter 1$) between periodic reminder
+      alarms. There should be an item here for each "quantity" that the locale needs.
+      quantity = zero | one | two | few | many | other. -->
+    <plurals name="notification_body">
+        <item quantity="one">Alarm every minute</item>
+        <item quantity="other">Alarm every %1$d minutes</item>
+    </plurals>
 
     <!-- Notification body message: The timer is running with no reminder alarms. This message must
        be short enough to fit in one line of the notification drawer area. -->
@@ -56,11 +56,11 @@
        in one line of the notification drawer area. -->
     <string name="timer_stopped">Stopped</string>
 
-    <!-- Notification body third line of text: a tip on how to dismiss the notification. This
-       message must be short enough to fit in one line of the notification drawer area. -->
+    <!-- Notification body subtext (third line): A tip that swiping will dismiss the notification.
+       This message must be short enough to fit in one line of the notification drawer area. -->
     <string name="dismiss_tip">(Swipe to stop)</string>
 
-    <!-- Notification body third line of text: indicates that periodic reminder alarms are turned
+    <!-- Notification body subtext (third line): Indicates that periodic reminder alarms are turned
       off. This message must be short enough to fit in one line of the notification drawer area. -->
     <string name="no_reminders_tip">No periodic alarms</string>
 

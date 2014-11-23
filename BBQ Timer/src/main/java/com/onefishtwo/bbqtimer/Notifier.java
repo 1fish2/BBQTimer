@@ -181,9 +181,8 @@ public class Notifier {
             if (isRunning && state.isEnableReminders()) {
                 int reminderSecs   = state.getSecondsPerReminder();
                 int minutes        = reminderSecs / 60;
-                String contentText = minutes > 1
-                        ? context.getString(R.string.notification_body, minutes)
-                        : context.getString(R.string.notification_body_singular);
+                String contentText = context.getResources()
+                        .getQuantityString(R.plurals.notification_body, minutes, minutes);
                 int numReminders   = AlarmReceiver.numRemindersSoFar(state);
 
                 builder.setContentText(contentText);
