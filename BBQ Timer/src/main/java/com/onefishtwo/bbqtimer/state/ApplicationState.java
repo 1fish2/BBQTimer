@@ -65,7 +65,7 @@ public class ApplicationState {
 
             if (needToSave) {
                 state.save(context);
-                Log.i(TAG, "*** Loaded, reset, and saved the timer ***");
+                Log.i(TAG, "*** Reset and saved the timer ***");
             }
 
             sharedInstance = state;
