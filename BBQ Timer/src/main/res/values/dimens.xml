@@ -15,9 +15,12 @@
     <dimen name="controls_top_margin">12dp</dimen>
 
     <!-- Text sizes. -->
-    <!-- 70dp fits 1 hours digit on Nexus 1 & Nexus S in portrait mode (320dp screen width);
-        2+ hours digits on Galaxy Nexus, Nexus 4, Nexus 5, Nexus 6.
-        Use dp instead of sp to fit the space, independent of the user's font size setting. -->
+    <!-- Nexus 1 & Nexus S (320x533 dp) fits 1 hours digit in portrait mode,
+        Galaxy Nexus (360x640 dp) fits 2+ hours digits,
+        Nexus 4 (384x640 dp) fits 2+ hours digits,
+        Nexus 5 (432x768 dp) fits 2+ hours digits,
+        Nexus 6 (411x731 dp) fits 2+ hours digits.
+        Uses dp instead of sp to fit the space, independent of the user's font size setting. -->
     <dimen name="display_text_size">70dp</dimen>
     <dimen name="widget_text_size">56sp</dimen>
     <dimen name="secondary_text_size">20sp</dimen>
