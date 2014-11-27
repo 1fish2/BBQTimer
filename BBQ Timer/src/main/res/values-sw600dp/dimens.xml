@@ -1,0 +1,4 @@
+<!-- Layout resources for 7" tablets (e.g. 600x1024 mdpi; 800x1280 tvdpi; 1200x1920 xhdpi). -->
+<resources>
+    <dimen name="button_margin">8dp</dimen>
+</resources>

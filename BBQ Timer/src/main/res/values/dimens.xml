@@ -5,6 +5,7 @@
 
     <dimen name="button_padding">16dp</dimen>
     <dimen name="button_drawable_padding">9dp</dimen>
+    <dimen name="button_margin">3dp</dimen>
     <dimen name="small_button_padding">8dp</dimen>
     <dimen name="widget_interior_padding">3dp</dimen>
     <dimen name="max_checkbox_width">300dp</dimen>
@@ -14,7 +15,10 @@
     <dimen name="controls_top_margin">12dp</dimen>
 
     <!-- Text sizes. -->
-    <dimen name="display_text_size">70sp</dimen>
+    <!-- 70dp fits 1 hours digit on Nexus 1 & Nexus S in portrait mode (320dp screen width);
+        2+ hours digits on Galaxy Nexus, Nexus 4, Nexus 5, Nexus 6.
+        Use dp instead of sp to fit the space, independent of the user's font size setting. -->
+    <dimen name="display_text_size">70dp</dimen>
     <dimen name="widget_text_size">56sp</dimen>
     <dimen name="secondary_text_size">20sp</dimen>
     <dimen name="controls_text_size">18sp</dimen>
