@@ -48,7 +48,7 @@
                 android:paddingLeft="@dimen/button_padding"
                 android:paddingRight="@dimen/button_padding"
                 android:onClick="onClickStartStop"
-                android:drawableLeft="@drawable/ic_action_play"
+                android:drawableLeft="@drawable/ic_play"
                 android:layout_marginRight="@dimen/button_margin"
                 android:focusable="true"/>
 
@@ -60,7 +60,7 @@
                 android:paddingLeft="@dimen/button_padding"
                 android:paddingRight="@dimen/button_padding"
                 android:onClick="onClickReset"
-                android:drawableLeft="@drawable/ic_action_replay"
+                android:drawableLeft="@drawable/ic_replay"
                 android:layout_marginLeft="@dimen/button_margin"
                 android:layout_marginRight="@dimen/button_margin"
                 android:focusable="true"/>
@@ -73,7 +73,7 @@
                 android:paddingLeft="@dimen/button_padding"
                 android:paddingRight="@dimen/button_padding"
                 android:onClick="onClickStop"
-                android:drawableLeft="@drawable/ic_action_stop"
+                android:drawableLeft="@drawable/ic_stop"
                 android:layout_marginLeft="@dimen/button_margin"
                 android:focusable="true"
                 android:nextFocusForward="@+id/enableReminders"/>

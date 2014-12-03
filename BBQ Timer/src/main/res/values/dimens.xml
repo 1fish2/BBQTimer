@@ -3,7 +3,7 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
 
-    <dimen name="button_padding">16dp</dimen>
+    <dimen name="button_padding">12dp</dimen>
     <dimen name="button_margin">3dp</dimen>
     <dimen name="small_button_padding">8dp</dimen>
     <dimen name="widget_interior_padding">3dp</dimen>
