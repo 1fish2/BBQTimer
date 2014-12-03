@@ -2,12 +2,12 @@
 
 [See it in the Google Play store](https://play.google.com/store/apps/details?id=com.onefishtwo.bbqtimer)
 
-A stopwatch with a twist (or two):
+A stopwatch with:
 
-1. **Lock screen notifications** (on Android Lollipop) and a **lock screen widget** (on Jelly Bean and
-   KitKat) for quick access without unlocking your phone or tablet.
-2. **Periodic alarms** remind you to check the food -- rather than a one-shot alarm that assumes the
-   food will be done. It’s a count-up stopwatch with timer alarms.
+1. **Lock screen operation** for quick access. It provides *lock screen notifications* (on Android
+   Lollipop) and a *lock screen widget* (on Jelly Bean and KitKat).
+2. **Periodic alarms** to remind you to check the food (instead of a one-shot alarm that assumes
+   the food will be done). It’s a count-up stopwatch with timer alarms.
 
 Of course it can time more things than cooking.
 
@@ -35,13 +35,13 @@ Released.
 [MIT License](https://github.com/1fish2/BBQTimer/blob/master/LICENSE.md).
 
 ## Usage Tips
-* On Android Lollipop, just start or pause BBQ Timer from the application or its home screen widget.
+* On Android Lollipop, start BBQ Timer from the application or its home screen widget.
   You can operate it from the notification drawer and the lock screen as long as it's running or
   paused.
 * On Jelly Bean and KitKat, place the BBQ Timer widget on your lock screen for quick access.
 * The widget also works on the home screen.
 * To resize the home screen widget, long-press on it then drag its resize handles.
-  Stretched wider, it can show longer durations.
+  When stretched wider, it can show longer durations.
 * To remove the widget, long-press it then drag it onto “X Remove”.
 * Tap the stopwatch time display to cycle between *stopped* → *running* → *paused* → *stopped.*
 * On the app’s main screen, tap the checkbox to turn on periodic reminder alarms.
@@ -71,7 +71,7 @@ Released.
 * When you wake the Android screen, it shows the main (rightmost) lock screen widget.
   To access your other lock screen widgets, swipe rightwards.
 * To rearrange your lock screen widgets, long-press one and drag it left or right.
-* You can rearrange lock screen widgets when you cook (moving BBQ Timer to the rightmost
+* You can rearrange lock screen widgets when you cook (move BBQ Timer to the rightmost
   position) and afterwards, move the Digital Clock there.
 
 ## Known Issues
@@ -87,8 +87,6 @@ Released.
   the notification area shows black text on a black background.
 
 ## TODO
-* Use available space on tablets. Add screen shots for 10" tablets.
-* Display the time larger in the activity when the screen is large enough.
 * Add a menu of recipes to set the reminder alarm time and suggest the cooking temp.
 * Add a Setting to pick {sound, vibrate, both, disable} for reminders.
 * Add a Setting to pick the reminder alarm sound.
