@@ -49,7 +49,7 @@
        short enough to fit in one line of the notification drawer area.
 
        NOTE: The <elapsed_time> is the accumulated timer duration, not the time of day when the
-       pause occurred. In English, "Paused at 10:23" is ambiguous. -->
+       pause occurred. In English, "Paused at 10:23" is ambiguous; it could mean either one. -->
     <string name="timer_paused">Paused %1$s</string>
 
     <!-- Notification body message: The timer is stopped. This message must be short enough to fit
@@ -57,7 +57,9 @@
     <string name="timer_stopped">Stopped</string>
 
     <!-- Notification body subtext (third line): A tip that swiping will dismiss the notification.
-       This message must be short enough to fit in one line of the notification drawer area. -->
+       This message must be short enough to fit in one line of the notification drawer area.
+
+       NOTE: This message is not important. An empty string would be OK. -->
     <string name="dismiss_tip">(Swipe to stop)</string>
 
     <!-- Notification body subtext (third line): Indicates that periodic reminder alarms are turned
@@ -66,7 +68,7 @@
 
     <!-- The initial text for a reset timer showing 0 minutes and 0.0 seconds. This should match the
       locale's format used by the Android OS utility DateUtils.formatElapsedTime() with appended
-      tenths of a second, BUT it doesn't really matter since it gets replaced immediately with a
+      tenths of a second, BUT it doesn't matter since it gets replaced immediately with a
       string computed by formatting the timer duration value 0. See time_format.
 
       The Android OS standard format is "00:00" in English even though "0:00" would look better. -->
