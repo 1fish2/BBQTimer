@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 21
-    buildToolsVersion '21.1.1'
+    buildToolsVersion '21.1.2'
 
     defaultConfig {
         minSdkVersion 12
@@ -24,10 +24,10 @@ android {
 
     buildTypes {
         release {
-            runProguard true
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.txt'
             signingConfig signingConfigs.releaseSigning
-            zipAlign true
+            zipAlignEnabled true
         }
     }
 }
@@ -48,6 +48,6 @@ tasks.whenTaskAdded { theTask ->
 }
 
 dependencies {
-    compile 'com.android.support:appcompat-v7:21.0.2'
-    compile "com.android.support:support-v4:21.0.2"
+    compile 'com.android.support:appcompat-v7:21.0.3'
+    compile "com.android.support:support-v4:21.0.3"
 }
