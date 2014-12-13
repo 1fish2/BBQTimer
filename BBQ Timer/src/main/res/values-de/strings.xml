@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- String -Ressourcen für den Grill Timer-Anwendung . -->
+<resources>
+    <string name="app_name">BBQ Timer</string>
+    <string name="app_description">Eine Stoppuhr , die Sie auf das Schloss - Bildschirm verwenden können.</string>
+    <string name="dismiss_tip">Wischen zu stoppen</string>
+    <string name="no_reminders_tip">Keine regelmäßige Alarme</string>
+    <string name="pause">Anhalten</string>
+    <string name="reminder_switch">Periodische Alarme so viele Minuten auseinander :</string>
+    <string name="reset">Zurücksetzen</string>
+    <string name="start">Start</string>
+    <string name="start_stop">Aufnahme starten/anhalten</string>
+    <string name="stop">Beenden</string>
+    <string name="time0">00:00,0</string>
+    <string name="timer_paused">Angehalten %1$s</string>
+    <string name="timer_running">Laufen</string>
+    <string name="timer_stopped">gestoppt</string>
+    <plurals name="notification_body">
+        <item quantity="one">Weckton jede Minute</item>
+        <item quantity="other">Weckton alle %1$d Minuten</item>
+    </plurals>
+</resources>
