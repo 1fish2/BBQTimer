@@ -36,6 +36,8 @@ import android.widget.Toast;
 
 import com.onefishtwo.bbqtimer.state.ApplicationState;
 
+import java.lang.ref.WeakReference;
+
 /**
  * The BBQ Timer's main activity.
  */
@@ -43,18 +45,33 @@ public class MainActivity extends ActionBarActivity implements NumberPicker.OnVa
     /** Hide the Stop feature (that distinguishes Stop from Paused) on older OS versions. */
     static final boolean HIDE_STOP_FEATURE = !Notifier.PAUSEABLE_NOTIFICATIONS;
 
-    /** A Handler for periodic display updates. */
-    private class UpdateHandler extends Handler {
+    /**
+     * A Handler for periodic display updates.
+     *
+     * <p/>Queued Messages refer to the Handler which refers to the Activity. Since
+     * Activity#onStop() calls #endScheduledUpdates(), there's no memory leak but using a
+     * WeakReference protects that from future changes and appeases Lint.
+     */
+    private static class UpdateHandler extends Handler {
         private static final int MSG_UPDATE = 1;
         private static final long UPDATE_INTERVAL = 100; // msec
+        private final WeakReference<MainActivity> weakActivity;
+
+        private UpdateHandler(MainActivity activity) {
+            weakActivity = new WeakReference<>(activity);
+        }
 
         /** Handles a message to periodically update the display. */
         @Override
         public void handleMessage(Message msg) {
+            MainActivity activity = weakActivity.get();
+
             super.handleMessage(msg);
             switch (msg.what) {
                 case MSG_UPDATE:
-                    displayTime();
+                    if (activity != null) {
+                        activity.displayTime();
+                    }
                     scheduleNextUpdate();
                     break;
             }
@@ -62,7 +79,9 @@ public class MainActivity extends ActionBarActivity implements NumberPicker.OnVa
 
         /** Schedules the next Activity display update if the timer is running. */
         private void scheduleNextUpdate() {
-            if (timer.isRunning()) {
+            MainActivity activity = weakActivity.get();
+
+            if (activity != null && activity.timer.isRunning()) {
                 sendEmptyMessageDelayed(MSG_UPDATE, UPDATE_INTERVAL);
             }
         }
@@ -79,7 +98,7 @@ public class MainActivity extends ActionBarActivity implements NumberPicker.OnVa
         }
     }
 
-    private final UpdateHandler updateHandler = new UpdateHandler();
+    private final UpdateHandler updateHandler = new UpdateHandler(this);
     private ApplicationState state;
     private TimeCounter timer;
 
