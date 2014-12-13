@@ -7,4 +7,4 @@
 DIR="BBQ Timer/build/outputs"
 OUTPUT="releases/snapshot_${1:-`date "+%Y%m%d"`}.tar.bz2"
 tar cjvf "${OUTPUT}" "${DIR}/apk/BBQ Timer-release.apk" \
-    "${DIR}/proguard/release/mapping.txt"
+    "${DIR}/mapping/release/mapping.txt"
