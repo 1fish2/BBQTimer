@@ -2,6 +2,8 @@
 <!-- For n cells, use 70 * n - 30 dp. That's 40, 110, 180, 250, ... -->
 <!-- If resizeMode doesn't include "vertical", it'll be "small" on the lock screen. -->
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+                    xmlns:tools="http://schemas.android.com/tools"
+                    tools:ignore="UnusedAttribute"
     android:minWidth="180dp"
     android:minHeight="40dp"
     android:minResizeWidth="180dp"

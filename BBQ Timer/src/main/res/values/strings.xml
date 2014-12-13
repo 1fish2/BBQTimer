@@ -2,10 +2,6 @@
 <!-- String resources for the BBQ Timer application. -->
 <resources>
 
-    <!-- A menu command in the Options Menu, to open a (future) Settings activity. [This feature
-      might get removed from the app.] -->
-    <string name="action_settings">Settings</string>
-
     <!-- The application's name. -->
     <string name="app_name">BBQ Timer</string>
 

@@ -32,7 +32,6 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.NumberPicker;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.onefishtwo.bbqtimer.state.ApplicationState;
 
@@ -181,12 +180,13 @@ public class MainActivity extends ActionBarActivity implements NumberPicker.OnVa
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            // TODO: Implement Settings.
-            Toast.makeText(this, "Settings are not yet implemented", Toast.LENGTH_SHORT).show();
-            return true;
-        }
+
+        // TODO: Implement this once there is a menu:
+        // int id = item.getItemId();
+        // if (id == R.id.action_settings) {
+        //     ...
+        //     return true;
+        // }
         return super.onOptionsItemSelected(item);
     }
 

@@ -19,6 +19,7 @@
 
 package com.onefishtwo.bbqtimer;
 
+import android.annotation.TargetApi;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
@@ -74,11 +75,17 @@ public class AlarmReceiver extends BroadcastReceiver {
         long nextReminder = nextReminderTime(state);
 
         if (android.os.Build.VERSION.SDK_INT >= 19) {
-            alarmMgr.setWindow(AlarmManager.ELAPSED_REALTIME_WAKEUP,
-                    nextReminder - WAKEUP_WINDOW_MS, WAKEUP_WINDOW_MS, pendingIntent);
+            setAlarmWindowV19(alarmMgr, nextReminder, pendingIntent);
         } else {
             alarmMgr.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, nextReminder, pendingIntent);
         }
+    }
+
+    @TargetApi(19)
+    private static void setAlarmWindowV19(AlarmManager alarmMgr, long nextReminder,
+            PendingIntent pendingIntent) {
+        alarmMgr.setWindow(AlarmManager.ELAPSED_REALTIME_WAKEUP,
+                nextReminder - WAKEUP_WINDOW_MS, WAKEUP_WINDOW_MS, pendingIntent);
     }
 
     /**

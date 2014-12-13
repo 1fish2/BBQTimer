@@ -1,5 +1,5 @@
 <!-- Layout resources for tablets like Nexus 10 (1600x2560 xhdpi = 800x1280 dp). -->
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <!-- fits 2+ hours digits -->
-    <dimen name="display_text_size">158dp</dimen>
+    <dimen name="display_text_size" tools:ignore="SpUsage">158dp</dimen>
 </resources>
