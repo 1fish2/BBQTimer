@@ -8,6 +8,7 @@ build/
 # Unused source assets. They may get used later.
 /source-assets/unused/
 
+/tmp/
 
 # OS X
 .DS_Store
