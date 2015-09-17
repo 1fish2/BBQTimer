@@ -2,7 +2,7 @@
   <library name="appcompat-v7-21.0.3">
     <CLASSES>
       <root url="file://$PROJECT_DIR$/BBQ Timer/build/intermediates/exploded-aar/com.android.support/appcompat-v7/21.0.3/res" />
-      <root url="jar://$PROJECT_DIR$/BBQ Timer/build/intermediates/exploded-aar/com.android.support/appcompat-v7/21.0.3/classes.jar!/" />
+      <root url="jar://$PROJECT_DIR$/BBQ Timer/build/intermediates/exploded-aar/com.android.support/appcompat-v7/21.0.3/jars/classes.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />
