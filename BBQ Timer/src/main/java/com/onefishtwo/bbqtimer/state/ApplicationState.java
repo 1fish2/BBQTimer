@@ -93,7 +93,7 @@ public class ApplicationState {
 
         boolean needToSave    = timeCounter.load(prefs);
         mainActivityIsVisible = prefs.getBoolean(PREF_MAIN_ACTIVITY_IS_VISIBLE, false);
-        enableReminders       = prefs.getBoolean(PREF_ENABLE_REMINDERS, false);
+        enableReminders       = prefs.getBoolean(PREF_ENABLE_REMINDERS, true);
         secondsPerReminder    = prefs.getInt(PREF_SECONDS_PER_REMINDER, 5 * 60);
 
         return needToSave;
