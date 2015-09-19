@@ -25,19 +25,21 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.support.v7.app.NotificationCompat;
 
 /**
- * Notification Builder for API level 21+, implemented via Notification.Builder since
- * NotificationCompat.Builder doesn't support MediaStyle.
+ * Notification Builder for API level 21+.
+ * Previously this had to be implemented via Notification.Builder.
+ * Now with appcompat-v7:23, NotificationCompat.Builder supports MediaStyle.
  *</p>
  * ASSUMES: Build.VERSION.SDK_INT >= 21. Conditionally load this class.
  */
 @TargetApi(21)
 class V21Builder implements NotificationBuilder {
-    private Notification.Builder builder;
+    private NotificationCompat.Builder builder;
 
     public V21Builder(Context context) {
-        builder = new Notification.Builder(context);
+        builder = new NotificationCompat.Builder(context);
     }
 
     @Override
@@ -156,7 +158,7 @@ class V21Builder implements NotificationBuilder {
 
     @Override
     public NotificationBuilder setMediaStyleActionsInCompactView(int... actions) {
-        new Notification.MediaStyle(builder).setShowActionsInCompactView(actions);
+        new NotificationCompat.MediaStyle(builder).setShowActionsInCompactView(actions);
         return this;
     }
 

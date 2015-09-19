@@ -23,7 +23,8 @@ import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.text.Spanned;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -40,7 +41,7 @@ import java.lang.ref.WeakReference;
 /**
  * The BBQ Timer's main activity.
  */
-public class MainActivity extends ActionBarActivity implements NumberPicker.OnValueChangeListener {
+public class MainActivity extends AppCompatActivity implements NumberPicker.OnValueChangeListener {
     /** Hide the Stop feature (that distinguishes Stop from Paused) on older OS versions. */
     static final boolean HIDE_STOP_FEATURE = !Notifier.PAUSEABLE_NOTIFICATIONS;
 
@@ -242,7 +243,7 @@ public class MainActivity extends ActionBarActivity implements NumberPicker.OnVa
                 timer.isRunning() ? R.color.running_timer_colors
                 : timer.isReset() ? R.color.reset_timer_colors
                 : R.color.paused_timer_colors;
-        ColorStateList textColors = getResources().getColorStateList(textColorsId);
+        ColorStateList textColors = ContextCompat.getColorStateList(this, textColorsId);
 
         displayView.setText(formatted);
         displayView.setTextColor(textColors);
