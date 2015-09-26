@@ -40,8 +40,17 @@ public class AlarmReceiver extends BroadcastReceiver {
     private static PendingIntent makeAlarmPendingIntent(Context context) {
         Intent intent = new Intent(context, AlarmReceiver.class);
 
+        // See http://stackoverflow.com/questions/32492770
+        if (android.os.Build.VERSION.SDK_INT >= 16) {
+            intent.addFlags(Intent.FLAG_RECEIVER_FOREGROUND);
+        }
+
+        // (ibid) "FLAG_CANCEL_CURRENT seems to be required to prevent a bug where the
+        // intent doesn't fire after app reinstall in KitKat." -- This doesn't seem any
+        // better or worse than FLAG_UPDATE_CURRENT, but it's hard to tell since
+        // MY_PACKAGE_REPLACED is unreliable, at least in the emulator.
         return PendingIntent.getBroadcast(context, 0, intent,
-                PendingIntent.FLAG_UPDATE_CURRENT);
+                PendingIntent.FLAG_CANCEL_CURRENT);
     }
 
     /** Returns the SystemClock.elapsedRealtime() for the next reminder notification. */
