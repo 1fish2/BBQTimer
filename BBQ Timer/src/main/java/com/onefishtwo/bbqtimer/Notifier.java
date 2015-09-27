@@ -1,6 +1,6 @@
 // The MIT License (MIT)
 //
-// Copyright (c) 2014 Jerry Morrison
+// Copyright (c) 2015 Jerry Morrison
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
 // associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -26,6 +26,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.app.TaskStackBuilder;
@@ -39,6 +40,16 @@ import com.onefishtwo.bbqtimer.state.ApplicationState;
  */
 public class Notifier {
     private static final int NOTIFICATION_ID = 7;
+
+    // Marshmallow rejects invisible notifications (IllegalArgumentException if there's no small
+    // icon, and just adding a small icon shows a nearly empty notification). Either show a visible
+    // notification in the Activity (despite the style guide) or implement another way to play
+    // the alarm on Marshmallow. Showing a notification is nice because it gives immediate feedback
+    // on starting/stopping notifications that are accessible on the Lollipop+ lock screen and
+    // visible alarm feedback (just like out-of-activity).
+    //
+    private static final boolean IN_ACTIVITY_NOTIFICATIONS =
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
 
     /**
      * On API 21+, allow Paused notifications with Reset/Stop/Start buttons and Running
@@ -136,7 +147,7 @@ public class Notifier {
         boolean isMainActivityVisible = state.isMainActivityVisible();
         TimeCounter timer             = state.getTimeCounter();
         boolean showable = PAUSEABLE_NOTIFICATIONS ? !timer.isStopped() : timer.isRunning();
-        boolean show                  = showable && !isMainActivityVisible;
+        boolean show     = showable && (IN_ACTIVITY_NOTIFICATIONS || !isMainActivityVisible);
 
         if (!(show || playChime || vibrate)) {
             cancelAll();
@@ -148,12 +159,16 @@ public class Notifier {
         notificationManager.notify(NOTIFICATION_ID, notification);
     }
 
-    /** Builds a notification. */
+    /** Builds a notification, optionally visible, audible, tactile. */
     protected Notification buildNotification(ApplicationState state, boolean show) {
         NotificationBuilder builder = NotificationBuilderFactory.builder(context)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setCategory(NotificationCompat.CATEGORY_ALARM)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
+
+        if (IN_ACTIVITY_NOTIFICATIONS) {
+            show = true;
+        }
 
         if (show) {
             TimeCounter timer = state.getTimeCounter();
