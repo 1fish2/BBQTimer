@@ -1,6 +1,6 @@
 // The MIT License (MIT)
 //
-// Copyright (c) 2014 Jerry Morrison
+// Copyright (c) 2015 Jerry Morrison
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
 // associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -25,8 +25,8 @@ import android.content.Intent;
 import android.util.Log;
 
 /**
- * A BroadcastReceiver to resume the running timer and notification after an app upgrade
- * (MY_PACKAGE_REPLACED Intent action).
+ * A BroadcastReceiver to resume/adjust the running timer and notification after an app upgrade,
+ * clock adjustment, or timezone adjustment.
  *<p/>
  * TODO: Maybe stop the timer in a ACTION_BOOT_COMPLETED BroadcastReceiver. That requires another
  * permission and would only help a narrow case: If the device reboots when the timer was running or
@@ -40,7 +40,8 @@ import android.util.Log;
  *<p/>
  * BTW the OS doesn't send broadcasts to "stopped" applications. See
  * <a href="http://developer.android.com/about/versions/android-3.1.html#launchcontrols">Launch
- * Controls</a>.
+ * Controls</a> and <a href="https://code.google.com/p/android/issues/detail?id=18225">Issue
+ * 18225</a>.
  */
 public class ResumeReceiver extends BroadcastReceiver {
     private static final String TAG = "ResumeReceiver";
@@ -48,10 +49,17 @@ public class ResumeReceiver extends BroadcastReceiver {
     /** Handles an incoming Intent. */
     @Override
     public void onReceive(Context context, Intent intent) {
-        Log.i(TAG, "*** " + intent.getAction() + " ***");
-        AlarmReceiver.updateNotifications(context);
+        String action = intent.getAction();
 
-        // NOTE: The widgets should stay in the right state but if that doesn't always work:
-        // TimerAppWidgetProvider.updateAllWidgets(context, state);
+        Log.i(TAG, action);
+
+        if (Intent.ACTION_MY_PACKAGE_REPLACED.equals(action)) {
+            AlarmReceiver.updateNotifications(context);
+            // NOTE: The widgets should stay in the right state but if that doesn't always work, do
+            // TimerAppWidgetProvider.updateAllWidgets(context, state);
+        } else if (Intent.ACTION_TIME_CHANGED.equals(action) // TIME_SET
+                || Intent.ACTION_TIMEZONE_CHANGED.equals(action)) {
+            AlarmReceiver.handleClockAdjustment(context);
+        }
     }
 }

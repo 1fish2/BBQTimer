@@ -48,6 +48,7 @@ public class Notifier {
     // on starting/stopping notifications that are accessible on the Lollipop+ lock screen and
     // visible alarm feedback (just like out-of-activity).
     //
+    // TODO: Test in-activity notifications on earlier Android builds.
     private static final boolean IN_ACTIVITY_NOTIFICATIONS =
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
 

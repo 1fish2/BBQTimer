@@ -1,6 +1,6 @@
 // The MIT License (MIT)
 //
-// Copyright (c) 2014 Jerry Morrison
+// Copyright (c) 2015 Jerry Morrison
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
 // associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -140,6 +140,11 @@ public class TimeCounter {
     // TODO: Inject the clock for testability.
     public long elapsedRealtimeClock() {
         return SystemClock.elapsedRealtime();
+    }
+
+    /** Converts from the elapsed realtime clock (ELAPSED) to the realtime wall clock (RTC). */
+    public long elapsedTimeToWallTime(long elapsed) {
+        return elapsed - elapsedRealtimeClock() + System.currentTimeMillis();
     }
 
     /** Returns true if the timer is Running (not Stopped/Paused). */

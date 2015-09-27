@@ -1,6 +1,6 @@
 // The MIT License (MIT)
 //
-// Copyright (c) 2014 Jerry Morrison
+// Copyright (c) 2015 Jerry Morrison
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
 // associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -26,6 +26,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.text.format.DateUtils;
+import android.util.Log;
 import android.widget.RemoteViews;
 
 import com.onefishtwo.bbqtimer.state.ApplicationState;
@@ -34,6 +35,8 @@ import com.onefishtwo.bbqtimer.state.ApplicationState;
  * The BBQ Timer app widget for the home and lock screens.
  */
 public class TimerAppWidgetProvider extends AppWidgetProvider {
+    private static final String TAG = "AppWidgetProvider";
+
     // --- R.id.viewFlipper child indexes.
     private static final int RUNNING_CHRONOMETER_CHILD = 0;
     private static final int PAUSED_CHRONOMETER_CHILD  = 1;
@@ -46,7 +49,10 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
     static final String ACTION_STOP       = "com.onefishtwo.bbqtimer.ACTION_STOP";
     static final String ACTION_CYCLE      = "com.onefishtwo.bbqtimer.ACTION_CYCLE";
 
-    // Synchronized on the class.
+    /**
+     * Date display text for the widget's second line, visible on the lock screen.
+     * Synchronized on the class. Computed lazily.
+     */
     private static String secondaryTextCache;
 
     static ComponentName getComponentName(Context context) {
@@ -64,6 +70,7 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
         return secondaryTextCache;
     }
 
+    /** Clears the cached secondary text, to be recomputed lazily. */
     static synchronized void clearSecondaryTextCache() {
         secondaryTextCache = null;
     }
@@ -166,6 +173,8 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
         ApplicationState state = ApplicationState.sharedInstance(context);
         TimeCounter timer      = state.getTimeCounter();
 
+        Log.d(TAG, action);
+
         if (ACTION_RUN_PAUSE.equals(action)) { // The user tapped a Run/Pause button.
             timer.toggleRunPause();
             saveStateAndUpdateUI(context, state);
@@ -178,7 +187,7 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
         } else if (ACTION_RESET.equals(action)) { // The user tapped a Reset button.
             timer.reset();
             saveStateAndUpdateUI(context, state);
-        } else if (ACTION_STOP.equals(action)) { // The user tapped a Stop button.
+        } else if (ACTION_STOP.equals(action)) { // tapped a Stop button or swiped the notification.
             timer.stop();
             saveStateAndUpdateUI(context, state);
         } else if (ACTION_CYCLE.equals(action)) { // The user tapped the time text.
