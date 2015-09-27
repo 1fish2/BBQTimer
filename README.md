@@ -4,10 +4,10 @@
 
 A stopwatch with:
 
-1. **Lock screen operation** for quick access. It provides *lock screen notifications* (on Android
-   Lollipop) and a *lock screen widget* (on Jelly Bean and KitKat).
+1. **Lock screen operation** for quick access. It provides *lock screen notifications* (Android
+   Lollipop 5 on) or a *lock screen widget* (Jelly Bean 4.2 to KitKat 4.4).
 2. **Periodic alarms** to remind you to check the food (instead of a one-shot alarm that assumes
-   the food will be done). It’s a count-up stopwatch with timer alarms.
+   the food will be done). It’s a count-up stopwatch with alarms.
 
 Of course it can time more things than cooking.
 
@@ -35,23 +35,21 @@ Released.
 [MIT License](https://github.com/1fish2/BBQTimer/blob/master/LICENSE.md).
 
 ## Usage Tips
-* On Android Lollipop, start BBQ Timer from the application or its home screen widget.
-  You can operate it from the notification drawer and the lock screen as long as it's running or
+* Android Lollipop on: Start BBQ Timer from the application or its home screen widget.
+  You can operate it from the lock screen and the pull-down notification while it's running or
   paused.
-* On Jelly Bean and KitKat, place the BBQ Timer widget on your lock screen for quick access.
+* Jelly Bean and KitKat: Put the BBQ Timer widget on your lock screen for quick access.
+  (Instructions below.)
 * The widget also works on the home screen.
-* To resize the home screen widget, long-press on it then drag its resize handles.
-  When stretched wider, it can show longer durations.
-* To remove the widget, long-press it then drag it onto “X Remove”.
-* Tap the stopwatch time display to cycle between *stopped* → *running* → *paused* → *stopped.*
-* On the app’s main screen, tap the checkbox to turn on periodic reminder alarms.
-* On the app’s main screen, set the interval between periodic reminder alarms by
-  dragging the number widget, or tap the number then type in a new number, or tap and hold on the
-  number above or below the current setting.
+* Tap the timer display to cycle between *stopped* → *running* → *paused* → *stopped.*
+* If you long-press the home screen widget, you can stretch it to fit longer durations.
+* On the app’s main screen, tap the checkbox to turn on periodic reminder alarms. Set the
+  interval between reminders by dragging the number widget, or tap the number then
+  type in a new number, or press and hold the number above or below the current value.
 
 ## How to Use Android Lock Screen Widgets
-* This feature requires Android 4.2 Jelly Bean MR1 through Android 4.4 KitKat. Not Lollipop.
-* On KitKat, you must turn on Settings → Security → Enable Widgets to enable this feature.
+* Only Android 4.2 Jelly Bean MR1 through Android 4.4 KitKat can do this.
+* On KitKat, first enable Settings → Security → Enable Widgets.
 * For step-by-step instructions, see [Getting started with lock screen widgets on Android Jelly
   Bean](http://howto.cnet.com/8301-11310_39-57549747-285/getting-started-with-lock-screen-widgets-on-android-jelly-bean/
   “CNET How To”)
@@ -61,7 +59,7 @@ Released.
 * In short, to add a lock screen widget on Jelly Bean or KitKat:
     * On Android 4.4 KitKat, turn on Settings → Security → Enable Widgets.
     * Wake the screen.
-    * Swipe from the left edge of the screen to the right until you see the “+” screen.
+    * Swipe from the left edge of the screen towards the right until you see the “+” screen.
     * Tap “+”.
     * Unlock the phone.
     * Tap the BBQ Timer widget.
@@ -70,26 +68,24 @@ Released.
       widgets.
 * When you wake the Android screen, it shows the main (rightmost) lock screen widget.
   To access your other lock screen widgets, swipe rightwards.
-* To rearrange your lock screen widgets, long-press one and drag it left or right.
-* You can rearrange lock screen widgets when you cook (move BBQ Timer to the rightmost
-  position) and afterwards, move the Digital Clock there.
+* To rearrange your lock screen widgets, long-press one and drag it left or right. E.g. when you
+  cook, move BBQ Timer to the rightmost position. Afterwards, move the Digital Clock there.
 
 ## Known Issues
 * Due to [Android OS bug 2880](https://code.google.com/p/android/issues/detail?id=2880), if the
   clock gets set backwards, the widget’s date display might not update until the clock catches up to
   what was going to be the next day.
 * Not yet tested on Android API level 13 (HONEYCOMB_MR2) or level 14 (ICE_CREAM_SANDWICH) where the
-  emulator takes most of an hour to launch, then croaks. If you have those versions of
-  Android, let me know how it goes.
+  emulator takes most of an hour to launch, then croaks.
 * There’s a fraction of a second clock skew between the stopwatch time displayed in widgets vs. the
   notification area. To see precise times, open the application’s main screen.
 * Android emulator bugs: The app’s timer display sometimes stops changing. In emulator API level 12,
   the notification area shows black text on a black background.
 
 ## TODO
+* Display something in the activity when the alarm rings. Flash a background color or image? Show a notification despite being in the Activity?
+* Add a voice action to start a timer.
 * Add a menu of recipes to set the reminder alarm time and suggest the cooking temp.
-* Add a Setting to pick {sound, vibrate, both, disable} for reminders.
-* Add a Setting to pick the reminder alarm sound.
 * Localize into several languages.
 * Accessibility.
 * Use a font-resizing text view fit long durations in the Activity. See
@@ -99,6 +95,7 @@ Released.
 * Use a font-resizing heuristic to fit hours in a minimum width home screen widget without eliding
   the seconds.
 * Unit tests.
+* Add Material Design shadows.
 
 ## Building from Source Code
 Use [Android Studio](http://developer.android.com/sdk/installing/studio.html) (an excellent tool!).
