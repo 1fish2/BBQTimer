@@ -44,10 +44,10 @@ public class TimeCounter {
     static final String PREF_PAUSE_TIME = "Timer_pauseTime";
 
     /**
-     * The default format string for assembling and HTML-styling a timer duration.</p>
+     * The default format string for assembling and HTML-styling a timer duration.<p/>
      *
      * Format arg %1$s is a placeholder for the already-localized HH:MM:SS string from
-     * DateUtils.formatElapsedTime(), e.g. "00:00" or "0:00:00".</p>
+     * DateUtils.formatElapsedTime(), e.g. "00:00" or "0:00:00".<p/>
      *
      * Format arg %2$s is a placeholder for the already-localized fractional seconds string, e.g.
      * ".0". The code uses a NumberFormat to format that string instead of an inline format %.1d to
@@ -265,7 +265,7 @@ public class TimeCounter {
 
     /**
      * Formats a millisecond duration in localized [hh:]mm:ss.f format <em>with attached
-     * styles</em>.</p>
+     * styles</em>.<p/>
      *
      * QUESTION: Does {@link #DEFAULT_TIME_STYLE} need to be localized for any locale? Do RTL
      * locales need to put the fractional part before the HHMMSS part? If so, make the caller get it

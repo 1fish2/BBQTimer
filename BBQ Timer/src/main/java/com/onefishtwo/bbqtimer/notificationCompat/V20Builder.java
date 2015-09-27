@@ -1,6 +1,6 @@
 // The MIT License (MIT)
 //
-// Copyright (c) 2014 Jerry Morrison
+// Copyright (c) 2015 Jerry Morrison
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
 // associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -55,7 +55,7 @@ class V20Builder implements NotificationBuilder {
 
     /**
      * NOTE: In API 17+.
-     *</p>
+     *<p/>
      * NOTE: Updating an existing notification to/from UsesChronometer only works in API 21+. In
      * API 19, going from chronometer to hide-the-time continues the running chronometer. In
      * API 16 - 18, hiding the When field doesn't actually work, and the changing to/from a

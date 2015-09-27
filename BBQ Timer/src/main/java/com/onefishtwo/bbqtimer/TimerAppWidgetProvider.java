@@ -76,18 +76,18 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
     }
 
     /**
-     * Updates the given app widgets' contents to the Timer state.</p>
+     * Updates the given app widgets' contents to the Timer state.<p/>
      *
      * Unfortunately, a Chronometer view can't accurately set its value when paused. You can set it
      * to (now - desiredTime) but even setting all widgets at once ends up with different displays
-     * due to propagation delays. *SO* when the timer is paused, switch to a TextView.</p>
+     * due to propagation delays. *SO* when the timer is paused, switch to a TextView.<p/>
      *
      * NOTE: A simpler implementation would stop the Chronometer then use it as the paused TextView,
      * but that relies on it not updating its text. Anyway, this code switches between the
      * Chronometer and two different TextViews to select the right ColorStateList for user feedback
-     * since RemoteViews can't do {@code TextView#setTextColor(ColorStateList)}.</p>
+     * since RemoteViews can't do {@code TextView#setTextColor(ColorStateList)}.<p/>
      *
-     * NOTE: setDisplayedChild() requires minSdkVersion 12 (in build.gradle).</p>
+     * NOTE: setDisplayedChild() requires minSdkVersion 12 (in build.gradle).<p/>
      *
      * TODO: Preload the button image Bitmaps? Flip between Buttons?
      */

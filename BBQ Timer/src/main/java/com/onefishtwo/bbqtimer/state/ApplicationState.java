@@ -1,6 +1,6 @@
 // The MIT License (MIT)
 //
-// Copyright (c) 2014 Jerry Morrison
+// Copyright (c) 2015 Jerry Morrison
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
 // associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -27,9 +27,9 @@ import com.onefishtwo.bbqtimer.TimeCounter;
 
 /**
  * Saves the application's state persistently in SharedPreferences and caches it in a static
- * variable while the process is in memory.</p>
+ * variable while the process is in memory.<p/>
  *
- * This does not currently provide listener notifications.</p>
+ * This does not currently provide listener notifications.<p/>
  *
  * The setters only update the state in memory. Call {@link #save} to persist the changes.
  */
@@ -113,7 +113,7 @@ public class ApplicationState {
     }
 
     /**
-     * Returns the shared TimeCounter instance.</p>
+     * Returns the shared TimeCounter instance.<p/>
      *
      * NOTE: The TimeCounter is a shared, mutable object. After updating it, call {@link #save} to
      * save it persistently.
