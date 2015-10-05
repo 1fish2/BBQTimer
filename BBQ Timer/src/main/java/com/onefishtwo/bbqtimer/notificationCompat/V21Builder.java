@@ -1,6 +1,6 @@
 // The MIT License (MIT)
 //
-// Copyright (c) 2014 Jerry Morrison
+// Copyright (c) 2015 Jerry Morrison
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
 // associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -31,12 +31,12 @@ import android.support.v7.app.NotificationCompat;
  * Notification Builder for API level 21+.
  * Previously this had to be implemented via Notification.Builder.
  * Now with appcompat-v7:23, NotificationCompat.Builder supports MediaStyle.
- *</p>
- * ASSUMES: Build.VERSION.SDK_INT >= 21. Conditionally load this class.
+ *<p/>
+ * ASSUMES: {@code Build.VERSION.SDK_INT >= 21}. Conditionally load this class.
  */
 @TargetApi(21)
 class V21Builder implements NotificationBuilder {
-    private NotificationCompat.Builder builder;
+    private final NotificationCompat.Builder builder;
 
     public V21Builder(Context context) {
         builder = new NotificationCompat.Builder(context);

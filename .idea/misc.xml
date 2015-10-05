@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="EntryPointsManager">
-    <entry_points version="2.0" />
-  </component>
-  <component name="MavenImportPreferences">
-    <option name="generalSettings">
-      <MavenGeneralSettings>
-        <option name="mavenHome" value="Bundled (Maven 3)" />
-      </MavenGeneralSettings>
-    </option>
+    <entry_points version="2.0">
+      <entry_point TYPE="method" FQNAME="com.onefishtwo.bbqtimer.MainActivity void onClickStartStop(android.view.View v)" />
+      <entry_point TYPE="method" FQNAME="com.onefishtwo.bbqtimer.MainActivity void onClickReset(android.view.View v)" />
+      <entry_point TYPE="method" FQNAME="com.onefishtwo.bbqtimer.MainActivity void onClickStop(android.view.View v)" />
+      <entry_point TYPE="method" FQNAME="com.onefishtwo.bbqtimer.MainActivity void onClickTimerText(android.view.View v)" />
+      <entry_point TYPE="method" FQNAME="com.onefishtwo.bbqtimer.MainActivity void onClickEnableRemindersToggle(android.view.View v)" />
+      <entry_point TYPE="method" FQNAME="com.onefishtwo.bbqtimer.TimeCounter long getPauseTime()" />
+    </entry_points>
   </component>
   <component name="NullableNotNullManager">
     <option name="myDefaultNullable" value="android.support.annotation.Nullable" />

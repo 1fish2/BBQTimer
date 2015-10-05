@@ -1,6 +1,6 @@
 // The MIT License (MIT)
 //
-// Copyright (c) 2014 Jerry Morrison
+// Copyright (c) 2015 Jerry Morrison
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
 // associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -44,10 +44,10 @@ public class TimeCounter {
     static final String PREF_PAUSE_TIME = "Timer_pauseTime";
 
     /**
-     * The default format string for assembling and HTML-styling a timer duration.</p>
+     * The default format string for assembling and HTML-styling a timer duration.<p/>
      *
      * Format arg %1$s is a placeholder for the already-localized HH:MM:SS string from
-     * DateUtils.formatElapsedTime(), e.g. "00:00" or "0:00:00".</p>
+     * DateUtils.formatElapsedTime(), e.g. "00:00" or "0:00:00".<p/>
      *
      * Format arg %2$s is a placeholder for the already-localized fractional seconds string, e.g.
      * ".0". The code uses a NumberFormat to format that string instead of an inline format %.1d to
@@ -96,9 +96,9 @@ public class TimeCounter {
      * Loads state from a preferences object. Enforces invariants and normalizes the state.
      *
      * @return true if the caller should {@link #save} the normalized state to ensure consistent
-     * results. That happens when the state was running/paused with future startTime, indicating a
-     * reboot. That check only helps when {@link #load} runs within startTime after reboot so it's
-     * important to save the normalized state.
+     * results. That happens when the loaded state is "running" or "paused" with a future startTime,
+     * which means the device must've rebooted. load() can only detect that within startTime after
+     * reboot, so it's important to save the normalized state.
      */
     public boolean load(SharedPreferences prefs) {
         isRunning = prefs.getBoolean(PREF_IS_RUNNING, false);
@@ -140,6 +140,11 @@ public class TimeCounter {
     // TODO: Inject the clock for testability.
     public long elapsedRealtimeClock() {
         return SystemClock.elapsedRealtime();
+    }
+
+    /** Converts from the elapsed realtime clock (ELAPSED) to the realtime wall clock (RTC). */
+    public long elapsedTimeToWallTime(long elapsed) {
+        return elapsed - elapsedRealtimeClock() + System.currentTimeMillis();
     }
 
     /** Returns true if the timer is Running (not Stopped/Paused). */
@@ -207,6 +212,7 @@ public class TimeCounter {
      *
      * @return true if the timer is now running.
      */
+    @SuppressWarnings("UnusedReturnValue")
     public boolean toggleRunPause() {
         if (isRunning) {
             pause();
@@ -260,7 +266,7 @@ public class TimeCounter {
 
     /**
      * Formats a millisecond duration in localized [hh:]mm:ss.f format <em>with attached
-     * styles</em>.</p>
+     * styles</em>.<p/>
      *
      * QUESTION: Does {@link #DEFAULT_TIME_STYLE} need to be localized for any locale? Do RTL
      * locales need to put the fractional part before the HHMMSS part? If so, make the caller get it

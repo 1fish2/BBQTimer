@@ -27,6 +27,7 @@ android {
         release {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.txt'
+            //noinspection GroovyAssignabilityCheck
             signingConfig signingConfigs.releaseSigning
             zipAlignEnabled true
         }
