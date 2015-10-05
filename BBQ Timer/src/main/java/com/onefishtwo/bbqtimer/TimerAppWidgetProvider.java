@@ -71,7 +71,7 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
     }
 
     /** Clears the cached secondary text, to be recomputed lazily. */
-    static synchronized void clearSecondaryTextCache() {
+    private static synchronized void clearSecondaryTextCache() {
         secondaryTextCache = null;
     }
 

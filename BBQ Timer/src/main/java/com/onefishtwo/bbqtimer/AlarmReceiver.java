@@ -115,7 +115,7 @@ public class AlarmReceiver extends BroadcastReceiver {
      * (Re)schedules the next reminder Notification via an AlarmManager Intent.
      * Deals with AlarmManager time windows and system idle/doze modes.
      */
-    static void scheduleNextReminder(Context context, ApplicationState state) {
+    private static void scheduleNextReminder(Context context, ApplicationState state) {
         AlarmManager alarmMgr = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
         PendingIntent pendingIntent = makeAlarmPendingIntent(context);
         long nextReminder = nextReminderTime(state);

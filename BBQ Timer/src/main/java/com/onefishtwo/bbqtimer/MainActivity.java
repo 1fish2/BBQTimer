@@ -27,7 +27,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Spanned;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
@@ -176,24 +175,10 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
         super.onStop();
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-
-        // TODO: Implement this once there is a menu:
-        // int id = item.getItemId();
-        // if (id == R.id.action_settings) {
-        //     ...
-        //     return true;
-        // }
-        return super.onOptionsItemSelected(item);
-    }
-
     /** The user tapped the Run/Pause button. */
     // TODO: Use listeners to update the Activity UI and app widgets.
     // A Proguard rule keeps all Activity *(View) methods.
+    @SuppressWarnings("UnusedParameters")
     public void onClickStartStop(View v) {
         timer.toggleRunPause();
         updateHandler.beginScheduledUpdate();
@@ -201,18 +186,21 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
     }
 
     /** The user tapped the Reset button. */
+    @SuppressWarnings("UnusedParameters")
     public void onClickReset(View v) {
         timer.reset();
         updateUI();
     }
 
     /** The user tapped the Stop button. */
+    @SuppressWarnings("UnusedParameters")
     public void onClickStop(View v) {
         timer.stop();
         updateUI();
     }
 
     /** The user tapped the time text: Cycle Reset -> Running -> Paused -> Reset. */
+    @SuppressWarnings("UnusedParameters")
     public void onClickTimerText(View v) {
         timer.cycle();
         updateHandler.beginScheduledUpdate();
@@ -220,6 +208,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
     }
 
     /** The user clicked the enable/disable periodic-reminders toggle switch/checkbox. */
+    @SuppressWarnings("UnusedParameters")
     public void onClickEnableRemindersToggle(View v) {
         state.setEnableReminders(enableRemindersToggle.isChecked());
         state.save(this);

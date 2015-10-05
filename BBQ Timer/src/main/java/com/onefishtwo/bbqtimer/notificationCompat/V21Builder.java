@@ -36,7 +36,7 @@ import android.support.v7.app.NotificationCompat;
  */
 @TargetApi(21)
 class V21Builder implements NotificationBuilder {
-    private NotificationCompat.Builder builder;
+    private final NotificationCompat.Builder builder;
 
     public V21Builder(Context context) {
         builder = new NotificationCompat.Builder(context);

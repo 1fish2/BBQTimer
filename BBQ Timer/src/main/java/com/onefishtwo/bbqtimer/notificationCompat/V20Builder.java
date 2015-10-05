@@ -32,7 +32,7 @@ import android.support.v4.app.NotificationCompat;
  * additional OS bug workarounds.
  */
 class V20Builder implements NotificationBuilder {
-    private NotificationCompat.Builder builder;
+    private final NotificationCompat.Builder builder;
 
     public V20Builder(Context context) {
         builder = new NotificationCompat.Builder(context);

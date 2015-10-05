@@ -31,29 +31,30 @@ import android.net.Uri;
  * 1659: "There is no NotificationCompat.MediaStyle in the support library"</a>. It only has the
  * features needed by this app.
  */
+@SuppressWarnings({"SameParameterValue", "UnusedReturnValue"})
 public interface NotificationBuilder {
-    public NotificationBuilder setWhen(long when);
-    public NotificationBuilder setShowWhen(boolean show);
-    public NotificationBuilder setUsesChronometer(boolean b);
-    public NotificationBuilder setSmallIcon(int icon);
-    public NotificationBuilder setContentTitle(CharSequence title);
-    public NotificationBuilder setContentText(CharSequence text);
-    public NotificationBuilder setSubText(CharSequence text);
-    public NotificationBuilder setNumber(int number);
-    public NotificationBuilder setContentIntent(PendingIntent intent);
-    public NotificationBuilder setDeleteIntent(PendingIntent intent);
-    public NotificationBuilder setLargeIcon(Bitmap icon);
-    public NotificationBuilder setSound(Uri sound);
-    public NotificationBuilder setVibrate(long[] pattern);
-    public NotificationBuilder setOngoing(boolean ongoing);
-    public NotificationBuilder setCategory(String category);
-    public NotificationBuilder setDefaults(int defaults);
-    public NotificationBuilder setPriority(int pri);
-    public NotificationBuilder addAction(int icon, CharSequence title, PendingIntent intent);
-    public NotificationBuilder setVisibility(int visibility);
+    NotificationBuilder setWhen(long when);
+    NotificationBuilder setShowWhen(boolean show);
+    NotificationBuilder setUsesChronometer(boolean b);
+    NotificationBuilder setSmallIcon(int icon);
+    NotificationBuilder setContentTitle(CharSequence title);
+    NotificationBuilder setContentText(CharSequence text);
+    NotificationBuilder setSubText(CharSequence text);
+    NotificationBuilder setNumber(int number);
+    NotificationBuilder setContentIntent(PendingIntent intent);
+    NotificationBuilder setDeleteIntent(PendingIntent intent);
+    NotificationBuilder setLargeIcon(Bitmap icon);
+    NotificationBuilder setSound(Uri sound);
+    NotificationBuilder setVibrate(long[] pattern);
+    NotificationBuilder setOngoing(boolean ongoing);
+    NotificationBuilder setCategory(String category);
+    NotificationBuilder setDefaults(int defaults);
+    NotificationBuilder setPriority(int pri);
+    NotificationBuilder addAction(int icon, CharSequence title, PendingIntent intent);
+    NotificationBuilder setVisibility(int visibility);
 
     /** Sets MediaStyle with setShowActionsInCompactView(). */
-    public NotificationBuilder setMediaStyleActionsInCompactView(int... actions);
+    NotificationBuilder setMediaStyleActionsInCompactView(int... actions);
 
-    public Notification build();
+    Notification build();
 }

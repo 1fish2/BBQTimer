@@ -38,6 +38,7 @@ import com.onefishtwo.bbqtimer.state.ApplicationState;
 /**
  * Manages the app's Android Notifications.
  */
+@SuppressWarnings("SameParameterValue")
 public class Notifier {
     private static final int NOTIFICATION_ID = 7;
 
@@ -161,16 +162,19 @@ public class Notifier {
     }
 
     /**
-     * Builds a notification, optionally visible, audible, tactile.<br/>
-     * Note: Android 6 Marshmallow rejects invisible notifications.
+     * Builds a notification. Its sound and vibration are determined by
+     * {@link #setPlayChime(boolean)} and {@link #setVibrate(boolean)}.
      *
+     * @param visible whether to make the notification visible -- except on Android 6+ which rejects
+     *             invisible notifications. Invisible notifications are handy for playing the same
+     *             alarm sound and vibration as visible notifications.
      * @param addActions whether to add a content action, delete action, and media buttons to the
      *                   degree they're supported by the OS build. false makes a read-only
      *                   notification (can't even dismiss itself) for when the activity is open.<br/>
      *                   <b>Alternative:</b> In-activity audible/visual alarm feedback instead of a
      *                   notification.
      */
-    protected Notification buildNotification(ApplicationState state, boolean show,
+    protected Notification buildNotification(ApplicationState state, boolean visible,
             boolean addActions) {
         NotificationBuilder builder = NotificationBuilderFactory.builder(context)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
@@ -178,10 +182,10 @@ public class Notifier {
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
 
         if (IN_ACTIVITY_NOTIFICATIONS) {
-            show = true;
+            visible = true;
         }
 
-        if (show) {
+        if (visible) {
             TimeCounter timer = state.getTimeCounter();
             boolean isRunning = timer.isRunning();
             Bitmap largeIcon = BitmapFactory.decodeResource(context.getResources(),
@@ -197,8 +201,8 @@ public class Notifier {
             } else {
                 // Hide the "when" field, which isn't useful while Paused, so it doesn't take space
                 // in the compact view along with 3 action buttons (Reset, Start, Stop).
-                // This doesn't actually work in API 17-18, so in API 18- it'd show the time of day
-                // when the notification is built, but it's even more broken after changing the
+                // This doesn't actually work in API 17-18, so in API 18- it'd visible the time of
+                // day when the notification is built, but it's even more broken after changing the
                 // "When" info in an open notification.
                 builder.setShowWhen(false);
             }

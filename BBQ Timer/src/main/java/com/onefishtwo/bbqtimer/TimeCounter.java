@@ -96,9 +96,9 @@ public class TimeCounter {
      * Loads state from a preferences object. Enforces invariants and normalizes the state.
      *
      * @return true if the caller should {@link #save} the normalized state to ensure consistent
-     * results. That happens when the state was running/paused with future startTime, indicating a
-     * reboot. That check only helps when {@link #load} runs within startTime after reboot so it's
-     * important to save the normalized state.
+     * results. That happens when the loaded state is "running" or "paused" with a future startTime,
+     * which means the device must've rebooted. load() can only detect that within startTime after
+     * reboot, so it's important to save the normalized state.
      */
     public boolean load(SharedPreferences prefs) {
         isRunning = prefs.getBoolean(PREF_IS_RUNNING, false);
@@ -212,6 +212,7 @@ public class TimeCounter {
      *
      * @return true if the timer is now running.
      */
+    @SuppressWarnings("UnusedReturnValue")
     public boolean toggleRunPause() {
         if (isRunning) {
             pause();
