@@ -155,13 +155,23 @@ public class Notifier {
             return;
         }
 
-        Notification notification = buildNotification(state, show);
+        Notification notification = buildNotification(state, show, !isMainActivityVisible);
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
         notificationManager.notify(NOTIFICATION_ID, notification);
     }
 
-    /** Builds a notification, optionally visible, audible, tactile. */
-    protected Notification buildNotification(ApplicationState state, boolean show) {
+    /**
+     * Builds a notification, optionally visible, audible, tactile.<br/>
+     * Note: Android 6 Marshmallow rejects invisible notifications.
+     *
+     * @param addActions whether to add a content action, delete action, and media buttons to the
+     *                   degree they're supported by the OS build. false makes a read-only
+     *                   notification (can't even dismiss itself) for when the activity is open.<br/>
+     *                   <b>Alternative:</b> In-activity audible/visual alarm feedback instead of a
+     *                   notification.
+     */
+    protected Notification buildNotification(ApplicationState state, boolean show,
+            boolean addActions) {
         NotificationBuilder builder = NotificationBuilderFactory.builder(context)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setCategory(NotificationCompat.CATEGORY_ALARM)
@@ -208,56 +218,58 @@ public class Notifier {
                 }
             } else {
                 builder.setContentText(timerRunState(timer));
-                if (timer.isPaused()) {
+                if (addActions && timer.isPaused()) {
                     builder.setSubText(context.getString(R.string.dismiss_tip));
                 } else if (isRunning) {
                     builder.setSubText(context.getString(R.string.no_reminders_tip));
                 }
             }
 
-            // Make an Intent to launch the Activity from the notification.
-            Intent activityIntent = new Intent(context, MainActivity.class);
-
-            // So navigating back from the Activity goes from the app to the Home screen.
-            TaskStackBuilder stackBuilder = TaskStackBuilder.create(context)
-                    .addParentStack(MainActivity.class)
-                    .addNextIntent(activityIntent);
-            PendingIntent activityPendingIntent =
-                    stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
-            builder.setContentIntent(activityPendingIntent);
-
             numActions = 0;
 
-            // Action button to reset the timer.
-            PendingIntent resetIntent = makeActionIntent(TimerAppWidgetProvider.ACTION_RESET);
-            if (timer.isPaused() && !timer.isReset()) {
-                addAction(builder, R.drawable.ic_action_replay, R.string.reset, resetIntent);
+            if (addActions) {
+                // Make an Intent to launch the Activity from the notification.
+                Intent activityIntent = new Intent(context, MainActivity.class);
+
+                // So navigating back from the Activity goes from the app to the Home screen.
+                TaskStackBuilder stackBuilder = TaskStackBuilder.create(context)
+                        .addParentStack(MainActivity.class)
+                        .addNextIntent(activityIntent);
+                PendingIntent activityPendingIntent =
+                        stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+                builder.setContentIntent(activityPendingIntent);
+
+                // Action button to reset the timer.
+                PendingIntent resetIntent = makeActionIntent(TimerAppWidgetProvider.ACTION_RESET);
+                if (timer.isPaused() && !timer.isReset()) {
+                    addAction(builder, R.drawable.ic_action_replay, R.string.reset, resetIntent);
+                }
+
+                // Action button to run (start) the timer.
+                PendingIntent runIntent = makeActionIntent(TimerAppWidgetProvider.ACTION_RUN);
+                if (!isRunning) {
+                    addAction(builder, R.drawable.ic_action_play, R.string.start, runIntent);
+                }
+
+                // Action button to pause the timer.
+                PendingIntent pauseIntent = makeActionIntent(TimerAppWidgetProvider.ACTION_PAUSE);
+                if (!timer.isPaused()) {
+                    addAction(builder, R.drawable.ic_action_pause, R.string.pause, pauseIntent);
+                }
+
+                // Action button to stop the timer.
+                PendingIntent stopIntent = makeActionIntent(TimerAppWidgetProvider.ACTION_STOP);
+                if (PAUSEABLE_NOTIFICATIONS && !timer.isStopped()) {
+                    addAction(builder, R.drawable.ic_action_stop, R.string.stop, stopIntent);
+                }
+
+                // Allow stopping via dismissing the notification (unless it's "ongoing").
+                builder.setDeleteIntent(stopIntent);
+
+                setMediaStyleActionsInCompactView(builder);
             }
 
-            // Action button to run (start) the timer.
-            PendingIntent runIntent = makeActionIntent(TimerAppWidgetProvider.ACTION_RUN);
-            if (!isRunning) {
-                addAction(builder, R.drawable.ic_action_play, R.string.start, runIntent);
-            }
-
-            // Action button to pause the timer.
-            PendingIntent pauseIntent = makeActionIntent(TimerAppWidgetProvider.ACTION_PAUSE);
-            if (!timer.isPaused()) {
-                addAction(builder, R.drawable.ic_action_pause, R.string.pause, pauseIntent);
-            }
-
-            // Action button to stop the timer.
-            PendingIntent stopIntent = makeActionIntent(TimerAppWidgetProvider.ACTION_STOP);
-            if (PAUSEABLE_NOTIFICATIONS && !timer.isStopped()) {
-                addAction(builder, R.drawable.ic_action_stop, R.string.stop, stopIntent);
-            }
-
-            // Allow stopping via dismissing the notification (unless it's "ongoing").
-            builder.setDeleteIntent(stopIntent);
-
-            setMediaStyleActionsInCompactView(builder);
-
-            if (isRunning) {
+            if (isRunning || !addActions) {
                 builder.setOngoing(true);
             }
         }
