@@ -25,6 +25,8 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
+import android.util.Log;
 
 import com.onefishtwo.bbqtimer.state.ApplicationState;
 
@@ -32,17 +34,27 @@ import com.onefishtwo.bbqtimer.state.ApplicationState;
  * Uses AlarmManager to perform periodic reminder notifications.
  */
 public class AlarmReceiver extends BroadcastReceiver {
+    private static final String TAG = "AlarmReceiver";
+
     /**
-     * Whether to use alarmMgr.setAlarmClock() vs. set(). It's available on API v21 but on v23 this
-     * matters to wake up on time from idle/doze power saving modes. It displays another timer icon
+     * Whether to use alarmMgr.setAlarmClock() vs. set(). It's available on API v21 but on v23 it's
+     * needed to wake up on time from idle/doze power saving modes. It displays another timer icon
      * in the notification bar and lock screen with tap-through to MainActivity to edit the timer.
+     *<p/>
+     * Hopefully this is a UI improvement but it displays the alarm time as an absolute minute
+     * rather than an interval and it may seem broken when the alarm doesn't occur at the turn of
+     * the minute.
      *<p/>
      * It uses RTC wall time instead of elapsed interval time, so convert time bases and listen
      * for clock adjustments.
      *<p/>
-     * Hopefully this is a UI improvement, but alas it displays the alarm time as an absolute minute
-     * rather than an interval and could seem broken since the alarm doesn't happen at the turn of
-     * the minute.
+     * TODO: Workaround the early alarm that occurs when the clock gets adjusted forwards past the
+     * wall alarm time. The early alarm occurs before the ACTION_TIME_CHANGED intent.
+     * (TIMEZONE_CHANGED is OK.) Ideas: (1) If an alarm occurs more than 50ms before the expected
+     * next elapsed time, reschedule instead of sounding an alarm. (2) When an alarm occurs, set a
+     * 1ms elapsed time alarm to trigger the audible notification after the ACTION_TIME_CHANGED
+     * intent, if any. (3) Set an elapsed alarm for the desired time and also an alarm clock for 1ms
+     * later just to avoid Doze mode.
      */
     // The incomplete docs:
     // https://developer.android.com/preview/features/power-mgmt.html
@@ -56,7 +68,7 @@ public class AlarmReceiver extends BroadcastReceiver {
     // https://newcircle.com/s/post/1739/2015/06/12/diving-into-android-m-doze
     // https://commonsware.com/blog/2015/06/03/random-musing-m-developer-preview-ugly-part-one.html
     // http://stackoverflow.com/search?q=%5Bandroid%5D+doze
-    private static final boolean USE_SET_ALARM_CLOCK = android.os.Build.VERSION.SDK_INT >= 21;
+    private static final boolean USE_SET_ALARM_CLOCK = android.os.Build.VERSION.SDK_INT >= 23;
 
     /** Whether to set wakeup time flexibility to save battery power (on supporting OS builds). */
     private static final boolean ALLOW_WAKEUP_FLEXIBILITY =
@@ -88,6 +100,23 @@ public class AlarmReceiver extends BroadcastReceiver {
 
         return PendingIntent.getActivity(context, 0, activityIntent,
                 PendingIntent.FLAG_ONE_SHOT);
+    }
+
+    /** Get a string description of an Intent, including extras, for debugging. */
+    @SuppressWarnings("unused")
+    public static String debugDumpIntent(Intent intent) {
+        StringBuilder sb = new StringBuilder(intent.toString());
+
+        Bundle extras = intent.getExtras();
+        if (extras != null) {
+            sb.append(" extras: {");
+
+            for (String key : extras.keySet()) {
+                sb.append(key).append(':').append(extras.get(key)).append(", ");
+            }
+            sb.append('}');
+        }
+        return sb.toString();
     }
 
     /** Returns the SystemClock.elapsedRealtime() for the next reminder notification. */
@@ -226,6 +255,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         TimeCounter timer      = state.getTimeCounter();
 
         if (timer.isRunning()) {
+            Log.d(TAG, intent.toString());
             Notifier notifier = new Notifier(context).setPlayChime(true).setVibrate(true);
             notifier.openOrCancel(state);
 
