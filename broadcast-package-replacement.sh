@@ -6,7 +6,8 @@
 # Arguments:
 #   $1 -- optional Intent action like TIME_SET or TIMEZONE_CHANGED.
 #         Defaults to MY_PACKAGE_REPLACED.
-#   $2 -- optional flags like "-d" to force it to use an ADB USB Device.
+#   $2 -- optional flag like "-d" to force it to use an ADB USB Device.
+#         Defaults to "-e".
 
 ACTION="android.intent.action.${1:-MY_PACKAGE_REPLACED}"
 PACKAGE="com.onefishtwo.bbqtimer"
