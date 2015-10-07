@@ -4,7 +4,7 @@
 
 A stopwatch with:
 
-1. **Lock screen operation** for quick access. It provides *lock screen notifications* (Android
+1. **Lock screen operation** for quick access via a *lock screen notification* (Android
    Lollipop 5 on) or a *lock screen widget* (Jelly Bean 4.2 to KitKat 4.4).
 2. **Periodic alarms** to remind you to check the food (instead of a one-shot alarm that assumes
    the food will be done). It’s a count-up stopwatch with alarms.
