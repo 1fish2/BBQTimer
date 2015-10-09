@@ -47,14 +47,6 @@ public class AlarmReceiver extends BroadcastReceiver {
      *<p/>
      * It uses RTC wall time instead of elapsed interval time, so convert time bases and listen
      * for clock adjustments.
-     *<p/>
-     * TODO: Workaround the early alarm that occurs when the clock gets adjusted forwards past the
-     * wall alarm time. The early alarm occurs before the ACTION_TIME_CHANGED intent.
-     * (TIMEZONE_CHANGED is OK.) Ideas: (1) If an alarm occurs more than 50ms before the expected
-     * next elapsed time, reschedule instead of sounding an alarm. (2) When an alarm occurs, set a
-     * 1ms elapsed time alarm to trigger the audible notification after the ACTION_TIME_CHANGED
-     * intent, if any. (3) Set an elapsed alarm for the desired time and also an alarm clock for 1ms
-     * later just to avoid Doze mode.
      */
     // The incomplete docs:
     // https://developer.android.com/preview/features/power-mgmt.html
@@ -70,13 +62,34 @@ public class AlarmReceiver extends BroadcastReceiver {
     // http://stackoverflow.com/search?q=%5Bandroid%5D+doze
     private static final boolean USE_SET_ALARM_CLOCK = android.os.Build.VERSION.SDK_INT >= 23;
 
+    /**
+     * An Extra to store an alarm Intent's target time, in system elapsed time msec.
+     * setAlarmClock() uses a wall clock RTC target. If the clock gets adjusted forwards past that
+     * target, the OS will trigger the alarm early (the goal time "passed") and <em>then</em> send
+     * an ACTION_TIME_CHANGED intent.
+     * Workaround: If an alarm triggers early, reschedule it instead of sounding an alarm.
+     */
+    private static final String EXTRA_ELAPSED_REALTIME_TARGET =
+            "com.onefishtwo.bbqtimer.ElapsedRealtimeTarget";
+    /** Tolerance value for an early alarm. */
+    private static final long ALARM_TOLERANCE_MS = 10L;
+
     /** Whether to set wakeup time flexibility to save battery power (on supporting OS builds). */
     private static final boolean ALLOW_WAKEUP_FLEXIBILITY =
             !USE_SET_ALARM_CLOCK && android.os.Build.VERSION.SDK_INT >= 19;
     private static final long WAKEUP_WINDOW_MS = ALLOW_WAKEUP_FLEXIBILITY ? 50L : 0L;
 
-    /** Constructs a PendingIntent for the AlarmManager to invoke AlarmReceiver. */
-    private static PendingIntent makeAlarmPendingIntent(Context context) {
+    /**
+     * Constructs a PendingIntent for the AlarmManager to invoke AlarmReceiver.
+     *
+     * @param elapsedRealtimeTarget the target time for this alarm, in system elapsed time msec.
+     *                              This is stored in an Intent Extra to enable detecting if the
+     *                              alarm triggered early. The value doesn't matter when making an
+     *                              Intent to cancel the alarm since Extras don't affect Intent
+     *                              retrieval.
+     */
+    private static PendingIntent makeAlarmPendingIntent(Context context,
+            long elapsedRealtimeTarget) {
         Intent intent = new Intent(context, AlarmReceiver.class);
 
         // See http://stackoverflow.com/questions/32492770
@@ -84,12 +97,15 @@ public class AlarmReceiver extends BroadcastReceiver {
             intent.addFlags(Intent.FLAG_RECEIVER_FOREGROUND);
         }
 
+        if (USE_SET_ALARM_CLOCK) {
+            intent.putExtra(EXTRA_ELAPSED_REALTIME_TARGET, elapsedRealtimeTarget);
+        }
+
         // (ibid) "FLAG_CANCEL_CURRENT seems to be required to prevent a bug where the
         // intent doesn't fire after app reinstall in KitKat." -- It didn't seem to work better, but
         // it's hard to tell since MY_PACKAGE_REPLACED is unreliable, at least in the emulator. In
         // any case it breaks alarmMgr.cancel(), see http://stackoverflow.com/questions/26434490/
-        return PendingIntent.getBroadcast(context, 0, intent,
-                PendingIntent.FLAG_UPDATE_CURRENT);
+        return PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
     /** Constructs a PendingIntent for setAlarmClock() to show/edit the timer. */
@@ -131,9 +147,10 @@ public class AlarmReceiver extends BroadcastReceiver {
         long timed        = timer.getElapsedTime();
         long untilNextReminder = periodMs - (timed % periodMs);
 
-        // Don't (re)schedule within the wakeup window. That'd double-trigger the notification.
+        // Don't (re)schedule within the wakeup window. That'd double-alarm when the notification
+        // arrives on the early side of the given window.
         // (Maybe don't even schedule within the alarm sound's duration.)
-        if (untilNextReminder <= WAKEUP_WINDOW_MS) {
+        if (untilNextReminder <= WAKEUP_WINDOW_MS + ALARM_TOLERANCE_MS) {
             untilNextReminder += periodMs;
         }
 
@@ -146,8 +163,8 @@ public class AlarmReceiver extends BroadcastReceiver {
      */
     private static void scheduleNextReminder(Context context, ApplicationState state) {
         AlarmManager alarmMgr = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
-        PendingIntent pendingIntent = makeAlarmPendingIntent(context);
         long nextReminder = nextReminderTime(state);
+        PendingIntent pendingIntent = makeAlarmPendingIntent(context, nextReminder);
 
         if (USE_SET_ALARM_CLOCK) {
             setAlarmClockV21(context, alarmMgr, state, nextReminder, pendingIntent);
@@ -164,6 +181,9 @@ public class AlarmReceiver extends BroadcastReceiver {
      * 15 minutes or hours, at least in the M Developer Preview.]
      *<p/>
      * Converts the elapsed time value to a wall clock time value for setAlarmClock().
+     *
+     * @param nextReminder the SystemClock.elapsedRealtime() for the next reminder notification
+     * @param pendingIntent the PendingIntent to wake this receiver in nextReminder msec
      */
     @TargetApi(21)
     private static void setAlarmClockV21(Context context, AlarmManager alarmMgr,
@@ -235,7 +255,7 @@ public class AlarmReceiver extends BroadcastReceiver {
     /** Cancels any outstanding reminders by canceling the AlarmManager Intents. */
     public static void cancelReminders(Context context) {
         AlarmManager alarmMgr = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
-        PendingIntent pendingIntent = makeAlarmPendingIntent(context);
+        PendingIntent pendingIntent = makeAlarmPendingIntent(context, 0);
 
         alarmMgr.cancel(pendingIntent);
 
@@ -246,8 +266,21 @@ public class AlarmReceiver extends BroadcastReceiver {
         }
     }
 
+    /** Returns true if the Intent is earlier than its target time (with tolerance). */
+    private boolean isAlarmEarly(Intent intent, TimeCounter timer) {
+        if (USE_SET_ALARM_CLOCK) {
+            long now    = timer.elapsedRealtimeClock();
+            long target = intent.getLongExtra(EXTRA_ELAPSED_REALTIME_TARGET, now);
+
+            return now < target + ALARM_TOLERANCE_MS;
+        }
+
+        return false;
+    }
+
     /**
      * Handles an AlarmManager Intent: Shows/plays a reminder alarm and vibration via the Notifier.
+     * Detects and quiets early alarms.
      */
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -255,9 +288,13 @@ public class AlarmReceiver extends BroadcastReceiver {
         TimeCounter timer      = state.getTimeCounter();
 
         if (timer.isRunning()) {
-            Log.d(TAG, intent.toString());
-            Notifier notifier = new Notifier(context).setPlayChime(true).setVibrate(true);
-            notifier.openOrCancel(state);
+            if (isAlarmEarly(intent, timer)) {
+                Log.i(TAG, "Early alarm " + intent);
+            } else {
+                Log.d(TAG, intent.toString());
+                Notifier notifier = new Notifier(context).setPlayChime(true).setVibrate(true);
+                notifier.openOrCancel(state);
+            }
 
             scheduleNextReminder(context, state);
         }

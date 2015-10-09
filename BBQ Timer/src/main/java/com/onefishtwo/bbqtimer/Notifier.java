@@ -279,8 +279,6 @@ public class Notifier {
         }
 
         if (playChime || vibrate) {
-            int defaults = Notification.DEFAULT_LIGHTS;
-
             if (playChime) {
                 builder.setSound(getSoundUri(R.raw.cowbell4));
             }
@@ -288,7 +286,8 @@ public class Notifier {
             if (vibrate) {
                 builder.setVibrate(VIBRATE_PATTERN);
             }
-            builder.setDefaults(defaults);
+
+            builder.setDefaults(Notification.DEFAULT_LIGHTS);
         }
 
        return builder.build();
