@@ -221,14 +221,20 @@ public class AlarmReceiver extends BroadcastReceiver {
     }
 
     /**
-     * Handles a clock or timezone adjustment by updating alarms as needed. It's needed for
-     * AlarmManager.setAlarmClock() since that API uses RTC wall-clock time instead of elapsed
-     * interval time.
+     * Handles a clock or timezone adjustment (ACTION_TIME_CHANGED or
+     * ACTION_TIMEZONE_CHANGED) by updating alarms as needed. It's needed with:
+     *<ul>
+     *     <li>{@link AlarmManager#setAlarmClock(AlarmManager.AlarmClockInfo, PendingIntent)} to
+     *     reschedule the alarm since that API uses RTC wall-clock time instead of elapsed
+     *     interval time.</li>
+     *     <li>{@link AlarmManager#set(int, long, PendingIntent)} and
+     *     {@link AlarmManager#setWindow(int, long, long, PendingIntent)} to work around
+     *     <a href="https://code.google.com/p/android/issues/detail?id=2880">Issue 2880</a>, where
+     *     setting the clock backwards delays outstanding alarms.</li>
+     *</ul>
      */
     public static void handleClockAdjustment(Context context) {
-        if (USE_SET_ALARM_CLOCK) {
-            updateNotifications(context);
-        }
+        updateNotifications(context);
     }
 
     /**
