@@ -142,7 +142,18 @@ public class AlarmReceiver extends BroadcastReceiver {
         long timed        = timer.getElapsedTime();
         long untilNextReminder = periodMs - (timed % periodMs);
 
+        // Don't (re)schedule within a small window. That'd double-alarm if the notification
+        // arrives on the early side of the given window due to a clock adjustment.
         // (Maybe don't even schedule within the alarm sound's duration.)
+        //
+        // NOTE: This could play a double-alarm if the Intent arrives ALARM_TOLERANCE_MS early (due
+        // to the clock getting set backwards) then this code runs within the same msec. That's
+        // unlikely, less bad than dropping an alarm, and attempts to avoid it caused worse problems
+        // with a second alarm ~5 seconds after the regular alarm if Android was busy in another
+        // app. onReceive() takes 9-60 seconds to open a notifier, not 5 secs, so that's not it.
+        //
+        // TODO: Should this use a higher tolerance?
+        if (untilNextReminder < ALARM_TOLERANCE_MS) {
             untilNextReminder += periodMs;
         }
 
@@ -151,6 +162,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 
     /**
      * (Re)schedules the next reminder Notification via an AlarmManager Intent.
+     * Deals with system idle/doze modes.
      */
     private static void scheduleNextReminder(Context context, ApplicationState state) {
         AlarmManager alarmMgr = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
@@ -186,10 +198,13 @@ public class AlarmReceiver extends BroadcastReceiver {
         alarmMgr.setAlarmClock(info, pendingIntent);
     }
 
+    /** Returns the number of reminder alarms that should've happened by now. */
     static int numRemindersSoFar(ApplicationState state) {
         TimeCounter timer        = state.getTimeCounter();
+        long elapsedMs           = timer.getElapsedTime();
         long reminderMs          = state.getSecondsPerReminder() * 1000L;
 
+        return (int)(elapsedMs / reminderMs);
     }
 
     /**
@@ -199,6 +214,7 @@ public class AlarmReceiver extends BroadcastReceiver {
      *     <li>{@link AlarmManager#setAlarmClock(AlarmManager.AlarmClockInfo, PendingIntent)} to
      *     reschedule the alarm since that API uses RTC wall-clock time instead of elapsed
      *     interval time.</li>
+     *     <li>{@link AlarmManager#set(int, long, PendingIntent)} to work around
      *     <a href="https://code.google.com/p/android/issues/detail?id=2880">Issue 2880</a>, where
      *     setting the clock backwards delays outstanding alarms.</li>
      *</ul>
@@ -242,11 +258,17 @@ public class AlarmReceiver extends BroadcastReceiver {
         }
     }
 
+    /**
+     * Returns true if the Intent is more than {@link #ALARM_TOLERANCE_MS} earlier than its
+     * setAlarmClock() target time. See {@link #EXTRA_ELAPSED_REALTIME_TARGET} for why.
+     */
     private boolean isAlarmEarly(Intent intent, TimeCounter timer) {
         if (USE_SET_ALARM_CLOCK) {
             long now    = timer.elapsedRealtimeClock();
             long target = intent.getLongExtra(EXTRA_ELAPSED_REALTIME_TARGET, now);
+            // Log.d(TAG, "Alarm " + (now - target) + "ms late");
 
+            return now < target - ALARM_TOLERANCE_MS;
         }
 
         return false;
