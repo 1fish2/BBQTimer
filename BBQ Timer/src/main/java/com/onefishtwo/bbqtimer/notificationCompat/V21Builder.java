@@ -158,7 +158,9 @@ class V21Builder implements NotificationBuilder {
 
     @Override
     public NotificationBuilder setMediaStyleActionsInCompactView(int... actions) {
-        new NotificationCompat.MediaStyle(builder).setShowActionsInCompactView(actions);
+        NotificationCompat.MediaStyle style = new NotificationCompat.MediaStyle()
+                .setShowActionsInCompactView(actions);
+        builder.setStyle(style);
         return this;
     }
 
