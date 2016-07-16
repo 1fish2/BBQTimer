@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="gray_text">#999</color>
+    <color name="dark_orange_red">#e93800</color>
+    <color name="gray_text">#9e9e9e</color>
     <color name="grayer">#20808080</color>
-    <color name="orange_red_text">#ff4317</color>
-    <color name="to_go_text">#06c212</color>
-    <color name="to_reset_text">#646464</color>
-    <color name="to_stop_text">#c7000b</color>
+    <color name="orange_red_text">#ff3d00</color>
+    <color name="to_go_text">#00c853</color>
+    <color name="to_reset_text">#616161</color>
+    <color name="to_stop_text">#d50000</color>
     <color name="translucent_background">#60000000</color>
 </resources>
