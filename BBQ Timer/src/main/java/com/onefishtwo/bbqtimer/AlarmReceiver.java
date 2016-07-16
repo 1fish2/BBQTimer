@@ -37,8 +37,8 @@ public class AlarmReceiver extends BroadcastReceiver {
     private static final String TAG = "AlarmReceiver";
 
     /**
-     * Whether to use alarmMgr.setAlarmClock() vs. set(). It's available on API v21 but on v23 it's
-     * needed to wake up on time from idle/doze power saving modes. It displays another timer icon
+     * Whether to use alarmMgr.setAlarmClock() vs. set(). It's available on API v21 but needed on
+     * v23+ to wake up on time from idle/doze power saving modes. It displays another timer icon
      * in the notification bar and lock screen with tap-through to MainActivity to edit the timer.
      *<p/>
      * Hopefully this is a UI improvement but it displays the alarm time as an absolute minute
@@ -73,11 +73,6 @@ public class AlarmReceiver extends BroadcastReceiver {
             "com.onefishtwo.bbqtimer.ElapsedRealtimeTarget";
     /** Tolerance value for an early alarm. */
     private static final long ALARM_TOLERANCE_MS = 10L;
-
-    /** Whether to set wakeup time flexibility to save battery power (on supporting OS builds). */
-    private static final boolean ALLOW_WAKEUP_FLEXIBILITY =
-            !USE_SET_ALARM_CLOCK && android.os.Build.VERSION.SDK_INT >= 19;
-    private static final long WAKEUP_WINDOW_MS = ALLOW_WAKEUP_FLEXIBILITY ? 50L : 0L;
 
     /**
      * Constructs a PendingIntent for the AlarmManager to invoke AlarmReceiver.
@@ -147,10 +142,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         long timed        = timer.getElapsedTime();
         long untilNextReminder = periodMs - (timed % periodMs);
 
-        // Don't (re)schedule within the wakeup window. That'd double-alarm when the notification
-        // arrives on the early side of the given window.
         // (Maybe don't even schedule within the alarm sound's duration.)
-        if (untilNextReminder <= WAKEUP_WINDOW_MS + ALARM_TOLERANCE_MS) {
             untilNextReminder += periodMs;
         }
 
@@ -159,7 +151,6 @@ public class AlarmReceiver extends BroadcastReceiver {
 
     /**
      * (Re)schedules the next reminder Notification via an AlarmManager Intent.
-     * Deals with AlarmManager time windows and system idle/doze modes.
      */
     private static void scheduleNextReminder(Context context, ApplicationState state) {
         AlarmManager alarmMgr = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
@@ -168,8 +159,6 @@ public class AlarmReceiver extends BroadcastReceiver {
 
         if (USE_SET_ALARM_CLOCK) {
             setAlarmClockV21(context, alarmMgr, state, nextReminder, pendingIntent);
-        } else if (android.os.Build.VERSION.SDK_INT >= 19) {
-            setAlarmWindowV19(alarmMgr, nextReminder, pendingIntent);
         } else {
             alarmMgr.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, nextReminder, pendingIntent);
         }
@@ -197,27 +186,10 @@ public class AlarmReceiver extends BroadcastReceiver {
         alarmMgr.setAlarmClock(info, pendingIntent);
     }
 
-    /**
-     * API v19 version of set-alarm. Giving the OS a time window is supposed to let it save battery
-     * power, but the newer Marshmallow APIs don't support that so maybe it didn't pan out.
-     */
-    @TargetApi(19)
-    private static void setAlarmWindowV19(AlarmManager alarmMgr, long nextReminder,
-            PendingIntent pendingIntent) {
-        alarmMgr.setWindow(AlarmManager.ELAPSED_REALTIME_WAKEUP,
-                nextReminder - WAKEUP_WINDOW_MS, WAKEUP_WINDOW_MS, pendingIntent);
-    }
-
-    /**
-     * Returns the number of reminder alarms that happened by "now," allowing for the wakeup time
-     * flexibility where alarms may arrive a little early.
-     */
     static int numRemindersSoFar(ApplicationState state) {
         TimeCounter timer        = state.getTimeCounter();
-        long elapsedMsWithWindow = timer.getElapsedTime() + WAKEUP_WINDOW_MS;
         long reminderMs          = state.getSecondsPerReminder() * 1000L;
 
-        return (int)(elapsedMsWithWindow / reminderMs);
     }
 
     /**
@@ -227,8 +199,6 @@ public class AlarmReceiver extends BroadcastReceiver {
      *     <li>{@link AlarmManager#setAlarmClock(AlarmManager.AlarmClockInfo, PendingIntent)} to
      *     reschedule the alarm since that API uses RTC wall-clock time instead of elapsed
      *     interval time.</li>
-     *     <li>{@link AlarmManager#set(int, long, PendingIntent)} and
-     *     {@link AlarmManager#setWindow(int, long, long, PendingIntent)} to work around
      *     <a href="https://code.google.com/p/android/issues/detail?id=2880">Issue 2880</a>, where
      *     setting the clock backwards delays outstanding alarms.</li>
      *</ul>
@@ -272,13 +242,11 @@ public class AlarmReceiver extends BroadcastReceiver {
         }
     }
 
-    /** Returns true if the Intent is earlier than its target time (with tolerance). */
     private boolean isAlarmEarly(Intent intent, TimeCounter timer) {
         if (USE_SET_ALARM_CLOCK) {
             long now    = timer.elapsedRealtimeClock();
             long target = intent.getLongExtra(EXTRA_ELAPSED_REALTIME_TARGET, now);
 
-            return now < target + ALARM_TOLERANCE_MS;
         }
 
         return false;
