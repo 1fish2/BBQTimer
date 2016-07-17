@@ -1,16 +1,8 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion '23.0.3'
-
-    defaultConfig {
-        minSdkVersion 12
-        targetSdkVersion 23
-        versionCode 14
-        versionName "2.4"
-        resConfigs "en","de"
-    }
+    compileSdkVersion 24
+    buildToolsVersion '24.0.0'
 
     signingConfigs {
         releaseSigning {
@@ -23,6 +15,14 @@ android {
         }
     }
 
+    defaultConfig {
+        minSdkVersion 12
+        targetSdkVersion 24
+        versionCode 14
+        versionName "2.4"
+        resConfigs "en","de"
+    }
+
     buildTypes {
         release {
             minifyEnabled true
@@ -31,6 +31,11 @@ android {
             signingConfig signingConfigs.releaseSigning
             zipAlignEnabled true
         }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
     }
 }
 
@@ -50,6 +55,6 @@ tasks.whenTaskAdded { theTask ->
 }
 
 dependencies {
-    compile 'com.android.support:appcompat-v7:23.4.0'
-    compile 'com.android.support:support-v4:23.4.0'
+    compile 'com.android.support:appcompat-v7:24.0.0'
+    compile 'com.android.support:support-v4:24.0.0'
 }
