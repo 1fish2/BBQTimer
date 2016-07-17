@@ -169,8 +169,10 @@ public class AlarmReceiver extends BroadcastReceiver {
         long nextReminder = nextReminderTime(state);
         PendingIntent pendingIntent = makeAlarmPendingIntent(context, nextReminder);
 
-        if (USE_SET_ALARM_CLOCK) {
+        if (USE_SET_ALARM_CLOCK) { // Android v23+
             setAlarmClockV21(context, alarmMgr, state, nextReminder, pendingIntent);
+        } else if (android.os.Build.VERSION.SDK_INT >= 19) {
+            alarmMgr.setExact(AlarmManager.ELAPSED_REALTIME_WAKEUP, nextReminder, pendingIntent);
         } else {
             alarmMgr.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, nextReminder, pendingIntent);
         }
