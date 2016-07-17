@@ -29,7 +29,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.app.TaskStackBuilder;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.NotificationCompat;
 
 import com.onefishtwo.bbqtimer.notificationCompat.NotificationBuilder;
@@ -215,13 +214,8 @@ public class Notifier {
                 int minutes        = reminderSecs / 60;
                 String contentText = context.getResources()
                         .getQuantityString(R.plurals.notification_body, minutes, minutes);
-                int numReminders   = AlarmReceiver.numRemindersSoFar(state);
 
                 builder.setContentText(contentText);
-
-                if (numReminders > 0) {
-                    builder.setNumber(numReminders);
-                }
             } else {
                 builder.setContentText(timerRunState(timer));
                 if (addActions && timer.isPaused()) {

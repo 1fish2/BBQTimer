@@ -86,6 +86,8 @@ class V21Builder implements NotificationBuilder {
 
     @Override
     public NotificationBuilder setNumber(int number) {
+        // This is a no-op on Android v24+ (N). We could work around it by appending to subText, but
+        // is this number worth the user complexity or the code complexity?
         builder.setNumber(number);
         return this;
     }
