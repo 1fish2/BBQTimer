@@ -25,7 +25,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
-import android.support.v4.app.NotificationCompat;
+import android.support.v7.app.NotificationCompat;
 
 /**
  * Notification Builder for API level 20-, implemented via NotificationCompat.Builder plus

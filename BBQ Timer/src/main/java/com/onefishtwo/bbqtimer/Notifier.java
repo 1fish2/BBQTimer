@@ -27,9 +27,10 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
-import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.app.TaskStackBuilder;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.NotificationCompat;
 
 import com.onefishtwo.bbqtimer.notificationCompat.NotificationBuilder;
 import com.onefishtwo.bbqtimer.notificationCompat.NotificationBuilderFactory;
@@ -165,9 +166,10 @@ public class Notifier {
      * Builds a notification. Its sound and vibration are determined by
      * {@link #setPlayChime(boolean)} and {@link #setVibrate(boolean)}.
      *
-     * @param visible whether to make the notification visible -- except on Android 6+ which rejects
-     *             invisible notifications. Invisible notifications are handy for playing the same
-     *             alarm sound and vibration as visible notifications.
+     * @param visible whether to make the notification visible -- overridden on Android L+ which
+     *                reject invisible notifications (at least M does). Invisible notifications
+     *                are handy for playing the same alarm sound and vibration as visible
+     *                notifications, but maybe a heads-up notification is better anyway.
      * @param addActions whether to add a content action, delete action, and media buttons to the
      *                   degree they're supported by the OS build. false makes a read-only
      *                   notification (can't even dismiss itself) for when the activity is open.<br/>
