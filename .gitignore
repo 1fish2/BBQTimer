@@ -1,9 +1,11 @@
 # Android Studio
+*.iml
 .gradle
 /local.properties
 /.idea/workspace.xml
 /.idea/libraries
 build/
+/captures
 
 # Unused source assets. They may get used later.
 /source-assets/unused/
