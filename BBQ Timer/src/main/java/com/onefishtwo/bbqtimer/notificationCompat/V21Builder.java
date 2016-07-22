@@ -25,7 +25,10 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Build;
 import android.support.v7.app.NotificationCompat;
+
+import com.onefishtwo.bbqtimer.R;
 
 /**
  * Notification Builder for API level 21+.
@@ -40,6 +43,15 @@ class V21Builder implements NotificationBuilder {
 
     public V21Builder(Context context) {
         builder = new NotificationCompat.Builder(context);
+
+        // Workaround a Marshmallow bug where the heads-up notification shows low contrast dark gray
+        // text on darker gray background. setColor() sometimes sets the background color but it's
+        // supposed to set the accent color. Unfortunately it also changes pull-down notifications
+        // and it carries over from one notification to its replacement.
+        // See http://stackoverflow.com/q/38415467/1682419
+        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.M) {
+            builder.setColor(context.getColor(R.color.gray_text));
+        }
     }
 
     @Override
