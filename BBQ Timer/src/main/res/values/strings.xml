@@ -33,10 +33,10 @@
       alarms (user alerts). There should be an item here for each "quantity" that the locale needs.
       quantity = zero | one | two | few | many | other.
 
-      "%1$d" is placeholder #1 for the number of minutes ("d" for decimal). -->
+      "%1$s" is placeholder #1 for the number of minutes, e.g. "0.5", "1", "2", etc. -->
     <plurals name="notification_body">
         <item quantity="one">Alarm every minute</item>
-        <item quantity="other">Alarm every %1$d minutes</item>
+        <item quantity="other">Alarm every %1$s minutes</item>
     </plurals>
 
     <!-- Notification body message: The timer is running with no reminder alarms. This message must

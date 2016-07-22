@@ -17,6 +17,6 @@
     <string name="timer_stopped">Gestoppt</string>
     <plurals name="notification_body">
         <item quantity="one">Alarm jede Minute</item>
-        <item quantity="other">Alarm alle %1$d Minuten</item>
+        <item quantity="other">Alarm alle %1$s Minuten</item>
     </plurals>
 </resources>

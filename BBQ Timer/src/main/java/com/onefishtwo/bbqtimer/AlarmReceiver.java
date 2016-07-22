@@ -200,15 +200,6 @@ public class AlarmReceiver extends BroadcastReceiver {
         alarmMgr.setAlarmClock(info, pendingIntent);
     }
 
-    /** Returns the number of reminder alarms that should've happened by now. */
-    static int numRemindersSoFar(ApplicationState state) {
-        TimeCounter timer        = state.getTimeCounter();
-        long elapsedMs           = timer.getElapsedTime();
-        long reminderMs          = state.getSecondsPerReminder() * 1000L;
-
-        return (int)(elapsedMs / reminderMs);
-    }
-
     /**
      * Handles a clock or timezone adjustment (ACTION_TIME_CHANGED or
      * ACTION_TIMEZONE_CHANGED) by updating alarms as needed. It's needed with:

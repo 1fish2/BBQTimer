@@ -43,6 +43,28 @@ import java.lang.ref.WeakReference;
 public class MainActivity extends AppCompatActivity implements NumberPicker.OnValueChangeListener {
     /** Hide the Stop feature (that distinguishes Stop from Paused) on older OS versions. */
     static final boolean HIDE_STOP_FEATURE = !Notifier.PAUSEABLE_NOTIFICATIONS;
+    /** The names of the minutes-per-periodic-alarm picker choices. */
+    private static final String[] MINUTES_CHOICES = new String[100];
+
+    static {
+        MINUTES_CHOICES[0] = "0.5";
+        for (int i = 1; i < MINUTES_CHOICES.length; ++i) {
+            MINUTES_CHOICES[i] = Integer.toString(i);
+        }
+    }
+
+    static int minutesChoiceToSeconds(int choice) {
+        return choice == 0 ? 30 : choice * 60;
+    }
+
+    static int secondsToMinutesChoice(int secondsPerReminder) {
+        return secondsPerReminder == 30 ? 0 : secondsPerReminder / 60;
+    }
+
+    /** Converts seconds-per-periodic-alarm to a minutes picker choice string. */
+    public static String secondsToMinuteChoiceString(int seconds) {
+        return MINUTES_CHOICES[secondsToMinutesChoice(seconds)];
+    }
 
     /**
      * A Handler for periodic display updates.
@@ -121,8 +143,9 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
         enableRemindersToggle = (CompoundButton) findViewById(R.id.enableReminders);
         minutesPicker         = (NumberPicker) findViewById(R.id.minutesPicker);
 
-        minutesPicker.setMinValue(1);
-        minutesPicker.setMaxValue(99);
+        minutesPicker.setMinValue(0);
+        minutesPicker.setMaxValue(MINUTES_CHOICES.length - 1);
+        minutesPicker.setDisplayedValues(MINUTES_CHOICES);
         minutesPicker.setWrapSelectorWheel(false);
         minutesPicker.setOnValueChangedListener(this);
         minutesPicker.setFocusableInTouchMode(true);
@@ -219,7 +242,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
     @Override
     public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
         if (picker == minutesPicker) {
-            state.setSecondsPerReminder(newVal * 60);
+            state.setSecondsPerReminder(minutesChoiceToSeconds(newVal));
             state.save(this);
             AlarmReceiver.updateNotifications(this);
         }
@@ -250,7 +273,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
                 : timer.isStopped() ? View.INVISIBLE
                 : View.VISIBLE);
         enableRemindersToggle.setChecked(state.isEnableReminders());
-        minutesPicker.setValue(state.getSecondsPerReminder() / 60);
+        minutesPicker.setValue(secondsToMinutesChoice(state.getSecondsPerReminder()));
 
         AlarmReceiver.updateNotifications(this);
 
