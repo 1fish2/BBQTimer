@@ -56,14 +56,5 @@ public interface NotificationBuilder {
     /** Sets MediaStyle with setShowActionsInCompactView(). */
     NotificationBuilder setMediaStyleActionsInCompactView(int... actions);
 
-    // NOTE: I tried using setColor() to set the accent color. But on Android API K- it's not
-    // worth testing across different handset builds that tinkered with notification colors. On
-    // Android L-M it's unsafe since setting a notification's accent color will sometimes set its
-    // replacement MediaStyle heads-up notification's background color. On Android N it seems to
-    // have no effect.
-    //
-    // It might be worth calling setColor() on Android M to work around the low-contrast text bug
-    // http://stackoverflow.com/q/38415467/1682419
-
     Notification build();
 }

@@ -40,17 +40,13 @@ import com.onefishtwo.bbqtimer.R;
 @TargetApi(21)
 class V21Builder implements NotificationBuilder {
     private final NotificationCompat.Builder builder;
+    private int workaroundColor = 0x9e9e9e;
 
     public V21Builder(Context context) {
         builder = new NotificationCompat.Builder(context);
 
-        // Workaround a Marshmallow bug where the heads-up notification shows low contrast dark gray
-        // text on darker gray background. setColor() sometimes sets the background color but it's
-        // supposed to set the accent color. Unfortunately it also changes pull-down notifications
-        // and it carries over from one notification to its replacement.
-        // See http://stackoverflow.com/q/38415467/1682419
-        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.M) {
-            builder.setColor(context.getColor(R.color.gray_text));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            workaroundColor = context.getColor(R.color.gray_text);
         }
     }
 
@@ -175,6 +171,20 @@ class V21Builder implements NotificationBuilder {
         NotificationCompat.MediaStyle style = new NotificationCompat.MediaStyle()
                 .setShowActionsInCompactView(actions);
         builder.setStyle(style);
+
+        // Workaround a Marshmallow bug where the heads-up notification shows low contrast dark gray
+        // text on darker gray background. setColor() sometimes sets the background color tho it's
+        // supposed to set the accent color. Unfortunately it also changes pull-down notifications
+        // and carries over from one notification to its replacement.
+        // See http://stackoverflow.com/q/38415467/1682419
+
+        // It'd be nice to call setColor() for other non-MediaStyle cases to set the accent color.
+        // But on Android API K- it's risky since different handset builds tinkered with colors. On
+        // Android N it seems to have no effect.
+        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.M) {
+            builder.setColor(workaroundColor);
+        }
+
         return this;
     }
 
