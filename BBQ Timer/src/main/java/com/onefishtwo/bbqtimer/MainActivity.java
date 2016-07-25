@@ -102,7 +102,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
         private void scheduleNextUpdate() {
             MainActivity activity = weakActivity.get();
 
-            if (activity != null && activity.timer.isRunning()) {
+            if (activity != null && !activity.timer.isStopped()) {
                 sendEmptyMessageDelayed(MSG_UPDATE, UPDATE_INTERVAL);
             }
         }
@@ -212,6 +212,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
     @SuppressWarnings("UnusedParameters")
     public void onClickReset(View v) {
         timer.reset();
+        updateHandler.beginScheduledUpdate();
         updateUI();
     }
 
@@ -248,13 +249,23 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
         }
     }
 
+    /** @return a ColorStateList resource ID; time-dependent for blinking. */
+    private int pausedTimerColors() {
+        TimeCounter timeCounter = state.getTimeCounter();
+        long millis = timeCounter.elapsedRealtimeClock() - timeCounter.getPauseTime();
+        long seconds = millis / 1000L;
+
+        return (seconds & 1) == 0 ? R.color.paused_alternate_timer_colors
+                : R.color.paused_timer_colors;
+    }
+
     /** Updates the display of the elapsed time. */
     private void displayTime() {
         Spanned formatted         = timer.formatHhMmSsFraction();
         int textColorsId          =
                 timer.isRunning() ? R.color.running_timer_colors
-                : timer.isReset() ? R.color.reset_timer_colors
-                : R.color.paused_timer_colors;
+                : timer.isPaused() ? pausedTimerColors()
+                : R.color.reset_timer_colors;
         ColorStateList textColors = ContextCompat.getColorStateList(this, textColorsId);
 
         displayView.setText(formatted);
@@ -266,7 +277,8 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
         boolean isRunning = timer.isRunning();
 
         displayTime();
-        resetButton.setVisibility(isRunning || timer.isReset() ? View.INVISIBLE : View.VISIBLE);
+        resetButton.setVisibility(isRunning || timer.isPaused() && timer.isReset()
+                ? View.INVISIBLE : View.VISIBLE);
         startStopButton.setCompoundDrawablesWithIntrinsicBounds(
                 isRunning ? R.drawable.ic_pause : R.drawable.ic_play, 0, 0, 0);
         stopButton.setVisibility(HIDE_STOP_FEATURE ? View.GONE

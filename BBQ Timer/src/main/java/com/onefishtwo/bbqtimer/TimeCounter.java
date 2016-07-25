@@ -136,7 +136,7 @@ public class TimeCounter {
         return pauseTime;
     }
 
-    /** Returns the underlying clock time. */
+    /** Returns the underlying clock time, in milliseconds since boot. */
     // TODO: Inject the clock for testability.
     public long elapsedRealtimeClock() {
         return SystemClock.elapsedRealtime();
@@ -233,13 +233,11 @@ public class TimeCounter {
         }
     }
 
-    /** Resets the timer to 0:00; pausing if it was Running or letting it remain Stopped. */
+    /** Resets the timer to Paused at 0:00. */
     public void reset() {
         startTime = pauseTime = 0;
-        if (isRunning) {
-            isRunning = false;
-            isPaused  = true;
-        } // else remain Paused or Stopped
+        isRunning = false;
+        isPaused  = true;
     }
 
     /** Returns true if the TimeCounter is Stopped/Paused at 0:00. */
