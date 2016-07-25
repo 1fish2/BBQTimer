@@ -208,7 +208,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
         updateUI();
     }
 
-    /** The user tapped the Reset button. */
+    /** The user tapped the Reset button; go to Paused at 0:00. */
     @SuppressWarnings("UnusedParameters")
     public void onClickReset(View v) {
         timer.reset();
@@ -275,9 +275,12 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
     /** Updates the whole UI for the current state: Activity, Notifications, alarms, and widgets. */
     private void updateUI() {
         boolean isRunning = timer.isRunning();
+        boolean isReset = timer.isReset();
 
         displayTime();
-        resetButton.setVisibility(isRunning || timer.isPaused() && timer.isReset()
+        resetButton.setCompoundDrawablesWithIntrinsicBounds(
+                isReset ? R.drawable.ic_pause : R.drawable.ic_replay, 0, 0, 0);
+        resetButton.setVisibility(isRunning || timer.isPaused() && isReset
                 ? View.INVISIBLE : View.VISIBLE);
         startStopButton.setCompoundDrawablesWithIntrinsicBounds(
                 isRunning ? R.drawable.ic_pause : R.drawable.ic_play, 0, 0, 0);
