@@ -16,7 +16,7 @@ android {
     }
 
     defaultConfig {
-        minSdkVersion 12
+        minSdkVersion 14
         targetSdkVersion 24
         versionCode 14
         versionName "2.4"
