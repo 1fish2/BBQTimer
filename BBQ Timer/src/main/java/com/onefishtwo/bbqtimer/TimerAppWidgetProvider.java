@@ -25,6 +25,7 @@ import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.widget.RemoteViews;
@@ -59,8 +60,8 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
         return new ComponentName(context, TimerAppWidgetProvider.class);
     }
 
-    /** Returns the formatted date (or other secondary text string). */
-    static synchronized String secondaryText() {
+    /** Returns the formatted date to show as secondary text in the lock screen widget. */
+    private static synchronized String dateText() {
         if (secondaryTextCache == null) {
             long now = System.currentTimeMillis();
             secondaryTextCache = DateUtils.formatDateTime(null, now,
@@ -68,6 +69,20 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
                         | DateUtils.FORMAT_SHOW_WEEKDAY | DateUtils.FORMAT_ABBREV_WEEKDAY);
         }
         return secondaryTextCache;
+    }
+
+    /**
+     * Returns the secondary text to show in the lock screen widget -- or empty on Lollipop+ which
+     * doesn't support lock screen widgets. Hiding it helps on Nougat, where some combos of Display
+     * Size and Font Size would make some of that text visible on a home screen widget: Font Small;
+     * Font Default, Display {Small, Large}; Font Large, Display {Small, Large, Largest}. On KitKat
+     * it's also an issue with Font Size Small, oh well.
+     */
+    private static String secondaryText() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            return "";
+        }
+        return dateText();
     }
 
     /** Clears the cached secondary text, to be recomputed lazily. */

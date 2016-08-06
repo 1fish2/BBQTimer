@@ -170,6 +170,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
         state = ApplicationState.sharedInstance(this);
         timer = state.getTimeCounter();
         state.setMainActivityIsVisible(true);
+        state.save(this);
 
         updateUI();
 
