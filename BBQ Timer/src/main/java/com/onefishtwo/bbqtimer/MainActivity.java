@@ -281,7 +281,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
         displayTime();
         resetButton.setCompoundDrawablesWithIntrinsicBounds(
                 isReset ? R.drawable.ic_pause : R.drawable.ic_replay, 0, 0, 0);
-        resetButton.setVisibility(isRunning || timer.isPaused() && isReset
+        resetButton.setVisibility(isRunning || isReset && (timer.isPaused() || HIDE_STOP_FEATURE)
                 ? View.INVISIBLE : View.VISIBLE);
         startStopButton.setCompoundDrawablesWithIntrinsicBounds(
                 isRunning ? R.drawable.ic_pause : R.drawable.ic_play, 0, 0, 0);
