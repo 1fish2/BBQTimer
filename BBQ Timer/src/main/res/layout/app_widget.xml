@@ -28,7 +28,8 @@
                 android:layout_gravity="center_vertical"
                 android:contentDescription="@string/start_stop"
                 android:paddingLeft="@dimen/small_button_padding"
-                android:paddingRight="@dimen/small_button_padding"/>
+                android:paddingRight="@dimen/small_button_padding"
+                android:backgroundTint="@color/widget_button_background"/>
 
             <ViewFlipper
                 android:id="@+id/viewFlipper"

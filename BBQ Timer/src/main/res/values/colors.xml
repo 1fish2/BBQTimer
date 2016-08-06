@@ -9,4 +9,5 @@
     <color name="to_reset_text">#616161</color>
     <color name="to_stop_text">#d50000</color>
     <color name="translucent_background">#60000000</color>
+    <color name="widget_button_background">#616161</color>
 </resources>
