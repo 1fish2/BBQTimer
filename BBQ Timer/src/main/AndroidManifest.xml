@@ -32,6 +32,8 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <layout android:minWidth="@dimen/activityMinWidth"
+                    android:minHeight="@dimen/activityMinHeight"/>
         </activity>
 
         <receiver android:name=".TimerAppWidgetProvider" >
