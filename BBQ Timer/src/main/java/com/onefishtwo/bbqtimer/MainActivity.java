@@ -36,6 +36,7 @@ import android.widget.TextView;
 import com.onefishtwo.bbqtimer.state.ApplicationState;
 
 import java.lang.ref.WeakReference;
+import java.util.Locale;
 
 /**
  * The BBQ Timer's main activity.
@@ -47,7 +48,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
     private static final String[] MINUTES_CHOICES = new String[100];
 
     static {
-        MINUTES_CHOICES[0] = "0.5";
+        MINUTES_CHOICES[0] = String.format(Locale.getDefault(), "%,.1f", 0.5F);
         for (int i = 1; i < MINUTES_CHOICES.length; ++i) {
             MINUTES_CHOICES[i] = Integer.toString(i);
         }
