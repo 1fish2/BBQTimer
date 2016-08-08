@@ -139,11 +139,11 @@ public class Notifier {
     }
 
     /**
-     * <em>Opens</em> this app's notification with visible, audible, and/or tactile content
+     * <em>(Re)Opens</em> this app's notification with visible, audible, and/or tactile content
      * depending on {@code state}, {@link #setPlayChime(boolean)}, and {@link #setVibrate(boolean)},
      * <em>or cancels</em> the app's notification if there's nothing to show or sound.
      *
-     * @param state -- the ApplicationState state to display.
+     * @param state the ApplicationState state to display.
      */
     public void openOrCancel(ApplicationState state) {
         boolean isMainActivityVisible = state.isMainActivityVisible();
@@ -241,20 +241,22 @@ public class Notifier {
                 builder.setContentIntent(activityPendingIntent);
 
                 // Action button to reset the timer.
-                PendingIntent resetIntent = makeActionIntent(TimerAppWidgetProvider.ACTION_RESET);
                 if (timer.isPaused() && !timer.isReset()) {
+                    PendingIntent resetIntent =
+                            makeActionIntent(TimerAppWidgetProvider.ACTION_RESET);
                     addAction(builder, R.drawable.ic_action_replay, R.string.reset, resetIntent);
                 }
 
                 // Action button to run (start) the timer.
-                PendingIntent runIntent = makeActionIntent(TimerAppWidgetProvider.ACTION_RUN);
                 if (!isRunning) {
+                    PendingIntent runIntent = makeActionIntent(TimerAppWidgetProvider.ACTION_RUN);
                     addAction(builder, R.drawable.ic_action_play, R.string.start, runIntent);
                 }
 
                 // Action button to pause the timer.
-                PendingIntent pauseIntent = makeActionIntent(TimerAppWidgetProvider.ACTION_PAUSE);
                 if (!timer.isPaused()) {
+                    PendingIntent pauseIntent
+                            = makeActionIntent(TimerAppWidgetProvider.ACTION_PAUSE);
                     addAction(builder, R.drawable.ic_action_pause, R.string.pause, pauseIntent);
                 }
 
