@@ -48,10 +48,15 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
     private static final String[] MINUTES_CHOICES = new String[100];
 
     static {
-        MINUTES_CHOICES[0] = String.format(Locale.getDefault(), "%,.1f", 0.5F);
+        makeLocaleStrings();
         for (int i = 1; i < MINUTES_CHOICES.length; ++i) {
             MINUTES_CHOICES[i] = Integer.toString(i);
         }
+    }
+
+    /** Makes locale-specific string constants. */
+    private static void makeLocaleStrings() {
+        MINUTES_CHOICES[0] = String.format(Locale.getDefault(), "%,.1f", 0.5F);
     }
 
     static int minutesChoiceToSeconds(int choice) {
@@ -135,6 +140,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        makeLocaleStrings();
         setContentView(R.layout.activity_main);
 
         resetButton           = (Button) findViewById(R.id.resetButton);

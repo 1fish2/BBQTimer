@@ -29,6 +29,7 @@ import java.math.RoundingMode;
 import java.text.FieldPosition;
 import java.text.NumberFormat;
 import java.util.Formatter;
+import java.util.Locale;
 
 /**
  * A stopwatch time counter (data model).
@@ -62,18 +63,28 @@ public class TimeCounter {
     private static final StringBuilder recycledStringBuilder = new StringBuilder(44);
     private static final Formatter recycledFormatter = new Formatter(recycledStringBuilder);
 
-    // Synchronized on fractionFormatter.
-    private static final NumberFormat fractionFormatter = NumberFormat.getNumberInstance();
+    // Also synchronized on recycledStringBuilder.
+    private static Locale lastLocale;
+    private static NumberFormat fractionFormatter; // constructed on demand and on locale changes
     private static final StringBuffer recycledStringBuffer = new StringBuffer(2);
     private static final FieldPosition fractionFieldPosition =
             new FieldPosition(NumberFormat.FRACTION_FIELD);
 
-    static {
-        fractionFormatter.setMinimumIntegerDigits(0);
-        fractionFormatter.setMaximumIntegerDigits(0);
-        fractionFormatter.setMinimumFractionDigits(1);
-        fractionFormatter.setMaximumFractionDigits(1);
-        fractionFormatter.setRoundingMode(RoundingMode.DOWN);
+    /** Makes locale-specific text formatters if needed, including a locale change. */
+    private static void makeLocaleFormatters() {
+        synchronized (recycledStringBuilder) {
+            Locale locale = Locale.getDefault();
+
+            if (!locale.equals(lastLocale)) {
+                lastLocale = locale;
+                fractionFormatter = NumberFormat.getNumberInstance();
+                fractionFormatter.setMinimumIntegerDigits(0);
+                fractionFormatter.setMaximumIntegerDigits(0);
+                fractionFormatter.setMinimumFractionDigits(1);
+                fractionFormatter.setMaximumFractionDigits(1);
+                fractionFormatter.setRoundingMode(RoundingMode.DOWN);
+            }
+        }
     }
 
     private boolean isRunning;
@@ -276,13 +287,13 @@ public class TimeCounter {
         String f;
         String html;
 
-        synchronized (fractionFormatter) {
+        makeLocaleFormatters();
+
+        synchronized (recycledStringBuilder) {
             recycledStringBuffer.setLength(0);
             f = fractionFormatter.format(seconds, recycledStringBuffer, fractionFieldPosition)
                     .toString();
-        }
 
-        synchronized (recycledStringBuilder) {
             recycledStringBuilder.setLength(0);
             html = recycledFormatter.format(DEFAULT_TIME_STYLE, hhmmss, f).toString();
         }
