@@ -23,6 +23,7 @@ import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
 import android.support.v7.app.NotificationCompat;
@@ -135,7 +136,7 @@ class V20Builder implements NotificationBuilder {
 
     @Override
     public NotificationBuilder setSound(Uri sound) {
-        builder.setSound(sound);
+        builder.setSound(sound, AudioManager.STREAM_ALARM);
         return this;
     }
 

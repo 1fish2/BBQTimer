@@ -20,6 +20,7 @@
 package com.onefishtwo.bbqtimer;
 
 import android.content.res.ColorStateList;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -156,6 +157,8 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
         minutesPicker.setWrapSelectorWheel(false);
         minutesPicker.setOnValueChangedListener(this);
         minutesPicker.setFocusableInTouchMode(true);
+
+        setVolumeControlStream(AudioManager.STREAM_ALARM);
     }
 
     @Override
