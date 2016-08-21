@@ -63,7 +63,7 @@ public class Notifier {
      * setUsesChronometer(true)] and sometimes also the notification time of day, both confusing.
      * API < 16 has no action buttons so it has no payoff in Paused notifications.
      */
-    static final boolean PAUSEABLE_NOTIFICATIONS = android.os.Build.VERSION.SDK_INT >= 21;
+    static final boolean PAUSEABLE_NOTIFICATIONS = TimeCounter.PAUSEABLE_NOTIFICATIONS;
 
     private static final long[] VIBRATE_PATTERN = {150, 82, 180, 96}; // ms off, ms on, ms off, ...
     private static final int[][] ACTION_INDICES = {{}, {0}, {0, 1}, {0, 1, 2}};
