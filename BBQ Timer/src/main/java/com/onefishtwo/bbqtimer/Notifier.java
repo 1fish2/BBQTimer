@@ -241,7 +241,7 @@ public class Notifier {
                 builder.setContentIntent(activityPendingIntent);
 
                 // Action button to reset the timer.
-                if (timer.isPaused() && !timer.isReset()) {
+                if (timer.isPaused() && !timer.isPausedAt0()) {
                     PendingIntent resetIntent =
                             makeActionIntent(TimerAppWidgetProvider.ACTION_RESET);
                     addAction(builder, R.drawable.ic_action_replay, R.string.reset, resetIntent);

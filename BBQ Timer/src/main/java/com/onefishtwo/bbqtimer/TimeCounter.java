@@ -174,6 +174,14 @@ public class TimeCounter {
     }
 
     /**
+     * Returns true if the TimeCounter is Paused at 0:00 (the result of
+     * {@link #reset()}).
+     */
+    public boolean isPausedAt0() {
+        return isPaused() && getElapsedTime() == 0;
+    }
+
+    /**
      * Returns the Timer's Running/Paused/Stopped state for debugging. Not localized.
      *
      * @see com.onefishtwo.bbqtimer.Notifier#timerRunState(TimeCounter)
@@ -193,7 +201,7 @@ public class TimeCounter {
         return (isRunning ? elapsedRealtimeClock() : pauseTime) - startTime;
     }
 
-    /** Stops and resets the timer to 0:00. */
+    /** Stops and clears the timer to 0:00. */
     public void stop() {
         startTime = pauseTime = 0;
         isRunning = false;
@@ -237,7 +245,7 @@ public class TimeCounter {
     public void cycle() {
         if (isRunning()) {
             pause();
-        } else if (isStopped() || isReset()) {
+        } else if (isStopped() || isPausedAt0()) {
             start();
         } else {
             stop();
@@ -249,11 +257,6 @@ public class TimeCounter {
         startTime = pauseTime = 0;
         isRunning = false;
         isPaused  = true;
-    }
-
-    /** Returns true if the TimeCounter is Stopped/Paused at 0:00. */
-    public boolean isReset() {
-        return !isRunning && getElapsedTime() == 0;
     }
 
     /**

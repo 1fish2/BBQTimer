@@ -44,8 +44,11 @@ import java.util.Locale;
  * The BBQ Timer's main activity.
  */
 public class MainActivity extends AppCompatActivity implements NumberPicker.OnValueChangeListener {
-    /** Hide the Stop feature (that distinguishes Stop from Paused) on older OS versions. */
-    private static final boolean HIDE_STOP_FEATURE = !Notifier.PAUSEABLE_NOTIFICATIONS;
+    /**
+     * Hide the Reset feature (Pause @ 0:00) if the app doesn't show notifications while paused
+     * (that's on Android versions without lock screen notifications). Just use Stop.
+     */
+    private static final boolean HIDE_RESET_FEATURE = !Notifier.PAUSEABLE_NOTIFICATIONS;
     /** The names of the minutes-per-periodic-alarm picker choices. */
     private static final String[] MINUTES_CHOICES = new String[100];
 
@@ -210,7 +213,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
         super.onStop();
     }
 
-    /** The user tapped the Run/Pause button. */
+    /** The user tapped the Run/Pause button (named "StartStop"). */
     // TODO: Use listeners to update the Activity UI and app widgets.
     // A Proguard rule keeps all Activity *(View) methods.
     @SuppressWarnings("UnusedParameters")
@@ -232,6 +235,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
     @SuppressWarnings("UnusedParameters")
     public void onClickStop(View v) {
         timer.stop();
+        updateHandler.endScheduledUpdates();
         updateUI();
     }
 
@@ -262,6 +266,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
     }
 
     /** @return a ColorStateList resource ID; time-dependent for blinking. */
+    // TODO: In isPausedAt0(), the Pressed state should be green ("go") like reset_timer_colors.
     @ColorRes
     private int pausedTimerColors() {
         TimeCounter timeCounter = state.getTimeCounter();
@@ -288,18 +293,18 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
     /** Updates the whole UI for the current state: Activity, Notifications, alarms, and widgets. */
     private void updateUI() {
         boolean isRunning = timer.isRunning();
-        boolean isReset = timer.isReset();
+        boolean isStopped = timer.isStopped();
+        boolean isPausedAt0 = timer.isPausedAt0();
 
         displayTime();
         resetButton.setCompoundDrawablesWithIntrinsicBounds(
-                isReset ? R.drawable.ic_pause : R.drawable.ic_replay, 0, 0, 0);
-        resetButton.setVisibility(isRunning || isReset && (timer.isPaused() || HIDE_STOP_FEATURE)
-                ? View.INVISIBLE : View.VISIBLE);
+                isStopped ? R.drawable.ic_pause : R.drawable.ic_replay, 0, 0, 0);
+        resetButton.setVisibility(HIDE_RESET_FEATURE ? View.GONE
+                : isRunning || isPausedAt0 ? View.INVISIBLE
+                : View.VISIBLE);
         startStopButton.setCompoundDrawablesWithIntrinsicBounds(
                 isRunning ? R.drawable.ic_pause : R.drawable.ic_play, 0, 0, 0);
-        stopButton.setVisibility(HIDE_STOP_FEATURE ? View.GONE
-                : timer.isStopped() ? View.INVISIBLE
-                : View.VISIBLE);
+        stopButton.setVisibility(isStopped ? View.INVISIBLE : View.VISIBLE);
         enableRemindersToggle.setChecked(state.isEnableReminders());
         minutesPicker.setValue(secondsToMinutesChoice(state.getSecondsPerReminder()));
 

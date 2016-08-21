@@ -119,7 +119,7 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
             views.setChronometer(R.id.chronometer, timer.getStartTime(), null, true);
         } else {
             long elapsedTime = timer.getElapsedTime();
-            int child = timer.isReset() ? RESET_CHRONOMETER_CHILD : PAUSED_CHRONOMETER_CHILD;
+            int child = timer.isStopped() ? RESET_CHRONOMETER_CHILD : PAUSED_CHRONOMETER_CHILD;
             int textViewId = child == RESET_CHRONOMETER_CHILD ? R.id.resetChronometerText
                     : R.id.pausedChronometerText;
 
