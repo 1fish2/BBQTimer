@@ -24,6 +24,7 @@ import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.ColorRes;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Spanned;
@@ -44,7 +45,7 @@ import java.util.Locale;
  */
 public class MainActivity extends AppCompatActivity implements NumberPicker.OnValueChangeListener {
     /** Hide the Stop feature (that distinguishes Stop from Paused) on older OS versions. */
-    static final boolean HIDE_STOP_FEATURE = !Notifier.PAUSEABLE_NOTIFICATIONS;
+    private static final boolean HIDE_STOP_FEATURE = !Notifier.PAUSEABLE_NOTIFICATIONS;
     /** The names of the minutes-per-periodic-alarm picker choices. */
     private static final String[] MINUTES_CHOICES = new String[100];
 
@@ -261,6 +262,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
     }
 
     /** @return a ColorStateList resource ID; time-dependent for blinking. */
+    @ColorRes
     private int pausedTimerColors() {
         TimeCounter timeCounter = state.getTimeCounter();
         long millis = timeCounter.elapsedRealtimeClock() - timeCounter.getPauseTime();
@@ -273,7 +275,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
     /** Updates the display of the elapsed time. */
     private void displayTime() {
         Spanned formatted         = timer.formatHhMmSsFraction();
-        int textColorsId          =
+        @ColorRes int textColorsId =
                 timer.isRunning() ? R.color.running_timer_colors
                 : timer.isPaused() ? pausedTimerColors()
                 : R.color.reset_timer_colors;

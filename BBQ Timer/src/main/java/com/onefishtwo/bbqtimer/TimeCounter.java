@@ -39,10 +39,10 @@ import java.util.Locale;
  */
 public class TimeCounter {
     /** PERSISTENT STATE identifiers. */
-    static final String PREF_IS_RUNNING = "Timer_isRunning";
-    static final String PREF_IS_PAUSED  = "Timer_isPaused";  // new in app versionCode 10
-    static final String PREF_START_TIME = "Timer_startTime";
-    static final String PREF_PAUSE_TIME = "Timer_pauseTime";
+    private static final String PREF_IS_RUNNING = "Timer_isRunning";
+    private static final String PREF_IS_PAUSED  = "Timer_isPaused";  // new in app versionCode 10
+    private static final String PREF_START_TIME = "Timer_startTime";
+    private static final String PREF_PAUSE_TIME = "Timer_pauseTime";
 
     /**
      * The default format string for assembling and HTML-styling a timer duration.<p/>
@@ -56,7 +56,7 @@ public class TimeCounter {
      * make the rapidly changing fractional part less distracting and to make it fit better on
      * screen. This way, "12:34:56.7" fits on a Galaxy Nexus screen.
      */
-    public static final String DEFAULT_TIME_STYLE = "%1$s<small><small>%2$s</small></small>";
+    private static final String DEFAULT_TIME_STYLE = "%1$s<small><small>%2$s</small></small>";
 
     // Synchronized on recycledStringBuilder.
     // The buffer is big enough for hhh:mm:ss.f + HTML markup = 11 + 30, and rounded up.
@@ -178,7 +178,7 @@ public class TimeCounter {
      *
      * @see com.onefishtwo.bbqtimer.Notifier#timerRunState(TimeCounter)
      */
-    public String runState() {
+    String runState() {
         if (isRunning) {
             return "Running";
         } else if (isPaused) {
@@ -298,6 +298,7 @@ public class TimeCounter {
             html = recycledFormatter.format(DEFAULT_TIME_STYLE, hhmmss, f).toString();
         }
 
+        //noinspection deprecation
         return Html.fromHtml(html);
     }
 
