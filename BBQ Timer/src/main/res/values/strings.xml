@@ -2,6 +2,10 @@
 <!-- String resources for the BBQ Timer application. -->
 <resources>
 
+    <!-- Inform the user that the system Alarm volume is muted, and thus they won't be able to hear
+      the app's alarms. This wording comes right out of the Clock app. -->
+    <string name="alarm_muted">Alarm volume muted</string>
+
     <!-- The application's name. -->
     <string name="app_name">BBQ Timer</string>
 

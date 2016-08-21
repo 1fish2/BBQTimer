@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- String -Ressourcen für den Grill Timer-Anwendung . -->
 <resources>
+    <string name="alarm_muted">Alarmlautstärke stumm geschaltet</string>
     <string name="app_name">BBQ Timer</string>
     <string name="app_description">Eine Stoppuhr, die Sie auf dem Sperrbildschirm verwenden können.</string>
     <string name="dismiss_tip">Wischen um zu stoppen</string>

@@ -19,6 +19,7 @@
 
 package com.onefishtwo.bbqtimer;
 
+import android.content.Context;
 import android.content.res.ColorStateList;
 import android.media.AudioManager;
 import android.os.Bundle;
@@ -34,6 +35,7 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.NumberPicker;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.onefishtwo.bbqtimer.state.ApplicationState;
 
@@ -197,6 +199,8 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
 
         // Take focus from minutesPicker's EditText child.
         minutesPicker.requestFocus();
+
+        informIfAudioMuted();
     }
 
     /** The Activity is no longer visible. */
@@ -211,6 +215,20 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
         AlarmReceiver.updateNotifications(this); // after setMainActivityIsVisible()
 
         super.onStop();
+    }
+
+    /**
+     * Informs the user if the alarm audio is muted.
+     *<p/>
+     * TODO: Use a Snackbar instead of a Toast.
+     */
+    private void informIfAudioMuted() {
+        AudioManager am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        int volume = am.getStreamVolume(AudioManager.STREAM_ALARM);
+
+        if (volume <= 0) {
+            Toast.makeText(this, R.string.alarm_muted, Toast.LENGTH_LONG).show();
+        }
     }
 
     /** The user tapped the Run/Pause button (named "StartStop"). */
