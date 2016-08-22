@@ -26,6 +26,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.ColorRes;
+import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Spanned;
@@ -35,7 +36,6 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.NumberPicker;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.onefishtwo.bbqtimer.state.ApplicationState;
 
@@ -217,17 +217,25 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
         super.onStop();
     }
 
-    /**
-     * Informs the user if the alarm audio is muted.
-     *<p/>
-     * TODO: Use a Snackbar instead of a Toast.
-     */
+    /** Informs the user if the alarm audio is muted, offering an UNMUTE option. */
     private void informIfAudioMuted() {
-        AudioManager am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        final AudioManager am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         int volume = am.getStreamVolume(AudioManager.STREAM_ALARM);
 
         if (volume <= 0) {
-            Toast.makeText(this, R.string.alarm_muted, Toast.LENGTH_LONG).show();
+            Snackbar snackbar = Snackbar.make(findViewById(R.id.main_container),
+                        R.string.alarm_muted, Snackbar.LENGTH_LONG)
+                    .setAction(R.string.alarm_unmute, new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            am.adjustStreamVolume(AudioManager.STREAM_ALARM,
+                                    AudioManager.ADJUST_RAISE, 0);
+                        }
+                    })
+                    .setActionTextColor(ContextCompat.getColor(this, R.color.contrasting_text));
+            snackbar.getView().setBackgroundColor(
+                    ContextCompat.getColor(this, R.color.dark_orange_red));
+            snackbar.show();
         }
     }
 

@@ -6,6 +6,9 @@
       the app's alarms. This wording comes right out of the Clock app. -->
     <string name="alarm_muted">Alarm volume muted</string>
 
+    <!-- The "unmute" action (hence all upper-case) for the alarm_muted Snackbar. -->
+    <string name="alarm_unmute">UNMUTE</string>
+
     <!-- The application's name. -->
     <string name="app_name">BBQ Timer</string>
 

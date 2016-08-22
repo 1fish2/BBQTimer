@@ -10,4 +10,5 @@
     <color name="to_stop_text">#d50000</color>
     <color name="translucent_background">#60000000</color>
     <color name="widget_button_background">#616161</color>
+    <color name="contrasting_text">#b2dfdb</color>
 </resources>
