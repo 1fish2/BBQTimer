@@ -222,6 +222,11 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
         final AudioManager am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         int volume = am.getStreamVolume(AudioManager.STREAM_ALARM);
 
+        // Only warn when reminders are enabled, not when running silently.
+        if (!state.isEnableReminders()) {
+            return;
+        }
+
         if (volume <= 0) {
             Snackbar snackbar = Snackbar.make(findViewById(R.id.main_container),
                         R.string.alarm_muted, Snackbar.LENGTH_LONG)
@@ -279,6 +284,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
         state.setEnableReminders(enableRemindersToggle.isChecked());
         state.save(this);
         AlarmReceiver.updateNotifications(this);
+        informIfAudioMuted();
     }
 
     /** A NumberPicker value changed. */
