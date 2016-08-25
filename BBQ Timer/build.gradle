@@ -1,8 +1,10 @@
+import groovy.swing.SwingBuilder
+
 apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 24
-    buildToolsVersion '24.0.1'
+    buildToolsVersion '24.0.2'
 
     signingConfigs {
         releaseSigning {
@@ -27,14 +29,19 @@ android {
         debug {
             minifyEnabled true
             useProguard false
+            debuggable true
+            zipAlignEnabled true
         }
         debugProguard {
             minifyEnabled true
+            // shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.txt'
             zipAlignEnabled true
+            debuggable true
         }
         release {
             minifyEnabled true
+            // shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.txt'
             //noinspection GroovyAssignabilityCheck
             signingConfig signingConfigs.releaseSigning
@@ -48,10 +55,39 @@ android {
     }
 }
 
+// See http://stackoverflow.com/a/19350401/1682419
+// See http://stackoverflow.com/a/24360969/1682419
 task askForPasswords << {
-    // Construct a String because readPassword() returns char[] and using that fails silently.
-    def storePw = new String(System.console().readPassword("\nKeystore password: "))
-    def keyPw   = new String(System.console().readPassword("\nKey password: "))
+    def storePw = ''
+    def keyPw   = ''
+
+    if (System.console() == null) {
+        // The console is null in Gradle daemon builds, so use Swing.
+        new SwingBuilder().edt {
+            dialog(modal: true, title: 'Enter signing passwords', alwaysOnTop: true,
+                    resizable: false, locationRelativeTo: null, pack: true, show: true) {
+                vbox {
+                    label(text: "Keystore password:")
+                    def storePwField = passwordField(columns: 20)
+                    label(text: "Key password:")
+                    def keyPwField = passwordField(columns: 20)
+                    button(defaultButton: true, text: 'OK', actionPerformed: {
+                        storePw = new String(storePwField.password);
+                        keyPw   = new String(keyPwField.password);
+                        dispose();
+                    })
+                }
+            }
+        }
+    } else {
+        // Construct Strings because readPassword() returns char[] and using that fails silently.
+        storePw = new String(System.console().readPassword("\nKeystore password: "))
+        keyPw   = new String(System.console().readPassword("\nKey password: "))
+    }
+
+    if (storePw.size() <= 0 || keyPw.size() <= 0) {
+        throw new InvalidUserDataException("You must enter the passwords to proceed.")
+    }
 
     android.signingConfigs.releaseSigning.storePassword = storePw
     android.signingConfigs.releaseSigning.keyPassword = keyPw
