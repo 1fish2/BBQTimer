@@ -29,6 +29,7 @@ import java.math.RoundingMode;
 import java.text.FieldPosition;
 import java.text.NumberFormat;
 import java.util.Formatter;
+import java.util.Locale;
 
 /**
  * A stopwatch time counter (data model).
@@ -37,11 +38,23 @@ import java.util.Formatter;
  * Notification so it can be viewed and resumed on the Android Lollipop lock screen.
  */
 public class TimeCounter {
+    /**
+     * On API 21+, allow Paused notifications with control buttons as well as Running
+     * notifications with control buttons, mainly so the user can control the timer from a lock
+     * screen notification. Otherwise, unify Paused @ 0:00 with Stopped in the UI.
+     * <p/>
+     * Due to OS bugs in API 17 - 20, changing a notification to Paused would continue showing a
+     * running chronometer [despite calling setShowWhen(false) and not calling
+     * setUsesChronometer(true)] and sometimes also the notification time of day, both confusing.
+     * API < 16 has no action buttons so it has no payoff in Paused notifications.
+     */
+    static final boolean PAUSEABLE_NOTIFICATIONS = android.os.Build.VERSION.SDK_INT >= 21;
+
     /** PERSISTENT STATE identifiers. */
-    static final String PREF_IS_RUNNING = "Timer_isRunning";
-    static final String PREF_IS_PAUSED  = "Timer_isPaused";  // new in app versionCode 10
-    static final String PREF_START_TIME = "Timer_startTime";
-    static final String PREF_PAUSE_TIME = "Timer_pauseTime";
+    private static final String PREF_IS_RUNNING = "Timer_isRunning";
+    private static final String PREF_IS_PAUSED  = "Timer_isPaused";  // new in app versionCode 10
+    private static final String PREF_START_TIME = "Timer_startTime";
+    private static final String PREF_PAUSE_TIME = "Timer_pauseTime";
 
     /**
      * The default format string for assembling and HTML-styling a timer duration.<p/>
@@ -55,25 +68,35 @@ public class TimeCounter {
      * make the rapidly changing fractional part less distracting and to make it fit better on
      * screen. This way, "12:34:56.7" fits on a Galaxy Nexus screen.
      */
-    public static final String DEFAULT_TIME_STYLE = "%1$s<small><small>%2$s</small></small>";
+    private static final String DEFAULT_TIME_STYLE = "%1$s<small><small>%2$s</small></small>";
 
     // Synchronized on recycledStringBuilder.
     // The buffer is big enough for hhh:mm:ss.f + HTML markup = 11 + 30, and rounded up.
     private static final StringBuilder recycledStringBuilder = new StringBuilder(44);
     private static final Formatter recycledFormatter = new Formatter(recycledStringBuilder);
 
-    // Synchronized on fractionFormatter.
-    private static final NumberFormat fractionFormatter = NumberFormat.getNumberInstance();
+    // Also synchronized on recycledStringBuilder.
+    private static Locale lastLocale;
+    private static NumberFormat fractionFormatter; // constructed on demand and on locale changes
     private static final StringBuffer recycledStringBuffer = new StringBuffer(2);
     private static final FieldPosition fractionFieldPosition =
             new FieldPosition(NumberFormat.FRACTION_FIELD);
 
-    static {
-        fractionFormatter.setMinimumIntegerDigits(0);
-        fractionFormatter.setMaximumIntegerDigits(0);
-        fractionFormatter.setMinimumFractionDigits(1);
-        fractionFormatter.setMaximumFractionDigits(1);
-        fractionFormatter.setRoundingMode(RoundingMode.DOWN);
+    /** Makes locale-specific text formatters if needed, including a locale change. */
+    private static void makeLocaleFormatters() {
+        synchronized (recycledStringBuilder) {
+            Locale locale = Locale.getDefault();
+
+            if (!locale.equals(lastLocale)) {
+                lastLocale = locale;
+                fractionFormatter = NumberFormat.getNumberInstance();
+                fractionFormatter.setMinimumIntegerDigits(0);
+                fractionFormatter.setMaximumIntegerDigits(0);
+                fractionFormatter.setMinimumFractionDigits(1);
+                fractionFormatter.setMaximumFractionDigits(1);
+                fractionFormatter.setRoundingMode(RoundingMode.DOWN);
+            }
+        }
     }
 
     private boolean isRunning;
@@ -119,6 +142,9 @@ public class TimeCounter {
             if (startTime > pauseTime || startTime > elapsedRealtimeClock()) {
                 stop();
                 needToSave = true;
+            } else if (startTime == pauseTime && !PAUSEABLE_NOTIFICATIONS) {
+                stop();
+                needToSave = true;
             }
         } else {
             stop();
@@ -136,7 +162,7 @@ public class TimeCounter {
         return pauseTime;
     }
 
-    /** Returns the underlying clock time. */
+    /** Returns the underlying clock time, in milliseconds since boot. */
     // TODO: Inject the clock for testability.
     public long elapsedRealtimeClock() {
         return SystemClock.elapsedRealtime();
@@ -163,11 +189,19 @@ public class TimeCounter {
     }
 
     /**
+     * Returns true if the TimeCounter is Paused at 0:00 (the result of
+     * {@link #reset()}).
+     */
+    public boolean isPausedAt0() {
+        return isPaused() && getElapsedTime() == 0;
+    }
+
+    /**
      * Returns the Timer's Running/Paused/Stopped state for debugging. Not localized.
      *
      * @see com.onefishtwo.bbqtimer.Notifier#timerRunState(TimeCounter)
      */
-    public String runState() {
+    String runState() {
         if (isRunning) {
             return "Running";
         } else if (isPaused) {
@@ -182,7 +216,7 @@ public class TimeCounter {
         return (isRunning ? elapsedRealtimeClock() : pauseTime) - startTime;
     }
 
-    /** Stops and resets the timer to 0:00. */
+    /** Stops and clears the timer to 0:00. */
     public void stop() {
         startTime = pauseTime = 0;
         isRunning = false;
@@ -226,25 +260,18 @@ public class TimeCounter {
     public void cycle() {
         if (isRunning()) {
             pause();
-        } else if (isStopped() || isReset()) {
+        } else if (isStopped() || isPausedAt0()) {
             start();
         } else {
             stop();
         }
     }
 
-    /** Resets the timer to 0:00; pausing if it was Running or letting it remain Stopped. */
+    /** Resets the timer to Paused at 0:00. */
     public void reset() {
         startTime = pauseTime = 0;
-        if (isRunning) {
-            isRunning = false;
-            isPaused  = true;
-        } // else remain Paused or Stopped
-    }
-
-    /** Returns true if the TimeCounter is Stopped/Paused at 0:00. */
-    public boolean isReset() {
-        return !isRunning && getElapsedTime() == 0;
+        isRunning = false;
+        isPaused  = true;
     }
 
     /**
@@ -278,17 +305,18 @@ public class TimeCounter {
         String f;
         String html;
 
-        synchronized (fractionFormatter) {
+        makeLocaleFormatters();
+
+        synchronized (recycledStringBuilder) {
             recycledStringBuffer.setLength(0);
             f = fractionFormatter.format(seconds, recycledStringBuffer, fractionFieldPosition)
                     .toString();
-        }
 
-        synchronized (recycledStringBuilder) {
             recycledStringBuilder.setLength(0);
             html = recycledFormatter.format(DEFAULT_TIME_STYLE, hhmmss, f).toString();
         }
 
+        //noinspection deprecation
         return Html.fromHtml(html);
     }
 

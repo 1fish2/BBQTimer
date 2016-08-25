@@ -27,9 +27,9 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
-import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.app.TaskStackBuilder;
+import android.support.v7.app.NotificationCompat;
 
 import com.onefishtwo.bbqtimer.notificationCompat.NotificationBuilder;
 import com.onefishtwo.bbqtimer.notificationCompat.NotificationBuilderFactory;
@@ -63,7 +63,7 @@ public class Notifier {
      * setUsesChronometer(true)] and sometimes also the notification time of day, both confusing.
      * API < 16 has no action buttons so it has no payoff in Paused notifications.
      */
-    static final boolean PAUSEABLE_NOTIFICATIONS = android.os.Build.VERSION.SDK_INT >= 21;
+    static final boolean PAUSEABLE_NOTIFICATIONS = TimeCounter.PAUSEABLE_NOTIFICATIONS;
 
     private static final long[] VIBRATE_PATTERN = {150, 82, 180, 96}; // ms off, ms on, ms off, ...
     private static final int[][] ACTION_INDICES = {{}, {0}, {0, 1}, {0, 1, 2}};
@@ -139,11 +139,11 @@ public class Notifier {
     }
 
     /**
-     * <em>Opens</em> this app's notification with visible, audible, and/or tactile content
+     * <em>(Re)Opens</em> this app's notification with visible, audible, and/or tactile content
      * depending on {@code state}, {@link #setPlayChime(boolean)}, and {@link #setVibrate(boolean)},
      * <em>or cancels</em> the app's notification if there's nothing to show or sound.
      *
-     * @param state -- the ApplicationState state to display.
+     * @param state the ApplicationState state to display.
      */
     public void openOrCancel(ApplicationState state) {
         boolean isMainActivityVisible = state.isMainActivityVisible();
@@ -165,9 +165,10 @@ public class Notifier {
      * Builds a notification. Its sound and vibration are determined by
      * {@link #setPlayChime(boolean)} and {@link #setVibrate(boolean)}.
      *
-     * @param visible whether to make the notification visible -- except on Android 6+ which rejects
-     *             invisible notifications. Invisible notifications are handy for playing the same
-     *             alarm sound and vibration as visible notifications.
+     * @param visible whether to make the notification visible -- overridden on Android L+ which
+     *                reject invisible notifications (at least M does). Invisible notifications
+     *                are handy for playing the same alarm sound and vibration as visible
+     *                notifications, but maybe a heads-up notification is better anyway.
      * @param addActions whether to add a content action, delete action, and media buttons to the
      *                   degree they're supported by the OS build. false makes a read-only
      *                   notification (can't even dismiss itself) for when the activity is open.<br/>
@@ -210,16 +211,12 @@ public class Notifier {
             // Set the notification body text to explain the run state.
             if (isRunning && state.isEnableReminders()) {
                 int reminderSecs   = state.getSecondsPerReminder();
-                int minutes        = reminderSecs / 60;
+                int quantity       = reminderSecs == 30 ? 2 : reminderSecs / 60; // 0.5 is a "few"
+                String minutes     = MainActivity.secondsToMinuteChoiceString(reminderSecs);
                 String contentText = context.getResources()
-                        .getQuantityString(R.plurals.notification_body, minutes, minutes);
-                int numReminders   = AlarmReceiver.numRemindersSoFar(state);
+                        .getQuantityString(R.plurals.notification_body, quantity, minutes);
 
                 builder.setContentText(contentText);
-
-                if (numReminders > 0) {
-                    builder.setNumber(numReminders);
-                }
             } else {
                 builder.setContentText(timerRunState(timer));
                 if (addActions && timer.isPaused()) {
@@ -244,20 +241,22 @@ public class Notifier {
                 builder.setContentIntent(activityPendingIntent);
 
                 // Action button to reset the timer.
-                PendingIntent resetIntent = makeActionIntent(TimerAppWidgetProvider.ACTION_RESET);
-                if (timer.isPaused() && !timer.isReset()) {
+                if (timer.isPaused() && !timer.isPausedAt0()) {
+                    PendingIntent resetIntent =
+                            makeActionIntent(TimerAppWidgetProvider.ACTION_RESET);
                     addAction(builder, R.drawable.ic_action_replay, R.string.reset, resetIntent);
                 }
 
                 // Action button to run (start) the timer.
-                PendingIntent runIntent = makeActionIntent(TimerAppWidgetProvider.ACTION_RUN);
                 if (!isRunning) {
+                    PendingIntent runIntent = makeActionIntent(TimerAppWidgetProvider.ACTION_RUN);
                     addAction(builder, R.drawable.ic_action_play, R.string.start, runIntent);
                 }
 
                 // Action button to pause the timer.
-                PendingIntent pauseIntent = makeActionIntent(TimerAppWidgetProvider.ACTION_PAUSE);
                 if (!timer.isPaused()) {
+                    PendingIntent pauseIntent
+                            = makeActionIntent(TimerAppWidgetProvider.ACTION_PAUSE);
                     addAction(builder, R.drawable.ic_action_pause, R.string.pause, pauseIntent);
                 }
 

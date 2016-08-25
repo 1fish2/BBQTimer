@@ -19,10 +19,14 @@
 
 package com.onefishtwo.bbqtimer;
 
+import android.content.Context;
 import android.content.res.ColorStateList;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.ColorRes;
+import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Spanned;
@@ -36,13 +40,44 @@ import android.widget.TextView;
 import com.onefishtwo.bbqtimer.state.ApplicationState;
 
 import java.lang.ref.WeakReference;
+import java.util.Locale;
 
 /**
  * The BBQ Timer's main activity.
  */
 public class MainActivity extends AppCompatActivity implements NumberPicker.OnValueChangeListener {
-    /** Hide the Stop feature (that distinguishes Stop from Paused) on older OS versions. */
-    static final boolean HIDE_STOP_FEATURE = !Notifier.PAUSEABLE_NOTIFICATIONS;
+    /**
+     * Hide the Reset feature (Pause @ 0:00) if the app doesn't show notifications while paused
+     * (that's on Android versions without lock screen notifications). Just use Stop.
+     */
+    private static final boolean HIDE_RESET_FEATURE = !Notifier.PAUSEABLE_NOTIFICATIONS;
+    /** The names of the minutes-per-periodic-alarm picker choices. */
+    private static final String[] MINUTES_CHOICES = new String[100];
+
+    static {
+        makeLocaleStrings();
+        for (int i = 1; i < MINUTES_CHOICES.length; ++i) {
+            MINUTES_CHOICES[i] = Integer.toString(i);
+        }
+    }
+
+    /** Makes locale-specific string constants. */
+    private static void makeLocaleStrings() {
+        MINUTES_CHOICES[0] = String.format(Locale.getDefault(), "%,.1f", 0.5F);
+    }
+
+    static int minutesChoiceToSeconds(int choice) {
+        return choice == 0 ? 30 : choice * 60;
+    }
+
+    static int secondsToMinutesChoice(int secondsPerReminder) {
+        return secondsPerReminder == 30 ? 0 : secondsPerReminder / 60;
+    }
+
+    /** Converts seconds-per-periodic-alarm to a minutes picker choice string. */
+    public static String secondsToMinuteChoiceString(int seconds) {
+        return MINUTES_CHOICES[secondsToMinutesChoice(seconds)];
+    }
 
     /**
      * A Handler for periodic display updates.
@@ -80,7 +115,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
         private void scheduleNextUpdate() {
             MainActivity activity = weakActivity.get();
 
-            if (activity != null && activity.timer.isRunning()) {
+            if (activity != null && !activity.timer.isStopped()) {
                 sendEmptyMessageDelayed(MSG_UPDATE, UPDATE_INTERVAL);
             }
         }
@@ -112,6 +147,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        makeLocaleStrings();
         setContentView(R.layout.activity_main);
 
         resetButton           = (Button) findViewById(R.id.resetButton);
@@ -121,11 +157,14 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
         enableRemindersToggle = (CompoundButton) findViewById(R.id.enableReminders);
         minutesPicker         = (NumberPicker) findViewById(R.id.minutesPicker);
 
-        minutesPicker.setMinValue(1);
-        minutesPicker.setMaxValue(99);
+        minutesPicker.setMinValue(0);
+        minutesPicker.setMaxValue(MINUTES_CHOICES.length - 1);
+        minutesPicker.setDisplayedValues(MINUTES_CHOICES);
         minutesPicker.setWrapSelectorWheel(false);
         minutesPicker.setOnValueChangedListener(this);
         minutesPicker.setFocusableInTouchMode(true);
+
+        setVolumeControlStream(AudioManager.STREAM_ALARM);
     }
 
     @Override
@@ -147,6 +186,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
         state = ApplicationState.sharedInstance(this);
         timer = state.getTimeCounter();
         state.setMainActivityIsVisible(true);
+        state.save(this);
 
         updateUI();
 
@@ -159,6 +199,8 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
 
         // Take focus from minutesPicker's EditText child.
         minutesPicker.requestFocus();
+
+        informIfAudioMuted();
     }
 
     /** The Activity is no longer visible. */
@@ -175,7 +217,34 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
         super.onStop();
     }
 
-    /** The user tapped the Run/Pause button. */
+    /** Informs the user if the alarm audio is muted, offering an UNMUTE option. */
+    private void informIfAudioMuted() {
+        final AudioManager am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        int volume = am.getStreamVolume(AudioManager.STREAM_ALARM);
+
+        // Only warn when reminders are enabled, not when running silently.
+        if (!state.isEnableReminders()) {
+            return;
+        }
+
+        if (volume <= 0) {
+            Snackbar snackbar = Snackbar.make(findViewById(R.id.main_container),
+                        R.string.alarm_muted, Snackbar.LENGTH_LONG)
+                    .setAction(R.string.alarm_unmute, new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            am.adjustStreamVolume(AudioManager.STREAM_ALARM,
+                                    AudioManager.ADJUST_RAISE, 0);
+                        }
+                    })
+                    .setActionTextColor(ContextCompat.getColor(this, R.color.contrasting_text));
+            snackbar.getView().setBackgroundColor(
+                    ContextCompat.getColor(this, R.color.dark_orange_red));
+            snackbar.show();
+        }
+    }
+
+    /** The user tapped the Run/Pause button (named "StartStop"). */
     // TODO: Use listeners to update the Activity UI and app widgets.
     // A Proguard rule keeps all Activity *(View) methods.
     @SuppressWarnings("UnusedParameters")
@@ -185,10 +254,11 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
         updateUI();
     }
 
-    /** The user tapped the Reset button. */
+    /** The user tapped the Reset button; go to Paused at 0:00. */
     @SuppressWarnings("UnusedParameters")
     public void onClickReset(View v) {
         timer.reset();
+        updateHandler.beginScheduledUpdate();
         updateUI();
     }
 
@@ -196,6 +266,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
     @SuppressWarnings("UnusedParameters")
     public void onClickStop(View v) {
         timer.stop();
+        updateHandler.endScheduledUpdates();
         updateUI();
     }
 
@@ -213,25 +284,38 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
         state.setEnableReminders(enableRemindersToggle.isChecked());
         state.save(this);
         AlarmReceiver.updateNotifications(this);
+        informIfAudioMuted();
     }
 
     /** A NumberPicker value changed. */
     @Override
     public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
         if (picker == minutesPicker) {
-            state.setSecondsPerReminder(newVal * 60);
+            state.setSecondsPerReminder(minutesChoiceToSeconds(newVal));
             state.save(this);
             AlarmReceiver.updateNotifications(this);
         }
     }
 
+    /** @return a ColorStateList resource ID; time-dependent for blinking. */
+    // TODO: In isPausedAt0(), the Pressed state should be green ("go") like reset_timer_colors.
+    @ColorRes
+    private int pausedTimerColors() {
+        TimeCounter timeCounter = state.getTimeCounter();
+        long millis = timeCounter.elapsedRealtimeClock() - timeCounter.getPauseTime();
+        long seconds = millis / 1000L;
+
+        return (seconds & 1) == 0 ? R.color.paused_alternate_timer_colors
+                : R.color.paused_timer_colors;
+    }
+
     /** Updates the display of the elapsed time. */
     private void displayTime() {
         Spanned formatted         = timer.formatHhMmSsFraction();
-        int textColorsId          =
+        @ColorRes int textColorsId =
                 timer.isRunning() ? R.color.running_timer_colors
-                : timer.isReset() ? R.color.reset_timer_colors
-                : R.color.paused_timer_colors;
+                : timer.isPaused() ? pausedTimerColors()
+                : R.color.reset_timer_colors;
         ColorStateList textColors = ContextCompat.getColorStateList(this, textColorsId);
 
         displayView.setText(formatted);
@@ -241,16 +325,20 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
     /** Updates the whole UI for the current state: Activity, Notifications, alarms, and widgets. */
     private void updateUI() {
         boolean isRunning = timer.isRunning();
+        boolean isStopped = timer.isStopped();
+        boolean isPausedAt0 = timer.isPausedAt0();
 
         displayTime();
-        resetButton.setVisibility(isRunning || timer.isReset() ? View.INVISIBLE : View.VISIBLE);
+        resetButton.setCompoundDrawablesWithIntrinsicBounds(
+                isStopped ? R.drawable.ic_pause : R.drawable.ic_replay, 0, 0, 0);
+        resetButton.setVisibility(HIDE_RESET_FEATURE ? View.GONE
+                : isRunning || isPausedAt0 ? View.INVISIBLE
+                : View.VISIBLE);
         startStopButton.setCompoundDrawablesWithIntrinsicBounds(
                 isRunning ? R.drawable.ic_pause : R.drawable.ic_play, 0, 0, 0);
-        stopButton.setVisibility(HIDE_STOP_FEATURE ? View.GONE
-                : timer.isStopped() ? View.INVISIBLE
-                : View.VISIBLE);
+        stopButton.setVisibility(isStopped ? View.INVISIBLE : View.VISIBLE);
         enableRemindersToggle.setChecked(state.isEnableReminders());
-        minutesPicker.setValue(state.getSecondsPerReminder() / 60);
+        minutesPicker.setValue(secondsToMinutesChoice(state.getSecondsPerReminder()));
 
         AlarmReceiver.updateNotifications(this);
 

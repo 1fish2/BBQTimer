@@ -37,12 +37,12 @@ public class ApplicationState {
     private static final String TAG = "ApplicationState";
 
     /** PERSISTENT STATE filename. */
-    static final String APPLICATION_PREF_FILE = "BBQ_Timer_Prefs";
+    private static final String APPLICATION_PREF_FILE = "BBQ_Timer_Prefs";
 
     /** PERSISTENT STATE identifiers. */
-    static final String PREF_MAIN_ACTIVITY_IS_VISIBLE = "App_mainActivityIsVisible";
-    static final String PREF_ENABLE_REMINDERS = "App_enableReminders";
-    static final String PREF_SECONDS_PER_REMINDER = "App_secondsPerReminder";
+    private static final String PREF_MAIN_ACTIVITY_IS_VISIBLE = "App_mainActivityIsVisible";
+    private static final String PREF_ENABLE_REMINDERS = "App_enableReminders";
+    private static final String PREF_SECONDS_PER_REMINDER = "App_secondsPerReminder";
 
     private static ApplicationState sharedInstance;
 

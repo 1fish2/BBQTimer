@@ -24,8 +24,12 @@ import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.media.AudioManager;
 import android.net.Uri;
+import android.os.Build;
 import android.support.v7.app.NotificationCompat;
+
+import com.onefishtwo.bbqtimer.R;
 
 /**
  * Notification Builder for API level 21+.
@@ -37,9 +41,14 @@ import android.support.v7.app.NotificationCompat;
 @TargetApi(21)
 class V21Builder implements NotificationBuilder {
     private final NotificationCompat.Builder builder;
+    private int workaroundColor = 0x9e9e9e;
 
     public V21Builder(Context context) {
         builder = new NotificationCompat.Builder(context);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            workaroundColor = context.getColor(R.color.gray_text);
+        }
     }
 
     @Override
@@ -86,6 +95,8 @@ class V21Builder implements NotificationBuilder {
 
     @Override
     public NotificationBuilder setNumber(int number) {
+        // This is a no-op on Android v24+ (N). We could work around it by appending to subText, but
+        // is this number worth the user complexity or the code complexity?
         builder.setNumber(number);
         return this;
     }
@@ -110,7 +121,8 @@ class V21Builder implements NotificationBuilder {
 
     @Override
     public NotificationBuilder setSound(Uri sound) {
-        builder.setSound(sound);
+        // TODO: Switch to setSound(Uri, AudioAttributes) when supported by NotificationCompat.
+        builder.setSound(sound, AudioManager.STREAM_ALARM);
         return this;
     }
 
@@ -158,7 +170,23 @@ class V21Builder implements NotificationBuilder {
 
     @Override
     public NotificationBuilder setMediaStyleActionsInCompactView(int... actions) {
-        new NotificationCompat.MediaStyle(builder).setShowActionsInCompactView(actions);
+        NotificationCompat.MediaStyle style = new NotificationCompat.MediaStyle()
+                .setShowActionsInCompactView(actions);
+        builder.setStyle(style);
+
+        // Workaround a Marshmallow bug where the heads-up notification shows low contrast dark gray
+        // text on darker gray background. setColor() sometimes sets the background color tho it's
+        // supposed to set the accent color. Unfortunately it also changes pull-down notifications
+        // and carries over from one notification to its replacement.
+        // See http://stackoverflow.com/q/38415467/1682419
+
+        // It'd be nice to call setColor() for other non-MediaStyle cases to set the accent color.
+        // But on Android API K- it's risky since different handset builds tinkered with colors. On
+        // Android N it seems to have no effect.
+        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.M) {
+            builder.setColor(workaroundColor);
+        }
+
         return this;
     }
 

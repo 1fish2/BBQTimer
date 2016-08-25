@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
 
     <!-- Base application theme. -->
@@ -13,7 +14,6 @@
     </style>
 
     <style name="FireyActionBar.Text" parent="TextAppearance.AppCompat.Widget.ActionBar.Title">
-        <!-- item name="android:textColor">@color/background_material_dark</item -->
         <item name="android:textStyle">bold</item>
     </style>
 

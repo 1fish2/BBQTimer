@@ -1,7 +1,8 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             xmlns:tools="http://schemas.android.com/tools"
-             tools:ignore="MergeRootFrame"
-    android:id="@+id/container"
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="MergeRootFrame"
+    android:id="@+id/main_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.onefishtwo.bbqtimer.MainActivity"
@@ -115,4 +116,4 @@
         </LinearLayout>
 
     </LinearLayout>
-</FrameLayout>
+</android.support.design.widget.CoordinatorLayout>
