@@ -40,7 +40,6 @@ import android.widget.TextView;
 import com.onefishtwo.bbqtimer.state.ApplicationState;
 
 import java.lang.ref.WeakReference;
-import java.util.Locale;
 
 /**
  * The BBQ Timer's main activity.
@@ -51,32 +50,17 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
      * (that's on Android versions without lock screen notifications). Just use Stop.
      */
     private static final boolean HIDE_RESET_FEATURE = !Notifier.PAUSEABLE_NOTIFICATIONS;
-    /** The names of the minutes-per-periodic-alarm picker choices. */
-    private static final String[] MINUTES_CHOICES = new String[100];
 
-    static {
-        makeLocaleStrings();
-        for (int i = 1; i < MINUTES_CHOICES.length; ++i) {
-            MINUTES_CHOICES[i] = Integer.toString(i);
-        }
-    }
+    private static final MinutesChoices minutesChoices = new MinutesChoices();
 
-    /** Makes locale-specific string constants. */
+    /** (Re)makes all locale-dependent strings. */
     private static void makeLocaleStrings() {
-        MINUTES_CHOICES[0] = String.format(Locale.getDefault(), "%,.1f", 0.5F);
+        minutesChoices.makeLocaleStrings();
     }
 
-    static int minutesChoiceToSeconds(int choice) {
-        return choice == 0 ? 30 : choice * 60;
-    }
-
-    static int secondsToMinutesChoice(int secondsPerReminder) {
-        return secondsPerReminder == 30 ? 0 : secondsPerReminder / 60;
-    }
-
-    /** Converts seconds-per-periodic-alarm to a minutes picker choice string. */
+    /** Converts seconds/alarm to a minutesPicker choice string. */
     public static String secondsToMinuteChoiceString(int seconds) {
-        return MINUTES_CHOICES[secondsToMinutesChoice(seconds)];
+        return minutesChoices.secondsToMinuteChoiceString(seconds);
     }
 
     /**
@@ -158,8 +142,8 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
         minutesPicker         = (NumberPicker) findViewById(R.id.minutesPicker);
 
         minutesPicker.setMinValue(0);
-        minutesPicker.setMaxValue(MINUTES_CHOICES.length - 1);
-        minutesPicker.setDisplayedValues(MINUTES_CHOICES);
+        minutesPicker.setMaxValue(minutesChoices.choices.length - 1);
+        minutesPicker.setDisplayedValues(minutesChoices.choices);
         minutesPicker.setWrapSelectorWheel(false);
         minutesPicker.setOnValueChangedListener(this);
         minutesPicker.setFocusableInTouchMode(true);
@@ -291,7 +275,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
     @Override
     public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
         if (picker == minutesPicker) {
-            state.setSecondsPerReminder(minutesChoiceToSeconds(newVal));
+            state.setSecondsPerReminder(minutesChoices.pickerChoiceToSeconds(newVal));
             state.save(this);
             AlarmReceiver.updateNotifications(this);
         }
@@ -338,7 +322,8 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
                 isRunning ? R.drawable.ic_pause : R.drawable.ic_play, 0, 0, 0);
         stopButton.setVisibility(isStopped ? View.INVISIBLE : View.VISIBLE);
         enableRemindersToggle.setChecked(state.isEnableReminders());
-        minutesPicker.setValue(secondsToMinutesChoice(state.getSecondsPerReminder()));
+        minutesPicker.setValue(minutesChoices.secondsToPickerChoice(
+                state.getSecondsPerReminder()));
 
         AlarmReceiver.updateNotifications(this);
 

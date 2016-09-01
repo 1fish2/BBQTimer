@@ -211,7 +211,9 @@ public class Notifier {
             // Set the notification body text to explain the run state.
             if (isRunning && state.isEnableReminders()) {
                 int reminderSecs   = state.getSecondsPerReminder();
-                int quantity       = reminderSecs == 30 ? 2 : reminderSecs / 60; // 0.5 is a "few"
+
+                // Synthesize a "quantity" to select the right pluralization rule.
+                int quantity = MinutesChoices.secondsToMinutesPluralizationQuantity(reminderSecs);
                 String minutes     = MainActivity.secondsToMinuteChoiceString(reminderSecs);
                 String contentText = context.getResources()
                         .getQuantityString(R.plurals.notification_body, quantity, minutes);
