@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
 
     /** (Re)makes all locale-dependent strings. */
     private static void makeLocaleStrings() {
-        minutesChoices.makeLocaleStrings();
+        minutesChoices.updateLocale();
     }
 
     /** Converts seconds/alarm to a minutesPicker choice string. */

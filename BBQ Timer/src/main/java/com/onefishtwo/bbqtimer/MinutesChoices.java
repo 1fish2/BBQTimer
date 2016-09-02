@@ -63,7 +63,7 @@ public class MinutesChoices {
 
     /** Constructs a MinutesChoices for the default locale. */
     MinutesChoices() {
-        makeLocaleStrings();
+        updateLocale();
 
         // The whole-numbers-only part of the array is locale-independent.
         for (int i = BEGIN_INDEX_WHOLE_MINUTES_ONLY; i < choices.length; ++i) {
@@ -72,8 +72,8 @@ public class MinutesChoices {
         }
     }
 
-    /** (Re)makes the locale-dependent strings. */
-    final void makeLocaleStrings() {
+    /** (Re)makes locale-dependent data. */
+    final void updateLocale() {
         Locale locale = Locale.getDefault();
 
         for (int i = 0; i <= BEGIN_INDEX_WHOLE_MINUTES_ONLY; ++i) {
