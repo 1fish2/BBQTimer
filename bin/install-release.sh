@@ -4,4 +4,4 @@
 # Arguments:
 #   $1 -- optional flags like "-r" to reinstall.
 
-adb install ${1-} BBQ\ Timer/build/outputs/apk/BBQ\ Timer-release.apk
+adb install ${1-} app/build/outputs/apk/BBQTimer-release.apk

@@ -57,6 +57,15 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_7
         targetCompatibility JavaVersion.VERSION_1_7
     }
+
+    android.applicationVariants.all { variant ->
+        variant.outputs.each { output ->
+            // Use the project name rather than "app" in the output APK filename.
+            // Consider also including "${variant.versionName}" in the APK filename.
+            def apkName = "${rootProject.name}-${output.baseName}.apk"
+            output.outputFile = new File(output.outputFile.parent, apkName)
+        }
+    }
 }
 
 // See http://stackoverflow.com/a/19350401/1682419

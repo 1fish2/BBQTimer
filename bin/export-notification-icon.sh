@@ -6,11 +6,10 @@
 # Unfortunately, Inkscape can't set the doc background to transparent and display it over a
 # non-white canvas.
 
-PROJECT="BBQ Timer"
 IMAGE="notification_icon"
 INPUT="source-assets/${IMAGE}.svg"
 OUTPUT="${IMAGE}.png"
-MAIN="${PROJECT}/src/main/"
+MAIN="app/src/main/"
 RES="${MAIN}res/"
 DRAWABLE="${RES}/drawable"
 

@@ -1,9 +1,8 @@
 #!/bin/sh
 # Converts the Inkscape icon file ic_launcher_web.svg to the launcher web & app png files.
 
-PROJECT="BBQ Timer"
 INPUT="source-assets/ic_launcher_web.svg"
-MAIN="${PROJECT}/src/main/"
+MAIN="app/src/main/"
 RES="${MAIN}res/"
 DRAWABLE="${RES}drawable"
 
