@@ -70,10 +70,14 @@ import static org.hamcrest.core.AllOf.allOf;
 @LargeTest
 @RunWith(AndroidJUnit4.class)
 public class InAppUITest {
+    /** The resetButton is hidden on older versions of Android. */
+    private static final boolean HIDE_RESET_FEATURE = MainActivity.HIDE_RESET_FEATURE;
+
     private ViewInteraction playPauseButton; // play/pause, formerly known as start/stop
-    private ViewInteraction resetButton; // reset to paused @ 0:00; pause/replay icon; hidden on old Androids
-    private ViewInteraction stopButton; // goes to stopped @ 0:00
+    private ViewInteraction resetButton; // reset (pause @ 00:00); pause/replay icon or hidden
+    private ViewInteraction stopButton; // stop @ 00:00
     private ViewInteraction timeView;
+    private Matcher<View> resetIsDisplayed; // isDisplayed() -- or not if always hidden
 
     @Rule
     public ActivityTestRule<MainActivity> mActivityTestRule = new ActivityTestRule<>(
@@ -85,6 +89,7 @@ public class InAppUITest {
         resetButton = onView(withId(R.id.resetButton));
         stopButton = onView(withId(R.id.stopButton));
         timeView = onView(withId(R.id.display));
+        resetIsDisplayed = HIDE_RESET_FEATURE ? not(isDisplayed()) : isDisplayed();
     }
 
     @After
@@ -93,7 +98,18 @@ public class InAppUITest {
         resetButton = null;
         stopButton = null;
         timeView = null;
+        resetIsDisplayed = null;
     }
+
+// MainActivity's FSM:
+//
+// Stopped  @ 00:00     |>  ||      --> Playing, Reset
+//
+// Reset    @ 00:00     |>      []  --> Playing, Stopped [on Android 21+]
+//
+// Playing  hh:mm++     ||      []  --> Paused, Stopped
+//
+// Paused   > 00:00     |>  ®   []  --> Playing, Reset, Stopped
 
     /** Tests all the nodes and arcs in the app's play/pause/reset/stop FSM. */
     @Test
@@ -109,23 +125,27 @@ public class InAppUITest {
 
         checkStopped();
 
-        resetButton.perform(click());
-        checkPausedAt0();
+        if (!HIDE_RESET_FEATURE) {
+            resetButton.perform(click());
+            checkPausedAt0();
+
+            stopButton.perform(click());
+            checkStopped();
+        }
+
+        playPauseButton.perform(click());
+        checkPlaying();
+
+        // TODO: Delay 2 seconds.
+        // TODO: Check that timeView's text is within a given time range.
 
         stopButton.perform(click());
         checkStopped();
 
-        playPauseButton.perform(click());
-        checkPlaying();
-
-        // TODO: Delay 2 seconds.
-        // TODO: Check that timeView's text is within a given time range.
-
-        stopButton.perform(click());
-        checkStopped();
-
-        resetButton.perform(click());
-        checkPausedAt0();
+        if (!HIDE_RESET_FEATURE) {
+            resetButton.perform(click());
+            checkPausedAt0();
+        }
 
         playPauseButton.perform(click());
         checkPlaying();
@@ -146,26 +166,28 @@ public class InAppUITest {
         checkPausedNotAt0();
         // TODO: Check that timeView's text is within a given time range.
 
-        resetButton.perform(click());
-        checkPausedAt0();
+        if (!HIDE_RESET_FEATURE) {
+            resetButton.perform(click());
+            checkPausedAt0();
 
-        playPauseButton.perform(click());
-        checkPlaying();
+            playPauseButton.perform(click());
+            checkPlaying();
 
-        // TODO: Delay 2 seconds.
-        // TODO: Check that timeView's text is within a given time range.
+            // TODO: Delay 2 seconds.
+            // TODO: Check that timeView's text is within a given time range.
 
-        playPauseButton.perform(click());
-        checkPausedNotAt0();
+            playPauseButton.perform(click());
+            checkPausedNotAt0();
+        }
 
         stopButton.perform(click());
         checkStopped();
     }
 
-    /** Checks that the UI is in the fully Stopped at 0:00 state. */
+    /** Checks that the UI is in the fully Stopped at 00:00 state. */
     private void checkStopped() {
         playPauseButton.check(matches(isDisplayed()));
-        resetButton.check(matches(isDisplayed()));
+        resetButton.check(matches(resetIsDisplayed));
         stopButton.check(matches(not(isDisplayed())));
         timeView.check(matches(withText("00:00.0")));
 
@@ -175,7 +197,7 @@ public class InAppUITest {
         // TODO: Check timeView's color state.
     }
 
-    /** Checks that the UI is in the Paused @ 0:00 state, aka the Reset state. */
+    /** Checks that the UI is in the Paused @ 00:00 state, aka the Reset state. */
     private void checkPausedAt0() {
         playPauseButton.check(matches(isDisplayed()));
         resetButton.check(matches(not(isDisplayed())));
@@ -200,10 +222,10 @@ public class InAppUITest {
         // TODO: Check timeView's color state.
     }
 
-    /** Checks that the UI is in the Paused state, not at 0:00. */
+    /** Checks that the UI is in the Paused state, not at 00:00. */
     private void checkPausedNotAt0() {
         playPauseButton.check(matches(isDisplayed()));
-        resetButton.check(matches(isDisplayed()));
+        resetButton.check(matches(resetIsDisplayed));
         stopButton.check(matches(isDisplayed()));
 
         playPauseButton.check(matches(withCompoundDrawable(R.drawable.ic_action_play)));
