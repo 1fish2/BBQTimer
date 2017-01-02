@@ -22,25 +22,15 @@
 package com.onefishtwo.bbqtimer;
 
 
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.support.test.espresso.FailureHandler;
 import android.support.test.espresso.ViewInteraction;
-import android.support.test.espresso.matcher.BoundedMatcher;
 import android.support.test.espresso.matcher.ViewMatchers;
 import android.support.test.filters.LargeTest;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewParent;
-import android.widget.TextView;
 
-import org.hamcrest.Description;
 import org.hamcrest.Matcher;
-import org.hamcrest.TypeSafeMatcher;
 import org.hamcrest.core.IsInstanceOf;
 import org.junit.After;
 import org.junit.Before;
@@ -61,6 +51,8 @@ import static android.support.test.espresso.matcher.ViewMatchers.withEffectiveVi
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withParent;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import static com.onefishtwo.bbqtimer.CustomMatchers.childAtPosition;
+import static com.onefishtwo.bbqtimer.CustomMatchers.withCompoundDrawable;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.core.AllOf.allOf;
@@ -283,63 +275,6 @@ public class InAppUITest {
                                 1),
                         isDisplayed()));
         editText.check(matches(withText("1")));
-
-    }
-
-    private static Matcher<View> childAtPosition(
-            final Matcher<View> parentMatcher, final int position) {
-
-        return new TypeSafeMatcher<View>() {
-            @Override
-            public void describeTo(Description description) {
-                description.appendText("Child at position " + position + " in parent ");
-                parentMatcher.describeTo(description);
-            }
-
-            @Override
-            public boolean matchesSafely(View view) {
-                ViewParent parent = view.getParent();
-                return parent instanceof ViewGroup && parentMatcher.matches(parent)
-                        && view.equals(((ViewGroup) parent).getChildAt(position));
-            }
-        };
-    }
-
-    public static Matcher<View> withCompoundDrawable(final int resourceId) {
-        return new BoundedMatcher<View, TextView>(TextView.class) {
-            @Override
-            public void describeTo(Description description) {
-                description.appendText("has compound drawable resource " + resourceId);
-            }
-
-            @Override
-            public boolean matchesSafely(TextView textView) {
-                for (Drawable drawable : textView.getCompoundDrawables()) {
-                    if (sameBitmap(textView.getContext(), drawable, resourceId)) {
-                        return true;
-                    }
-                }
-                return false;
-            }
-        };
-    }
-
-    private static boolean sameBitmap(Context context, Drawable drawable, int resourceId) {
-        Drawable otherDrawable = context.getResources().getDrawable(resourceId);
-
-        if (drawable == null || otherDrawable == null) {
-            return false;
-        }
-
-        drawable = drawable.getCurrent();
-        otherDrawable = otherDrawable.getCurrent();
-
-        if (drawable instanceof BitmapDrawable && otherDrawable instanceof BitmapDrawable) {
-            Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
-            Bitmap otherBitmap = ((BitmapDrawable) otherDrawable).getBitmap();
-            return bitmap != null && bitmap.sameAs(otherBitmap);
-        }
-        return false;
     }
 
 }

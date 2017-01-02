@@ -26,7 +26,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.ColorRes;
-import android.support.annotation.VisibleForTesting;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -50,8 +49,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
      * Hide the Reset feature (Pause @ 0:00) if the app doesn't show notifications while paused
      * (that's on Android versions without lock screen notifications). Just use Stop.
      */
-    @VisibleForTesting
-    public static final boolean HIDE_RESET_FEATURE = !Notifier.PAUSEABLE_NOTIFICATIONS;
+    static final boolean HIDE_RESET_FEATURE = !Notifier.PAUSEABLE_NOTIFICATIONS;
 
     private static final MinutesChoices minutesChoices = new MinutesChoices();
 
