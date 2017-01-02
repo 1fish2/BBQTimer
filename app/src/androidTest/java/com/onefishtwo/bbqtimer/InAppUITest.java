@@ -26,8 +26,10 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.support.test.espresso.FailureHandler;
 import android.support.test.espresso.ViewInteraction;
 import android.support.test.espresso.matcher.BoundedMatcher;
+import android.support.test.espresso.matcher.ViewMatchers;
 import android.support.test.filters.LargeTest;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
@@ -55,6 +57,7 @@ import static android.support.test.espresso.action.ViewActions.replaceText;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withClassName;
+import static android.support.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withParent;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
@@ -95,8 +98,14 @@ public class InAppUITest {
     /** Tests all the nodes and arcs in the app's play/pause/reset/stop FSM. */
     @Test
     public void playPauseStopUITest() {
-        // TODO: Click the Stop button if it's visible so the test doesn't have to assume it begins
-        // in the stopped state.
+        // Click the Stop button if it's visible so the test can begin in a well-defined state.
+        // TODO: A clickIfVisible() or ifVisible(click()) ViewAction would be cleaner.
+        onView(withId(R.id.stopButton)).withFailureHandler(new FailureHandler() {
+            @Override
+            public void handle(Throwable error, Matcher<View> viewMatcher) {
+            }
+        }).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)))
+                .perform(click());
 
         checkStopped();
 
