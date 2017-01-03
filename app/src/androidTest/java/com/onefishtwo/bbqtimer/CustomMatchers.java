@@ -25,6 +25,8 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.support.test.espresso.FailureHandler;
+import android.support.test.espresso.ViewInteraction;
 import android.support.test.espresso.matcher.BoundedMatcher;
 import android.view.View;
 import android.view.ViewGroup;
@@ -79,6 +81,20 @@ class CustomMatchers {
         };
     }
 
+    /**
+     * <b>Modifies the given ViewInteraction</b> to have a no-op FailureHandler. Use this, e.g.,
+     * to perform an action on a View if it's visible and not complain if it isn't.
+     *
+     * @return the modified ViewInteraction
+     */
+    static ViewInteraction ignoringFailures(ViewInteraction interaction) {
+        return interaction.withFailureHandler(new FailureHandler() {
+            @Override
+            public void handle(Throwable error, Matcher<View> viewMatcher) {
+            }
+        });
+    }
+
     private static boolean sameBitmap(Context context, Drawable drawable, int resourceId) {
         Drawable otherDrawable = context.getResources().getDrawable(resourceId);
 
@@ -96,4 +112,5 @@ class CustomMatchers {
         }
         return false;
     }
+
 }

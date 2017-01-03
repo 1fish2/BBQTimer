@@ -22,9 +22,7 @@
 package com.onefishtwo.bbqtimer;
 
 
-import android.support.test.espresso.FailureHandler;
 import android.support.test.espresso.ViewInteraction;
-import android.support.test.espresso.matcher.ViewMatchers;
 import android.support.test.filters.LargeTest;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
@@ -47,12 +45,13 @@ import static android.support.test.espresso.action.ViewActions.replaceText;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withClassName;
-import static android.support.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withParent;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static com.onefishtwo.bbqtimer.CustomMatchers.childAtPosition;
+import static com.onefishtwo.bbqtimer.CustomMatchers.ignoringFailures;
 import static com.onefishtwo.bbqtimer.CustomMatchers.withCompoundDrawable;
+import static com.onefishtwo.bbqtimer.CustomViewActions.waitMsec;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.core.AllOf.allOf;
@@ -106,14 +105,8 @@ public class InAppUITest {
     /** Tests all the nodes and arcs in the app's play/pause/reset/stop FSM. */
     @Test
     public void playPauseStopUITest() {
-        // Click the Stop button if it's visible so the test can begin in a well-defined state.
-        // TODO: A clickIfVisible() or ifVisible(click()) ViewAction would be cleaner.
-        onView(withId(R.id.stopButton)).withFailureHandler(new FailureHandler() {
-            @Override
-            public void handle(Throwable error, Matcher<View> viewMatcher) {
-            }
-        }).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)))
-                .perform(click());
+        // Click the Stop button if clickable so the test can begin in a well-defined state.
+        ignoringFailures(onView(withId(R.id.stopButton))).perform(click());
 
         checkStopped();
 
@@ -127,31 +120,40 @@ public class InAppUITest {
 
         playPauseButton.perform(click());
         checkPlaying();
-
-        // TODO: Delay 2 seconds.
+        playPauseButton.perform(waitMsec(1000));
+        checkPlaying();
         // TODO: Check that timeView's text is within a given time range.
 
         stopButton.perform(click());
         checkStopped();
+        playPauseButton.perform(waitMsec(100));
+        checkStopped();
 
         if (!HIDE_RESET_FEATURE) {
             resetButton.perform(click());
+            checkPausedAt0();
+            playPauseButton.perform(waitMsec(100));
             checkPausedAt0();
         }
 
         playPauseButton.perform(click());
         checkPlaying();
 
-        // TODO: Delay 2 seconds.
+        playPauseButton.perform(waitMsec(1000));
+        checkPlaying();
         // TODO: Check that timeView's text is within a given time range.
 
         playPauseButton.perform(click());
         checkPausedNotAt0();
+        // TODO: Check that timeView's text is within a given time range.
+        playPauseButton.perform(waitMsec(100));
+        checkPausedNotAt0();
+        // TODO: Check that timeView's text didn't change.
 
         playPauseButton.perform(click());
         checkPlaying();
-
-        // TODO: Delay 2 seconds.
+        playPauseButton.perform(waitMsec(1000));
+        checkPlaying();
         // TODO: Check that timeView's text is within a given time range.
 
         playPauseButton.perform(click());
@@ -164,12 +166,12 @@ public class InAppUITest {
 
             playPauseButton.perform(click());
             checkPlaying();
-
-            // TODO: Delay 2 seconds.
-            // TODO: Check that timeView's text is within a given time range.
+            playPauseButton.perform(waitMsec(1000));
+            checkPlaying();
 
             playPauseButton.perform(click());
             checkPausedNotAt0();
+            // TODO: Check that timeView's text is within a given time range.
         }
 
         stopButton.perform(click());
