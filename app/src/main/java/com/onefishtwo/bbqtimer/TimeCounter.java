@@ -38,6 +38,20 @@ import java.util.Locale;
  * Notification so it can be viewed and resumed on the Android Lollipop lock screen.
  */
 public class TimeCounter {
+    static class InjectForTesting {
+        String formatElapsedTime(StringBuilder recycle, long elapsedSeconds) {
+            return DateUtils.formatElapsedTime(recycle, elapsedSeconds);
+        }
+
+        //noinspection deprecation
+        Spanned fromHtml(String source) {
+            return Html.fromHtml(source);
+        }
+    }
+
+    /** Inject or mock for testing. */
+    static InjectForTesting injected = new InjectForTesting();
+
     /**
      * On API 21+, allow Paused notifications with control buttons as well as Running
      * notifications with control buttons, mainly so the user can control the timer from a lock
@@ -287,7 +301,7 @@ public class TimeCounter {
         long elapsedSeconds = elapsedMilliseconds / 1000;
 
         synchronized (recycledStringBuilder) {
-            return DateUtils.formatElapsedTime(recycledStringBuilder, elapsedSeconds);
+            return injected.formatElapsedTime(recycledStringBuilder, elapsedSeconds);
         }
     }
 
@@ -316,8 +330,7 @@ public class TimeCounter {
             html = recycledFormatter.format(DEFAULT_TIME_STYLE, hhmmss, f).toString();
         }
 
-        //noinspection deprecation
-        return Html.fromHtml(html);
+        return injected.fromHtml(html);
     }
 
     @Override
