@@ -32,6 +32,7 @@ import org.hamcrest.Matcher;
 import org.hamcrest.core.IsInstanceOf;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -52,11 +53,13 @@ import static com.onefishtwo.bbqtimer.CustomMatchers.childAtPosition;
 import static com.onefishtwo.bbqtimer.CustomMatchers.ignoringFailures;
 import static com.onefishtwo.bbqtimer.CustomMatchers.withCompoundDrawable;
 import static com.onefishtwo.bbqtimer.CustomViewActions.waitMsec;
+import static com.onefishtwo.bbqtimer.TimeIntervalMatcher.inTimeInterval;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.core.AllOf.allOf;
 
 /** Within-app Espresso UI tests. */
+// TODO: Test the app's home screen widget.
 // TODO: Add a multi-app test that checks the app's notifications.
 @LargeTest
 @RunWith(AndroidJUnit4.class)
@@ -108,70 +111,69 @@ public class InAppUITest {
         // Click the Stop button if clickable so the test can begin in a well-defined state.
         ignoringFailures(onView(withId(R.id.stopButton))).perform(click());
 
-        checkStopped();
+        checkStopped(); // Stopped
 
         if (!HIDE_RESET_FEATURE) {
-            resetButton.perform(click());
+            resetButton.perform(click()); // Reset
             checkPausedAt0();
 
-            stopButton.perform(click());
+            stopButton.perform(click()); // Stop
             checkStopped();
         }
 
-        playPauseButton.perform(click());
+        playPauseButton.perform(click()); // Play
         checkPlaying();
         playPauseButton.perform(waitMsec(1000));
-        checkPlaying();
-        // TODO: Check that timeView's text is within a given time range.
+        TimeIntervalMatcher time1 = inTimeInterval(1000, 1500); // TODO: Enough latitude?
+        checkPlayingAt(time1);
 
-        stopButton.perform(click());
+        stopButton.perform(click()); // Stop
         checkStopped();
         playPauseButton.perform(waitMsec(100));
         checkStopped();
 
         if (!HIDE_RESET_FEATURE) {
-            resetButton.perform(click());
+            resetButton.perform(click()); // Reset
             checkPausedAt0();
             playPauseButton.perform(waitMsec(100));
             checkPausedAt0();
         }
 
-        playPauseButton.perform(click());
+        playPauseButton.perform(click()); // Play
         checkPlaying();
-
         playPauseButton.perform(waitMsec(1000));
-        checkPlaying();
-        // TODO: Check that timeView's text is within a given time range.
+        checkPlayingAt(time1);
 
-        playPauseButton.perform(click());
-        checkPausedNotAt0();
-        // TODO: Check that timeView's text is within a given time range.
+        playPauseButton.perform(click()); // Pause
+        TimeIntervalMatcher time2 = inTimeInterval(time1.time, time1.time + 200);
+        checkPausedAt(time2);
+
         playPauseButton.perform(waitMsec(100));
-        checkPausedNotAt0();
-        // TODO: Check that timeView's text didn't change.
+        TimeIntervalMatcher time3 = inTimeInterval(time2.time, time2.time); // same time
+        checkPausedAt(time3);
 
-        playPauseButton.perform(click());
+        playPauseButton.perform(click()); // Play
         checkPlaying();
         playPauseButton.perform(waitMsec(1000));
-        checkPlaying();
-        // TODO: Check that timeView's text is within a given time range.
+        TimeIntervalMatcher time4 = inTimeInterval(time3.time + 1000, time3.time + 1500);
+        checkPlayingAt(time4);
 
-        playPauseButton.perform(click());
-        checkPausedNotAt0();
-        // TODO: Check that timeView's text is within a given time range.
+        playPauseButton.perform(click()); // Pause
+        TimeIntervalMatcher time5 = inTimeInterval(time4.time, time4.time + 200);
+        checkPausedAt(time5);
 
         if (!HIDE_RESET_FEATURE) {
-            resetButton.perform(click());
+            resetButton.perform(click()); // Reset
             checkPausedAt0();
 
-            playPauseButton.perform(click());
+            playPauseButton.perform(click()); // Play
             checkPlaying();
             playPauseButton.perform(waitMsec(1000));
-            checkPlaying();
+            checkPlayingAt(time1);
 
-            playPauseButton.perform(click());
-            checkPausedNotAt0();
-            // TODO: Check that timeView's text is within a given time range.
+            playPauseButton.perform(click()); // Pause
+            TimeIntervalMatcher time6 = inTimeInterval(time1.time, time1.time + 200);
+            checkPausedAt(time6);
         }
 
         stopButton.perform(click());
@@ -216,8 +218,14 @@ public class InAppUITest {
         // TODO: Check timeView's color state.
     }
 
-    /** Checks that the UI is in the Paused state, not at 00:00. */
-    private void checkPausedNotAt0() {
+    /** Checks that the UI is in the Playing state at a matching time value. */
+    private void checkPlayingAt(TimeIntervalMatcher time) {
+        checkPlaying();
+        timeView.check(matches(withText(time)));
+    }
+
+    /** Checks that the UI is in the Paused state at a matching time value. */
+    private void checkPausedAt(TimeIntervalMatcher time) {
         playPauseButton.check(matches(isDisplayed()));
         resetButton.check(matches(resetIsDisplayed));
         stopButton.check(matches(isDisplayed()));
@@ -225,12 +233,14 @@ public class InAppUITest {
         playPauseButton.check(matches(withCompoundDrawable(R.drawable.ic_action_play)));
         resetButton.check(matches(withCompoundDrawable(R.drawable.ic_action_replay)));
         stopButton.check(matches(withCompoundDrawable(R.drawable.ic_action_stop)));
+        timeView.check(matches(withText(time)));
 
         // TODO: Check timeView's color state, flashing between either of two color states.
     }
 
+    @Ignore("TODO: Finish reworking this rough code from Espresso Test Recorder")
+    @Test
     public void minutePickerUITest() {
-        // TODO: Finish writing this test. This rough code is from an Espresso test recording.
         ViewInteraction numberPicker = onView(withId(R.id.minutesPicker));
         numberPicker.perform(longClick());
 
