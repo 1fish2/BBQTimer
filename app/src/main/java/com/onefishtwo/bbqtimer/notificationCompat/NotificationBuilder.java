@@ -23,6 +23,7 @@ import android.app.Notification;
 import android.app.PendingIntent;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 
 /**
  * An interface to alternate implementations of
@@ -33,27 +34,47 @@ import android.net.Uri;
  */
 @SuppressWarnings({"SameParameterValue", "UnusedReturnValue"})
 public interface NotificationBuilder {
+    @NonNull
     NotificationBuilder setWhen(long when);
+    @NonNull
     NotificationBuilder setShowWhen(boolean show);
+    @NonNull
     NotificationBuilder setUsesChronometer(boolean b);
+    @NonNull
     NotificationBuilder setSmallIcon(int icon);
+    @NonNull
     NotificationBuilder setContentTitle(CharSequence title);
+    @NonNull
     NotificationBuilder setContentText(CharSequence text);
+    @NonNull
     NotificationBuilder setSubText(CharSequence text);
+    @NonNull
     NotificationBuilder setNumber(int number);
+    @NonNull
     NotificationBuilder setContentIntent(PendingIntent intent);
+    @NonNull
     NotificationBuilder setDeleteIntent(PendingIntent intent);
+    @NonNull
     NotificationBuilder setLargeIcon(Bitmap icon);
+    @NonNull
     NotificationBuilder setSound(Uri sound);
+    @NonNull
     NotificationBuilder setVibrate(long[] pattern);
+    @NonNull
     NotificationBuilder setOngoing(boolean ongoing);
+    @NonNull
     NotificationBuilder setCategory(String category);
+    @NonNull
     NotificationBuilder setDefaults(int defaults);
+    @NonNull
     NotificationBuilder setPriority(int pri);
+    @NonNull
     NotificationBuilder addAction(int icon, CharSequence title, PendingIntent intent);
+    @NonNull
     NotificationBuilder setVisibility(int visibility);
 
     /** Sets MediaStyle with setShowActionsInCompactView(). */
+    @NonNull
     NotificationBuilder setMediaStyleActionsInCompactView(int... actions);
 
     Notification build();

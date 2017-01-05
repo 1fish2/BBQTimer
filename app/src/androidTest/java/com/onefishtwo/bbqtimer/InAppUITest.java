@@ -22,6 +22,7 @@
 package com.onefishtwo.bbqtimer;
 
 
+import android.support.annotation.NonNull;
 import android.support.test.espresso.ViewInteraction;
 import android.support.test.filters.LargeTest;
 import android.support.test.rule.ActivityTestRule;
@@ -71,11 +72,14 @@ public class InAppUITest {
     private ViewInteraction resetButton; // reset (pause @ 00:00); pause/replay icon or hidden
     private ViewInteraction stopButton; // stop @ 00:00
     private ViewInteraction timeView;
-    private Matcher<View> resetIsDisplayed; // isDisplayed() -- or not if always hidden
+    @NonNull
+    private final Matcher<View> resetIsDisplayed =
+            HIDE_RESET_FEATURE ? not(isDisplayed()) : isDisplayed();
 
+    @NonNull
     @Rule
-    public ActivityTestRule<MainActivity> mActivityTestRule = new ActivityTestRule<>(
-            MainActivity.class);
+    public final ActivityTestRule<MainActivity> mActivityTestRule =
+            new ActivityTestRule<>(MainActivity.class);
 
     @Before
     public void setUp() throws Exception {
@@ -83,7 +87,6 @@ public class InAppUITest {
         resetButton = onView(withId(R.id.resetButton));
         stopButton = onView(withId(R.id.stopButton));
         timeView = onView(withId(R.id.display));
-        resetIsDisplayed = HIDE_RESET_FEATURE ? not(isDisplayed()) : isDisplayed();
     }
 
     @After
@@ -92,7 +95,6 @@ public class InAppUITest {
         resetButton = null;
         stopButton = null;
         timeView = null;
-        resetIsDisplayed = null;
     }
 
 // MainActivity's FSM:
@@ -225,13 +227,13 @@ public class InAppUITest {
     }
 
     /** Checks that the UI is in the Playing state at a matching time value. */
-    private void checkPlayingAt(TimeIntervalMatcher time) {
+    private void checkPlayingAt(@NonNull TimeIntervalMatcher time) {
         checkPlaying();
         timeView.check(matches(withText(time)));
     }
 
     /** Checks that the UI is in the Paused state at a matching time value. */
-    private void checkPausedAt(TimeIntervalMatcher time) {
+    private void checkPausedAt(@NonNull TimeIntervalMatcher time) {
         playPauseButton.check(matches(isDisplayed()));
         resetButton.check(matches(resetIsDisplayed));
         stopButton.check(matches(isDisplayed()));

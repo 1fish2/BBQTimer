@@ -21,6 +21,7 @@
 
 package com.onefishtwo.bbqtimer;
 
+import android.support.annotation.NonNull;
 import android.support.test.espresso.UiController;
 import android.support.test.espresso.ViewAction;
 import android.view.View;
@@ -40,20 +41,23 @@ class CustomViewActions {
      * time</a> on creating and using an {@code IdlingResource} that can wait a long time. Reports
      * say Espresso polls an IdlingResource about every 5 seconds, so the timing precision is low.
      */
+    @NonNull
     static ViewAction waitMsec(final long msec) {
         return new ViewAction() {
+            @NonNull
             @Override
             public Matcher<View> getConstraints() {
                 return any(View.class);
             }
 
+            @NonNull
             @Override
             public String getDescription() {
                 return "Wait " + msec + " msec.";
             }
 
             @Override
-            public void perform(UiController uiController, View view) {
+            public void perform(@NonNull UiController uiController, View view) {
                 uiController.loopMainThreadForAtLeast(msec);
             }
         };

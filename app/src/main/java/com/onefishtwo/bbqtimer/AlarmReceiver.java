@@ -26,6 +26,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.onefishtwo.bbqtimer.state.ApplicationState;
@@ -115,7 +116,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 
     /** Get a string description of an Intent, including extras, for debugging. */
     @SuppressWarnings("unused")
-    public static String debugDumpIntent(Intent intent) {
+    public static String debugDumpIntent(@NonNull Intent intent) {
         StringBuilder sb = new StringBuilder(intent.toString());
 
         Bundle extras = intent.getExtras();
@@ -135,7 +136,7 @@ public class AlarmReceiver extends BroadcastReceiver {
     // TODO: If the user changes the period without resetting the timer, compute future reminders
     // relative to the previous reminder rather than 0:00? E.g. after a 7 minute reminder you change
     // it to 4 minutes, then it would next alert at 0:11:00 rather than 0:08:00.
-    private static long nextReminderTime(ApplicationState state) {
+    private static long nextReminderTime(@NonNull ApplicationState state) {
         TimeCounter timer = state.getTimeCounter();
         long periodMs     = state.getMillisecondsPerReminder();
         long now          = timer.elapsedRealtimeClock();
@@ -164,7 +165,8 @@ public class AlarmReceiver extends BroadcastReceiver {
      * (Re)schedules the next reminder Notification via an AlarmManager Intent.
      * Deals with system idle/doze modes.
      */
-    private static void scheduleNextReminder(Context context, ApplicationState state) {
+    private static void scheduleNextReminder(@NonNull Context context,
+            @NonNull ApplicationState state) {
         AlarmManager alarmMgr = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
         long nextReminder = nextReminderTime(state);
         PendingIntent pendingIntent = makeAlarmPendingIntent(context, nextReminder);
@@ -189,8 +191,8 @@ public class AlarmReceiver extends BroadcastReceiver {
      * @param pendingIntent the PendingIntent to wake this receiver in nextReminder msec
      */
     @TargetApi(21)
-    private static void setAlarmClockV21(Context context, AlarmManager alarmMgr,
-            ApplicationState state, long nextReminder, PendingIntent pendingIntent) {
+    private static void setAlarmClockV21(Context context, @NonNull AlarmManager alarmMgr,
+            @NonNull ApplicationState state, long nextReminder, PendingIntent pendingIntent) {
         PendingIntent activityPI = makeActivityPendingIntent(context);
         TimeCounter timer        = state.getTimeCounter();
         long reminderWallTime    = timer.elapsedTimeToWallTime(nextReminder);
@@ -212,7 +214,7 @@ public class AlarmReceiver extends BroadcastReceiver {
      *     setting the clock backwards delays outstanding alarms.</li>
      *</ul>
      */
-    public static void handleClockAdjustment(Context context) {
+    public static void handleClockAdjustment(@NonNull Context context) {
         updateNotifications(context);
     }
 
@@ -221,7 +223,7 @@ public class AlarmReceiver extends BroadcastReceiver {
      * Notification alarms for the visible/invisible activity state, the running/paused timer state,
      * and the reminders-enabled state.
      */
-    public static void updateNotifications(Context context) {
+    public static void updateNotifications(@NonNull Context context) {
         ApplicationState state        = ApplicationState.sharedInstance(context);
         boolean enableReminders       = state.isEnableReminders();
         TimeCounter timer             = state.getTimeCounter();
@@ -238,7 +240,7 @@ public class AlarmReceiver extends BroadcastReceiver {
     }
 
     /** Cancels any outstanding reminders by canceling the AlarmManager Intents. */
-    public static void cancelReminders(Context context) {
+    public static void cancelReminders(@NonNull Context context) {
         AlarmManager alarmMgr = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
         PendingIntent pendingIntent = makeAlarmPendingIntent(context, 0);
 
@@ -255,7 +257,7 @@ public class AlarmReceiver extends BroadcastReceiver {
      * Returns true if the Intent is more than {@link #ALARM_TOLERANCE_MS} earlier than its
      * setAlarmClock() target time. See {@link #EXTRA_ELAPSED_REALTIME_TARGET} for why.
      */
-    private boolean isAlarmEarly(Intent intent, TimeCounter timer) {
+    private boolean isAlarmEarly(@NonNull Intent intent, @NonNull TimeCounter timer) {
         if (USE_SET_ALARM_CLOCK) {
             long now    = timer.elapsedRealtimeClock();
             long target = intent.getLongExtra(EXTRA_ELAPSED_REALTIME_TARGET, now);
@@ -272,7 +274,7 @@ public class AlarmReceiver extends BroadcastReceiver {
      * Detects and quiets early alarms.
      */
     @Override
-    public void onReceive(Context context, Intent intent) {
+    public void onReceive(@NonNull Context context, @NonNull Intent intent) {
         ApplicationState state = ApplicationState.sharedInstance(context);
         TimeCounter timer      = state.getTimeCounter();
 

@@ -26,6 +26,7 @@ import android.graphics.Bitmap;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
+import android.support.annotation.NonNull;
 import android.support.v7.app.NotificationCompat;
 
 /**
@@ -33,12 +34,14 @@ import android.support.v7.app.NotificationCompat;
  * additional OS bug workarounds.
  */
 class V20Builder implements NotificationBuilder {
+    @NonNull
     private final NotificationCompat.Builder builder;
 
     public V20Builder(Context context) {
         builder = new NotificationCompat.Builder(context);
     }
 
+    @NonNull
     @Override
     public NotificationBuilder setWhen(long when) {
         builder.setWhen(when);
@@ -48,6 +51,7 @@ class V20Builder implements NotificationBuilder {
     /**
      * NOTE: This is supposed to work in API 17+ but it doesn't work right in API 17-18.
      */
+    @NonNull
     @Override
     public NotificationBuilder setShowWhen(boolean show) {
         builder.setShowWhen(show);
@@ -62,36 +66,42 @@ class V20Builder implements NotificationBuilder {
      * API 16 - 18, hiding the When field doesn't actually work, and the changing to/from a
      * chronometer shows BOTH the time and the chronometer.
      */
+    @NonNull
     @Override
     public NotificationBuilder setUsesChronometer(boolean b) {
         builder.setUsesChronometer(b);
         return this;
     }
 
+    @NonNull
     @Override
     public NotificationBuilder setSmallIcon(int icon) {
         builder.setSmallIcon(icon);
         return this;
     }
 
+    @NonNull
     @Override
     public NotificationBuilder setContentTitle(CharSequence title) {
         builder.setContentTitle(title);
         return this;
     }
 
+    @NonNull
     @Override
     public NotificationBuilder setContentText(CharSequence text) {
         builder.setContentText(text);
         return this;
     }
 
+    @NonNull
     @Override
     public NotificationBuilder setSubText(CharSequence text) {
         builder.setSubText(text);
         return this;
     }
 
+    @NonNull
     @Override
     public NotificationBuilder setNumber(int number) {
         // WORKAROUND: On Android level 12 HONEYCOMB_MR1, setNumber() will later crash with
@@ -108,18 +118,21 @@ class V20Builder implements NotificationBuilder {
         return this;
     }
 
+    @NonNull
     @Override
     public NotificationBuilder setContentIntent(PendingIntent intent) {
         builder.setContentIntent(intent);
         return this;
     }
 
+    @NonNull
     @Override
     public NotificationBuilder setDeleteIntent(PendingIntent intent) {
         builder.setDeleteIntent(intent);
         return this;
     }
 
+    @NonNull
     @Override
     public NotificationBuilder setLargeIcon(Bitmap icon) {
         // WORKAROUND: On Android level 12, setLargeIcon() will later crash with "FATAL EXCEPTION:
@@ -134,54 +147,63 @@ class V20Builder implements NotificationBuilder {
         return this;
     }
 
+    @NonNull
     @Override
     public NotificationBuilder setSound(Uri sound) {
         builder.setSound(sound, AudioManager.STREAM_ALARM);
         return this;
     }
 
+    @NonNull
     @Override
     public NotificationBuilder setVibrate(long[] pattern) {
         builder.setVibrate(pattern);
         return this;
     }
 
+    @NonNull
     @Override
     public NotificationBuilder setOngoing(boolean ongoing) {
         builder.setOngoing(ongoing);
         return this;
     }
 
+    @NonNull
     @Override
     public NotificationBuilder setCategory(String category) {
         builder.setCategory(category);
         return this;
     }
 
+    @NonNull
     @Override
     public NotificationBuilder setDefaults(int defaults) {
         builder.setDefaults(defaults);
         return this;
     }
 
+    @NonNull
     @Override
     public NotificationBuilder setPriority(int pri) {
         builder.setPriority(pri);
         return this;
     }
 
+    @NonNull
     @Override
     public NotificationBuilder addAction(int icon, CharSequence title, PendingIntent intent) {
         builder.addAction(icon, title, intent);
         return this;
     }
 
+    @NonNull
     @Override
     public NotificationBuilder setVisibility(int visibility) {
         builder.setVisibility(visibility);
         return this;
     }
 
+    @NonNull
     @Override
     public NotificationBuilder setMediaStyleActionsInCompactView(int... actions) {
         // Noop for Android API V20-.

@@ -21,6 +21,7 @@ package com.onefishtwo.bbqtimer;
 
 import android.content.SharedPreferences;
 import android.os.SystemClock;
+import android.support.annotation.NonNull;
 import android.text.Html;
 import android.text.Spanned;
 import android.text.format.DateUtils;
@@ -39,7 +40,8 @@ import java.util.Locale;
  */
 public class TimeCounter {
     static class InjectForTesting {
-        String formatElapsedTime(StringBuilder recycle, long elapsedSeconds) {
+        String formatElapsedTime(@SuppressWarnings("SameParameterValue") StringBuilder recycle,
+                long elapsedSeconds) {
             return DateUtils.formatElapsedTime(recycle, elapsedSeconds);
         }
 
@@ -50,6 +52,7 @@ public class TimeCounter {
     }
 
     /** Inject or mock for testing. */
+    @NonNull
     static InjectForTesting injected = new InjectForTesting();
 
     /**
@@ -122,7 +125,7 @@ public class TimeCounter {
     }
 
     /** Saves state to a preferences editor. */
-    public void save(SharedPreferences.Editor prefsEditor) {
+    public void save(@NonNull SharedPreferences.Editor prefsEditor) {
         prefsEditor.putBoolean(PREF_IS_RUNNING, isRunning);
         prefsEditor.putBoolean(PREF_IS_PAUSED, isPaused);
         prefsEditor.putLong(PREF_START_TIME, startTime);
@@ -137,7 +140,7 @@ public class TimeCounter {
      * which means the device must've rebooted. load() can only detect that within startTime after
      * reboot, so it's important to save the normalized state.
      */
-    public boolean load(SharedPreferences prefs) {
+    public boolean load(@NonNull SharedPreferences prefs) {
         isRunning = prefs.getBoolean(PREF_IS_RUNNING, false);
         isPaused  = prefs.getBoolean(PREF_IS_PAUSED, false);  // absent in older data
         startTime = prefs.getLong(PREF_START_TIME, 0);
@@ -215,6 +218,7 @@ public class TimeCounter {
      *
      * @see com.onefishtwo.bbqtimer.Notifier#timerRunState(TimeCounter)
      */
+    @NonNull
     String runState() {
         if (isRunning) {
             return "Running";
@@ -333,6 +337,7 @@ public class TimeCounter {
         return injected.fromHtml(html);
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "TimeCounter " + runState() + " @ " + formatHhMmSs(getElapsedTime());

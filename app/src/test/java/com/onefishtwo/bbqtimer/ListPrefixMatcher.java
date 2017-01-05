@@ -21,6 +21,8 @@
 
 package com.onefishtwo.bbqtimer;
 
+import android.support.annotation.NonNull;
+
 import org.hamcrest.FeatureMatcher;
 import org.hamcrest.Matcher;
 
@@ -33,10 +35,12 @@ import static org.hamcrest.CoreMatchers.is;
 public class ListPrefixMatcher<E> extends FeatureMatcher<List<E>, List<E>> {
     final List<E> expectedPrefix;
 
+    @NonNull
     public static <T> Matcher<List<T>> listPrefixMatcher(List<T> expectedPrefix) {
         return new ListPrefixMatcher<>(expectedPrefix);
     }
 
+    @NonNull
     @SafeVarargs
     public static <T> Matcher<List<T>> listPrefixMatcher(T... expectedPrefix) {
         return new ListPrefixMatcher<>(Arrays.asList(expectedPrefix));
@@ -47,8 +51,9 @@ public class ListPrefixMatcher<E> extends FeatureMatcher<List<E>, List<E>> {
         this.expectedPrefix = expectedPrefix;
     }
 
+    @NonNull
     @Override
-    protected List<E> featureValueOf(List<E> actual) {
+    protected List<E> featureValueOf(@NonNull List<E> actual) {
         return actual.subList(0, Math.min(expectedPrefix.size(), actual.size()));
     }
 }

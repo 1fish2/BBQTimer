@@ -26,6 +26,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.ColorRes;
+import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -73,6 +74,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
     private static class UpdateHandler extends Handler {
         private static final int MSG_UPDATE = 1;
         private static final long UPDATE_INTERVAL = 100; // msec
+        @NonNull
         private final WeakReference<MainActivity> weakActivity;
 
         private UpdateHandler(MainActivity activity) {
@@ -81,7 +83,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
 
         /** Handles a message to periodically update the display. */
         @Override
-        public void handleMessage(Message msg) {
+        public void handleMessage(@NonNull Message msg) {
             MainActivity activity = weakActivity.get();
 
             super.handleMessage(msg);

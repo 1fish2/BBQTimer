@@ -27,6 +27,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
+import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.app.NotificationCompat;
@@ -81,6 +82,7 @@ public class Notifier {
      * Builder-style setter: Whether {@link #openOrCancel} should play a notification chime for a
      * reminder. Default = false.
      */
+    @NonNull
     public Notifier setPlayChime(boolean playChime) {
         this.playChime = playChime;
         return this;
@@ -89,6 +91,7 @@ public class Notifier {
     /**
      * Builder-style setter: Whether to vibrate and flash the notification light. Default = false.
      */
+    @NonNull
     public Notifier setVibrate(boolean vibrate) {
         this.vibrate = vibrate;
         return this;
@@ -107,7 +110,7 @@ public class Notifier {
      * Adds an action button to the given NotificationBuilder and to the
      * {@link #setMediaStyleActionsInCompactView} list.
      */
-    private void addAction(NotificationBuilder builder, int iconId, int titleId,
+    private void addAction(@NonNull NotificationBuilder builder, int iconId, int titleId,
             PendingIntent intent) {
         builder.addAction(iconId, context.getString(titleId), intent);
         ++numActions;
@@ -118,7 +121,7 @@ public class Notifier {
      * notification view (which is the view that appears in lock screen notifications in API V21
      * Lollipop). No-op before API 21.
      */
-    private void setMediaStyleActionsInCompactView(NotificationBuilder builder) {
+    private void setMediaStyleActionsInCompactView(@NonNull NotificationBuilder builder) {
         int num = Math.min(numActions, ACTION_INDICES.length - 1);
 
         if (num < 1) {
@@ -128,7 +131,8 @@ public class Notifier {
     }
 
     /** Returns a localized description of the timer's run state, e.g. "Paused 00:12.3". */
-    String timerRunState(TimeCounter timer) {
+    @NonNull
+    String timerRunState(@NonNull TimeCounter timer) {
         if (timer.isRunning()) {
             return context.getString(R.string.timer_running);
         } else if (timer.isPaused()) {
@@ -145,7 +149,7 @@ public class Notifier {
      *
      * @param state the ApplicationState state to display.
      */
-    public void openOrCancel(ApplicationState state) {
+    public void openOrCancel(@NonNull ApplicationState state) {
         boolean isMainActivityVisible = state.isMainActivityVisible();
         TimeCounter timer             = state.getTimeCounter();
         boolean showable = PAUSEABLE_NOTIFICATIONS ? !timer.isStopped() : timer.isRunning();
@@ -175,7 +179,7 @@ public class Notifier {
      *                   <b>Alternative:</b> In-activity audible/visual alarm feedback instead of a
      *                   notification.
      */
-    protected Notification buildNotification(ApplicationState state, boolean visible,
+    protected Notification buildNotification(@NonNull ApplicationState state, boolean visible,
             boolean addActions) {
         NotificationBuilder builder = NotificationBuilderFactory.builder(context)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)

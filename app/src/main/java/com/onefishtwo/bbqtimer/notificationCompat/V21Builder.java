@@ -27,6 +27,7 @@ import android.graphics.Bitmap;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
+import android.support.annotation.NonNull;
 import android.support.v7.app.NotificationCompat;
 
 import com.onefishtwo.bbqtimer.R;
@@ -40,10 +41,11 @@ import com.onefishtwo.bbqtimer.R;
  */
 @TargetApi(21)
 class V21Builder implements NotificationBuilder {
+    @NonNull
     private final NotificationCompat.Builder builder;
     private int workaroundColor = 0x9e9e9e;
 
-    public V21Builder(Context context) {
+    public V21Builder(@NonNull Context context) {
         builder = new NotificationCompat.Builder(context);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -51,48 +53,56 @@ class V21Builder implements NotificationBuilder {
         }
     }
 
+    @NonNull
     @Override
     public NotificationBuilder setWhen(long when) {
         builder.setWhen(when);
         return this;
     }
 
+    @NonNull
     @Override
     public NotificationBuilder setShowWhen(boolean show) {
         builder.setShowWhen(show);
         return this;
     }
 
+    @NonNull
     @Override
     public NotificationBuilder setUsesChronometer(boolean b) {
         builder.setUsesChronometer(b);
         return this;
     }
 
+    @NonNull
     @Override
     public NotificationBuilder setSmallIcon(int icon) {
         builder.setSmallIcon(icon);
         return this;
     }
 
+    @NonNull
     @Override
     public NotificationBuilder setContentTitle(CharSequence title) {
         builder.setContentTitle(title);
         return this;
     }
 
+    @NonNull
     @Override
     public NotificationBuilder setContentText(CharSequence text) {
         builder.setContentText(text);
         return this;
     }
 
+    @NonNull
     @Override
     public NotificationBuilder setSubText(CharSequence text) {
         builder.setSubText(text);
         return this;
     }
 
+    @NonNull
     @Override
     public NotificationBuilder setNumber(int number) {
         // This is a no-op on Android v24+ (N). We could work around it by appending to subText, but
@@ -101,24 +111,28 @@ class V21Builder implements NotificationBuilder {
         return this;
     }
 
+    @NonNull
     @Override
     public NotificationBuilder setContentIntent(PendingIntent intent) {
         builder.setContentIntent(intent);
         return this;
     }
 
+    @NonNull
     @Override
     public NotificationBuilder setDeleteIntent(PendingIntent intent) {
         builder.setDeleteIntent(intent);
         return this;
     }
 
+    @NonNull
     @Override
     public NotificationBuilder setLargeIcon(Bitmap icon) {
         builder.setLargeIcon(icon);
         return this;
     }
 
+    @NonNull
     @Override
     public NotificationBuilder setSound(Uri sound) {
         // TODO: Switch to setSound(Uri, AudioAttributes) when supported by NotificationCompat.
@@ -126,48 +140,56 @@ class V21Builder implements NotificationBuilder {
         return this;
     }
 
+    @NonNull
     @Override
     public NotificationBuilder setVibrate(long[] pattern) {
         builder.setVibrate(pattern);
         return this;
     }
 
+    @NonNull
     @Override
     public NotificationBuilder setOngoing(boolean ongoing) {
         builder.setOngoing(ongoing);
         return this;
     }
 
+    @NonNull
     @Override
     public NotificationBuilder setCategory(String category) {
         builder.setCategory(category);
         return this;
     }
 
+    @NonNull
     @Override
     public NotificationBuilder setDefaults(int defaults) {
         builder.setDefaults(defaults);
         return this;
     }
 
+    @NonNull
     @Override
     public NotificationBuilder setPriority(int pri) {
         builder.setPriority(pri);
         return this;
     }
 
+    @NonNull
     @Override
     public NotificationBuilder addAction(int icon, CharSequence title, PendingIntent intent) {
         builder.addAction(icon, title, intent);
         return this;
     }
 
+    @NonNull
     @Override
     public NotificationBuilder setVisibility(int visibility) {
         builder.setVisibility(visibility);
         return this;
     }
 
+    @NonNull
     @Override
     public NotificationBuilder setMediaStyleActionsInCompactView(int... actions) {
         NotificationCompat.MediaStyle style = new NotificationCompat.MediaStyle()

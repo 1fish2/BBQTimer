@@ -21,6 +21,7 @@ package com.onefishtwo.bbqtimer.state;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.onefishtwo.bbqtimer.TimeCounter;
@@ -58,7 +59,7 @@ public class ApplicationState {
      *<p/>
      * NOTE: After updating the shared instance, call {@link #save} to save it persistently.
      */
-    public static ApplicationState sharedInstance(Context context) {
+    public static ApplicationState sharedInstance(@NonNull Context context) {
         if (sharedInstance == null) {
             ApplicationState state = new ApplicationState();
             boolean needToSave     = state.load(context);
@@ -87,7 +88,7 @@ public class ApplicationState {
      * @return true if the caller should {@link #save} the normalized state to ensure consistent
      * results. (See {@link TimeCounter#load}.)
      */
-    boolean load(Context context) {
+    boolean load(@NonNull Context context) {
         SharedPreferences prefs =
                 context.getSharedPreferences(APPLICATION_PREF_FILE, Context.MODE_PRIVATE);
 
@@ -100,7 +101,7 @@ public class ApplicationState {
     }
 
     /** Saves persistent state using context. */
-    public void save(Context context) {
+    public void save(@NonNull Context context) {
         SharedPreferences prefs =
                 context.getSharedPreferences(APPLICATION_PREF_FILE, Context.MODE_PRIVATE);
         SharedPreferences.Editor prefsEditor = prefs.edit();
@@ -118,6 +119,7 @@ public class ApplicationState {
      * NOTE: The TimeCounter is a shared, mutable object. After updating it, call {@link #save} to
      * save it persistently.
      */
+    @NonNull
     public TimeCounter getTimeCounter() {
         return timeCounter;
     }

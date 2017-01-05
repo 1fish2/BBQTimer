@@ -22,6 +22,8 @@
 
 package com.onefishtwo.bbqtimer;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.Spanned;
 
 import org.junit.Test;
@@ -35,6 +37,7 @@ import static org.junit.Assert.assertSame;
 
 public class TimeCounterTest {
     static class MockSpanned implements Spanned {
+        @Nullable
         @Override
         public <T> T[] getSpans(int start, int end, Class<T> type) { return null; }
 
@@ -56,6 +59,7 @@ public class TimeCounterTest {
         @Override
         public char charAt(int index) { return 0; }
 
+        @Nullable
         @Override
         public CharSequence subSequence(int start, int end) { return null; }
     }
@@ -74,6 +78,7 @@ public class TimeCounterTest {
         final MockSpanned mockSpanned = new MockSpanned();
 
         TimeCounter.injected = new TimeCounter.InjectForTesting() {
+            @NonNull
             @Override
             String formatElapsedTime(StringBuilder recycle, long elapsedSeconds) {
                 assertNotNull(recycle);
@@ -81,6 +86,7 @@ public class TimeCounterTest {
                 return hhmmssText;
             }
 
+            @NonNull
             @Override
             Spanned fromHtml(String source) {
                 assertEquals(htmlText, source);

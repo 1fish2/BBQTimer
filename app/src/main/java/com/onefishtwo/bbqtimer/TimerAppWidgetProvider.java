@@ -26,6 +26,8 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.widget.RemoteViews;
@@ -54,13 +56,16 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
      * Date display text for the widget's second line, visible on the lock screen.
      * Synchronized on the class. Computed lazily.
      */
+    @Nullable
     private static String secondaryTextCache;
 
+    @NonNull
     static ComponentName getComponentName(Context context) {
         return new ComponentName(context, TimerAppWidgetProvider.class);
     }
 
     /** Returns the formatted date to show as secondary text in the lock screen widget. */
+    @NonNull
     private static synchronized String dateText() {
         if (secondaryTextCache == null) {
             long now = System.currentTimeMillis();
@@ -78,6 +83,7 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
      * Font Default, Display {Small, Large}; Font Large, Display {Small, Large, Largest}. On KitKat
      * it's also an issue with Font Size Small, oh well.
      */
+    @NonNull
     private static String secondaryText() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             return "";
@@ -106,8 +112,9 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
      *
      * TODO: Preload the button image Bitmaps? Flip between Buttons?
      */
-    private static void updateWidgets(Context context, AppWidgetManager appWidgetManager,
-            int[] appWidgetIds, ApplicationState state) {
+    private static void updateWidgets(@NonNull Context context,
+            @NonNull AppWidgetManager appWidgetManager,
+            int[] appWidgetIds, @NonNull ApplicationState state) {
         TimeCounter timer = state.getTimeCounter();
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.app_widget);
         PendingIntent runPauseIntent  = makeActionIntent(context, ACTION_RUN_PAUSE);
@@ -142,14 +149,15 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
      * widget host (e.g. home screen or lock screen) and periodically at updatePeriodMillis.
      */
     @Override
-    public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
+    public void onUpdate(@NonNull Context context, @NonNull AppWidgetManager appWidgetManager,
+            int[] appWidgetIds) {
         ApplicationState state = ApplicationState.sharedInstance(context);
 
         updateWidgets(context, appWidgetManager, appWidgetIds, state);
     }
 
     /** Updates the contents of all of this provider's app widgets. */
-    static void updateAllWidgets(Context context, ApplicationState state) {
+    static void updateAllWidgets(@NonNull Context context, @NonNull ApplicationState state) {
         ComponentName componentName = getComponentName(context);
         AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
 
@@ -181,7 +189,7 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
     // Cf http://stackoverflow.com/questions/21758246/android-action-date-changed-broadcast which
     // suggests a workaround by implementing a similar alarm.
     @Override
-    public void onReceive(Context context, Intent intent) {
+    public void onReceive(@NonNull Context context, @NonNull Intent intent) {
         super.onReceive(context, intent);
 
         String action          = intent.getAction();
@@ -218,7 +226,7 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
     }
 
     /** Saves app state then updates the Widgets and Notifications. */
-    private void saveStateAndUpdateUI(Context context, ApplicationState state) {
+    private void saveStateAndUpdateUI(@NonNull Context context, @NonNull ApplicationState state) {
         state.save(context);
 
         updateAllWidgets(context, state);

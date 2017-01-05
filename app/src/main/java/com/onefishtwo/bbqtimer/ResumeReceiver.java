@@ -22,6 +22,7 @@ package com.onefishtwo.bbqtimer;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 /**
@@ -48,7 +49,7 @@ public class ResumeReceiver extends BroadcastReceiver {
 
     /** Handles an incoming Intent. */
     @Override
-    public void onReceive(Context context, Intent intent) {
+    public void onReceive(@NonNull Context context, @NonNull Intent intent) {
         String action = intent.getAction();
 
         Log.i(TAG, action);

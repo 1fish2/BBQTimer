@@ -21,6 +21,8 @@
 
 package com.onefishtwo.bbqtimer;
 
+import android.support.annotation.NonNull;
+
 import org.hamcrest.CustomTypeSafeMatcher;
 import org.hamcrest.Description;
 
@@ -47,12 +49,13 @@ public class TimeIntervalMatcher extends CustomTypeSafeMatcher<String> {
     }
 
     /** Matches a time string "MM:SS.F" in the interval [min .. max] milliseconds. */
+    @NonNull
     public static TimeIntervalMatcher inTimeInterval(long min, long max) {
         return new TimeIntervalMatcher(min, max);
     }
 
     @Override
-    protected boolean matchesSafely(String item) {
+    protected boolean matchesSafely(@NonNull String item) {
         java.util.regex.Matcher m = TIME_PATTERN.matcher(item);
 
         if (!m.matches()) {
@@ -64,14 +67,14 @@ public class TimeIntervalMatcher extends CustomTypeSafeMatcher<String> {
     }
 
     @Override
-    protected void describeMismatchSafely(String item, Description mismatchDescription) {
+    protected void describeMismatchSafely(String item, @NonNull Description mismatchDescription) {
         mismatchDescription.appendText("expected ");
         super.describeTo(mismatchDescription);
         mismatchDescription.appendText("; was ").appendText(item);
     }
 
     /** Gets the integer value of a capturing group from the Matcher. */
-    private int val(java.util.regex.Matcher matcher, int group) {
+    private int val(@NonNull java.util.regex.Matcher matcher, int group) {
         final String s = matcher.group(group);
         return s == null ? 0 : Integer.parseInt(s);
     }
