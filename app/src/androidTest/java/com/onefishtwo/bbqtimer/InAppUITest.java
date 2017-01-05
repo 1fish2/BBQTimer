@@ -105,7 +105,13 @@ public class InAppUITest {
 //
 // Paused   > 00:00     |>  ®   []  --> Playing, Reset, Stopped
 
-    /** Tests all the nodes and arcs in the app's play/pause/reset/stop FSM. */
+    /**
+     * Tests all the nodes and arcs in the app's play/pause/reset/stop FSM.
+     * <p/>
+     * NOTE: Testing the timer is inherently timing-dependent. A test run could fail by not
+     * allowing the app enough time to respond. ARM emulators need extra response time. Mocking
+     * the TimeCounter clock might fix this even with MainActivity's Handler.
+     */
     @Test
     public void playPauseStopUITest() {
         // Click the Stop button if clickable so the test can begin in a well-defined state.
@@ -124,7 +130,7 @@ public class InAppUITest {
         playPauseButton.perform(click()); // Play
         checkPlaying();
         playPauseButton.perform(waitMsec(1000));
-        TimeIntervalMatcher time1 = inTimeInterval(1000, 1500); // TODO: Enough latitude?
+        TimeIntervalMatcher time1 = inTimeInterval(1000, 1700); // ARM emulators need latitude
         checkPlayingAt(time1);
 
         stopButton.perform(click()); // Stop
@@ -145,7 +151,7 @@ public class InAppUITest {
         checkPlayingAt(time1);
 
         playPauseButton.perform(click()); // Pause
-        TimeIntervalMatcher time2 = inTimeInterval(time1.time, time1.time + 200);
+        TimeIntervalMatcher time2 = inTimeInterval(time1.time, time1.time + 300);
         checkPausedAt(time2);
 
         playPauseButton.perform(waitMsec(100));
@@ -155,11 +161,11 @@ public class InAppUITest {
         playPauseButton.perform(click()); // Play
         checkPlaying();
         playPauseButton.perform(waitMsec(1000));
-        TimeIntervalMatcher time4 = inTimeInterval(time3.time + 1000, time3.time + 1500);
+        TimeIntervalMatcher time4 = inTimeInterval(time3.time + 1000, time3.time + 1700);
         checkPlayingAt(time4);
 
         playPauseButton.perform(click()); // Pause
-        TimeIntervalMatcher time5 = inTimeInterval(time4.time, time4.time + 200);
+        TimeIntervalMatcher time5 = inTimeInterval(time4.time, time4.time + 300);
         checkPausedAt(time5);
 
         if (!HIDE_RESET_FEATURE) {
@@ -187,8 +193,8 @@ public class InAppUITest {
         stopButton.check(matches(not(isDisplayed())));
         timeView.check(matches(withText("00:00.0")));
 
-        playPauseButton.check(matches(withCompoundDrawable(R.drawable.ic_action_play)));
-        resetButton.check(matches(withCompoundDrawable(R.drawable.ic_action_pause)));
+        playPauseButton.check(matches(withCompoundDrawable(R.drawable.ic_play)));
+        resetButton.check(matches(withCompoundDrawable(R.drawable.ic_pause)));
 
         // TODO: Check timeView's color state.
     }
@@ -200,8 +206,8 @@ public class InAppUITest {
         stopButton.check(matches(isDisplayed())); // TODO: check its icon
         timeView.check(matches(withText("00:00.0")));
 
-        playPauseButton.check(matches(withCompoundDrawable(R.drawable.ic_action_play)));
-        stopButton.check(matches(withCompoundDrawable(R.drawable.ic_action_stop)));
+        playPauseButton.check(matches(withCompoundDrawable(R.drawable.ic_play)));
+        stopButton.check(matches(withCompoundDrawable(R.drawable.ic_stop)));
 
         // TODO: Check timeView's color state, flashing between either of two color states.
     }
@@ -212,8 +218,8 @@ public class InAppUITest {
         resetButton.check(matches(not(isDisplayed())));
         stopButton.check(matches(isDisplayed()));
 
-        playPauseButton.check(matches(withCompoundDrawable(R.drawable.ic_action_pause)));
-        stopButton.check(matches(withCompoundDrawable(R.drawable.ic_action_stop)));
+        playPauseButton.check(matches(withCompoundDrawable(R.drawable.ic_pause)));
+        stopButton.check(matches(withCompoundDrawable(R.drawable.ic_stop)));
 
         // TODO: Check timeView's color state.
     }
@@ -230,16 +236,16 @@ public class InAppUITest {
         resetButton.check(matches(resetIsDisplayed));
         stopButton.check(matches(isDisplayed()));
 
-        playPauseButton.check(matches(withCompoundDrawable(R.drawable.ic_action_play)));
-        resetButton.check(matches(withCompoundDrawable(R.drawable.ic_action_replay)));
-        stopButton.check(matches(withCompoundDrawable(R.drawable.ic_action_stop)));
+        playPauseButton.check(matches(withCompoundDrawable(R.drawable.ic_play)));
+        resetButton.check(matches(withCompoundDrawable(R.drawable.ic_replay)));
+        stopButton.check(matches(withCompoundDrawable(R.drawable.ic_stop)));
         timeView.check(matches(withText(time)));
 
         // TODO: Check timeView's color state, flashing between either of two color states.
     }
 
     @Ignore("TODO: Finish reworking this rough code from Espresso Test Recorder")
-    @Test
+    //@Test
     public void minutePickerUITest() {
         ViewInteraction numberPicker = onView(withId(R.id.minutesPicker));
         numberPicker.perform(longClick());
