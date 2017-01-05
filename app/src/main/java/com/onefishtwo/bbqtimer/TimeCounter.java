@@ -20,6 +20,7 @@
 package com.onefishtwo.bbqtimer;
 
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.text.Html;
@@ -45,9 +46,13 @@ public class TimeCounter {
             return DateUtils.formatElapsedTime(recycle, elapsedSeconds);
         }
 
-        //noinspection deprecation
         Spanned fromHtml(String source) {
-            return Html.fromHtml(source);
+            if (Build.VERSION.SDK_INT < 24) {
+                //noinspection deprecation
+                return Html.fromHtml(source);
+            } else {
+                return Html.fromHtml(source, Html.FROM_HTML_MODE_COMPACT);
+            }
         }
     }
 
