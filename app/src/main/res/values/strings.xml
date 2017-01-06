@@ -15,6 +15,13 @@
     <!-- The application's description. This goes into the AndroidManifest. -->
     <string name="app_description">A stopwatch that you can use on the lock-screen.</string>
 
+    <!-- Inform the user that the app's notifications are disabled, and thus they won't be able to
+      hear or see the app's alarms. -->
+    <string name="notifications_disabled">Notifications are disabled</string>
+
+    <!-- The "enable" action (hence all upper-case) for the notifications_disabled Snackbar. -->
+    <string name="notifications_enable">ENABLE</string>
+
     <!-- Label for the button that resets the timer to be stopped at 00:00. -->
     <string name="reset">Reset</string>
 
