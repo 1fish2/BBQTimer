@@ -210,26 +210,21 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
     }
 
     /**
-     * If reminders are enabled: Informs the user if the app's notifications are disabled (offering
-     * to open Settings to ENABLE them) or if the alarm audio is muted (offering to UNMUTE).
-     *<p/>
-     * NOTE: This won't detect if the app's notifications are visible but silenced. Silencing
-     * kills the audio and the heads-up action.
-     * How to detect it?
-     *<p/>
-     * NOTE: The notifications-disabled test only works on API 19+ KitKat+.<br/>
-     * NOTE: Opening Settings for the user to Enable notifications only works on API 21+ Lollipop+.
+     * Informs the user if the app's notifications are disabled (offering to open Settings to ENABLE
+     * them) or else if reminders are enabled but the alarm channel is muted (offering to UNMUTE).
+     * <p/>
+     * TODO: How to detect if the app's notifications are visible but silenced? Silencing kills the
+     * audio and heads-up notification shades.
+     * <p/>
+     * NOTE: The notifications-disabled test only works on API 19+ KitKat+.
+     * <p/>
+     * NOTE: Opening Settings to let the user Enable notifications only works on API 21+ Lollipop+.
      */
     private void informIfNotificationAlarmsMuted() {
-        // Only warn when reminders are enabled, not when running silently.
-        if (!state.isEnableReminders()) {
-            return;
-        }
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
 
         // Check for disabled notifications on API 19+ KitKat+.
         // NOTE: If notifications are disabled, so are Toasts.
-        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
-
         if (!notificationManager.areNotificationsEnabled()) {
             Snackbar snackbar = Snackbar.make(findViewById(R.id.main_container),
                     R.string.notifications_disabled, Snackbar.LENGTH_LONG);
@@ -247,12 +242,18 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
             }
 
             snackbar.show();
+            return;
         }
 
-        // Check for muted alarms.
+        // Only warn about muting when reminders are enabled, not when running silently.
+        if (!state.isEnableReminders()) {
+            return;
+        }
+
         final AudioManager am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         int volume = am.getStreamVolume(AudioManager.STREAM_ALARM);
 
+        // Check for muted alarms.
         if (volume <= 0) {
             Snackbar snackbar = Snackbar.make(findViewById(R.id.main_container),
                         R.string.alarm_muted, Snackbar.LENGTH_LONG);
@@ -278,14 +279,24 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
         timer.toggleRunPause();
         updateHandler.beginScheduledUpdate();
         updateUI();
+
+        if (timer.isRunning()) {
+            informIfNotificationAlarmsMuted();
+        }
     }
 
     /** The user tapped the Reset button; go to Paused at 0:00. */
     @SuppressWarnings("UnusedParameters")
     public void onClickReset(View v) {
+        boolean wasStopped = timer.isStopped();
+
         timer.reset();
         updateHandler.beginScheduledUpdate();
         updateUI();
+
+        if (wasStopped) {
+            informIfNotificationAlarmsMuted();
+        }
     }
 
     /** The user tapped the Stop button. */
@@ -296,12 +307,16 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
         updateUI();
     }
 
-    /** The user tapped the time text: Cycle Reset -> Running -> Paused -> Reset. */
+    /** The user tapped the time text: Cycle Stopped | Reset -> Running -> Paused -> Stopped. */
     @SuppressWarnings("UnusedParameters")
     public void onClickTimerText(View v) {
         timer.cycle();
         updateHandler.beginScheduledUpdate();
         updateUI();
+
+        if (timer.isRunning()) {
+            informIfNotificationAlarmsMuted();
+        }
     }
 
     /** The user clicked the enable/disable periodic-reminders toggle switch/checkbox. */
@@ -310,7 +325,10 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
         state.setEnableReminders(enableRemindersToggle.isChecked());
         state.save(this);
         AlarmReceiver.updateNotifications(this);
-        informIfNotificationAlarmsMuted();
+
+        if (state.isEnableReminders()) {
+            informIfNotificationAlarmsMuted();
+        }
     }
 
     /** A NumberPicker value changed. */
