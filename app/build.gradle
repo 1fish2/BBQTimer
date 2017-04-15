@@ -68,44 +68,48 @@ android {
 
 // See http://stackoverflow.com/a/19350401/1682419
 // See http://stackoverflow.com/a/24360969/1682419
-task askForPasswords << {
-    def storePw = ''
-    def keyPw   = ''
+// TODO: Try using the platform's keyring: http://stackoverflow.com/a/22597752/1682419
+//    and the OSX `security` command http://blog.macromates.com/2006/keychain-access-from-shell/
+task askForPasswords {
+    doLast {
+        def storePw = ''
+        def keyPw   = ''
 
-    if (System.console() == null) {
-        // The console is null in Gradle daemon builds, so use Swing.
-        new SwingBuilder().edt {
-            dialog(modal: true, title: 'Enter signing passwords', alwaysOnTop: true,
-                    resizable: false, locationRelativeTo: null, pack: true, show: true) {
-                vbox {
-                    label(text: "Keystore password:")
-                    def storePwField = passwordField(columns: 20)
-                    label(text: "Key password:")
-                    def keyPwField = passwordField(columns: 20)
-                    button(defaultButton: true, text: 'OK', actionPerformed: {
-                        storePw = new String(storePwField.password);
-                        keyPw   = new String(keyPwField.password);
-                        dispose();
-                    })
+        if (System.console() == null) {
+            // The console is null in Gradle daemon builds, so use Swing.
+            new SwingBuilder().edt {
+                dialog(modal: true, title: 'Enter signing passwords', alwaysOnTop: true,
+                        resizable: false, locationRelativeTo: null, pack: true, show: true) {
+                    vbox {
+                        label(text: "Keystore password:")
+                        def storePwField = passwordField(columns: 20)
+                        label(text: "Key password:")
+                        def keyPwField = passwordField(columns: 20)
+                        button(defaultButton: true, text: 'OK', actionPerformed: {
+                            storePw = new String(storePwField.password);
+                            keyPw   = new String(keyPwField.password);
+                            dispose();
+                        })
+                    }
                 }
             }
+        } else {
+            // Construct Strings because readPassword() returns char[] and using that fails silently.
+            storePw = new String(System.console().readPassword("\nKeystore password: "))
+            keyPw   = new String(System.console().readPassword("\nKey password: "))
         }
-    } else {
-        // Construct Strings because readPassword() returns char[] and using that fails silently.
-        storePw = new String(System.console().readPassword("\nKeystore password: "))
-        keyPw   = new String(System.console().readPassword("\nKey password: "))
-    }
 
-    if (storePw.size() <= 0 || keyPw.size() <= 0) {
-        throw new InvalidUserDataException("You must enter the passwords to proceed.")
-    }
+        if (storePw.size() <= 0 || keyPw.size() <= 0) {
+            throw new IOException("You must enter the passwords to proceed.")
+        }
 
-    android.signingConfigs.releaseSigning.storePassword = storePw
-    android.signingConfigs.releaseSigning.keyPassword = keyPw
+        android.signingConfigs.releaseSigning.storePassword = storePw
+        android.signingConfigs.releaseSigning.keyPassword = keyPw
+    }
 }
 
 tasks.whenTaskAdded { theTask ->
-    if (theTask.name.equals("packageRelease")) {
+    if (theTask.name in ["packageRelease"]) {
         theTask.dependsOn "askForPasswords"
     }
 }
