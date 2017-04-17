@@ -28,9 +28,25 @@
     <!-- Label for the button that starts or resumes the stopped timer. -->
     <string name="start">Start</string>
 
+    <!-- App shortcut that Resets the timer to 00:00 then Starts it. The long label appears in the
+       menu of app shortcuts, which is "limited to about 25 characters." Call this "Start",
+       "Start at 00:00", "Restart", "Reset + Start", or what? -->
+    <string name="start_at_0_long">Start</string>
+    <!-- App shortcut that Resets the timer to 00:00 then Starts it. The short label is used in
+       places like pinned shortcut icons. It's "limited to about 10 characters." -->
+    <string name="start_at_0_short">Start</string>
+
     <!-- Label for the button that pauses the running timer. This doesn't reset the timer nor hide
       its notification. -->
     <string name="pause">Pause</string>
+
+    <!-- App shortcut that puts the timer in the Paused at 00:00 state. The long label appears in the
+       menu of app shortcuts, which is "limited to about 25 characters." Call this "Pause at 00:00",
+       "Pause", "Reset + Pause", or what? -->
+    <string name="pause_at_0_long">Pause at 00:00</string>
+    <!-- App shortcut that puts the timer in the Paused at 00:00 state. The short label is used in
+       places like pinned shortcut icons. It's "limited to about 10 characters." -->
+    <string name="pause_at_0_short">Pause 00:00</string>
 
     <!-- Label for the button that stops and resets the timer and hides its notification. -->
     <string name="stop">Stop</string>

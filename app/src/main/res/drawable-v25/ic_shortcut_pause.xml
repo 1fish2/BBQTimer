@@ -1,0 +1,13 @@
+<!-- Apache 2.0 license -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+        android:width="24dp"
+        android:height="24dp"
+        android:viewportWidth="24.0"
+        android:viewportHeight="24.0">
+    <path
+        android:pathData="M2,12a10,10 0,1 0,20 0a10,10 0,1 0,-20 0z"
+        android:fillColor="#F5F5F5"/>
+    <path
+        android:pathData="M9,16L10.999,16L10.999,8L9,8L9,16ZM12.999,8L12.999,16L14.998,16L14.998,8L12.999,8Z"
+        android:fillColor="@color/orange_red_text"/>
+</vector>

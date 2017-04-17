@@ -60,6 +60,11 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
 
     private static final MinutesChoices minutesChoices = new MinutesChoices();
 
+    private static final int SHORTCUT_NONE = 0;
+    private static final int SHORTCUT_PAUSE = 1;
+    private static final int SHORTCUT_START = 2;
+    private int shortcutAction = SHORTCUT_NONE;
+
     /** (Re)makes all locale-dependent strings. */
     private static void makeLocaleStrings() {
         minutesChoices.updateLocale();
@@ -157,6 +162,21 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
         minutesPicker.setFocusableInTouchMode(true);
 
         setVolumeControlStream(AudioManager.STREAM_ALARM);
+
+        shortcutAction = SHORTCUT_NONE;
+        Intent callingIntent = getIntent();
+        if (callingIntent != null) {
+            String action = callingIntent.getAction(); // null action occurred in multi-window testing
+            if (Intent.ACTION_QUICK_CLOCK.equals(action)) { // App Shortcut: Pause @ 00:00
+                shortcutAction = SHORTCUT_PAUSE;
+                // Modify the Intent so a configuration change like enter/exit multi-window mode
+                // won't repeat the shortcut action when it re-creates the Activity.
+                callingIntent.setAction(Intent.ACTION_MAIN);
+            } else if (Intent.ACTION_RUN.equals(action)) { // App Shortcut: Start @ 00:00
+                shortcutAction = SHORTCUT_START;
+                callingIntent.setAction(Intent.ACTION_MAIN);
+            }
+        }
     }
 
     @Override
@@ -178,6 +198,19 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
         state = ApplicationState.sharedInstance(this);
         timer = state.getTimeCounter();
         state.setMainActivityIsVisible(true);
+
+        // Apply the app shortcut action, if any, once.
+        switch (shortcutAction) {
+            case SHORTCUT_PAUSE: // App Shortcut: Pause @ 00:00
+                timer.reset();
+                break;
+            case SHORTCUT_START: // App Shortcut: Start @ 00:00
+                timer.reset();
+                timer.start();
+                break;
+        }
+        shortcutAction = SHORTCUT_NONE;
+
         state.save(this);
 
         updateUI();
