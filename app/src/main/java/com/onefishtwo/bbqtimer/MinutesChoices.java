@@ -85,14 +85,14 @@ public class MinutesChoices {
     }
 
     /** Converts a minutesPicker choice index to a count of seconds/alarm. */
-    int pickerChoiceToSeconds(int choice) {
+    static int pickerChoiceToSeconds(int choice) {
         return choice < BEGIN_INDEX_WHOLE_MINUTES_ONLY
                 ? (choice + 1) * 30
                 : (choice + 1 - NUM_HALF_MINUTE_ENTRIES) * 60;
     }
 
     /** Converts seconds/alarm to a valid minutesPicker choice index. */
-    int secondsToPickerChoice(int secondsPerAlarm) {
+    static int secondsToPickerChoice(int secondsPerAlarm) {
         if (secondsPerAlarm < 30) {
             secondsPerAlarm = 30;
         }
@@ -103,6 +103,11 @@ public class MinutesChoices {
         return minutes < NUM_HALF_MINUTE_ENTRIES
                 ? minutes * 2 - 1 + (seconds < 30 ? 0 : 1)
                 : minutes + (NUM_HALF_MINUTE_ENTRIES - 1);
+    }
+
+    /** Normalizes the input to a valid value. */
+    public static int normalizeSeconds(int secondsPerAlarm) {
+        return pickerChoiceToSeconds(secondsToPickerChoice(secondsPerAlarm));
     }
 
     /** Converts seconds/alarm to a minutesPicker choice string. */

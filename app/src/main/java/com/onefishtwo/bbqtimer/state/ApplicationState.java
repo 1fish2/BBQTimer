@@ -24,6 +24,7 @@ import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.onefishtwo.bbqtimer.MinutesChoices;
 import com.onefishtwo.bbqtimer.TimeCounter;
 
 /**
@@ -83,10 +84,12 @@ public class ApplicationState {
     }
 
     /**
-     * Loads persistent state using context. Overridable for tests.
+     * Loads and normalizes persistent state using context. Overridable for tests.
+     * Normalization matters if the device rebooted while the timer was running or if the app was
+     * replaced with a version that doesn't support the current choice of secondsPerReminder.
      *
      * @return true if the caller should {@link #save} the normalized state to ensure consistent
-     * results. (See {@link TimeCounter#load}.)
+     * results after {@link TimeCounter#load(SharedPreferences)} had to reset the timer.
      */
     boolean load(@NonNull Context context) {
         SharedPreferences prefs =
@@ -95,7 +98,8 @@ public class ApplicationState {
         boolean needToSave    = timeCounter.load(prefs);
         mainActivityIsVisible = prefs.getBoolean(PREF_MAIN_ACTIVITY_IS_VISIBLE, false);
         enableReminders       = prefs.getBoolean(PREF_ENABLE_REMINDERS, true);
-        secondsPerReminder    = prefs.getInt(PREF_SECONDS_PER_REMINDER, 5 * 60);
+        int secs              = prefs.getInt(PREF_SECONDS_PER_REMINDER, 5 * 60);
+        secondsPerReminder    = MinutesChoices.normalizeSeconds(secs);
 
         return needToSave;
     }

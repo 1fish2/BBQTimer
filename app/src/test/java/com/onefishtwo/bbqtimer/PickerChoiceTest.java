@@ -45,7 +45,8 @@ public class PickerChoiceTest {
                 {6, 3 * 60 + 30}, {7, 4 * 60}, {8, 4 * 60 + 30},
                 // 5, 6, 7, ... 98, 99 minutes
                 {9, 5 * 60}, {10, 6 * 60}, {11, 7 * 60}, {102, 98 * 60}, {103, 99 * 60},
-                // The unparameterized MinutesChoicesTest tests out-of-bounds cases.
+
+                // See (unparameterized) MinutesChoicesTest for boundary cases.
         });
     }
 
@@ -64,13 +65,8 @@ public class PickerChoiceTest {
 
     @Test
     public void choiceToFromSeconds() {
-        assertThat("picker choice", mc.pickerChoiceToSeconds(choice), is(seconds));
-        assertThat("back to seconds", mc.secondsToPickerChoice(seconds), is(choice));
-
-        if (seconds == 30) { // hack in some non-parameterized boundary test cases
-            assertThat("10 seconds", mc.secondsToPickerChoice(10), is(0));
-            assertThat("0 seconds", mc.secondsToPickerChoice(0), is(0));
-        }
+        assertThat("picker choice", MinutesChoices.pickerChoiceToSeconds(choice), is(seconds));
+        assertThat("back to seconds", MinutesChoices.secondsToPickerChoice(seconds), is(choice));
     }
 
     @Test

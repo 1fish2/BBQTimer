@@ -368,7 +368,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
     @Override
     public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
         if (picker == minutesPicker) {
-            state.setSecondsPerReminder(minutesChoices.pickerChoiceToSeconds(newVal));
+            state.setSecondsPerReminder(MinutesChoices.pickerChoiceToSeconds(newVal));
             state.save(this);
             AlarmReceiver.updateNotifications(this);
         }
@@ -415,7 +415,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
                 isRunning ? R.drawable.ic_pause : R.drawable.ic_play, 0, 0, 0);
         stopButton.setVisibility(isStopped ? View.INVISIBLE : View.VISIBLE);
         enableRemindersToggle.setChecked(state.isEnableReminders());
-        minutesPicker.setValue(minutesChoices.secondsToPickerChoice(
+        minutesPicker.setValue(MinutesChoices.secondsToPickerChoice(
                 state.getSecondsPerReminder()));
 
         AlarmReceiver.updateNotifications(this);

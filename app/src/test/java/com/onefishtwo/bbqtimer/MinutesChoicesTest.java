@@ -32,7 +32,6 @@ import static org.junit.Assume.assumeThat;
 
 public class MinutesChoicesTest {
     private final int MM = MinutesChoices.MAX_MINUTES;
-    private final int MM1 = MM + 1;
     private final String MMS = Integer.toString(MM);
 
     private Locale savedLocale;
@@ -84,14 +83,29 @@ public class MinutesChoicesTest {
 
     @Test
     public void boundaryCases() {
-        assertThat("0 minutes", mc.secondsToPickerChoice(0), is(0));
-        assertThat("-0.5 minutes", mc.secondsToPickerChoice(-30), is(0));
-        assertThat("-1 minutes", mc.secondsToPickerChoice(-60), is(0));
+        final int MM1 = MM + 1;
 
-        assertThat("max minutes", mc.secondsToPickerChoice(MM * 60), is(103));
-        assertThat("1 too many minutes", mc.secondsToPickerChoice(MM1 * 60), is(103));
+        assertThat("10 seconds", MinutesChoices.secondsToPickerChoice(10), is(0));
+        assertThat("0 seconds", MinutesChoices.secondsToPickerChoice(0), is(0));
+
+        assertThat("0 minutes", MinutesChoices.secondsToPickerChoice(0), is(0));
+        assertThat("-0.5 minutes", MinutesChoices.secondsToPickerChoice(-30), is(0));
+        assertThat("-1 minutes", MinutesChoices.secondsToPickerChoice(-60), is(0));
+
+        assertThat("max minutes", MinutesChoices.secondsToPickerChoice(MM * 60), is(103));
+        assertThat("1 too many minutes", MinutesChoices.secondsToPickerChoice(MM1 * 60), is(103));
+        assertThat("1 too many secs", MinutesChoices.secondsToPickerChoice(MM * 60 + 1), is(103));
 
         assertThat("max minutes", mc.secondsToMinuteChoiceString(MM * 60), is(MMS));
         assertThat("1 too many minutes", mc.secondsToMinuteChoiceString(MM1 * 60), is(MMS));
+    }
+
+    @Test
+    public void normalizeSeconds() {
+        assertThat("negative seconds", MinutesChoices.normalizeSeconds(-90), is(30));
+        assertThat("0 seconds", MinutesChoices.normalizeSeconds(0), is(30));
+        assertThat("just over 90 seconds", MinutesChoices.normalizeSeconds(91), is(90));
+        assertThat("almost 2 minutes", MinutesChoices.normalizeSeconds(119), is(90));
+        assertThat("big", MinutesChoices.normalizeSeconds(2000 * 60 + 1), is(MM * 60));
     }
 }
