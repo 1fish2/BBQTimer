@@ -33,13 +33,14 @@ public class MinutesChoices {
      */
     private static final int NUM_HALF_MINUTE_ENTRIES = 5;
     private static final int BEGIN_INDEX_WHOLE_MINUTES_ONLY = NUM_HALF_MINUTE_ENTRIES * 2 - 1;
+    static final int MAX_MINUTES = 99;
 
     /**
      * The names of the periodic alarm minutesPicker choices:<br/>
      * {@code Index:   0, 1,   2, 3,   4, 5, ...   8, 9,   10, ... 103} <br/>
      * {@code Name:  0.5, 1, 1.5, 2, 2.5, 3, ... 4.5, 5,    6, ...  99}
      */
-    final String[] choices = new String[99 + NUM_HALF_MINUTE_ENTRIES];
+    final String[] choices = new String[MAX_MINUTES + NUM_HALF_MINUTE_ENTRIES];
 
     /**
      * Synthesizes a "quantity" to pass to Resources#getQuantityString() to get an integer or
@@ -90,13 +91,13 @@ public class MinutesChoices {
                 : (choice + 1 - NUM_HALF_MINUTE_ENTRIES) * 60;
     }
 
-    /** Converts seconds/alarm to a minutesPicker choice index. */
+    /** Converts seconds/alarm to a valid minutesPicker choice index. */
     int secondsToPickerChoice(int secondsPerAlarm) {
         if (secondsPerAlarm < 30) {
             secondsPerAlarm = 30;
         }
 
-        int minutes = secondsPerAlarm / 60;
+        int minutes = Math.min(secondsPerAlarm / 60, MAX_MINUTES);
         int seconds = secondsPerAlarm - minutes * 60;
 
         return minutes < NUM_HALF_MINUTE_ENTRIES

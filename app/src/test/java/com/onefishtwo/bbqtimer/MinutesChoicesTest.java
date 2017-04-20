@@ -31,6 +31,10 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assume.assumeThat;
 
 public class MinutesChoicesTest {
+    private final int MM = MinutesChoices.MAX_MINUTES;
+    private final int MM1 = MM + 1;
+    private final String MMS = Integer.toString(MM);
+
     private Locale savedLocale;
     private MinutesChoices mc;
 
@@ -54,7 +58,7 @@ public class MinutesChoicesTest {
                 ListPrefixMatcher.listPrefixMatcher(
                         "0.5", "1", "1.5", "2", "2.5", "3", "3.5", "4", "4.5", "5", "6", "7"));
         assertThat("number of minute choices", mc.choices.length, is(104));
-        assertThat("the last minute choice", mc.choices[mc.choices.length - 1], is("99"));
+        assertThat("the last minute choice", mc.choices[mc.choices.length - 1], is(MMS));
         assertThat("the penultimate minute choice", mc.choices[mc.choices.length - 2], is("98"));
     }
 
@@ -75,6 +79,19 @@ public class MinutesChoicesTest {
                 ListPrefixMatcher.listPrefixMatcher(
                         "0,5", "1", "1,5", "2", "2,5", "3", "3,5", "4", "4,5", "5", "6", "7"));
         assertThat("number of minute choices", mc.choices.length, is(104));
-        assertThat("the last minute choice", mc.choices[mc.choices.length - 1], is("99"));
+        assertThat("the last minute choice", mc.choices[mc.choices.length - 1], is(MMS));
+    }
+
+    @Test
+    public void boundaryCases() {
+        assertThat("0 minutes", mc.secondsToPickerChoice(0), is(0));
+        assertThat("-0.5 minutes", mc.secondsToPickerChoice(-30), is(0));
+        assertThat("-1 minutes", mc.secondsToPickerChoice(-60), is(0));
+
+        assertThat("max minutes", mc.secondsToPickerChoice(MM * 60), is(103));
+        assertThat("1 too many minutes", mc.secondsToPickerChoice(MM1 * 60), is(103));
+
+        assertThat("max minutes", mc.secondsToMinuteChoiceString(MM * 60), is(MMS));
+        assertThat("1 too many minutes", mc.secondsToMinuteChoiceString(MM1 * 60), is(MMS));
     }
 }
