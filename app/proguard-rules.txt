@@ -9,13 +9,6 @@
 
 # --- Project-specific keep options ---
 
-# Visible for Espresso tests.
--keep class com.onefishtwo.bbqtimer.MainActivity {
-    static boolean HIDE_RESET_FEATURE;
-}
--keep class com.onefishtwo.bbqtimer.TimeCounter {
-    static android.text.Spanned formatHhMmSsFraction(long);
-}
 
 # If your project uses WebView with JS, uncomment the following
 # and specify the fully qualified class name to the JavaScript interface
@@ -28,22 +21,4 @@
 -keepattributes Exceptions
 
 
-### Simplified and updated from http://stackoverflow.com/a/36275655/1682419 ###
-
-# support-v4
--keep,includedescriptorclasses class android.support.v4.** { *; }
-
-# support-v7  android.support.v7.widget.**, android.support.v7.view.**
--keep,includedescriptorclasses class android.support.v7.** { *; }
-
-# support design
-# http://stackoverflow.com/a/31028536
-#-keep,includedescriptorclasses class android.support.design.** { *; }
--keep,includedescriptorclasses class android.support.design.widget.Snackbar** { *; }
--keep,includedescriptorclasses class android.support.design.widget.NavigationView** { *; }
--keep,includedescriptorclasses class android.support.design.widget.TabLayout** { *; }
-
-# Note: the configuration refers to the unknown class 'com.google.vending.licensing.ILicensingService'
-# Note: the configuration refers to the unknown class 'com.android.vending.licensing.ILicensingService'
--dontnote com.google.vending.licensing.ILicensingService
--dontnote **ILicensingService
+-keep class android.support.v4.** { *; }

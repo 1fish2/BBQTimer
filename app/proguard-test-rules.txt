@@ -1,0 +1,57 @@
+# Add project specific ProGuard rules here.
+# By default, the flags in this file are appended to flags specified
+# in ${SDK}/tools/proguard/proguard-android.txt
+# You can edit the include path and order by changing the ProGuard
+# include property in project.properties.
+#
+# For more details, see
+#   http://developer.android.com/guide/developing/tools/proguard.html
+
+# --- Project-specific keep options ---
+
+
+# If your project uses WebView with JS, uncomment the following
+# and specify the fully qualified class name to the JavaScript interface
+# class:
+#-keepclassmembers class fqcn.of.javascript.interface.for.webview {
+#   public *;
+#}
+
+-keepattributes Signature
+-keepattributes Exceptions
+
+
+# The narrower "keep" seems to work. Can we rely on it for release builds?
+#-keep class android.support.v4.** { *; }
+-keep class android.support.v4.content.ContextCompat { *; }
+
+# The support library contains references to newer platform versions.
+# Don't warn about those in case this app is linking against an older
+# platform version. They're safe.
+#-dontwarn android.support.**
+
+# Note: the configuration refers to the unknown class 'com.google.vending.licensing.ILicensingService'
+# Note: the configuration refers to the unknown class 'com.android.vending.licensing.ILicensingService'
+#-dontnote com.google.vending.licensing.ILicensingService
+#-dontnote **ILicensingService
+
+
+
+# ------------------- TEST DEPENDENCIES -------------------
+-keep class com.onefishtwo.bbqtimer.MainActivity {
+    static boolean HIDE_RESET_FEATURE;
+}
+-keep class com.onefishtwo.bbqtimer.TimeCounter {
+    static android.text.Spanned formatHhMmSsFraction(long);
+}
+
+# From https://gist.github.com/knappador/1c7824979e1b21061b0b
+-keep class org.hamcrest.** { *; }
+-dontwarn org.hamcrest.**
+-dontwarn android.test.**
+-dontwarn android.support.test.**
+-keep class org.junit.** { *; }
+-dontwarn org.junit.**
+-keep class junit.** { *; }
+-dontwarn junit.**
+-dontwarn com.squareup.javawriter.JavaWriter
