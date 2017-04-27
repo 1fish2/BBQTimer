@@ -7,7 +7,15 @@
 # For more details, see
 #   http://developer.android.com/guide/developing/tools/proguard.html
 
-# --- Project specific keep options ---
+# --- Project-specific keep options ---
+
+# Visible for Espresso tests.
+-keep class com.onefishtwo.bbqtimer.MainActivity {
+    static boolean HIDE_RESET_FEATURE;
+}
+-keep class com.onefishtwo.bbqtimer.TimeCounter {
+    static android.text.Spanned formatHhMmSsFraction(long);
+}
 
 # If your project uses WebView with JS, uncomment the following
 # and specify the fully qualified class name to the JavaScript interface
