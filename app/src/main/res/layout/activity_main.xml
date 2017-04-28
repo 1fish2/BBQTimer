@@ -18,13 +18,13 @@
         android:layout_height="match_parent">
 
         <TextView
-            tools:ignore="SpUsage"
+            tools:ignore="SpUsage,Deprecated"
             android:id="@+id/display"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:clickable="true"
             android:textSize="@dimen/display_text_size"
-            android:maxLines="1"
+            android:singleLine="true"
             android:gravity="right"
             android:onClick="onClickTimerText"
             android:text="@string/time0"

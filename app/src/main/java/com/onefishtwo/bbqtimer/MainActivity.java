@@ -50,6 +50,7 @@ import java.lang.ref.WeakReference;
  * The BBQ Timer's main activity.
  */
 public class MainActivity extends AppCompatActivity implements NumberPicker.OnValueChangeListener {
+    @SuppressWarnings("FieldCanBeLocal")
     private final String TAG = "Main";
 
     /**
