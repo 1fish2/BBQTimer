@@ -205,7 +205,7 @@ public class InAppUITest {
     private void checkPausedAt0() {
         playPauseButton.check(matches(isDisplayed()));
         resetButton.check(matches(not(isDisplayed())));
-        stopButton.check(matches(isDisplayed())); // TODO: check its icon
+        stopButton.check(matches(isDisplayed()));
         timeView.check(matches(withText("00:00.0")));
 
         playPauseButton.check(matches(withCompoundDrawable(R.drawable.ic_play)));

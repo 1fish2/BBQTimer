@@ -97,7 +97,7 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
     }
 
     /**
-     * Updates the given app widgets' contents to the Timer state.<p/>
+     * Updates the given app widgets' contents to the Timer state and date.<p/>
      *
      * Unfortunately, a Chronometer view can't accurately set its value when paused. You can set it
      * to (now - desiredTime) but even setting all widgets at once ends up with different displays
