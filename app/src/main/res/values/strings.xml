@@ -15,6 +15,18 @@
     <!-- The application's description. This goes into the AndroidManifest. -->
     <string name="app_description">A stopwatch that you can use on the lock-screen.</string>
 
+    <!-- Name for the Alarm notification channel. Recommended maximum 40 chars. -->
+    <string name="notification_alarm_channel_name">Alarm</string>
+
+    <!-- Description for the Alarm notification channel. -->
+    <string name="notification_alarm_channel_description">Importance must be Urgent or High to hear the alarms; Medium or higher to control from the lock screen</string>
+
+    <!-- Name for the Start/Stop/Pause Controls notification channel. Recommended maximum 40 chars. -->
+    <string name="notification_controls_channel_name">Controls</string>
+
+    <!-- Description for the Controls notification channel. -->
+    <string name="notification_controls_channel_description">Importance must be Medium or higher to control from the lock screen</string>
+
     <!-- Inform the user that the app's notifications are disabled, and thus they won't be able to
       hear or see the app's alarms. -->
     <string name="notifications_disabled">Notifications are disabled</string>

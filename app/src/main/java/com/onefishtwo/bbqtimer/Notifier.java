@@ -19,18 +19,24 @@
 
 package com.onefishtwo.bbqtimer;
 
+import android.annotation.TargetApi;
 import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.AudioAttributes;
 import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.annotation.StringRes;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.app.TaskStackBuilder;
-import android.support.v7.app.NotificationCompat;
+import android.support.v4.content.ContextCompat;
 
 import com.onefishtwo.bbqtimer.notificationCompat.NotificationBuilder;
 import com.onefishtwo.bbqtimer.notificationCompat.NotificationBuilderFactory;
@@ -69,31 +75,27 @@ public class Notifier {
     private static final long[] VIBRATE_PATTERN = {150, 82, 180, 96}; // ms off, ms on, ms off, ...
     private static final int[][] ACTION_INDICES = {{}, {0}, {0, 1}, {0, 1, 2}};
 
+    private static final String ALARM_NOTIFICATION_CHANNEL_ID = "alarmChannel";
+    private static final String CONTROLS_NOTIFICATION_CHANNEL_ID = "controlsChannel";
+    private static boolean builtNotificationChannels = false;
+
     private final Context context;
-    private boolean playChime = false;
-    private boolean vibrate = false;
+    private boolean alarm = false;
+    private final int notificationLightColor;
     private int numActions; // the number of action buttons added to the notification
 
     public Notifier(Context context) {
         this.context = context;
+        notificationLightColor = ContextCompat.getColor(context, R.color.orange_red_text);
     }
 
     /**
-     * Builder-style setter: Whether {@link #openOrCancel} should play a notification chime for a
-     * reminder. Default = false.
+     * Builder-style setter: Whether to play an alarm sound, vibrate, and flash the device LED or
+     * not. Default = false.
      */
     @NonNull
-    public Notifier setPlayChime(boolean playChime) {
-        this.playChime = playChime;
-        return this;
-    }
-
-    /**
-     * Builder-style setter: Whether to vibrate and flash the notification light. Default = false.
-     */
-    @NonNull
-    public Notifier setVibrate(boolean vibrate) {
-        this.vibrate = vibrate;
+    public Notifier setAlarm(boolean alarm) {
+        this.alarm = alarm;
         return this;
     }
 
@@ -143,8 +145,8 @@ public class Notifier {
     }
 
     /**
-     * <em>(Re)Opens</em> this app's notification with visible, audible, and/or tactile content
-     * depending on {@code state}, {@link #setPlayChime(boolean)}, and {@link #setVibrate(boolean)},
+     * <em>(Re)Opens</em> this app's notification with content depending on {@code state} and
+     * {@link #setAlarm(boolean)},
      * <em>or cancels</em> the app's notification if there's nothing to show or sound.
      *
      * @param state the ApplicationState state to display.
@@ -155,7 +157,7 @@ public class Notifier {
         boolean showable = PAUSEABLE_NOTIFICATIONS ? !timer.isStopped() : timer.isRunning();
         boolean show     = showable && (IN_ACTIVITY_NOTIFICATIONS || !isMainActivityVisible);
 
-        if (!(show || playChime || vibrate)) {
+        if (!(show || alarm)) {
             cancelAll();
             return;
         }
@@ -165,9 +167,69 @@ public class Notifier {
         notificationManager.notify(NOTIFICATION_ID, notification);
     }
 
+    /** Creates a notification channel matching the parameters #buildNotification() uses. */
+    @TargetApi(26)
+    private void createNotificationChannelV26(boolean makeAlarm) {
+        // --- An alarm channel or not.
+        @StringRes int channelNameId = makeAlarm ? R.string.notification_alarm_channel_name
+                : R.string.notification_controls_channel_name;
+        @StringRes int channelDescriptionId = makeAlarm
+                ? R.string.notification_alarm_channel_description
+                : R.string.notification_controls_channel_description;
+        String channelId = makeAlarm ? ALARM_NOTIFICATION_CHANNEL_ID
+                : CONTROLS_NOTIFICATION_CHANNEL_ID;
+        int importance = makeAlarm ? NotificationManager.IMPORTANCE_HIGH
+                : NotificationManager.IMPORTANCE_LOW; // TODO: IMPORTANCE_DEFAULT?
+        boolean lights = makeAlarm;
+        boolean vibration = makeAlarm;
+        boolean sound = makeAlarm;
+
+        NotificationManager notificationManager =
+                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        String name = context.getString(channelNameId);
+        NotificationChannel channel = new NotificationChannel(channelId, name, importance);
+
+        String description = context.getString(channelDescriptionId);
+        channel.setDescription(description);
+
+        channel.enableLights(lights);
+        channel.setLightColor(notificationLightColor);
+
+        channel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
+
+        channel.enableVibration(vibration);
+        channel.setVibrationPattern(VIBRATE_PATTERN);
+
+        if (sound) {
+            AudioAttributes audioAttributes = new AudioAttributes.Builder()
+                    //.setLegacyStreamType(AudioManager.STREAM_ALARM) // TODO: ???
+                    .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION) // TODO: ???
+                    .setUsage(AudioAttributes.USAGE_ALARM) // TODO: ???
+                    .build();
+            channel.setSound(getSoundUri(R.raw.cowbell4), audioAttributes);
+        }
+
+        channel.setShowBadge(false);
+
+        // Did not setBypassDnd(), setGroup().
+
+        notificationManager.createNotificationChannel(channel); // goofy naming
+    }
+
+    /** Creates a notification channel lazily on Android O+. */
+    private void createNotificationChannels() {
+        if (Build.VERSION.SDK_INT < 26 || builtNotificationChannels) {
+            return;
+        }
+
+        createNotificationChannelV26(true);
+        createNotificationChannelV26(false);
+        builtNotificationChannels = true;
+    }
+
     /**
-     * Builds a notification. Its sound and vibration are determined by
-     * {@link #setPlayChime(boolean)} and {@link #setVibrate(boolean)}.
+     * Builds a notification. Its alarm sound, vibration, and LED light flashing are switched on/off
+     * by {@link #setAlarm(boolean)}.
      *
      * @param visible whether to make the notification visible -- overridden on Android L+ which
      *                reject invisible notifications (at least M does). Invisible notifications
@@ -181,7 +243,11 @@ public class Notifier {
      */
     protected Notification buildNotification(@NonNull ApplicationState state, boolean visible,
             boolean addActions) {
-        NotificationBuilder builder = NotificationBuilderFactory.builder(context)
+        createNotificationChannels();
+
+        String channelId = alarm ? ALARM_NOTIFICATION_CHANNEL_ID
+                : CONTROLS_NOTIFICATION_CHANNEL_ID;
+        NotificationBuilder builder = NotificationBuilderFactory.builder(context, channelId)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setCategory(NotificationCompat.CATEGORY_ALARM)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
@@ -283,19 +349,13 @@ public class Notifier {
             }
         }
 
-        if (playChime || vibrate) {
-            if (playChime) {
-                builder.setSound(getSoundUri(R.raw.cowbell4));
-            }
-
-            if (vibrate) {
-                builder.setVibrate(VIBRATE_PATTERN);
-            }
-
-            builder.setDefaults(Notification.DEFAULT_LIGHTS);
+        if (alarm) {
+            builder.setSound(getSoundUri(R.raw.cowbell4));
+            builder.setVibrate(VIBRATE_PATTERN);
+            builder.setLights(notificationLightColor, 1000, 5000);
         }
 
-       return builder.build();
+        return builder.build();
     }
 
     /** Cancels all of this app's notifications. */

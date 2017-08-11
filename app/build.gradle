@@ -3,7 +3,7 @@ import groovy.swing.SwingBuilder
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 25
+    compileSdkVersion 26
     buildToolsVersion '26.0.1'
     dexOptions {
         javaMaxHeapSize "2560m"
@@ -20,7 +20,7 @@ android {
     }
     defaultConfig {
         minSdkVersion 14
-        targetSdkVersion 25
+        targetSdkVersion 26
         versionCode 15
         versionName '2.5'
         resConfigs "en", "de"
@@ -116,9 +116,10 @@ tasks.whenTaskAdded { theTask ->
 }
 
 dependencies {
-    compile 'com.android.support:appcompat-v7:25.3.1'
-    compile 'com.android.support:support-compat:25.3.1'
-    compile 'com.android.support:design:25.3.1'
+    compile 'com.android.support:appcompat-v7:26.0.1'
+//    compile 'com.android.support:support-compat:26.0.1'
+    compile 'com.android.support:support-media-compat:26.0.1'
+    compile 'com.android.support:design:26.0.1'
     testCompile 'junit:junit:4.12'
     androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'

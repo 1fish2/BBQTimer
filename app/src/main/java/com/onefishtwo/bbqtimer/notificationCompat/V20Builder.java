@@ -27,7 +27,7 @@ import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.NonNull;
-import android.support.v7.app.NotificationCompat;
+import android.support.v4.app.NotificationCompat;
 
 /**
  * Notification Builder for API level 20-, implemented via NotificationCompat.Builder plus
@@ -37,8 +37,8 @@ class V20Builder implements NotificationBuilder {
     @NonNull
     private final NotificationCompat.Builder builder;
 
-    public V20Builder(Context context) {
-        builder = new NotificationCompat.Builder(context);
+    public V20Builder(@NonNull Context context, @NonNull String channelId) {
+        builder = new NotificationCompat.Builder(context, channelId);
     }
 
     @NonNull
@@ -96,6 +96,13 @@ class V20Builder implements NotificationBuilder {
 
     @NonNull
     @Override
+    public NotificationBuilder setLights(int argb, int onMs, int offMs) {
+        builder.setLights(argb, onMs, offMs);
+        return this;
+    }
+
+    @NonNull
+    @Override
     public NotificationBuilder setSubText(CharSequence text) {
         builder.setSubText(text);
         return this;
@@ -104,13 +111,12 @@ class V20Builder implements NotificationBuilder {
     @NonNull
     @Override
     public NotificationBuilder setNumber(int number) {
-        // WORKAROUND: On Android level 12 HONEYCOMB_MR1, setNumber() will later crash with
-        // Resources$NotFoundException "Resource ID #0x1050019" from
-        // Resources.getDimensionPixelSize(). It works on API v15.
-        //
-        // On older builds, calling builder.setContentInfo() would be a workaround but it's a noop.
-        //
-        // TODO: Test API level 13 - 14. Those emulators take most of an hour to launch, then croak.
+        // Android < v12: No-op, ditto for setContentInfo().
+        // Android v12 (HONEYCOMB_MR1): Will later crash with Resources$NotFoundException
+        //   "Resource ID #0x1050019" from Resources.getDimensionPixelSize().
+        // Android v13-14: Can't test it since those emulators don't work.
+        // Android v15-23: Puts a number in the notification.
+        // ...
         if (Build.VERSION.SDK_INT >= 15) {
             builder.setNumber(number);
         }

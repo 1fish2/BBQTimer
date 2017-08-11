@@ -27,11 +27,11 @@ public class NotificationBuilderFactory {
 
     /** Constructs a suitable NotificationBuilder for the current OS version. */
     @NonNull
-    public static NotificationBuilder builder(@NonNull Context context) {
+    public static NotificationBuilder builder(@NonNull Context context, @NonNull String channelId) {
         if (Build.VERSION.SDK_INT >= 21) { // Load the API V21 class only if the OS can load it.
-            return new V21Builder(context);
+            return new V21Builder(context, channelId);
         } else {
-            return new V20Builder(context);
+            return new V20Builder(context, channelId);
         }
     }
 }

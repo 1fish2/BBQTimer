@@ -283,7 +283,7 @@ public class AlarmReceiver extends BroadcastReceiver {
                 Log.i(TAG, "Early alarm " + intent);
             } else {
                 Log.d(TAG, intent.toString());
-                Notifier notifier = new Notifier(context).setPlayChime(true).setVibrate(true);
+                Notifier notifier = new Notifier(context).setAlarm(true);
                 notifier.openOrCancel(state);
             }
 

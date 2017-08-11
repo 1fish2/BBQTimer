@@ -26,11 +26,13 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 
 /**
- * An interface to alternate implementations of
- * {@link android.support.v4.app.NotificationCompat.Builder} to workaround
- * <a href="https://code.google.com/p/android-developer-preview/issues/detail?id=1659">Issue
- * 1659: "There is no NotificationCompat.MediaStyle in the support library"</a>. It only has the
- * features needed by this app.
+ * An interface to alternate Notification[Compat] Builder implementations (based on android.app,
+ * android.support.v4.app, android.support.v7.app, android.support.v4.media.app) to workaround bugs
+ * like <a href="https://code.google.com/p/android-developer-preview/issues/detail?id=1659">Issue
+ * 1659: "There is no NotificationCompat.MediaStyle in the support library"</a>, which required
+ * different implementations on different versions of Android.
+ *<p/>
+ * This interface has only the features needed by this app.
  */
 @SuppressWarnings({"SameParameterValue", "UnusedReturnValue"})
 public interface NotificationBuilder {
@@ -46,6 +48,8 @@ public interface NotificationBuilder {
     NotificationBuilder setContentTitle(CharSequence title);
     @NonNull
     NotificationBuilder setContentText(CharSequence text);
+    @NonNull
+    NotificationBuilder setLights(int argb, int onMs, int offMs);
     @NonNull
     NotificationBuilder setSubText(CharSequence text);
     @NonNull

@@ -28,7 +28,7 @@ import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.NonNull;
-import android.support.v7.app.NotificationCompat;
+import android.support.v4.app.NotificationCompat;
 
 import com.onefishtwo.bbqtimer.R;
 
@@ -43,13 +43,15 @@ import com.onefishtwo.bbqtimer.R;
 class V21Builder implements NotificationBuilder {
     @NonNull
     private final NotificationCompat.Builder builder;
-    private int workaroundColor = 0x9e9e9e;
+    private final int workaroundColor;
 
-    public V21Builder(@NonNull Context context) {
-        builder = new NotificationCompat.Builder(context);
+    public V21Builder(@NonNull Context context, @NonNull String channelId) {
+        builder = new NotificationCompat.Builder(context, channelId);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             workaroundColor = context.getColor(R.color.gray_text);
+        } else {
+            workaroundColor = 0x9e9e9e;
         }
     }
 
@@ -97,6 +99,13 @@ class V21Builder implements NotificationBuilder {
 
     @NonNull
     @Override
+    public NotificationBuilder setLights(int argb, int onMs, int offMs) {
+        builder.setLights(argb, onMs, offMs);
+        return this;
+    }
+
+    @NonNull
+    @Override
     public NotificationBuilder setSubText(CharSequence text) {
         builder.setSubText(text);
         return this;
@@ -105,8 +114,13 @@ class V21Builder implements NotificationBuilder {
     @NonNull
     @Override
     public NotificationBuilder setNumber(int number) {
-        // This is a no-op on Android v24+ (N). We could work around it by appending to subText, but
-        // is this number worth the user complexity or the code complexity?
+        // Android < v12: No-op, ditto for setContentInfo().
+        // Android v12 (HONEYCOMB_MR1): Will later crash with Resources$NotFoundException
+        //   "Resource ID #0x1050019" from Resources.getDimensionPixelSize().
+        // Android v13-14: Can't test it since those emulators don't work.
+        // Android v15-23: Puts a number in the notification.
+        // Android v24-25 (N): No-op.
+        // Android v26 (O): Puts a number in the long-press menu of an app in supported launchers.
         builder.setNumber(number);
         return this;
     }
@@ -192,8 +206,9 @@ class V21Builder implements NotificationBuilder {
     @NonNull
     @Override
     public NotificationBuilder setMediaStyleActionsInCompactView(int... actions) {
-        NotificationCompat.MediaStyle style = new NotificationCompat.MediaStyle()
-                .setShowActionsInCompactView(actions);
+        android.support.v4.media.app.NotificationCompat.MediaStyle style =
+                new android.support.v4.media.app.NotificationCompat.MediaStyle()
+                        .setShowActionsInCompactView(actions);
         builder.setStyle(style);
 
         // Workaround a Marshmallow bug where the heads-up notification shows low contrast dark gray

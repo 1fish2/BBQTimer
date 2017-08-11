@@ -5,6 +5,10 @@
     <string name="alarm_unmute">STUMMSCHALTUNG AUFHEBEN</string>
     <string name="app_name">BBQ Timer</string>
     <string name="app_description">Eine Stoppuhr, die Sie auf dem Sperrbildschirm verwenden können.</string>
+    <string name="notification_alarm_channel_name">Alarm</string>
+    <string name="notification_alarm_channel_description">Wichtigkeit muss dringend oder hoch sein, um die Alarme zu hören; Mittlere oder höhere Kontrolle über den Sperrbildschirm</string>
+    <string name="notification_controls_channel_name">Steuert</string>
+    <string name="notification_controls_channel_description">Wichtigkeit muss mittle oder höhere um vom Verriegelungsbildschirm zu kontrollieren</string>
     <string name="notifications_disabled">Benachrichtigungen sind deaktiviert</string>
     <string name="notifications_enable">AKTIVIEREN</string>
     <string name="dismiss_tip">Wischen um zu stoppen</string>
