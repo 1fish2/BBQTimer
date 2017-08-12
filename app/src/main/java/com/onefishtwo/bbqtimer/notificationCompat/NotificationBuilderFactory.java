@@ -20,7 +20,6 @@
 package com.onefishtwo.bbqtimer.notificationCompat;
 
 import android.content.Context;
-import android.os.Build;
 import android.support.annotation.NonNull;
 
 public class NotificationBuilderFactory {
@@ -28,10 +27,6 @@ public class NotificationBuilderFactory {
     /** Constructs a suitable NotificationBuilder for the current OS version. */
     @NonNull
     public static NotificationBuilder builder(@NonNull Context context, @NonNull String channelId) {
-        if (Build.VERSION.SDK_INT >= 21) { // Load the API V21 class only if the OS can load it.
-            return new V21Builder(context, channelId);
-        } else {
-            return new V20Builder(context, channelId);
-        }
+        return new V21Builder(context, channelId);
     }
 }

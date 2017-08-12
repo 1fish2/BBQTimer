@@ -19,7 +19,6 @@
 
 package com.onefishtwo.bbqtimer.notificationCompat;
 
-import android.annotation.TargetApi;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -33,13 +32,11 @@ import android.support.v4.app.NotificationCompat;
 import com.onefishtwo.bbqtimer.R;
 
 /**
- * Notification Builder for API level 21+.
- * Previously this had to be implemented via Notification.Builder.
- * Now with appcompat-v7:23, NotificationCompat.Builder supports MediaStyle.
- *<p/>
- * ASSUMES: {@code Build.VERSION.SDK_INT >= 21}. Conditionally load this class.
+ * NotificationBuilder proxy (the V21 name is historical). Previously the interface had to be
+ * implemented via Notification.Builder for v21+ but NotificationCompat.Builder for API 20-; then
+ * via v7 NotificationCompat.Builder for v21+; now v4 NotificationCompat.Builder works for all
+ * versions.
  */
-@TargetApi(21)
 class V21Builder implements NotificationBuilder {
     @NonNull
     private final NotificationCompat.Builder builder;
@@ -62,6 +59,10 @@ class V21Builder implements NotificationBuilder {
         return this;
     }
 
+    /**
+     * NOTE: {@code setShowWhen(false)} doesn't work in API 16 - 18.
+     * See {@link #setUsesChronometer(boolean)}.
+     */
     @NonNull
     @Override
     public NotificationBuilder setShowWhen(boolean show) {
@@ -69,6 +70,14 @@ class V21Builder implements NotificationBuilder {
         return this;
     }
 
+    /**
+     * NOTE: In API 17+.
+     *<p/>
+     * NOTE: Updating an existing notification to/from UsesChronometer only works in API 21+. In
+     * API 19, going from chronometer to hide-the-time continues the running chronometer. In
+     * API 16 - 18, hiding the When field doesn't actually work, and changing to/from a chronometer
+     * shows BOTH the time and the chronometer.
+     */
     @NonNull
     @Override
     public NotificationBuilder setUsesChronometer(boolean b) {
@@ -120,8 +129,10 @@ class V21Builder implements NotificationBuilder {
         // Android v13-14: Can't test it since those emulators don't work.
         // Android v15-23: Puts a number in the notification.
         // Android v24-25 (N): No-op.
-        // Android v26 (O): Puts a number in the long-press menu of an app in supported launchers.
-        builder.setNumber(number);
+        // Android v26 (O): Puts a number in the launch screen's app icon long-press pop-up.
+        if (Build.VERSION.SDK_INT >= 15) {
+            builder.setNumber(number);
+        }
         return this;
     }
 
@@ -142,7 +153,15 @@ class V21Builder implements NotificationBuilder {
     @NonNull
     @Override
     public NotificationBuilder setLargeIcon(Bitmap icon) {
-        builder.setLargeIcon(icon);
+        // WORKAROUND: On Android level 12, setLargeIcon() will later crash with "FATAL EXCEPTION:
+        // main android.app.RemoteServiceException: Bad notification posted ...: Couldn't expand
+        // RemoteViews for: StatusBarNotification(...)".
+        //
+        // Android v13-14: Can't test it since those emulators don't work.
+        if (Build.VERSION.SDK_INT >= 15) {
+            builder.setLargeIcon(icon);
+        }
+
         return this;
     }
 
@@ -206,10 +225,12 @@ class V21Builder implements NotificationBuilder {
     @NonNull
     @Override
     public NotificationBuilder setMediaStyleActionsInCompactView(int... actions) {
-        android.support.v4.media.app.NotificationCompat.MediaStyle style =
-                new android.support.v4.media.app.NotificationCompat.MediaStyle()
-                        .setShowActionsInCompactView(actions);
-        builder.setStyle(style);
+        if (Build.VERSION.SDK_INT >= 21) { // MediaStyle introduced in Android v21.
+            android.support.v4.media.app.NotificationCompat.MediaStyle style =
+                    new android.support.v4.media.app.NotificationCompat.MediaStyle()
+                            .setShowActionsInCompactView(actions);
+            builder.setStyle(style);
+        }
 
         // Workaround a Marshmallow bug where the heads-up notification shows low contrast dark gray
         // text on darker gray background. setColor() sometimes sets the background color tho it's

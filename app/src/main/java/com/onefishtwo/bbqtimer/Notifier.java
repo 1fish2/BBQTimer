@@ -272,7 +272,7 @@ public class Notifier {
             } else {
                 // Hide the "when" field, which isn't useful while Paused, so it doesn't take space
                 // in the compact view along with 3 action buttons (Reset, Start, Stop).
-                // This doesn't actually work in API 17-18, so in API 18- it'd visible the time of
+                // It doesn't actually work in API 17-18, so in API 18- it'd show the time of
                 // day when the notification is built, but it's even more broken after changing the
                 // "When" info in an open notification.
                 builder.setShowWhen(false);
