@@ -19,6 +19,7 @@
 
 package com.onefishtwo.bbqtimer;
 
+import android.annotation.TargetApi;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
@@ -27,8 +28,10 @@ import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.provider.Settings;
 import android.support.annotation.ColorRes;
 import android.support.annotation.NonNull;
+import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.ContextCompat;
@@ -65,6 +68,8 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
     private static final int SHORTCUT_PAUSE = 1;
     private static final int SHORTCUT_START = 2;
     private int shortcutAction = SHORTCUT_NONE;
+
+    private Notifier notifier;
 
     /** (Re)makes all locale-dependent strings. */
     private static void makeLocaleStrings() {
@@ -144,6 +149,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        notifier = new Notifier(this);
 
         makeLocaleStrings();
         setContentView(R.layout.activity_main);
@@ -250,9 +256,9 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
      * TODO: How to detect if the app's notifications are visible but silenced? Silencing kills the
      * audio and heads-up notification shades.
      * <p/>
-     * NOTE: The notifications-disabled test only works on API 19+ KitKat+.
-     * <p/>
-     * NOTE: Opening Settings to let the user Enable notifications only works on API 21+ Lollipop+.
+     * NOTE: The notifications-disabled test only works on API 19+ KitKat+. The notification channel
+     * misconfigured test only works on API 26+. Opening Settings to let the user Enable
+     * notifications only works on API 21+ Lollipop+.
      */
     private void informIfNotificationAlarmsMuted() {
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
@@ -260,26 +266,20 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
         // Check for disabled notifications on API 19+ KitKat+.
         // NOTE: If notifications are disabled, so are Toasts.
         if (!notificationManager.areNotificationsEnabled()) {
-            Snackbar snackbar = Snackbar.make(findViewById(R.id.main_container),
-                    R.string.notifications_disabled, Snackbar.LENGTH_LONG);
-            snackbar.getView().setBackgroundColor(
-                    ContextCompat.getColor(this, R.color.dark_orange_red));
-
-            if (android.os.Build.VERSION.SDK_INT >= 21) { // Where a Settings Intent works.
-                snackbar.setAction(R.string.notifications_enable, new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        openNotificationSettingsForApp();
-                    }
-                })
-                .setActionTextColor(ContextCompat.getColor(this, R.color.contrasting_text));
+            Snackbar snackbar = makeSnackbar(R.string.notifications_disabled);
+            if (android.os.Build.VERSION.SDK_INT >= 21) { // Where this Settings Intent works.
+                setSnackbarAction(snackbar, R.string.notifications_enable, new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                openNotificationSettingsForApp();
+                            }
+                });
             }
-
             snackbar.show();
             return;
         }
 
-        // Only warn about muting when reminders are enabled, not when running silently.
+        // Warn about inaudible alarms only when reminders are enabled, not when running silently.
         if (!state.isEnableReminders()) {
             return;
         }
@@ -289,20 +289,48 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
 
         // Check for muted alarms.
         if (volume <= 0) {
-            Snackbar snackbar = Snackbar.make(findViewById(R.id.main_container),
-                        R.string.alarm_muted, Snackbar.LENGTH_LONG);
-            snackbar.getView().setBackgroundColor(
-                    ContextCompat.getColor(this, R.color.dark_orange_red));
-            snackbar.setAction(R.string.alarm_unmute, new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            am.adjustStreamVolume(AudioManager.STREAM_ALARM,
-                                    AudioManager.ADJUST_RAISE, 0);
-                        }
-                    })
-                    .setActionTextColor(ContextCompat.getColor(this, R.color.contrasting_text));
+            Snackbar snackbar = makeSnackbar(R.string.alarm_muted);
+            setSnackbarAction(snackbar, R.string.alarm_unmute, new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    am.adjustStreamVolume(AudioManager.STREAM_ALARM, AudioManager.ADJUST_RAISE, 0);
+                }
+            });
+            snackbar.show();
+            return;
+        }
+
+        // Check for misconfigured Alarm notification channel.
+        if (!notifier.isAlarmChannelOK()) {
+            Snackbar snackbar = makeSnackbar(R.string.notifications_misconfigured);
+            if (android.os.Build.VERSION.SDK_INT >= 26) { // Where this Settings Intent works.
+                setSnackbarAction(snackbar, R.string.notifications_configure, new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                openNotificationChannelSettings(
+                                        Notifier.ALARM_NOTIFICATION_CHANNEL_ID);
+                            }
+                });
+            }
             snackbar.show();
         }
+    }
+
+    /** Constructs a Snackbar with the app's dark orange red color. */
+    @NonNull
+    private Snackbar makeSnackbar(@StringRes int stringResId) {
+        Snackbar snackbar = Snackbar.make(findViewById(R.id.main_container), stringResId,
+                Snackbar.LENGTH_LONG);
+        snackbar.getView().setBackgroundColor(
+                ContextCompat.getColor(this, R.color.dark_orange_red));
+        return snackbar;
+    }
+
+    /** Sets the Snackbar's action. */
+    private void setSnackbarAction(Snackbar snackbar, @StringRes int resId,
+            View.OnClickListener listener) {
+        snackbar.setAction(resId, listener)
+                .setActionTextColor(ContextCompat.getColor(this, R.color.contrasting_text));
     }
 
     /** The user tapped the Run/Pause button (named "StartStop"). */
@@ -429,7 +457,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
      * re-enable the application's notifications.
      * (From an example program for Android Wearable notifications.)
      *<p/>
-     * NOTE: Only works on Android version ???+. Don't call it on older Androids.
+     * NOTE: Only works on Android version 21+. Don't call it on older Androids.
      *<p/>
      * NOTE: Call this only if the user asked to do it.
      */
@@ -437,15 +465,42 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
         // Links to this app's notification settings
         Intent intent = new Intent();
 
-        intent.setAction("android.settings.APP_NOTIFICATION_SETTINGS");
-        intent.putExtra("app_package", getPackageName());
-        intent.putExtra("app_uid", getApplicationInfo().uid);
+        if (android.os.Build.VERSION.SDK_INT >= 26) {
+            intent.setAction(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
+            intent.putExtra(Settings.EXTRA_APP_PACKAGE, getPackageName());
+        } else {
+            intent.setAction("android.settings.APP_NOTIFICATION_SETTINGS");
+            intent.putExtra("app_package", getPackageName());
+            intent.putExtra("app_uid", getApplicationInfo().uid);
+        }
 
         try {
             startActivity(intent);
         } catch (ActivityNotFoundException e) {
             Log.e(TAG, "Couldn't open notification Settings: " + e.toString());
             // TODO: Open another SnackBar? (Toasts are disabled along with notifications.)
+        }
+    }
+
+    /**
+     * Helper method for the SnackBar action: This opens the Settings screen where the user can
+     * reconfigure one of the application's notification channels.
+     *<p/>
+     * NOTE: Call this only if the user asked to do it.
+     */
+    @TargetApi(26)
+    private void openNotificationChannelSettings(String channelId) {
+        Intent intent = new Intent();
+
+        intent.setAction(Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS);
+        intent.putExtra(Settings.EXTRA_APP_PACKAGE, getPackageName());
+        intent.putExtra(Settings.EXTRA_CHANNEL_ID, channelId);
+
+        try {
+            startActivity(intent);
+        } catch (ActivityNotFoundException e) {
+            Log.e(TAG, "Couldn't open notification channel Settings: " + e.toString());
+            // TODO: Open a toast?
         }
     }
 

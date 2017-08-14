@@ -75,27 +75,33 @@ public class Notifier {
     private static final long[] VIBRATE_PATTERN = {150, 82, 180, 96}; // ms off, ms on, ms off, ...
     private static final int[][] ACTION_INDICES = {{}, {0}, {0, 1}, {0, 1, 2}};
 
-    private static final String ALARM_NOTIFICATION_CHANNEL_ID = "alarmChannel";
-    private static final String CONTROLS_NOTIFICATION_CHANNEL_ID = "controlsChannel";
+    static final String ALARM_NOTIFICATION_CHANNEL_ID = "alarmChannel";
+    static final String CONTROLS_NOTIFICATION_CHANNEL_ID = "controlsChannel";
     private static boolean builtNotificationChannels = false;
 
     private final Context context;
-    private boolean alarm = false;
+    private final NotificationManager notificationManager;
+    private final NotificationManagerCompat notificationManagerCompat;
     private final int notificationLightColor;
-    private int numActions; // the number of action buttons added to the notification
+
+    private boolean soundAlarm = false; // whether the next notification should sound an alarm
+    private int numActions; // the number of action buttons added to the notification being built
 
     public Notifier(Context context) {
         this.context = context;
+        notificationManager =
+                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManagerCompat = NotificationManagerCompat.from(context);
         notificationLightColor = ContextCompat.getColor(context, R.color.orange_red_text);
     }
 
     /**
-     * Builder-style setter: Whether to play an alarm sound, vibrate, and flash the device LED or
-     * not. Default = false.
+     * Builder-style setter: Whether to make the next notification sound an alarm, vibrate, and
+     * flash the device LED. Initially set to false.
      */
     @NonNull
-    public Notifier setAlarm(boolean alarm) {
-        this.alarm = alarm;
+    public Notifier setAlarm(boolean soundAlarm) {
+        this.soundAlarm = soundAlarm;
         return this;
     }
 
@@ -157,39 +163,61 @@ public class Notifier {
         boolean showable = PAUSEABLE_NOTIFICATIONS ? !timer.isStopped() : timer.isRunning();
         boolean show     = showable && (IN_ACTIVITY_NOTIFICATIONS || !isMainActivityVisible);
 
-        if (!(show || alarm)) {
+        if (!(show || soundAlarm)) {
             cancelAll();
             return;
         }
 
         Notification notification = buildNotification(state, show, !isMainActivityVisible);
-        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
-        notificationManager.notify(NOTIFICATION_ID, notification);
+        notificationManagerCompat.notify(NOTIFICATION_ID, notification);
     }
 
-    /** Creates a notification channel matching the parameters #buildNotification() uses. */
+    /**
+     * Returns true if the Alarm channel is configured On with enough Importance to hear alarms.
+     * After createNotificationChannelV26() creates the channels, the user can reconfigure them and
+     * the app can only set their names and descriptions. If users configure the Alarm channel to be
+     * silent but request Periodic Alarms, they'll think the app isn't working.
+     */
+    boolean isAlarmChannelOK() {
+        if (android.os.Build.VERSION.SDK_INT >= 26) {
+            NotificationChannel channel = notificationManager.getNotificationChannel(
+                    ALARM_NOTIFICATION_CHANNEL_ID);
+
+            if (channel == null) { // The channel hasn't been created so it can't be messed up.
+                return true;
+            }
+
+            int importance = channel.getImportance();
+            return importance >= NotificationManager.IMPORTANCE_DEFAULT;
+        }
+
+        return true;
+    }
+
+    /**
+     * Creates a notification channel that matches the parameters #buildNotification() uses. The
+     * "Alarm" channel sounds an alarm at heads-up High importance. The "Controls" channel does not.
+     */
     @TargetApi(26)
     private void createNotificationChannelV26(boolean makeAlarm) {
         // --- An alarm channel or not.
-        @StringRes int channelNameId = makeAlarm ? R.string.notification_alarm_channel_name
+        @StringRes int channelNameRes = makeAlarm ? R.string.notification_alarm_channel_name
                 : R.string.notification_controls_channel_name;
-        @StringRes int channelDescriptionId = makeAlarm
+        @StringRes int channelDescriptionRes = makeAlarm
                 ? R.string.notification_alarm_channel_description
                 : R.string.notification_controls_channel_description;
         String channelId = makeAlarm ? ALARM_NOTIFICATION_CHANNEL_ID
                 : CONTROLS_NOTIFICATION_CHANNEL_ID;
         int importance = makeAlarm ? NotificationManager.IMPORTANCE_HIGH
-                : NotificationManager.IMPORTANCE_LOW; // TODO: IMPORTANCE_DEFAULT?
+                : NotificationManager.IMPORTANCE_LOW;
         boolean lights = makeAlarm;
         boolean vibration = makeAlarm;
         boolean sound = makeAlarm;
 
-        NotificationManager notificationManager =
-                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        String name = context.getString(channelNameId);
+        String name = context.getString(channelNameRes);
         NotificationChannel channel = new NotificationChannel(channelId, name, importance);
 
-        String description = context.getString(channelDescriptionId);
+        String description = context.getString(channelDescriptionRes);
         channel.setDescription(description);
 
         channel.enableLights(lights);
@@ -202,9 +230,11 @@ public class Notifier {
 
         if (sound) {
             AudioAttributes audioAttributes = new AudioAttributes.Builder()
-                    //.setLegacyStreamType(AudioManager.STREAM_ALARM) // TODO: ???
-                    .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION) // TODO: ???
-                    .setUsage(AudioAttributes.USAGE_ALARM) // TODO: ???
+                    //.setLegacyStreamType(AudioManager.STREAM_ALARM)
+                    .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                    .setUsage(AudioAttributes.USAGE_ALARM)
+                    // .setFlags(): Nope. See https://stackoverflow.com/q/44855786 and
+                    // https://issuetracker.google.com/issues/37033371
                     .build();
             channel.setSound(getSoundUri(R.raw.cowbell4), audioAttributes);
         }
@@ -216,7 +246,7 @@ public class Notifier {
         notificationManager.createNotificationChannel(channel); // goofy naming
     }
 
-    /** Creates a notification channel lazily on Android O+. */
+    /** Creates the notification channels lazily (or updates their text) on Android O+. */
     private void createNotificationChannels() {
         if (Build.VERSION.SDK_INT < 26 || builtNotificationChannels) {
             return;
@@ -225,6 +255,19 @@ public class Notifier {
         createNotificationChannelV26(true);
         createNotificationChannelV26(false);
         builtNotificationChannels = true;
+    }
+
+    /** Update state (e.g. notification channel names and descriptions) for a UI Locale change. */
+    void onLocaleChange() {
+        if (android.os.Build.VERSION.SDK_INT >= 26) {
+            NotificationChannel channel = notificationManager.getNotificationChannel(
+                    ALARM_NOTIFICATION_CHANNEL_ID);
+
+            if (channel != null) {
+                builtNotificationChannels = false;
+                createNotificationChannels();
+            }
+        }
     }
 
     /**
@@ -245,7 +288,7 @@ public class Notifier {
             boolean addActions) {
         createNotificationChannels();
 
-        String channelId = alarm ? ALARM_NOTIFICATION_CHANNEL_ID
+        String channelId = soundAlarm ? ALARM_NOTIFICATION_CHANNEL_ID
                 : CONTROLS_NOTIFICATION_CHANNEL_ID;
         NotificationBuilder builder = NotificationBuilderFactory.builder(context, channelId)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
@@ -349,7 +392,7 @@ public class Notifier {
             }
         }
 
-        if (alarm) {
+        if (soundAlarm) {
             builder.setSound(getSoundUri(R.raw.cowbell4));
             builder.setVibrate(VIBRATE_PATTERN);
             builder.setLights(notificationLightColor, 1000, 5000);
@@ -360,8 +403,6 @@ public class Notifier {
 
     /** Cancels all of this app's notifications. */
     public void cancelAll() {
-        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
-
-        notificationManager.cancelAll();
+        notificationManagerCompat.cancelAll();
     }
 }

@@ -27,7 +27,7 @@ import android.util.Log;
 
 /**
  * A BroadcastReceiver to resume/adjust the running timer and notification after an app upgrade,
- * clock adjustment, or timezone adjustment.
+ * clock adjustment, timezone adjustment, or locale change.
  *<p/>
  * TODO: Maybe stop the timer in a ACTION_BOOT_COMPLETED BroadcastReceiver. That requires another
  * permission and would only help a narrow case: If the device reboots when the timer was running or
@@ -61,6 +61,9 @@ public class ResumeReceiver extends BroadcastReceiver {
         } else if (Intent.ACTION_TIME_CHANGED.equals(action) // TIME_SET
                 || Intent.ACTION_TIMEZONE_CHANGED.equals(action)) {
             AlarmReceiver.handleClockAdjustment(context);
+        } else if (Intent.ACTION_LOCALE_CHANGED.equals(action)) {
+            Notifier notifier = new Notifier(context);
+            notifier.onLocaleChange();
         }
     }
 }
