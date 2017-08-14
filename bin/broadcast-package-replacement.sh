@@ -13,4 +13,5 @@ ACTION="android.intent.action.${1:-MY_PACKAGE_REPLACED}"
 PACKAGE="com.onefishtwo.bbqtimer"
 echo Broadcasting ${ACTION} to ${PACKAGE}
 
+adb root
 adb "${2:--e}" shell am broadcast -a "${ACTION}" "${PACKAGE}"
