@@ -64,6 +64,7 @@ public class ResumeReceiver extends BroadcastReceiver {
         } else if (Intent.ACTION_LOCALE_CHANGED.equals(action)) {
             Notifier notifier = new Notifier(context);
             notifier.onLocaleChange();
+            AlarmReceiver.updateNotifications(context);
         }
     }
 }
