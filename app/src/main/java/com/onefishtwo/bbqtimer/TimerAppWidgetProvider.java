@@ -40,6 +40,16 @@ import com.onefishtwo.bbqtimer.state.ApplicationState;
 public class TimerAppWidgetProvider extends AppWidgetProvider {
     private static final String TAG = "AppWidgetProvider";
 
+    /**
+     * Show the date in the lock screen widget's secondary text? I.e. an Android version that
+     * supports lock screen widgets? Hiding it helps on Nougat where some combos of Display Size
+     * and Font Size would make some of that text visible on a home screen widget: Font Small; Font
+     * Default, Display {Small, Large}; Font Large, Display {Small, Large, Largest}. On KitKat it's
+     * also an issue with Font Size Small, oh well.
+     */
+    private static final boolean SHOW_SECONDARY_TEXT =
+            Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP;
+
     // --- R.id.viewFlipper child indexes.
     private static final int RUNNING_CHRONOMETER_CHILD = 0;
     private static final int PAUSED_CHRONOMETER_CHILD  = 1;
@@ -85,10 +95,7 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
      */
     @NonNull
     private static String secondaryText() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            return "";
-        }
-        return dateText();
+        return SHOW_SECONDARY_TEXT ? dateText() : "";
     }
 
     /** Clears the cached secondary text, to be recomputed lazily. */
@@ -217,11 +224,14 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
             timer.cycle();
             saveStateAndUpdateUI(context, state);
         } else if (Intent.ACTION_DATE_CHANGED.equals(action)
-                || Intent.ACTION_TIME_CHANGED.equals(action)
+                || Intent.ACTION_TIME_CHANGED.equals(action) // TIME_SET
                 || Intent.ACTION_TIMEZONE_CHANGED.equals(action)) {
-            // The clock ticked over to the next day or it was adjusted. Update the date display.
-            clearSecondaryTextCache();
-            updateAllWidgets(context, state);
+            // The clock ticked over to the next day or it was adjusted. Update the date display in
+            // the lock screen widget.
+            if (SHOW_SECONDARY_TEXT) {
+                clearSecondaryTextCache();
+                updateAllWidgets(context, state);
+            }
         }
     }
 
