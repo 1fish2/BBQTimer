@@ -7,7 +7,7 @@
     <string name="app_description">Eine Stoppuhr, die Sie auf dem Sperrbildschirm verwenden können.</string>
     <string name="notification_alarm_channel_name">Alarm</string>
     <string name="notification_alarm_channel_description">Wichtigkeit muss für Alarme hoch oder höher sein; Mittel oder höher für den Sperrbildschirm</string>
-    <string name="notification_controls_channel_name">Steuert</string>
+    <string name="notification_controls_channel_name">Steuerung</string>
     <string name="notification_controls_channel_description">Wichtigkeit muss für den Sperrbildschirm mittel oder höher sein</string>
     <string name="notifications_disabled">Benachrichtigungen sind deaktiviert</string>
     <string name="notifications_enable">AKTIVIEREN</string>
