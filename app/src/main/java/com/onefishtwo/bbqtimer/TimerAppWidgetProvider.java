@@ -195,6 +195,10 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
     //
     // Cf http://stackoverflow.com/questions/21758246/android-action-date-changed-broadcast which
     // suggests a workaround by implementing a similar alarm.
+    //
+    // Also see https://developer.android.com/about/versions/oreo/background.html#broadcasts on how
+    // manifest registration for ACTION_DATE_CHANGED implicit broadcasts doesn't work on Android O+
+    // but this class only needs them on K-.
     @Override
     public void onReceive(@NonNull Context context, @NonNull Intent intent) {
         super.onReceive(context, intent);
@@ -223,7 +227,7 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
         } else if (ACTION_CYCLE.equals(action)) { // The user tapped the time text.
             timer.cycle();
             saveStateAndUpdateUI(context, state);
-        } else if (Intent.ACTION_DATE_CHANGED.equals(action)
+        } else if (Intent.ACTION_DATE_CHANGED.equals(action) // Won't receive this on Android O+
                 || Intent.ACTION_TIME_CHANGED.equals(action) // TIME_SET
                 || Intent.ACTION_TIMEZONE_CHANGED.equals(action)) {
             // The clock ticked over to the next day or it was adjusted. Update the date display in

@@ -116,10 +116,10 @@ tasks.whenTaskAdded { theTask ->
 }
 
 dependencies {
-    compile 'com.android.support:appcompat-v7:26.0.1'
-//    compile 'com.android.support:support-compat:26.0.1'
-    compile 'com.android.support:support-media-compat:26.0.1'
-    compile 'com.android.support:design:26.0.1'
+    compile 'com.android.support:appcompat-v7:26.0.2'
+//    compile 'com.android.support:support-compat:n.n.n'
+    compile 'com.android.support:support-media-compat:26.0.2'
+    compile 'com.android.support:design:26.0.2'
     testCompile 'junit:junit:4.12'
     androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
