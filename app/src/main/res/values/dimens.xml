@@ -1,4 +1,5 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Nexus 1 & Nexus S (320x533 dp); Galaxy Nexus (360x640 dp); Nexus 4 (384x640 dp); Nexus 5 (432x768 dp); Nexus 6 (411x731 dp). -->
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
@@ -14,13 +15,11 @@
     <dimen name="controls_top_margin">12dp</dimen>
 
     <!-- Text sizes. -->
-    <!-- Nexus 1 & Nexus S (320x533 dp) fits 1 hours digit in portrait mode,
-        Galaxy Nexus (360x640 dp) fits 2+ hours digits,
-        Nexus 4 (384x640 dp) fits 2+ hours digits,
-        Nexus 5 (432x768 dp) fits 2+ hours digits,
-        Nexus 6 (411x731 dp) fits 2+ hours digits.
-        Uses dp instead of sp to fit the space, independent of the user's font size setting. -->
+    <!-- Uses dp instead of sp to fit the space, independent of the user's font size setting.
+        With AutoSize text, this now only affects the IDE's design view. -->
     <dimen name="display_text_size" tools:ignore="SpUsage">70dp</dimen>
+    <!-- Display TextView height including margins + padding, leaving room for the controls. -->
+    <dimen name="display_text_view_height">72dp</dimen>
     <dimen name="widget_text_size">56sp</dimen>
     <dimen name="secondary_text_size">20sp</dimen>
     <dimen name="controls_text_size">18sp</dimen>

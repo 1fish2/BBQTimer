@@ -35,9 +35,11 @@ import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.TextViewCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Spanned;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
@@ -167,6 +169,10 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
         minutesPicker.setWrapSelectorWheel(false);
         minutesPicker.setOnValueChangedListener(this);
         minutesPicker.setFocusableInTouchMode(true);
+
+        // NOTE: This works with android:maxLines="1" but not with android:singleLine="true".
+        TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(displayView, 16, 1000, 1,
+                TypedValue.COMPLEX_UNIT_DIP);
 
         setVolumeControlStream(AudioManager.STREAM_ALARM);
 

@@ -18,21 +18,21 @@
         android:layout_height="match_parent">
 
         <TextView
-            tools:ignore="SpUsage,Deprecated"
             android:id="@+id/display"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/display_text_view_height"
+            android:layout_gravity="right"
             android:clickable="true"
-            android:textSize="@dimen/display_text_size"
-            android:singleLine="true"
-            android:gravity="right"
+            android:ellipsize="end"
+            android:focusable="true"
+            android:gravity="right|bottom"
+            android:maxLines="1"
             android:onClick="onClickTimerText"
             android:text="@string/time0"
-            android:ellipsize="end"
-            android:typeface="sans"
             android:textColor="@color/running_timer_colors"
-            android:layout_gravity="right"
-            android:focusable="true"/>
+            android:textSize="@dimen/display_text_size"
+            android:typeface="sans"
+            tools:ignore="SpUsage,Deprecated"/>
 
         <LinearLayout
             android:orientation="horizontal"

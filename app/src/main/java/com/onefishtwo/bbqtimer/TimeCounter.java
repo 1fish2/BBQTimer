@@ -86,11 +86,14 @@ public class TimeCounter {
      *
      * Format arg %2$s is a placeholder for the already-localized fractional seconds string, e.g.
      * ".0". The code uses a NumberFormat to format that string instead of an inline format %.1d to
-     * suppress the integer part and disable rounding. It's wrapped in @{code <small>} HTML tags to
+     * suppress the integer part and disable rounding. It's wrapped in &lt;small&gt; HTML tags to
      * make the rapidly changing fractional part less distracting and to make it fit better on
      * screen. This way, "12:34:56.7" fits on a Galaxy Nexus screen.
+     *<p/>
+     * NOTE: This used to use &lt;small&gt;&lt;small&gt; but the fraction digit ".8" would display
+     * wider than other digits when the time string got wide enough to need to auto-size down.
      */
-    private static final String DEFAULT_TIME_STYLE = "%1$s<small><small>%2$s</small></small>";
+    private static final String DEFAULT_TIME_STYLE = "%1$s<small>%2$s</small>";
 
     // Synchronized on recycledStringBuilder.
     // The buffer is big enough for hhh:mm:ss.f + HTML markup = 11 + 30, and rounded up.
