@@ -15,6 +15,7 @@
 
     <application
         android:allowBackup="true"
+        android:appCategory="productivity"
         android:description="@string/app_description"
         android:fullBackupContent="true"
         android:icon="@mipmap/ic_launcher"
