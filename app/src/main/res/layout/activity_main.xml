@@ -109,7 +109,7 @@
                 android:id="@+id/minutesPicker"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal|left"
+                android:layout_gravity="left"
                 android:layout_weight="0"
                 android:focusable="true"/>
         </LinearLayout>

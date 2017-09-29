@@ -24,6 +24,7 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
+import android.content.res.Configuration;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.Handler;
@@ -170,9 +171,12 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
         minutesPicker.setOnValueChangedListener(this);
         minutesPicker.setFocusableInTouchMode(true);
 
-        // NOTE: This works with android:maxLines="1" but not with android:singleLine="true".
-        TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(displayView, 16, 1000, 1,
-                TypedValue.COMPLEX_UNIT_DIP);
+        if (android.os.Build.VERSION.SDK_INT > 15) {
+            // AutoSizeText is supposed to work on API 14+ but generates lots of NPEs on 14-15.
+            // AutoSizeText works with android:maxLines="1" but not with android:singleLine="true".
+            TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(displayView, 16, 1000, 1,
+                    TypedValue.COMPLEX_UNIT_DIP);
+        }
 
         setVolumeControlStream(AudioManager.STREAM_ALARM);
 
@@ -190,6 +194,16 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
                 callingIntent.setAction(Intent.ACTION_MAIN);
             }
         }
+
+        logTheConfiguration(getResources().getConfiguration());
+    }
+
+    private void logTheConfiguration(Configuration config) {
+        int densityDpi = android.os.Build.VERSION.SDK_INT < 17 ? 0 : config.densityDpi;
+
+        Log.v(TAG, "Config densityDpi: " + densityDpi
+                + ", size DPI: " + config.screenWidthDp + "x" + config.screenHeightDp
+                + ", orientation: " + config.orientation);
     }
 
     @Override
@@ -337,6 +351,12 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
             View.OnClickListener listener) {
         snackbar.setAction(resId, listener)
                 .setActionTextColor(ContextCompat.getColor(this, R.color.contrasting_text));
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        logTheConfiguration(newConfig);
     }
 
     /** The user tapped the Run/Pause button (named "StartStop"). */

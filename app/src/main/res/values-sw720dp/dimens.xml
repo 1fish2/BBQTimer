@@ -1,4 +1,0 @@
-<!-- Layout resources for quoted 10" tablet size (720x1280 mdpi, 800x1280 mdpi). -->
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <dimen name="display_text_view_height">136dp</dimen>
-</resources>

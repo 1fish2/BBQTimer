@@ -1,0 +1,4 @@
+<resources>
+    <dimen name="button_margin">8dp</dimen>
+    <dimen name="display_text_view_height">140dp</dimen>
+</resources>
