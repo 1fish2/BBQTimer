@@ -20,7 +20,7 @@
         <TextView
             android:id="@+id/display"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/display_text_view_height"
+            android:layout_height="@dimen/display_text_view_adjusted_height"
             android:layout_gravity="right"
             android:clickable="true"
             android:ellipsize="end"

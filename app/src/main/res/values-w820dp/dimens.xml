@@ -1,6 +1,6 @@
 <resources>
-    <!-- Example customization of dimensions originally defined in res/values/dimens.xml
-         (such as screen margins) for screens with more than 820dp of available width. This
-         would include 7" and 10" devices in landscape (~960dp and ~1280dp respectively). -->
-    <dimen name="activity_horizontal_margin">64dp</dimen>
+    <!-- Wider screen margins for wide screens, e.g. 7" tables in landscape (~960dp) and 10" tablets
+    (~940dp or ~1500dp). -->
+    <dimen name="activity_horizontal_margin">34dp</dimen>
+    <dimen name="portrait_display_text_view_height">310dp</dimen>
 </resources>

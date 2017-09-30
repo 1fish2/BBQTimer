@@ -13,12 +13,15 @@
     <dimen name="widget_margin">0dp</dimen>
     <dimen name="controls_top_margin">12dp</dimen>
 
+    <!-- Display TextView layout height (overridden for specific screen configs). -->
+    <dimen name="display_text_view_height">70dp</dimen>
+    <!-- Display TextView layout height adjusted for landscape screen height (or portrait screen width). -->
+    <dimen name="display_text_view_adjusted_height">@dimen/display_text_view_height</dimen>
+
     <!-- Text sizes. -->
     <!-- Uses dp instead of sp to fit the space, independent of the user's font size setting.
         Thow now affects non-AutoSize versions and the IDE's design view. -->
     <dimen name="display_text_size" tools:ignore="SpUsage">66dp</dimen>
-    <!-- Display TextView height including margins + padding, leaving room for the controls. -->
-    <dimen name="display_text_view_height">70dp</dimen>
     <dimen name="widget_text_size">56sp</dimen>
     <dimen name="secondary_text_size">20sp</dimen>
     <dimen name="controls_text_size">18sp</dimen>
