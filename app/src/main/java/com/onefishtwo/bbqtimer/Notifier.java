@@ -92,7 +92,7 @@ public class Notifier {
         notificationManager =
                 (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManagerCompat = NotificationManagerCompat.from(context);
-        notificationLightColor = ContextCompat.getColor(context, R.color.orange_red_text);
+        notificationLightColor = ContextCompat.getColor(context, R.color.notification_light_color);
     }
 
     /**
