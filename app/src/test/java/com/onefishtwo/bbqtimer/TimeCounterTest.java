@@ -74,7 +74,7 @@ public class TimeCounterTest {
         final long inputMsec =
                 987 * HOUR_IN_MILLIS + 45 * MINUTE_IN_MILLIS + 23 * SECOND_IN_MILLIS + 600;
         final String hhmmssText = "987:45:23";
-        final String htmlText = hhmmssText + "<small><small>.6</small></small>";
+        final String htmlText = hhmmssText + "<small>.6</small>";
         final MockSpanned mockSpanned = new MockSpanned();
 
         TimeCounter.injected = new TimeCounter.InjectForTesting() {
