@@ -41,6 +41,34 @@ version, screen size, problem symptom, Android "bugreport" file).
 8. (Further info) See [Getting started with lock screen widgets on Android Jelly Bean](http://howto.cnet.com/8301-11310_39-57549747-285/getting-started-with-lock-screen-widgets-on-android-jelly-bean/)
   or [How to Add Lockscreen Widgets to Android 4.4 KitKat](http://www.gottabemobile.com/2013/11/11/add-lockscreen-widgets-android-4-4-kitkat-nexus-5/).
 
+## Notification Channel Settings (Android 8.0+)
+
+In Android 8.0 (Oreo), you can use the system Settings to adjust notification sounds. Beware that
+some changes will disable the app's periodic alarm sounds or lock screen features.
+
+Key settings:
+
+* Apps &amp; notifications / notifications / On the lock screen: **Show all notification content**
+* Apps &amp; notifications / App info / BBQ Timer / App notifications / **On**
+* Apps &amp; notifications / App info / BBQ Timer / App notifications / **Alarm** - **On**
+  * This notification channel is used to play the alarm sound, and it remains to display the timer
+    and the pause/reset/stop controls in the notification area and on the lock screen.
+  * **Importance** - must be **Urgent** to enable the “heads up” display from the pull-down notification bar;
+    **High** or higher to enable alarm sounds;
+    **Medium** or higher to appear on the lock screen and in the notification area.
+  * **Sound** - you can pick any sound, but don't pick **None** if you want to hear the app’s alarms.
+  * **Vibrate** and **Blink light** - you can change these alarm properties.
+  * **On the lock screen** - **Show all notification content** to operate the timer from the lock screen.
+* Apps &amp; notifications / App info / BBQ Timer / App notifications / **Controls** - **On**
+  * This notification channel is used to display the timer and the pause/reset/stop controls in the
+    notification area and on the lock screen when the app doesn’t need to play the alarm sound.
+  * **Importance** - must be **Medium** or higher to appear on the lock screen and in the notification area.
+  * **On the lock screen** - **Show all notification content** to operate the timer from the lock screen.
+
+The system alarm volume controls the volume of the app’s alarms. If you turn it all the way down,
+the app won’t sound audible alarms. It will still vibrate and blink the notification LED, assuming
+those settings are enabled.
+
 ## License
 
 [MIT License](https://github.com/1fish2/BBQTimer/blob/master/LICENSE.md).
