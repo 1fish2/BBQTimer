@@ -198,6 +198,7 @@ public class Notifier {
      * Creates a notification channel that matches the parameters #buildNotification() uses. The
      * "Alarm" channel sounds an alarm at heads-up High importance. The "Controls" channel does not.
      */
+    @SuppressWarnings("UnnecessaryLocalVariable")
     @TargetApi(26)
     private void createNotificationChannelV26(boolean makeAlarm) {
         // --- An alarm channel or not.

@@ -157,12 +157,12 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
         makeLocaleStrings();
         setContentView(R.layout.activity_main);
 
-        resetButton           = (Button) findViewById(R.id.resetButton);
-        startStopButton       = (Button) findViewById(R.id.startStopButton);
-        stopButton            = (Button) findViewById(R.id.stopButton);
-        displayView           = (TextView) findViewById(R.id.display);
-        enableRemindersToggle = (CompoundButton) findViewById(R.id.enableReminders);
-        minutesPicker         = (NumberPicker) findViewById(R.id.minutesPicker);
+        resetButton           = findViewById(R.id.resetButton);
+        startStopButton       = findViewById(R.id.startStopButton);
+        stopButton            = findViewById(R.id.stopButton);
+        displayView           = findViewById(R.id.display);
+        enableRemindersToggle = findViewById(R.id.enableReminders);
+        minutesPicker         = findViewById(R.id.minutesPicker);
 
         minutesPicker.setMinValue(0);
         minutesPicker.setMaxValue(minutesChoices.choices.length - 1);
@@ -515,7 +515,8 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
      * NOTE: Call this only if the user asked to do it.
      */
     @TargetApi(26)
-    private void openNotificationChannelSettings(String channelId) {
+    private void openNotificationChannelSettings(
+            @SuppressWarnings("SameParameterValue") String channelId) {
         Intent intent = new Intent();
 
         intent.setAction(Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS);
