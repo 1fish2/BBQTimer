@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/BBQ Timer/BBQ Timer.iml" filepath="$PROJECT_DIR$/BBQ Timer/BBQ Timer.iml" />
       <module fileurl="file://$PROJECT_DIR$/BBQTimer.iml" filepath="$PROJECT_DIR$/BBQTimer.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>
 </project>

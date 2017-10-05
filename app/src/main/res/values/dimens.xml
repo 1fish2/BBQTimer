@@ -1,0 +1,34 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Nexus 1 & Nexus S (320x533 dp); Galaxy Nexus (360x640 dp); Nexus 4 (384x640 dp); Nexus 5 (432x768 dp); Nexus 6 (411x731 dp). -->
+    <dimen name="activity_horizontal_margin">14dp</dimen>
+    <dimen name="activity_vertical_margin">2dp</dimen>
+
+    <dimen name="button_padding">12dp</dimen>
+    <dimen name="button_margin">3dp</dimen>
+    <dimen name="small_button_padding">8dp</dimen>
+    <dimen name="widget_horizontal_padding">3dp</dimen>
+    <dimen name="widget_vertical_padding">0dp</dimen>
+    <dimen name="widget_secondary_text_margin">4dp</dimen>
+    <dimen name="max_checkbox_width">300dp</dimen>
+
+    <!-- Used to default this to 8dp here and override it to 0dp in values-v14/dimens.xml . -->
+    <dimen name="widget_margin">0dp</dimen>
+    <dimen name="controls_top_margin">12dp</dimen>
+
+    <!-- Display TextView layout height (overridden for specific screen configs). -->
+    <dimen name="display_text_view_height">70dp</dimen>
+    <!-- Display TextView layout height adjusted for landscape screen height (or portrait screen width). -->
+    <dimen name="display_text_view_adjusted_height">@dimen/display_text_view_height</dimen>
+
+    <!-- Text sizes. -->
+    <!-- Uses dp instead of sp to fit the space, independent of the user's font size setting.
+        Thow now affects non-AutoSize versions and the IDE's design view. -->
+    <dimen name="display_text_size" tools:ignore="SpUsage">66dp</dimen>
+    <dimen name="widget_text_size">48dp</dimen>
+    <dimen name="secondary_text_size">20sp</dimen>
+    <dimen name="controls_text_size">18sp</dimen>
+
+    <dimen name="activityMinWidth">320dp</dimen>
+    <dimen name="activityMinHeight">290dp</dimen>
+
+</resources>

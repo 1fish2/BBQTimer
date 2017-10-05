@@ -1,5 +1,0 @@
-<!-- Layout resources for tablets like Nexus 9 (1536x2048 xhdpi = 768x1024 dp). -->
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- fits 2+ hours digits -->
-    <dimen name="display_text_size" tools:ignore="SpUsage">153dp</dimen>
-</resources>

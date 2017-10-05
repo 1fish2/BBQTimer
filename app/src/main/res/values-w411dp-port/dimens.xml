@@ -1,0 +1,3 @@
+<resources>
+    <dimen name="portrait_display_text_view_height">160dp</dimen>
+</resources>

@@ -4,9 +4,8 @@
 # NOTE: Save these .svg files with their bg layers hidden, then run this script,
 # then restore the .svg files.
 
-PROJECT="BBQ Timer"
 INPUT="source-assets/large-button-icons/"
-MAIN="${PROJECT}/src/main/"
+MAIN="app/src/main/"
 RES="${MAIN}res/"
 DRAWABLE="${RES}drawable"
 

@@ -1,0 +1,130 @@
+import groovy.swing.SwingBuilder
+
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 26
+    buildToolsVersion '26.0.2'
+    dexOptions {
+        javaMaxHeapSize "2560m"
+    }
+    signingConfigs {
+        releaseSigning {
+            // The dummy passwords complete the signingConfigs so the other tasks can work without
+            // asking for passwords when not needed.
+            storeFile file(System.getenv("HOME") + "/.android/1fish2_keystore.jks")
+            storePassword "notTheRealPassword"
+            keyAlias "BBQTimer"
+            keyPassword "notTheRealPassword"
+        }
+    }
+    defaultConfig {
+        minSdkVersion 14
+        targetSdkVersion 26
+        versionCode 15
+        versionName '2.5'
+        resConfigs "en", "de"
+        testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
+    }
+    buildTypes {
+        debug {
+            minifyEnabled true
+            useProguard false
+            debuggable true
+            zipAlignEnabled true
+        }
+        debugProguard {
+            minifyEnabled true
+            // shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-test-rules.txt'
+            signingConfig debug.signingConfig
+            debuggable true
+            zipAlignEnabled true
+        }
+        release {
+            minifyEnabled true
+            // shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.txt'
+            //noinspection GroovyAssignabilityCheck
+            signingConfig signingConfigs.releaseSigning
+            zipAlignEnabled true
+        }
+    }
+    // testBuildType "debugProguard"
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
+    }
+    android.applicationVariants.all { variant ->
+        variant.outputs.each { output ->
+            // Use the project name rather than "app" in the output APK filename.
+            // Consider also including "${variant.versionName}" in the APK filename.
+            def apkName = "${rootProject.name}-${output.baseName}.apk"
+            output.outputFile = new File(output.outputFile.parent, apkName)
+        }
+    }
+    productFlavors {
+    }
+}
+
+// See http://stackoverflow.com/a/19350401/1682419
+// See http://stackoverflow.com/a/24360969/1682419
+// TODO: Try using the platform's keyring: http://stackoverflow.com/a/22597752/1682419
+//    and the OSX `security` command http://blog.macromates.com/2006/keychain-access-from-shell/
+task askForPasswords {
+    doLast {
+        def storePw = ''
+        def keyPw   = ''
+
+        if (System.console() == null) {
+            // The console is null in Gradle daemon builds, so use Swing.
+            new SwingBuilder().edt {
+                dialog(modal: true, title: 'Enter signing passwords', alwaysOnTop: true,
+                        resizable: false, locationRelativeTo: null, pack: true, show: true) {
+                    vbox {
+                        label(text: "Keystore password:")
+                        def storePwField = passwordField(columns: 20)
+                        label(text: "Key password:")
+                        def keyPwField = passwordField(columns: 20)
+                        button(defaultButton: true, text: 'OK', actionPerformed: {
+                            storePw = new String(storePwField.password);
+                            keyPw   = new String(keyPwField.password);
+                            dispose();
+                        })
+                    }
+                }
+            }
+        } else {
+            // Construct Strings because readPassword() returns char[] and using that fails silently.
+            storePw = new String(System.console().readPassword("\nKeystore password: "))
+            keyPw   = new String(System.console().readPassword("\nKey password: "))
+        }
+
+        if (storePw.size() <= 0 || keyPw.size() <= 0) {
+            throw new IOException("You must enter the passwords to proceed.")
+        }
+
+        android.signingConfigs.releaseSigning.storePassword = storePw
+        android.signingConfigs.releaseSigning.keyPassword = keyPw
+    }
+}
+
+tasks.whenTaskAdded { theTask ->
+    if (theTask.name in ["packageRelease"]) {
+        theTask.dependsOn "askForPasswords"
+    }
+}
+
+dependencies {
+    compile 'com.android.support:appcompat-v7:26.0.2'
+    //    compile 'com.android.support:support-compat:n.n.n'
+    compile 'com.android.support:support-media-compat:26.0.2'
+    compile 'com.android.support:design:26.0.2'
+    testCompile 'junit:junit:4.12'
+    androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    }
+    debugProguardCompile 'com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    }
+}

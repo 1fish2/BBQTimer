@@ -4,4 +4,4 @@
 
 adb -e pull sdcard/Download/BBQ_Timer_ori_portrait.png widget_preview.png
 adb -e shell rm sdcard/Download/BBQ_Timer_ori_portrait.png
-echo 'Now move widget_preview.png to BBQ\ Timer/src/main/res/drawable-???/'
+echo 'Now move widget_preview.png to app/src/main/res/drawable-???/'

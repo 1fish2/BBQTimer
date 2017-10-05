@@ -1,0 +1,6 @@
+<resources>
+    <!-- Wider screen margins for wide screens, e.g. 7" tables in landscape (~960dp) and 10" tablets
+    (~940dp or ~1500dp). -->
+    <dimen name="activity_horizontal_margin">34dp</dimen>
+    <dimen name="portrait_display_text_view_height">310dp</dimen>
+</resources>
