@@ -8,6 +8,7 @@
     <dimen name="small_button_padding">8dp</dimen>
     <dimen name="widget_horizontal_padding">3dp</dimen>
     <dimen name="widget_vertical_padding">1dp</dimen>
+    <dimen name="widget_secondary_text_margin">4dp</dimen>
     <dimen name="max_checkbox_width">300dp</dimen>
 
     <!-- Used to default this to 8dp here and override it to 0dp in values-v14/dimens.xml . -->
