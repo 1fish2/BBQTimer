@@ -1,7 +1,8 @@
 #!/bin/sh
-# Installs the release APK on a connected device or emulator.
+# (Re)Installs the release APK on a connected device or emulator.
 #
 # Arguments:
-#   $1 -- optional flags like "-r" to reinstall.
+#   $1 -- optional flag like "-d" to force it to use an ADB USB Device.
+#         Defaults to "-e".
 
-adb install ${1-} app/build/outputs/apk/BBQTimer-release.apk
+adb "${1:--e}" install -r app/build/outputs/apk/BBQTimer-release.apk
