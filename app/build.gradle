@@ -37,6 +37,7 @@ android {
             minifyEnabled true
             // shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-test-rules.txt'
+            testProguardFile 'proguard-test-rules.txt'
             signingConfig debug.signingConfig
             debuggable true
             zipAlignEnabled true
@@ -54,6 +55,9 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_7
         targetCompatibility JavaVersion.VERSION_1_7
+    }
+    lintOptions {
+        abortOnError false
     }
     android.applicationVariants.all { variant ->
         variant.outputs.each { output ->

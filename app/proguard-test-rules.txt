@@ -20,11 +20,6 @@
 -keepattributes Signature
 -keepattributes Exceptions
 
-
-# The narrower "keep" seems to work. Can we rely on it for release builds?
-#-keep class android.support.v4.** { *; }
--keep class android.support.v4.content.ContextCompat { *; }
-
 # The support library contains references to newer platform versions.
 # Don't warn about those in case this app is linking against an older
 # platform version. They're safe.
