@@ -6,6 +6,7 @@
 /.idea/libraries
 build/
 /captures
+.idea/caches/
 
 # Unused source assets. They may get used later.
 /source-assets/unused/
