@@ -4,7 +4,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 26
-    buildToolsVersion '27.0.3'
+    buildToolsVersion '29.0.2'
     dexOptions {
         javaMaxHeapSize "2560m"
     }
@@ -29,7 +29,7 @@ android {
     buildTypes {
         debug {
             minifyEnabled true
-            useProguard false
+            // useProguard false
             debuggable true
             zipAlignEnabled true
         }
@@ -89,9 +89,9 @@ task askForPasswords {
                         label(text: "Key password:")
                         def keyPwField = passwordField(columns: 20)
                         button(defaultButton: true, text: 'OK', actionPerformed: {
-                            storePw = new String(storePwField.password);
-                            keyPw   = new String(keyPwField.password);
-                            dispose();
+                            storePw = new String(storePwField.password)
+                            keyPw   = new String(keyPwField.password)
+                            dispose()
                         })
                     }
                 }

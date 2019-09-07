@@ -107,13 +107,11 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
             MainActivity activity = weakActivity.get();
 
             super.handleMessage(msg);
-            switch (msg.what) {
-                case MSG_UPDATE:
-                    if (activity != null) {
-                        activity.displayTime();
-                    }
-                    scheduleNextUpdate();
-                    break;
+            if (msg.what == MSG_UPDATE) {
+                if (activity != null) {
+                    activity.displayTime();
+                }
+                scheduleNextUpdate();
             }
         }
 
@@ -305,19 +303,22 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
         }
 
         final AudioManager am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-        int volume = am.getStreamVolume(AudioManager.STREAM_ALARM);
+        if (am != null) {
+            int volume = am.getStreamVolume(AudioManager.STREAM_ALARM);
 
-        // Check for muted alarms.
-        if (volume <= 0) {
-            Snackbar snackbar = makeSnackbar(R.string.alarm_muted);
-            setSnackbarAction(snackbar, R.string.alarm_unmute, new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    am.adjustStreamVolume(AudioManager.STREAM_ALARM, AudioManager.ADJUST_RAISE, 0);
-                }
-            });
-            snackbar.show();
-            return;
+            // Check for muted alarms.
+            if (volume <= 0) {
+                Snackbar snackbar = makeSnackbar(R.string.alarm_muted);
+                setSnackbarAction(snackbar, R.string.alarm_unmute, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        am.adjustStreamVolume(AudioManager.STREAM_ALARM, AudioManager.ADJUST_RAISE,
+                                0);
+                    }
+                });
+                snackbar.show();
+                return;
+            }
         }
 
         // Check for misconfigured Alarm notification channel.

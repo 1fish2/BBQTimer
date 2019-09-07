@@ -43,6 +43,7 @@
                 android:layout_marginRight="@dimen/widget_horizontal_padding"
                 android:layout_weight="1"
                 android:clickable="true"
+                android:focusable="true"
                 android:measureAllChildren="false">
 
                 <Chronometer

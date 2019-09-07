@@ -171,6 +171,11 @@ public class AlarmReceiver extends BroadcastReceiver {
         long nextReminder = nextReminderTime(state);
         PendingIntent pendingIntent = makeAlarmPendingIntent(context, nextReminder);
 
+        if (alarmMgr == null) {
+            Log.w(TAG, "scheduleNextReminder: null alarmMgr");
+            return;
+        }
+
         if (USE_SET_ALARM_CLOCK) { // Android v23+
             setAlarmClockV21(context, alarmMgr, state, nextReminder, pendingIntent);
         } else if (android.os.Build.VERSION.SDK_INT >= 19) {
@@ -243,6 +248,11 @@ public class AlarmReceiver extends BroadcastReceiver {
     public static void cancelReminders(@NonNull Context context) {
         AlarmManager alarmMgr = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
         PendingIntent pendingIntent = makeAlarmPendingIntent(context, 0);
+
+        if (alarmMgr == null) {
+            Log.w(TAG, "cancelReminders: null alarmMgr");
+            return;
+        }
 
         alarmMgr.cancel(pendingIntent);
 
