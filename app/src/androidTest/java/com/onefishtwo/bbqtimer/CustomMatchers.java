@@ -28,7 +28,6 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.test.espresso.FailureHandler;
 import android.support.test.espresso.ViewInteraction;
 import android.support.test.espresso.matcher.BoundedMatcher;
 import android.support.v4.content.ContextCompat;
@@ -94,10 +93,7 @@ class CustomMatchers {
      * @return the modified ViewInteraction
      */
     static ViewInteraction ignoringFailures(@NonNull ViewInteraction interaction) {
-        return interaction.withFailureHandler(new FailureHandler() {
-            @Override
-            public void handle(Throwable error, Matcher<View> viewMatcher) {
-            }
+        return interaction.withFailureHandler((error, viewMatcher) -> {
         });
     }
 

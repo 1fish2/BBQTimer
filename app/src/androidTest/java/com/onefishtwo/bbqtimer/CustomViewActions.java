@@ -69,6 +69,7 @@ class CustomViewActions {
     }
 
     /** Clicks a checkbox if needed to put it into the desired state. */
+    @SuppressWarnings("SameParameterValue")
     @NonNull
     static ViewAction setChecked(final boolean checked) {
         return new ViewAction() {
@@ -95,7 +96,6 @@ class CustomViewActions {
                 return "click if needed to check";
             }
 
-            @NonNull
             @Override
             public void perform(UiController uiController, View view) {
                 Checkable checkableView = (Checkable) view;

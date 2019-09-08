@@ -120,6 +120,7 @@ class V21Builder implements NotificationBuilder {
         return this;
     }
 
+    @SuppressWarnings("unused")
     @NonNull
     @Override
     public NotificationBuilder setNumber(int number) {
@@ -194,6 +195,7 @@ class V21Builder implements NotificationBuilder {
         return this;
     }
 
+    @SuppressWarnings("unused")
     @NonNull
     @Override
     public NotificationBuilder setDefaults(int defaults) {

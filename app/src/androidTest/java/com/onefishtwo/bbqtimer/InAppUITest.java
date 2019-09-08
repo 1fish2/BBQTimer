@@ -307,7 +307,7 @@ public class InAppUITest {
                 allOf(withId(R.id.resetButton),
                         childAtPosition(
                                 childAtPosition(
-                                        IsInstanceOf.<View>instanceOf(
+                                        IsInstanceOf.instanceOf(
                                                 android.widget.LinearLayout.class),
                                         1),
                                 1),
@@ -325,11 +325,11 @@ public class InAppUITest {
         textView2.check(matches(withText("00:00.0")));
 
         ViewInteraction editText = onView(
-                allOf(IsInstanceOf.<View>instanceOf(android.widget.EditText.class),
+                allOf(IsInstanceOf.instanceOf(android.widget.EditText.class),
                         withText("1"),
                         childAtPosition(
                                 childAtPosition(
-                                        IsInstanceOf.<View>instanceOf(
+                                        IsInstanceOf.instanceOf(
                                                 android.widget.LinearLayout.class),
                                         1),
                                 1),

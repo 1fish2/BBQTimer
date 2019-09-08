@@ -39,6 +39,7 @@
             <meta-data android:name="android.app.shortcuts"
                        android:resource="@xml/shortcuts" />
             <!-- https://developer.android.com/guide/topics/ui/multi-window.html -->
+            <!--suppress AndroidElementNotAllowed -->
             <layout android:minWidth="@dimen/activityMinWidth"
                     android:minHeight="@dimen/activityMinHeight"/>
         </activity>

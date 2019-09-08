@@ -56,7 +56,6 @@ import java.lang.ref.WeakReference;
  * The BBQ Timer's main activity.
  */
 public class MainActivity extends AppCompatActivity implements NumberPicker.OnValueChangeListener {
-    @SuppressWarnings("FieldCanBeLocal")
     private final String TAG = "Main";
 
     /**
@@ -286,12 +285,8 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
         if (!notificationManager.areNotificationsEnabled()) {
             Snackbar snackbar = makeSnackbar(R.string.notifications_disabled);
             if (android.os.Build.VERSION.SDK_INT >= 21) { // Where this Settings Intent works.
-                setSnackbarAction(snackbar, R.string.notifications_enable, new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                openNotificationSettingsForApp();
-                            }
-                });
+                setSnackbarAction(snackbar, R.string.notifications_enable,
+                        view -> openNotificationSettingsForApp());
             }
             snackbar.show();
             return;
@@ -309,13 +304,9 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
             // Check for muted alarms.
             if (volume <= 0) {
                 Snackbar snackbar = makeSnackbar(R.string.alarm_muted);
-                setSnackbarAction(snackbar, R.string.alarm_unmute, new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        am.adjustStreamVolume(AudioManager.STREAM_ALARM, AudioManager.ADJUST_RAISE,
-                                0);
-                    }
-                });
+                setSnackbarAction(snackbar, R.string.alarm_unmute,
+                        view -> am.adjustStreamVolume(AudioManager.STREAM_ALARM, AudioManager.ADJUST_RAISE,
+                                0));
                 snackbar.show();
                 return;
             }
@@ -325,13 +316,9 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
         if (!notifier.isAlarmChannelOK()) {
             Snackbar snackbar = makeSnackbar(R.string.notifications_misconfigured);
             if (android.os.Build.VERSION.SDK_INT >= 26) { // Where this Settings Intent works.
-                setSnackbarAction(snackbar, R.string.notifications_configure, new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                openNotificationChannelSettings(
-                                        Notifier.ALARM_NOTIFICATION_CHANNEL_ID);
-                            }
-                });
+                setSnackbarAction(snackbar, R.string.notifications_configure,
+                        view -> openNotificationChannelSettings(
+                                Notifier.ALARM_NOTIFICATION_CHANNEL_ID));
             }
             snackbar.show();
         }

@@ -32,6 +32,7 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.is;
 
 /** Matcher to test that a List starts with the expected prefix. */
+@SuppressWarnings("unused")
 public class ListPrefixMatcher<E> extends FeatureMatcher<List<E>, List<E>> {
     final List<E> expectedPrefix;
 

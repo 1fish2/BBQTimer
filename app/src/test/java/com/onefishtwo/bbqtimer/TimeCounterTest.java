@@ -62,6 +62,13 @@ public class TimeCounterTest {
         @Nullable
         @Override
         public CharSequence subSequence(int start, int end) { return null; }
+
+        @SuppressWarnings("EmptyMethod")  // an "empty" method just for the @NonNull annotation
+        @NonNull
+        @Override
+        public String toString() {
+            return super.toString();
+        }
     }
 
     /**

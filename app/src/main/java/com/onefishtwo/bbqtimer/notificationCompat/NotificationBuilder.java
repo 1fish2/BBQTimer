@@ -52,6 +52,7 @@ public interface NotificationBuilder {
     NotificationBuilder setLights(int argb, int onMs, int offMs);
     @NonNull
     NotificationBuilder setSubText(CharSequence text);
+    @SuppressWarnings("unused")
     @NonNull
     NotificationBuilder setNumber(int number);
     @NonNull
@@ -68,6 +69,7 @@ public interface NotificationBuilder {
     NotificationBuilder setOngoing(boolean ongoing);
     @NonNull
     NotificationBuilder setCategory(String category);
+    @SuppressWarnings("unused")
     @NonNull
     NotificationBuilder setDefaults(int defaults);
     @NonNull
