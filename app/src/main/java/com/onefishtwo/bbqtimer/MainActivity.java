@@ -414,6 +414,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
         state.setEnableReminders(enableRemindersToggle.isChecked());
         state.save(this);
         AlarmReceiver.updateNotifications(this);
+        updateUI();
 
         if (state.isEnableReminders()) {
             informIfNotificationAlarmsMuted();
@@ -460,6 +461,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
         boolean isRunning = timer.isRunning();
         boolean isStopped = timer.isStopped();
         boolean isPausedAt0 = timer.isPausedAt0();
+        boolean areRemindersEnabled = state.isEnableReminders();
 
         displayTime();
         resetButton.setCompoundDrawablesWithIntrinsicBounds(
@@ -470,9 +472,10 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
         startStopButton.setCompoundDrawablesWithIntrinsicBounds(
                 isRunning ? R.drawable.ic_pause : R.drawable.ic_play, 0, 0, 0);
         stopButton.setVisibility(isStopped ? View.INVISIBLE : View.VISIBLE);
-        enableRemindersToggle.setChecked(state.isEnableReminders());
+        enableRemindersToggle.setChecked(areRemindersEnabled);
         minutesPicker.setValue(MinutesChoices.secondsToPickerChoice(
                 state.getSecondsPerReminder()));
+        minutesPicker.setEnabled(areRemindersEnabled);
 
         AlarmReceiver.updateNotifications(this);
 
