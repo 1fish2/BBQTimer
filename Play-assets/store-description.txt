@@ -1,6 +1,7 @@
-A timer with a twist (or two):
-1. <b>Lock screen operation</b> for quick access via a <em>lock screen notifications</em> (Android 5.0+ Lollipop+) or <em>lock screen widgets</em> (Android 4.2 Jelly Bean to 4.4 KitKat).
-2. <b>Periodic alarms</b> remind you to check/turn the food while it counts up the total cooking time.
+An interval timer with a twist:
+1. <b>Lock screen operation</b> for quick access via a <em>lock screen notification</em> (Android 5.0 Lollipop+) or a <em>lock screen widget</em> (Android 4.2 Jelly Bean to 4.4 KitKat) without unlocking your phone.
+2. <b>Periodic alarms</b> to check/turn your food while it tracks the total cooking time. (A “stopwatch” won’t alert you while a “timer” won’t track the total time while you turn the burgers, check their temperature, and give them more time as needed.)
+3. <b>Adjustable alarm interval</b> while it’s running.
 
 Of course it can time more things than cooking.
 
@@ -11,12 +12,12 @@ Of course it can time more things than cooking.
 
 
 <b>Usage Tips</b>
-• Android 5.0+ (Lollipop+): While BBQ Timer is <i>running</i> or <i>paused</i>, you can operate it from the lock screen and the pull-down notification. If the Timer is <i>stopped</i>, just tap the <b>Pause</b> or <b>Play</b> buttons in the app, or the <b>Play</b> button in the home screen widget, or the timer text. Or on Android 7.1+, use the “Pause at 0:00” app shortcut on the home screen.
+• Android 5.0+ (Lollipop+): While BBQ Timer is <i>running</i> or <i>paused</i>, you can operate it <b>from the lock screen</b> or the pull-down notification. If the Timer is <i>stopped</i>, just tap the <b>Pause</b> or <b>Play</b> buttons in the app, or the <b>Play</b> button in the home screen widget, or the timer text. Or on Android 7.1+, use the “Pause at 0:00” app shortcut on the home screen.
 • Try the home screen widget.
 • To stretch out the widget to show longer durations, long-press it then drag its resize handles.
 • To remove the widget, long-press it then drag it onto “× Remove”.
 • Tap the time display to cycle between <i>stopped</i> → <i>running</i> → <i>paused</i> → <i>stopped.</i>
-• Within the app, tap the checkbox to turn periodic reminder alarms on/off.
+• Within the app, tap the checkbox to turn the periodic reminder alarms on/off.
 
 <b>To put a BBQ Timer widget on your lock screen (Android 4.2 Jelly Bean to 4.4 KitKat)</b>
 1. On Android 4.4, enable Settings → Security → Enable Widgets.
@@ -45,5 +46,3 @@ In Android 8.0 (Oreo), you can use the system Settings to adjust notification so
 The system alarm volume adjusts the app’s alarm volume. If you turn it all the way down, the app won’t sound audible alarms. It can still vibrate and blink the notification LED, if enabled.
 
 Source code: https://github.com/1fish2/BBQTimer
-
-Keywords: BBQ, cooking, interval timer, lock screen widget, reminder alarm, stopwatch.
