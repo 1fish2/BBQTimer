@@ -2,14 +2,15 @@
 
 [See it in the Google Play store](https://play.google.com/store/apps/details?id=com.onefishtwo.bbqtimer)
 
-A timer with:
+An interval timer with a twist:
 
-1. **Lock screen operation** for quick access via *lock screen notifications* (Android 5.0+ Lollipop+) or *lock screen widgets* (Android 4.2 Jelly Bean to 4.4 KitKat).
-2. **Periodic alarms** remind you to check/turn the food while it counts up the total cooking time.
+1. **Lock screen operation** for quick access via *lock screen notifications* (Android 5.0 Lollipop+) or a *lock screen widget* (Android 4.2 Jelly Bean to 4.4 KitKat) without unlocking your phone.
+2. **Periodic alarms** to check/turn your food while it tracks the total cooking time. (A “stopwatch” won’t alert you while a “timer” won’t track the total time while you turn the burgers, check their temperature, and give them more time as needed.)
+3. **Adjustable alarm interval** while it’s running.
 
 Of course it can time more things than cooking.
 
-Requires few permissions.  
+Requires no special permissions.
 No network access. No ads. No data gathering.  
 Simple and focused.  
 Free.
@@ -28,7 +29,7 @@ version, screen size, problem symptom, Android "bugreport" file).
 * To stretch out the widget to show longer durations, long-press it then drag its resize handles.
 * To remove the widget, long-press it then drag it onto “X Remove”.
 * Tap the stopwatch time display to cycle between *stopped* → *running* → *paused* → *stopped.*
-* Within the app, tap the checkbox to turn periodic reminder alarms on/off.
+* Within the app, tap the checkbox to turn the periodic reminder alarms on/off.
 
 ## To put a widget on your lock screen (Android 4.2 to 4.4)
 1. On Android 4.4 KitKat, first enable Settings → Security → Enable Widgets.
@@ -44,9 +45,7 @@ version, screen size, problem symptom, Android "bugreport" file).
 ## Notification Channel Settings (Android 8.0+)
 
 In Android 8.0 (Oreo), you can use the system Settings to adjust notification sounds. Beware that
-some changes will disable the app's periodic alarm sounds or lock screen features.
-
-Key settings:
+some changes will disable the app's periodic alarm sounds or lock screen features. Settings:
 
 * Apps &amp; notifications / notifications / On the lock screen: **Show all notification content**
 * Apps &amp; notifications / App info / BBQ Timer / App notifications / **On**
@@ -73,8 +72,8 @@ those settings are enabled.
 
 [MIT License](https://github.com/1fish2/BBQTimer/blob/master/LICENSE.md).
 
-## Known Issues
-* There’s a fraction of a second clock skew between the stopwatch time displayed in widgets vs. the
+## Notes
+* There’s a small clock skew between the stopwatch time displayed in widgets vs. the
   notification area. For precise times, open the application’s main screen.
 * At Font Size Largest in Display Size Default, the home screen widget's text gets clipped at the bottom.
 * The app can’t install in external storage (SD card) because Android deletes
@@ -102,7 +101,7 @@ Launcher icon derived from a public domain image on [openclipart.org](http://ope
 BBQ, cooking, interval timer, lock screen widget, reminder alarm, stopwatch.
 
 ## Implementation notes
-* The lock screen widget and notification need to use a Chronometer view to show the ticking time
+* The lock screen widget and notification use a Chronometer view to show the ticking time
 display while using little battery power.
 * When paused, a Chronometer view can’t show the right time value because its API doesn’t
 handle that case. You could fudge it but it'll be off a bit and multiple widgets would
