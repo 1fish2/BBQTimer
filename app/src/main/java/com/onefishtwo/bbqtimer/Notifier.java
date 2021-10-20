@@ -31,16 +31,17 @@ import android.graphics.BitmapFactory;
 import android.media.AudioAttributes;
 import android.net.Uri;
 import android.os.Build;
-import android.support.annotation.NonNull;
-import android.support.annotation.StringRes;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationManagerCompat;
-import android.support.v4.app.TaskStackBuilder;
-import android.support.v4.content.ContextCompat;
 
 import com.onefishtwo.bbqtimer.notificationCompat.NotificationBuilder;
 import com.onefishtwo.bbqtimer.notificationCompat.NotificationBuilderFactory;
 import com.onefishtwo.bbqtimer.state.ApplicationState;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
+import androidx.core.app.TaskStackBuilder;
+import androidx.core.content.ContextCompat;
 
 /**
  * Manages the app's Android Notifications.
@@ -57,8 +58,7 @@ public class Notifier {
     // visible alarm feedback (just like out-of-activity).
     //
     // TODO: Test in-activity notifications on earlier Android builds.
-    private static final boolean IN_ACTIVITY_NOTIFICATIONS =
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
+    private static final boolean IN_ACTIVITY_NOTIFICATIONS = true;
 
     /**
      * On API 21+, allow Paused notifications with Reset/Stop/Start buttons and Running
@@ -87,12 +87,12 @@ public class Notifier {
     private boolean soundAlarm = false; // whether the next notification should sound an alarm
     private int numActions; // the number of action buttons added to the notification being built
 
-    public Notifier(Context context) {
-        this.context = context;
+    public Notifier(Context _context) {
+        this.context = _context;
         notificationManager =
-                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManagerCompat = NotificationManagerCompat.from(context);
-        notificationLightColor = ContextCompat.getColor(context, R.color.notification_light_color);
+                (NotificationManager) _context.getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManagerCompat = NotificationManagerCompat.from(_context);
+        notificationLightColor = ContextCompat.getColor(_context, R.color.notification_light_color);
     }
 
     /**
@@ -100,8 +100,8 @@ public class Notifier {
      * flash the device LED. Initially set to false.
      */
     @NonNull
-    public Notifier setAlarm(boolean soundAlarm) {
-        this.soundAlarm = soundAlarm;
+    public Notifier setAlarm(boolean _soundAlarm) {
+        this.soundAlarm = _soundAlarm;
         return this;
     }
 
@@ -264,6 +264,7 @@ public class Notifier {
             NotificationChannel channel = notificationManager.getNotificationChannel(
                     ALARM_NOTIFICATION_CHANNEL_ID);
 
+            //noinspection VariableNotUsedInsideIf
             if (channel != null) {
                 builtNotificationChannels = false;
                 createNotificationChannels();

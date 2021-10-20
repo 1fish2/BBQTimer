@@ -26,10 +26,12 @@ import android.graphics.Bitmap;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
-import android.support.annotation.NonNull;
-import android.support.v4.app.NotificationCompat;
 
 import com.onefishtwo.bbqtimer.R;
+
+import androidx.annotation.NonNull;
+import androidx.core.app.NotificationCompat;
+import androidx.media.app.NotificationCompat.MediaStyle;
 
 /**
  * NotificationBuilder proxy (the V21 name is historical). Previously the interface had to be
@@ -227,12 +229,8 @@ class V21Builder implements NotificationBuilder {
     @NonNull
     @Override
     public NotificationBuilder setMediaStyleActionsInCompactView(int... actions) {
-        if (Build.VERSION.SDK_INT >= 21) { // MediaStyle introduced in Android v21.
-            android.support.v4.media.app.NotificationCompat.MediaStyle style =
-                    new android.support.v4.media.app.NotificationCompat.MediaStyle()
-                            .setShowActionsInCompactView(actions);
-            builder.setStyle(style);
-        }
+        MediaStyle style = new MediaStyle().setShowActionsInCompactView(actions);
+        builder.setStyle(style);
 
         // Workaround a Marshmallow bug where the heads-up notification shows low contrast dark gray
         // text on darker gray background. setColor() sometimes sets the background color tho it's

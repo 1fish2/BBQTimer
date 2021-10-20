@@ -1,4 +1,5 @@
-<android.support.design.widget.CoordinatorLayout
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="MergeRootFrame"
@@ -27,7 +28,6 @@
             android:focusable="true"
             android:gravity="right|bottom"
             android:maxLines="1"
-            android:onClick="onClickTimerText"
             android:text="@string/time0"
             android:textColor="@color/running_timer_colors"
             android:textSize="@dimen/display_text_size"
@@ -50,7 +50,6 @@
                 android:layout_height="wrap_content"
                 android:paddingLeft="@dimen/button_padding"
                 android:paddingRight="@dimen/button_padding"
-                android:onClick="onClickStartStop"
                 android:drawableLeft="@drawable/ic_play"
                 android:layout_marginRight="@dimen/button_margin"
                 android:focusable="true"/>
@@ -62,7 +61,6 @@
                 android:layout_height="wrap_content"
                 android:paddingLeft="@dimen/button_padding"
                 android:paddingRight="@dimen/button_padding"
-                android:onClick="onClickReset"
                 android:drawableLeft="@drawable/ic_replay"
                 android:layout_marginLeft="@dimen/button_margin"
                 android:layout_marginRight="@dimen/button_margin"
@@ -75,7 +73,6 @@
                 android:layout_height="wrap_content"
                 android:paddingLeft="@dimen/button_padding"
                 android:paddingRight="@dimen/button_padding"
-                android:onClick="onClickStop"
                 android:drawableLeft="@drawable/ic_stop"
                 android:layout_marginLeft="@dimen/button_margin"
                 android:focusable="true"
@@ -97,7 +94,6 @@
                 android:layout_gravity="center_vertical"
                 android:ellipsize="end"
                 android:text="@string/reminder_switch"
-                android:onClick="onClickEnableRemindersToggle"
                 android:textSize="@dimen/controls_text_size"
                 android:layout_weight="6"
                 android:layout_margin="@dimen/widget_margin"
@@ -115,4 +111,4 @@
         </LinearLayout>
 
     </LinearLayout>
-</android.support.design.widget.CoordinatorLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -1,14 +1,9 @@
 # Add project specific ProGuard rules here.
-# By default, the flags in this file are appended to flags specified
-# in ${SDK}/tools/proguard/proguard-android.txt
-# You can edit the include path and order by changing the ProGuard
-# include property in project.properties.
+# You can control the set of applied configuration files using the
+# proguardFiles setting in build.gradle.
 #
 # For more details, see
 #   http://developer.android.com/guide/developing/tools/proguard.html
-
-# --- Project-specific keep options ---
-
 
 # If your project uses WebView with JS, uncomment the following
 # and specify the fully qualified class name to the JavaScript interface
@@ -40,11 +35,10 @@
     static android.text.Spanned formatHhMmSsFraction(long);
 }
 
-# From https://gist.github.com/knappador/1c7824979e1b21061b0b
+# Derived from https://gist.github.com/knappador/1c7824979e1b21061b0b
 -keep class org.hamcrest.** { *; }
 -dontwarn org.hamcrest.**
--dontwarn android.test.**
--dontwarn android.support.test.**
+-dontwarn androidx.test.**
 -keep class org.junit.** { *; }
 -dontwarn org.junit.**
 -keep class junit.** { *; }

@@ -23,7 +23,7 @@ import android.app.Notification;
 import android.app.PendingIntent;
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 /**
  * An interface to alternate Notification[Compat] Builder implementations (based on android.app,

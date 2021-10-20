@@ -22,8 +22,9 @@ package com.onefishtwo.bbqtimer;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.support.annotation.NonNull;
 import android.util.Log;
+
+import androidx.annotation.NonNull;
 
 /**
  * A BroadcastReceiver to resume/adjust the running timer and notification after an app upgrade,

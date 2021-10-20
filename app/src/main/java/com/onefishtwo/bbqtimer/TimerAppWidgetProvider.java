@@ -26,13 +26,14 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.widget.RemoteViews;
 
 import com.onefishtwo.bbqtimer.state.ApplicationState;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 /**
  * The BBQ Timer app widget for the home and lock screens.
@@ -61,6 +62,9 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
     static final String ACTION_RESET      = "com.onefishtwo.bbqtimer.ACTION_RESET";
     static final String ACTION_STOP       = "com.onefishtwo.bbqtimer.ACTION_STOP";
     static final String ACTION_CYCLE      = "com.onefishtwo.bbqtimer.ACTION_CYCLE";
+
+    private static final int FLAG_IMMUTABLE =
+            android.os.Build.VERSION.SDK_INT >= 23 ? PendingIntent.FLAG_IMMUTABLE : 0;
 
     /**
      * Date display text for the widget's second line, visible on the lock screen.
@@ -182,7 +186,7 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
     static PendingIntent makeActionIntent(Context context, String action) {
         Intent intent = new Intent(context, TimerAppWidgetProvider.class);
         intent.setAction(action);
-        return PendingIntent.getBroadcast(context, 0, intent, 0);
+        return PendingIntent.getBroadcast(context, 0, intent, FLAG_IMMUTABLE);
     }
 
     /**

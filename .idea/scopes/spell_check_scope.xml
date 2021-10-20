@@ -1,3 +1,0 @@
-<component name="DependencyValidationManager">
-  <scope name="spell check scope" pattern="file:*.java||file:*.txt||file:*.xml||src:*..*" />
-</component>

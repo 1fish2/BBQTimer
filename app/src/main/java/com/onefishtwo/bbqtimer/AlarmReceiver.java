@@ -26,10 +26,11 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.onefishtwo.bbqtimer.state.ApplicationState;
+
+import androidx.annotation.NonNull;
 
 /**
  * Uses AlarmManager to perform periodic reminder notifications.
@@ -37,21 +38,9 @@ import com.onefishtwo.bbqtimer.state.ApplicationState;
 public class AlarmReceiver extends BroadcastReceiver {
     private static final String TAG = "AlarmReceiver";
 
-    /**
-     * Whether to use alarmMgr.setAlarmClock() vs. set(). It's available on API v21 but needed on
-     * v23+ to wake up on time from idle/doze power saving modes. It displays another timer icon
-     * in the notification bar and lock screen with tap-through to MainActivity to edit the timer.
-     *<p/>
-     * Hopefully this is a UI improvement but it displays the alarm time as an absolute minute
-     * rather than an interval and it may seem broken when the alarm doesn't occur at the turn of
-     * the minute.
-     *<p/>
-     * It uses RTC wall time instead of elapsed interval time, so convert time bases and listen
-     * for clock adjustments.
-     */
-    // The incomplete docs:
+    // Some docs on alarms and doze mode:
     // https://developer.android.com/preview/features/power-mgmt.html
-    // http://developer.android.com/reference/android/app/AlarmManager.html#setAndAllowWhileIdle(int, long, android.app.PendingIntent)
+    // https://developer.android.com/reference/android/app/AlarmManager#setAlarmClock(android.app.AlarmManager.AlarmClockInfo,%20android.app.PendingIntent)
     // https://developer.android.com/preview/testing/guide.html#doze-standby
     //
     // See also:
@@ -61,7 +50,7 @@ public class AlarmReceiver extends BroadcastReceiver {
     // https://newcircle.com/s/post/1739/2015/06/12/diving-into-android-m-doze
     // https://commonsware.com/blog/2015/06/03/random-musing-m-developer-preview-ugly-part-one.html
     // http://stackoverflow.com/search?q=%5Bandroid%5D+doze
-    private static final boolean USE_SET_ALARM_CLOCK = android.os.Build.VERSION.SDK_INT >= 23;
+    // http://stackoverflow.com/questions/32492770
 
     /**
      * An Extra to store an alarm Intent's target time, in system elapsed time msec.
@@ -74,6 +63,9 @@ public class AlarmReceiver extends BroadcastReceiver {
             "com.onefishtwo.bbqtimer.ElapsedRealtimeTarget";
     /** Tolerance value for an early alarm. */
     private static final long ALARM_TOLERANCE_MS = 10L;
+
+    private static final int FLAG_IMMUTABLE =
+            android.os.Build.VERSION.SDK_INT >= 23 ? PendingIntent.FLAG_IMMUTABLE : 0;
 
     /**
      * Constructs a PendingIntent for the AlarmManager to invoke AlarmReceiver.
@@ -89,19 +81,15 @@ public class AlarmReceiver extends BroadcastReceiver {
         Intent intent = new Intent(context, AlarmReceiver.class);
 
         // See http://stackoverflow.com/questions/32492770
-        if (android.os.Build.VERSION.SDK_INT >= 16) {
-            intent.addFlags(Intent.FLAG_RECEIVER_FOREGROUND);
-        }
-
-        if (USE_SET_ALARM_CLOCK) {
-            intent.putExtra(EXTRA_ELAPSED_REALTIME_TARGET, elapsedRealtimeTarget);
-        }
+        intent.addFlags(Intent.FLAG_RECEIVER_FOREGROUND);
+        intent.putExtra(EXTRA_ELAPSED_REALTIME_TARGET, elapsedRealtimeTarget);
 
         // (ibid) "FLAG_CANCEL_CURRENT seems to be required to prevent a bug where the
         // intent doesn't fire after app reinstall in KitKat." -- It didn't seem to work better, but
         // it's hard to tell since MY_PACKAGE_REPLACED is unreliable, at least in the emulator. In
         // any case it breaks alarmMgr.cancel(), see http://stackoverflow.com/questions/26434490/
-        return PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        return PendingIntent.getBroadcast(context, 0, intent,
+                PendingIntent.FLAG_UPDATE_CURRENT + FLAG_IMMUTABLE);
     }
 
     /** Constructs a PendingIntent for setAlarmClock() to show/edit the timer. */
@@ -111,7 +99,7 @@ public class AlarmReceiver extends BroadcastReceiver {
                 .setAction(Intent.ACTION_EDIT); // distinguish from Launcher & Notifier intents
 
         return PendingIntent.getActivity(context, 0, activityIntent,
-                PendingIntent.FLAG_ONE_SHOT);
+                PendingIntent.FLAG_ONE_SHOT + FLAG_IMMUTABLE);
     }
 
     /** Get a string description of an Intent, including extras, for debugging. */
@@ -176,21 +164,12 @@ public class AlarmReceiver extends BroadcastReceiver {
             return;
         }
 
-        if (USE_SET_ALARM_CLOCK) { // Android v23+
-            setAlarmClockV21(context, alarmMgr, state, nextReminder, pendingIntent);
-        } else if (android.os.Build.VERSION.SDK_INT >= 19) {
-            alarmMgr.setExact(AlarmManager.ELAPSED_REALTIME_WAKEUP, nextReminder, pendingIntent);
-        } else {
-            alarmMgr.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, nextReminder, pendingIntent);
-        }
+        setAlarmClockV21(context, alarmMgr, state, nextReminder, pendingIntent);
     }
 
     /**
-     * API v21 version of set-alarm. setAlarmClock() alarms should work even when the device/app is
-     * idle/dozing in v23, unlike set(). [setAndAllowWhileIdle() is an alternative but it may wait
-     * 15 minutes or hours, at least in the M Developer Preview.]
-     *<p/>
-     * Converts the elapsed time value to a wall clock time value for setAlarmClock().
+     * Converts the elapsed time value to a wall clock time value and calls setAlarmClock().
+     * setAlarmClock() alarms should wake the device if dozing in v23, unlike set().
      *
      * @param nextReminder the SystemClock.elapsedRealtime() for the next reminder notification
      * @param pendingIntent the PendingIntent to wake this receiver in nextReminder msec
@@ -248,6 +227,7 @@ public class AlarmReceiver extends BroadcastReceiver {
     public static void cancelReminders(@NonNull Context context) {
         AlarmManager alarmMgr = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
         PendingIntent pendingIntent = makeAlarmPendingIntent(context, 0);
+        PendingIntent activityPI = makeActivityPendingIntent(context);
 
         if (alarmMgr == null) {
             Log.w(TAG, "cancelReminders: null alarmMgr");
@@ -255,12 +235,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         }
 
         alarmMgr.cancel(pendingIntent);
-
-        if (USE_SET_ALARM_CLOCK) {
-            PendingIntent activityPI = makeActivityPendingIntent(context);
-
-            alarmMgr.cancel(activityPI);
-        }
+        alarmMgr.cancel(activityPI);
     }
 
     /**
@@ -268,15 +243,11 @@ public class AlarmReceiver extends BroadcastReceiver {
      * setAlarmClock() target time. See {@link #EXTRA_ELAPSED_REALTIME_TARGET} for why.
      */
     private boolean isAlarmEarly(@NonNull Intent intent, @NonNull TimeCounter timer) {
-        if (USE_SET_ALARM_CLOCK) {
-            long now    = timer.elapsedRealtimeClock();
-            long target = intent.getLongExtra(EXTRA_ELAPSED_REALTIME_TARGET, now);
-            // Log.d(TAG, "Alarm " + (now - target) + "ms late");
+        long now    = timer.elapsedRealtimeClock();
+        long target = intent.getLongExtra(EXTRA_ELAPSED_REALTIME_TARGET, now);
+        // Log.d(TAG, "Alarm " + (now - target) + "ms late");
 
-            return now < target - ALARM_TOLERANCE_MS;
-        }
-
-        return false;
+        return now < target - ALARM_TOLERANCE_MS;
     }
 
     /**
@@ -284,7 +255,7 @@ public class AlarmReceiver extends BroadcastReceiver {
      * Detects and quiets early alarms.
      */
     @Override
-    public void onReceive(@NonNull Context context, @NonNull Intent intent) {
+    public final void onReceive(@NonNull Context context, @NonNull Intent intent) {
         ApplicationState state = ApplicationState.sharedInstance(context);
         TimeCounter timer      = state.getTimeCounter();
 

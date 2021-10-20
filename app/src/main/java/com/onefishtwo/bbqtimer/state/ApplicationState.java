@@ -21,11 +21,12 @@ package com.onefishtwo.bbqtimer.state;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.onefishtwo.bbqtimer.MinutesChoices;
 import com.onefishtwo.bbqtimer.TimeCounter;
+
+import androidx.annotation.NonNull;
 
 /**
  * Saves the application's state persistently in SharedPreferences and caches it in a static
@@ -139,8 +140,8 @@ public class ApplicationState {
     /**
      * Sets a boolean to remember whether MainActivity is visible. Call {@link #save} to save it.
      */
-    public void setMainActivityIsVisible(boolean mainActivityIsVisible) {
-        this.mainActivityIsVisible = mainActivityIsVisible;
+    public void setMainActivityIsVisible(boolean _mainActivityIsVisible) {
+        this.mainActivityIsVisible = _mainActivityIsVisible;
     }
 
     /** Returns a boolean indicating whether periodic reminders are enabled. */
@@ -152,8 +153,8 @@ public class ApplicationState {
      * Sets a boolean indicating whether periodic reminder alarms are enabled. Call {@link #save} to
      * save it.
      */
-    public void setEnableReminders(boolean enableReminders) {
-        this.enableReminders = enableReminders;
+    public void setEnableReminders(boolean _enableReminders) {
+        this.enableReminders = _enableReminders;
     }
 
     /** Returns the number of seconds between periodic reminder alarms. */
@@ -169,7 +170,7 @@ public class ApplicationState {
     /**
      * Sets the number of seconds between periodic reminder alarms. Call {@link #save} to save it.
      */
-    public void setSecondsPerReminder(int secondsPerReminder) {
-        this.secondsPerReminder = secondsPerReminder;
+    public void setSecondsPerReminder(int _secondsPerReminder) {
+        this.secondsPerReminder = _secondsPerReminder;
     }
 }

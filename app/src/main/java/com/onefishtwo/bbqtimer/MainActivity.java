@@ -28,16 +28,9 @@ import android.content.res.Configuration;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.provider.Settings;
-import android.support.annotation.ColorRes;
-import android.support.annotation.NonNull;
-import android.support.annotation.StringRes;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.NotificationManagerCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.widget.TextViewCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.text.Spanned;
 import android.util.Log;
 import android.util.TypedValue;
@@ -48,9 +41,19 @@ import android.widget.CompoundButton;
 import android.widget.NumberPicker;
 import android.widget.TextView;
 
+import com.google.android.material.snackbar.BaseTransientBottomBar;
+import com.google.android.material.snackbar.Snackbar;
 import com.onefishtwo.bbqtimer.state.ApplicationState;
 
 import java.lang.ref.WeakReference;
+
+import androidx.annotation.ColorRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationManagerCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.widget.TextViewCompat;
 
 /**
  * The BBQ Timer's main activity.
@@ -97,6 +100,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
         private final WeakReference<MainActivity> weakActivity;
 
         private UpdateHandler(MainActivity activity) {
+            super(Looper.getMainLooper());
             weakActivity = new WeakReference<>(activity);
         }
 
@@ -161,6 +165,12 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
         enableRemindersToggle = findViewById(R.id.enableReminders);
         minutesPicker         = findViewById(R.id.minutesPicker);
 
+        resetButton.setOnClickListener(this::onClickReset);
+        startStopButton.setOnClickListener(this::onClickStartStop);
+        stopButton.setOnClickListener(this::onClickStop);
+        displayView.setOnClickListener(this::onClickTimerText);
+        enableRemindersToggle.setOnClickListener(this::onClickEnableRemindersToggle);
+
         minutesPicker.setMinValue(0);
         minutesPicker.setMaxValue(minutesChoices.choices.length - 1);
         minutesPicker.setDisplayedValues(minutesChoices.choices);
@@ -168,12 +178,9 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
         minutesPicker.setOnValueChangedListener(this);
         minutesPicker.setFocusableInTouchMode(true);
 
-        if (android.os.Build.VERSION.SDK_INT > 15) {
-            // AutoSizeText is supposed to work on API 14+ but generates lots of NPEs on 14-15.
-            // AutoSizeText works with android:maxLines="1" but not with android:singleLine="true".
-            TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(displayView, 16, 1000, 1,
-                    TypedValue.COMPLEX_UNIT_DIP);
-        }
+        // AutoSizeText works with android:maxLines="1" but not with android:singleLine="true".
+        TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(displayView, 16,
+                1000, 1, TypedValue.COMPLEX_UNIT_DIP);
 
         setVolumeControlStream(AudioManager.STREAM_ALARM);
 
@@ -196,11 +203,10 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
     }
 
     private void logTheConfiguration(Configuration config) {
-        int densityDpi = android.os.Build.VERSION.SDK_INT < 17 ? 0 : config.densityDpi;
-
-        Log.v(TAG, "Config densityDpi: " + densityDpi
-                + ", size DPI: " + config.screenWidthDp + "x" + config.screenHeightDp
-                + ", orientation: " + config.orientation);
+        Log.v(TAG,
+            String.format("Config densityDpi: %d, size DPI: %dx%d, orientation: %d",
+                    config.densityDpi, config.screenWidthDp, config.screenHeightDp,
+                    config.orientation));
     }
 
     @Override
@@ -273,21 +279,17 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
      * TODO: How to detect if the app's notifications are visible but silenced? Silencing kills the
      * audio and heads-up notification shades.
      * <p/>
-     * NOTE: The notifications-disabled test only works on API 19+ KitKat+. The notification channel
-     * misconfigured test only works on API 26+. Opening Settings to let the user Enable
-     * notifications only works on API 21+ Lollipop+.
+     * NOTE: The notification channel misconfigured test only works on API 26+.
      */
     private void informIfNotificationAlarmsMuted() {
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
 
-        // Check for disabled notifications on API 19+ KitKat+.
+        // Check for disabled notifications.
         // NOTE: If notifications are disabled, so are Toasts.
         if (!notificationManager.areNotificationsEnabled()) {
             Snackbar snackbar = makeSnackbar(R.string.notifications_disabled);
-            if (android.os.Build.VERSION.SDK_INT >= 21) { // Where this Settings Intent works.
-                setSnackbarAction(snackbar, R.string.notifications_enable,
-                        view -> openNotificationSettingsForApp());
-            }
+            setSnackbarAction(snackbar, R.string.notifications_enable,
+                    view -> openNotificationSettingsForApp());
             snackbar.show();
             return;
         }
@@ -328,7 +330,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
     @NonNull
     private Snackbar makeSnackbar(@StringRes int stringResId) {
         Snackbar snackbar = Snackbar.make(findViewById(R.id.main_container), stringResId,
-                Snackbar.LENGTH_LONG);
+                BaseTransientBottomBar.LENGTH_LONG);
         snackbar.getView().setBackgroundColor(
                 ContextCompat.getColor(this, R.color.dark_orange_red));
         return snackbar;
@@ -342,7 +344,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
     }
 
     @Override
-    public void onConfigurationChanged(Configuration newConfig) {
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         logTheConfiguration(newConfig);
     }

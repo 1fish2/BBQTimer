@@ -22,7 +22,6 @@ package com.onefishtwo.bbqtimer;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.SystemClock;
-import android.support.annotation.NonNull;
 import android.text.Html;
 import android.text.Spanned;
 import android.text.format.DateUtils;
@@ -32,6 +31,8 @@ import java.text.FieldPosition;
 import java.text.NumberFormat;
 import java.util.Formatter;
 import java.util.Locale;
+
+import androidx.annotation.NonNull;
 
 /**
  * A stopwatch time counter (data model).
@@ -46,9 +47,9 @@ public class TimeCounter {
             return DateUtils.formatElapsedTime(recycle, elapsedSeconds);
         }
 
+        @SuppressWarnings("deprecation")
         Spanned fromHtml(String source) {
             if (Build.VERSION.SDK_INT < 24) {
-                //noinspection deprecation
                 return Html.fromHtml(source);
             } else {
                 return Html.fromHtml(source, Html.FROM_HTML_MODE_COMPACT);

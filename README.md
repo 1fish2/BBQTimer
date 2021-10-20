@@ -95,8 +95,6 @@ Don’t get me wrong -- commercial software is also great!
 Notification sound composed from sampled cowbell sounds which are used by permission from Phil Burk,
 Copyright (c) 2014 Mobileer Inc.
 
-Launcher icon derived from a public domain image on [openclipart.org](http://openclipart.org).
-
 ## Keywords
 BBQ, cooking, interval timer, lock screen widget, reminder alarm, stopwatch.
 
