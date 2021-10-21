@@ -32,6 +32,8 @@ import android.widget.RemoteViews;
 
 import com.onefishtwo.bbqtimer.state.ApplicationState;
 
+import androidx.annotation.DrawableRes;
+import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -138,12 +140,14 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
         } else {
             long elapsedTime = timer.getElapsedTime();
             int child = timer.isStopped() ? RESET_CHRONOMETER_CHILD : PAUSED_CHRONOMETER_CHILD;
-            int textViewId = child == RESET_CHRONOMETER_CHILD ? R.id.resetChronometerText
+            @IdRes int textViewId = child == RESET_CHRONOMETER_CHILD ? R.id.resetChronometerText
                     : R.id.pausedChronometerText;
+            @DrawableRes int ic_pause_or_play = child == RESET_CHRONOMETER_CHILD
+                    ? R.drawable.ic_action_pause : R.drawable.ic_action_play;
 
             views.setDisplayedChild(R.id.viewFlipper, child);
             views.setTextViewText(textViewId, TimeCounter.formatHhMmSs(elapsedTime));
-            views.setImageViewResource(R.id.remoteStartStopButton, R.drawable.ic_action_play);
+            views.setImageViewResource(R.id.remoteStartStopButton, ic_pause_or_play);
             // Stop the Chronometer in case it'd use battery power even when not displayed.
             views.setChronometer(R.id.chronometer, 0, null, false);
         }
@@ -214,7 +218,7 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
         Log.v(TAG, action);
 
         if (ACTION_RUN_PAUSE.equals(action)) { // The user tapped a Run/Pause button.
-            timer.toggleRunPause();
+            timer.togglePauseRun();
             saveStateAndUpdateUI(context, state);
         } else if (ACTION_RUN.equals(action)) { // The user tapped a Run (aka Play) button.
             timer.start();

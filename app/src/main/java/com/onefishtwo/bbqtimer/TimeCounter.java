@@ -269,7 +269,8 @@ public class TimeCounter {
     }
 
     /**
-     * Toggles the state to Running or Paused.
+     * Toggles the state to Running or Paused for a Play/Pause button that goes
+     * Stopped or Paused -> Running -> Paused.
      *
      * @return true if the timer is now running.
      */
@@ -279,6 +280,22 @@ public class TimeCounter {
             pause();
         } else {
             start();
+        }
+        return isRunning;
+    }
+
+    /**
+     * Toggles the state to Paused or Running for a Play/Pause button that goes
+     * Stopped or Running -> Paused -> Running.
+     *
+     * @return true if the timer is now running.
+     */
+    @SuppressWarnings("UnusedReturnValue")
+    public boolean togglePauseRun() {
+        if (isPaused) {
+            start();
+        } else {
+            pause();
         }
         return isRunning;
     }
