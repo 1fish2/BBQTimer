@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- aliases -->
+    <drawable name="ic_pause">@drawable/ic_pause_big</drawable>
+    <drawable name="ic_play">@drawable/ic_play_big</drawable>
+    <drawable name="ic_replay">@drawable/ic_replay_big</drawable>
+    <drawable name="ic_stop">@drawable/ic_stop_big</drawable>
+</resources>
