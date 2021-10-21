@@ -137,11 +137,10 @@ public class Notifier {
      * @param state the ApplicationState state to display.
      */
     public void openOrCancel(@NonNull ApplicationState state) {
-        boolean isMainActivityVisible = state.isMainActivityVisible();
-        TimeCounter timer             = state.getTimeCounter();
+        TimeCounter timer = state.getTimeCounter();
 
         if (!timer.isStopped() || soundAlarm) {
-            Notification notification = buildNotification(state, !isMainActivityVisible);
+            Notification notification = buildNotification(state);
             notificationManagerCompat.notify(NOTIFICATION_ID, notification);
         } else {
             cancelAll();
@@ -176,7 +175,6 @@ public class Notifier {
      * but it ought to have at least IMPORTANCE_DEFAULT to appear/sort correctly on a busy lock
      * screen, but that makes it never silent on Android 12 (and other releases?).
      */
-    @SuppressWarnings("UnnecessaryLocalVariable")
     @TargetApi(26)
     private void createNotificationChannelV26(boolean makeAlarm) {
         // --- An alarm channel or not.
@@ -253,17 +251,8 @@ public class Notifier {
     /**
      * Builds a notification. Its alarm sound, vibration, and LED light flashing are switched on/off
      * by {@link #setAlarm(boolean)}.
-     *<p/>
-     * TODO: Always addActions, despite (older?) UI guidelines, but when the Activity is visible
-     * make the actions send an intent to the Activity rather than to TimerAppWidgetProvider.
-     *
-     * @param addActions whether to add a content action, delete action, and media buttons to the
-     *                   degree they're supported by the OS build. false makes a read-only
-     *                   notification (can't even dismiss itself) for when the activity is open.<br/>
-     *                   <b>Alternative:</b> In-activity audible/visual alarm feedback instead of a
-     *                   notification.
      */
-    protected Notification buildNotification(@NonNull ApplicationState state, boolean addActions) {
+    protected Notification buildNotification(@NonNull ApplicationState state) {
         createNotificationChannels();
 
         String channelId = soundAlarm ? ALARM_NOTIFICATION_CHANNEL_ID
@@ -276,11 +265,8 @@ public class Notifier {
         {  // Construct the visible notification contents.
             TimeCounter timer = state.getTimeCounter();
             boolean isRunning = timer.isRunning();
-//            Bitmap largeIcon = BitmapFactory.decodeResource(context.getResources(),
-//                    R.drawable.ic_large_notification);
 
             builder.setSmallIcon(R.drawable.notification_icon)
-//                    .setLargeIcon(largeIcon)
                     .setContentTitle(context.getString(R.string.app_name));
 
             if (isRunning) {
@@ -308,7 +294,7 @@ public class Notifier {
                 builder.setContentText(contentText);
             } else {
                 builder.setContentText(timerRunState(timer));
-                if (addActions && timer.isPaused()) {
+                if (timer.isPaused()) {
                     builder.setSubText(context.getString(R.string.dismiss_tip));
                 } else if (isRunning) {
                     builder.setSubText(context.getString(R.string.no_reminders_tip));
@@ -317,7 +303,7 @@ public class Notifier {
 
             numActions = 0;
 
-            if (addActions) {
+            {
                 // Make an Intent to launch the Activity from the notification.
                 Intent activityIntent = new Intent(context, MainActivity.class);
 
@@ -362,7 +348,7 @@ public class Notifier {
                 setMediaStyleActionsInCompactView(builder);
             }
 
-            if (isRunning || !addActions) {
+            if (isRunning) {
                 builder.setOngoing(true);
             }
         }

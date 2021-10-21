@@ -68,6 +68,8 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
     private static final int SHORTCUT_START = 2;
     private int shortcutAction = SHORTCUT_NONE;
 
+    private int viewConfiguration = -1; // optimization: don't reset all the views every 100 msec
+
     private Notifier notifier;
 
     /** (Re)makes all locale-dependent strings. */
@@ -98,7 +100,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
             weakActivity = new WeakReference<>(activity);
         }
 
-        /** Handles a message to periodically update the display. */
+        /** Handles a message to periodically update the views. */
         @Override
         public void handleMessage(@NonNull Message msg) {
             MainActivity activity = weakActivity.get();
@@ -106,7 +108,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
             super.handleMessage(msg);
             if (msg.what == MSG_UPDATE) {
                 if (activity != null) {
-                    activity.displayTime();
+                    activity.updateViews();
                 }
                 scheduleNextUpdate();
             }
@@ -147,6 +149,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        viewConfiguration = -1;
         notifier = new Notifier(this);
 
         makeLocaleStrings();
@@ -217,6 +220,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
     @Override
     protected void onStart() {
         super.onStart();
+        viewConfiguration = -1;
 
         // Load persistent state.
         state = ApplicationState.sharedInstance(this);
@@ -439,24 +443,36 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
         displayView.setTextColor(textColors);
     }
 
-    /** Updates the whole UI for the current state: Activity, Notifications, alarms, and widgets. */
-    private void updateUI() {
+    /** Updates the Activity's views for the current state. */
+    private void updateViews() {
         boolean isRunning = timer.isRunning();
         boolean isStopped = timer.isStopped();
         boolean isPausedAt0 = timer.isPausedAt0();
         boolean areRemindersEnabled = state.isEnableReminders();
+        int newConfiguration = (isRunning ? 1 : 0) | (isStopped ? 2 : 0) | (isPausedAt0 ? 4 : 0)
+                | (areRemindersEnabled ? 8 : 0);
 
         displayTime();
-        resetButton.setCompoundDrawablesWithIntrinsicBounds(
-                isStopped ? R.drawable.ic_pause : R.drawable.ic_replay, 0, 0, 0);
-        resetButton.setVisibility(isRunning || isPausedAt0 ? View.INVISIBLE : View.VISIBLE);
-        startStopButton.setCompoundDrawablesWithIntrinsicBounds(
-                isRunning ? R.drawable.ic_pause : R.drawable.ic_play, 0, 0, 0);
-        stopButton.setVisibility(isStopped ? View.INVISIBLE : View.VISIBLE);
-        enableRemindersToggle.setChecked(areRemindersEnabled);
-        minutesPicker.setValue(MinutesChoices.secondsToPickerChoice(
-                state.getSecondsPerReminder()));
-        minutesPicker.setEnabled(areRemindersEnabled);
+
+        if (viewConfiguration != newConfiguration) { // optimize out the nearly-always no-op case
+            viewConfiguration = newConfiguration;
+
+            resetButton.setCompoundDrawablesWithIntrinsicBounds(
+                    isStopped ? R.drawable.ic_pause : R.drawable.ic_replay, 0, 0, 0);
+            resetButton.setVisibility(isRunning || isPausedAt0 ? View.INVISIBLE : View.VISIBLE);
+            startStopButton.setCompoundDrawablesWithIntrinsicBounds(
+                    isRunning ? R.drawable.ic_pause : R.drawable.ic_play, 0, 0, 0);
+            stopButton.setVisibility(isStopped ? View.INVISIBLE : View.VISIBLE);
+            enableRemindersToggle.setChecked(areRemindersEnabled);
+            minutesPicker.setValue(MinutesChoices.secondsToPickerChoice(
+                    state.getSecondsPerReminder()));
+            minutesPicker.setEnabled(areRemindersEnabled);
+        }
+    }
+
+    /** Updates the whole UI for the current state: Activity, Notifications, alarms, and widgets. */
+    private void updateUI() {
+        updateViews();
 
         AlarmReceiver.updateNotifications(this);
 
