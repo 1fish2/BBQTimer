@@ -29,7 +29,6 @@
 
 # ------------------- TEST DEPENDENCIES -------------------
 -keep class com.onefishtwo.bbqtimer.MainActivity {
-    static boolean HIDE_RESET_FEATURE;
 }
 -keep class com.onefishtwo.bbqtimer.TimeCounter {
     static android.text.Spanned formatHhMmSsFraction(long);

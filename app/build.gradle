@@ -13,8 +13,8 @@ android {
         versionName '2.6'
 //        minSdk 21
         minSdkVersion 21
-//        targetSdk 31
-        targetSdkVersion 31
+//        targetSdk 26
+        targetSdkVersion 26
         resConfigs "en", "de"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"

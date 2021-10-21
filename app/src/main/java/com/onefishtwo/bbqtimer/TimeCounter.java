@@ -61,18 +61,6 @@ public class TimeCounter {
     @NonNull
     static InjectForTesting injected = new InjectForTesting();
 
-    /**
-     * On API 21+, allow Paused notifications with control buttons as well as Running
-     * notifications with control buttons, mainly so the user can control the timer from a lock
-     * screen notification. Otherwise, unify Paused @ 0:00 with Stopped in the UI.
-     * <p/>
-     * Due to OS bugs in API 17 - 20, changing a notification to Paused would continue showing a
-     * running chronometer [despite calling setShowWhen(false) and not calling
-     * setUsesChronometer(true)] and sometimes also the notification time of day, both confusing.
-     * API < 16 has no action buttons so it has no payoff in Paused notifications.
-     */
-    static final boolean PAUSEABLE_NOTIFICATIONS = android.os.Build.VERSION.SDK_INT >= 21;
-
     /** PERSISTENT STATE identifiers. */
     private static final String PREF_IS_RUNNING = "Timer_isRunning";
     private static final String PREF_IS_PAUSED  = "Timer_isPaused";  // new in app versionCode 10
@@ -166,9 +154,6 @@ public class TimeCounter {
             }
         } else if (isPaused) {
             if (startTime > pauseTime || startTime > elapsedRealtimeClock()) {
-                stop();
-                needToSave = true;
-            } else if (startTime == pauseTime && !PAUSEABLE_NOTIFICATIONS) {
                 stop();
                 needToSave = true;
             }

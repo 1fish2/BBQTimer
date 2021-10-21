@@ -71,8 +71,8 @@ import static org.hamcrest.core.AllOf.allOf;
 @LargeTest
 @RunWith(AndroidJUnit4.class)
 public class InAppUITest {
-    /** The resetButton is hidden on older versions of Android. */
-    private static final boolean HIDE_RESET_FEATURE = MainActivity.HIDE_RESET_FEATURE;
+    /** The resetButton was hidden on older versions of Android. */
+    private static final boolean HIDE_RESET_FEATURE = false;
 
     private ViewInteraction playPauseButton; // play/pause, formerly known as start/stop
     private ViewInteraction resetButton; // reset (pause @ 00:00); pause/replay icon or hidden

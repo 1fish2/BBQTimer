@@ -61,12 +61,6 @@ import androidx.core.widget.TextViewCompat;
 public class MainActivity extends AppCompatActivity implements NumberPicker.OnValueChangeListener {
     private final String TAG = "Main";
 
-    /**
-     * Hide the Reset feature (Pause @ 0:00) if the app doesn't show notifications while paused
-     * (that's on Android versions without lock screen notifications). Just use Stop.
-     */
-    static final boolean HIDE_RESET_FEATURE = !Notifier.PAUSEABLE_NOTIFICATIONS;
-
     private static final MinutesChoices minutesChoices = new MinutesChoices();
 
     private static final int SHORTCUT_NONE = 0;
@@ -455,9 +449,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
         displayTime();
         resetButton.setCompoundDrawablesWithIntrinsicBounds(
                 isStopped ? R.drawable.ic_pause : R.drawable.ic_replay, 0, 0, 0);
-        resetButton.setVisibility(HIDE_RESET_FEATURE ? View.GONE
-                : isRunning || isPausedAt0 ? View.INVISIBLE
-                : View.VISIBLE);
+        resetButton.setVisibility(isRunning || isPausedAt0 ? View.INVISIBLE : View.VISIBLE);
         startStopButton.setCompoundDrawablesWithIntrinsicBounds(
                 isRunning ? R.drawable.ic_pause : R.drawable.ic_play, 0, 0, 0);
         stopButton.setVisibility(isStopped ? View.INVISIBLE : View.VISIBLE);
