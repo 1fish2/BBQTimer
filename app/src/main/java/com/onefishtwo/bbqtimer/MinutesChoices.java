@@ -31,14 +31,14 @@ public class MinutesChoices {
      * The number of "x.5" minute entries near the start of the array, counting by 0.5; all
      * following entries are whole numbers.
      */
-    private static final int NUM_HALF_MINUTE_ENTRIES = 5;
+    private static final int NUM_HALF_MINUTE_ENTRIES = 8;
     private static final int BEGIN_INDEX_WHOLE_MINUTES_ONLY = NUM_HALF_MINUTE_ENTRIES * 2 - 1;
     static final int MAX_MINUTES = 99;
 
     /**
      * The names of the periodic alarm minutesPicker choices:<br/>
-     * {@code Index:   0, 1,   2, 3,   4, 5, ...   8, 9,   10, ... 103} <br/>
-     * {@code Name:  0.5, 1, 1.5, 2, 2.5, 3, ... 4.5, 5,    6, ...  99}
+     * {@code Index:   0, 1,   2, 3,   4, 5, ... 11,   12, ... 106} <br/>
+     * {@code Name:  0.5, 1, 1.5, 2, 2.5, 3, ... 7.5,   8, ...  99}
      */
     final String[] choices = new String[MAX_MINUTES + NUM_HALF_MINUTE_ENTRIES];
 
