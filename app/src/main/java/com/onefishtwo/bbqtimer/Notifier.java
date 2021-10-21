@@ -50,6 +50,9 @@ import androidx.core.content.ContextCompat;
 public class Notifier {
     private static final int NOTIFICATION_ID = 7;
 
+    private static final int FLAG_IMMUTABLE =
+            android.os.Build.VERSION.SDK_INT >= 23 ? PendingIntent.FLAG_IMMUTABLE : 0;
+
     // Marshmallow rejects invisible notifications (IllegalArgumentException if there's no small
     // icon, and just adding a small icon shows a nearly empty notification). Either show a visible
     // notification in the Activity (despite the style guide) or implement another way to play
@@ -354,7 +357,8 @@ public class Notifier {
                         .addParentStack(MainActivity.class)
                         .addNextIntent(activityIntent);
                 PendingIntent activityPendingIntent =
-                        stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+                        stackBuilder.getPendingIntent(0,
+                                PendingIntent.FLAG_UPDATE_CURRENT + FLAG_IMMUTABLE);
                 builder.setContentIntent(activityPendingIntent);
 
                 // Action button to reset the timer.
