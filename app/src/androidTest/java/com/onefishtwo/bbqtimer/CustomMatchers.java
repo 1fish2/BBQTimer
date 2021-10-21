@@ -67,6 +67,7 @@ class CustomMatchers {
      * Matches a View that has the given compound drawable resource. Cribbed and tweaked from
      * <a href="https://gist.github.com/frankiesardo/7490059">@frankiesardo</a>.
      */
+    @SuppressWarnings("SpellCheckingInspection")
     @NonNull
     static Matcher<View> withCompoundDrawable(@DrawableRes final int resourceId) {
         return new BoundedMatcher<View, TextView>(TextView.class) {
