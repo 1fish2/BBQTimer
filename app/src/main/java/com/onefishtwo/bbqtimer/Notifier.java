@@ -187,9 +187,9 @@ public class Notifier {
                 : CONTROLS_NOTIFICATION_CHANNEL_ID;
         int importance = makeAlarm ? NotificationManager.IMPORTANCE_HIGH
                 : NotificationManager.IMPORTANCE_LOW;
-        boolean lights = makeAlarm;
-        boolean vibration = makeAlarm;
-        boolean sound = makeAlarm;
+        @SuppressWarnings("UnnecessaryLocalVariable") boolean lights = makeAlarm;
+        @SuppressWarnings("UnnecessaryLocalVariable") boolean vibration = makeAlarm;
+        @SuppressWarnings("UnnecessaryLocalVariable") boolean sound = makeAlarm;
 
         String name = context.getString(channelNameRes);
         NotificationChannel channel = new NotificationChannel(channelId, name, importance);

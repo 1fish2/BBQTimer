@@ -133,6 +133,7 @@ public class ApplicationState {
      * Returns a boolean indicating whether MainActivity is visible [it's between
      * onStart() .. onStop()].
      */
+    @SuppressWarnings("unused")
     public boolean isMainActivityVisible() {
         return mainActivityIsVisible;
     }

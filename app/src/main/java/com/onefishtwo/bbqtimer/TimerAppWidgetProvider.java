@@ -25,8 +25,6 @@ import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
-import android.text.format.DateUtils;
 import android.util.Log;
 import android.widget.RemoteViews;
 
@@ -35,23 +33,12 @@ import com.onefishtwo.bbqtimer.state.ApplicationState;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 /**
  * The BBQ Timer app widget for the home and lock screens.
  */
 public class TimerAppWidgetProvider extends AppWidgetProvider {
     private static final String TAG = "AppWidgetProvider";
-
-    /**
-     * Show the date in the lock screen widget's secondary text? I.e. an Android version that
-     * supports lock screen widgets? Hiding it helps on Nougat where some combos of Display Size
-     * and Font Size would make some of that text visible on a home screen widget: Font Small; Font
-     * Default, Display {Small, Large}; Font Large, Display {Small, Large, Largest}. On KitKat it's
-     * also an issue with Font Size Small, oh well.
-     */
-    private static final boolean SHOW_SECONDARY_TEXT =
-            Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP;
 
     // --- R.id.viewFlipper child indexes.
     private static final int RUNNING_CHRONOMETER_CHILD = 0;
@@ -68,45 +55,9 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
     private static final int FLAG_IMMUTABLE =
             android.os.Build.VERSION.SDK_INT >= 23 ? PendingIntent.FLAG_IMMUTABLE : 0;
 
-    /**
-     * Date display text for the widget's second line, visible on the lock screen.
-     * Synchronized on the class. Computed lazily.
-     */
-    @Nullable
-    private static String secondaryTextCache;
-
     @NonNull
     static ComponentName getComponentName(Context context) {
         return new ComponentName(context, TimerAppWidgetProvider.class);
-    }
-
-    /** Returns the formatted date to show as secondary text in the lock screen widget. */
-    @NonNull
-    private static synchronized String dateText() {
-        if (secondaryTextCache == null) {
-            long now = System.currentTimeMillis();
-            secondaryTextCache = DateUtils.formatDateTime(null, now,
-                    DateUtils.FORMAT_SHOW_DATE
-                        | DateUtils.FORMAT_SHOW_WEEKDAY | DateUtils.FORMAT_ABBREV_WEEKDAY);
-        }
-        return secondaryTextCache;
-    }
-
-    /**
-     * Returns the secondary text to show in the lock screen widget -- or empty on Lollipop+ which
-     * doesn't support lock screen widgets. Hiding it helps on Nougat, where some combos of Display
-     * Size and Font Size would make some of that text visible on a home screen widget: Font Small;
-     * Font Default, Display {Small, Large}; Font Large, Display {Small, Large, Largest}. On KitKat
-     * it's also an issue with Font Size Small, oh well.
-     */
-    @NonNull
-    private static String secondaryText() {
-        return SHOW_SECONDARY_TEXT ? dateText() : "";
-    }
-
-    /** Clears the cached secondary text, to be recomputed lazily. */
-    private static synchronized void clearSecondaryTextCache() {
-        secondaryTextCache = null;
     }
 
     /**
@@ -120,8 +71,6 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
      * but that relies on it not updating its text. Anyway, this code switches between the
      * Chronometer and two different TextViews to select the right ColorStateList for user feedback
      * since RemoteViews can't do {@code TextView#setTextColor(ColorStateList)}.<p/>
-     *
-     * NOTE: setDisplayedChild() requires minSdkVersion 12 (in build.gradle).<p/>
      *
      * TODO: Preload the button image Bitmaps? Flip between Buttons?
      */
@@ -152,7 +101,10 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
             views.setChronometer(R.id.chronometer, 0, null, false);
         }
 
-        views.setTextViewText(R.id.secondaryText, secondaryText());
+        // The widget's secondaryText field is below its main contents. It's visible on the
+        // lock screen but not on the home screen.
+        views.setTextViewText(R.id.secondaryText, "");
+
         views.setOnClickPendingIntent(R.id.remoteStartStopButton, runPauseIntent);
         views.setOnClickPendingIntent(R.id.viewFlipper, cycleIntent);
 
@@ -235,15 +187,6 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
         } else if (ACTION_CYCLE.equals(action)) { // The user tapped the time text.
             timer.cycle();
             saveStateAndUpdateUI(context, state);
-        } else if (Intent.ACTION_DATE_CHANGED.equals(action) // Won't receive this on Android O+
-                || Intent.ACTION_TIME_CHANGED.equals(action) // TIME_SET
-                || Intent.ACTION_TIMEZONE_CHANGED.equals(action)) {
-            // The clock ticked over to the next day or it was adjusted. Update the date display in
-            // the lock screen widget.
-            if (SHOW_SECONDARY_TEXT) {
-                clearSecondaryTextCache();
-                updateAllWidgets(context, state);
-            }
         }
     }
 
