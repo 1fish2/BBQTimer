@@ -27,11 +27,10 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.media.AudioAttributes;
+import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
 
-import com.onefishtwo.bbqtimer.notificationCompat.NotificationBuilder;
-import com.onefishtwo.bbqtimer.notificationCompat.NotificationBuilderFactory;
 import com.onefishtwo.bbqtimer.state.ApplicationState;
 
 import androidx.annotation.NonNull;
@@ -40,11 +39,11 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.app.TaskStackBuilder;
 import androidx.core.content.ContextCompat;
+import androidx.media.app.NotificationCompat.MediaStyle;
 
 /**
  * Manages the app's Android Notifications.
  */
-@SuppressWarnings("SameParameterValue")
 public class Notifier {
     private static final int NOTIFICATION_ID = 7;
 
@@ -97,7 +96,7 @@ public class Notifier {
      * Adds an action button to the given NotificationBuilder and to the
      * {@link #setMediaStyleActionsInCompactView} list.
      */
-    private void addAction(@NonNull NotificationBuilder builder, int iconId, int titleId,
+    private void addAction(@NonNull NotificationCompat.Builder builder, int iconId, int titleId,
             PendingIntent intent) {
         builder.addAction(iconId, context.getString(titleId), intent);
         ++numActions;
@@ -106,15 +105,30 @@ public class Notifier {
     /**
      * Makes the first 3 added {@link #addAction} actions appear in MediaStyle's compact
      * notification view (which is the view that appears in lock screen notifications in API V21
-     * Lollipop). No-op before API 21.
+     * Lollipop).
      */
-    private void setMediaStyleActionsInCompactView(@NonNull NotificationBuilder builder) {
+    private void setMediaStyleActionsInCompactView(@NonNull NotificationCompat.Builder builder) {
         int num = Math.min(numActions, ACTION_INDICES.length - 1);
 
         if (num < 1) {
             return;
         }
-        builder.setMediaStyleActionsInCompactView(ACTION_INDICES[num]);
+
+        MediaStyle style = new MediaStyle().setShowActionsInCompactView(ACTION_INDICES[num]);
+        builder.setStyle(style);
+
+        // Workaround a Marshmallow bug where the heads-up notification shows low contrast dark gray
+        // text on darker gray background. setColor() sometimes sets the background color although
+        // it's supposed to set the accent color. Unfortunately it also changes pull-down
+        // notifications and carries over from one notification to its replacement.
+        // See http://stackoverflow.com/q/38415467/1682419
+        //
+        // It'd be nice to call setColor() for non-MediaStyle cases to set the accent color.
+        // But on on Android N it seems to have no effect.
+        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.M) {
+            int workaroundColor = context.getColor(R.color.gray_text);
+            builder.setColor(workaroundColor);
+        }
     }
 
     /** Returns a localized description of the timer's run state, e.g. "Paused 00:12.3". */
@@ -257,7 +271,7 @@ public class Notifier {
 
         String channelId = soundAlarm ? ALARM_NOTIFICATION_CHANNEL_ID
                 : CONTROLS_NOTIFICATION_CHANNEL_ID;
-        NotificationBuilder builder = NotificationBuilderFactory.builder(context, channelId)
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, channelId)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setCategory(NotificationCompat.CATEGORY_ALARM)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
@@ -354,7 +368,7 @@ public class Notifier {
         }
 
         if (soundAlarm) {
-            builder.setSound(getSoundUri(R.raw.cowbell4));
+            builder.setSound(getSoundUri(R.raw.cowbell4), AudioManager.STREAM_ALARM);
             builder.setVibrate(VIBRATE_PATTERN);
             builder.setLights(notificationLightColor, 1000, 5000);
         }
