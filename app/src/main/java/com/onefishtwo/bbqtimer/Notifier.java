@@ -26,6 +26,8 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.net.Uri;
@@ -103,9 +105,11 @@ public class Notifier {
     }
 
     /**
-     * Makes the first 3 added {@link #addAction} actions appear in MediaStyle's compact
-     * notification view (which is the view that appears in lock screen notifications in API V21
-     * Lollipop).
+     * Makes the first 3 added {@link #addAction} actions appear in a MediaStyle notification
+     * view. The Media template should fit 3 actions in its collapsed view, 6 actions in expanded
+     * view, or 5 actions in expanded view with a large image but I haven't tested that.
+     *<p/>
+     * Calls builder.setColor() on some versions of Android to cope with OS vagaries.
      */
     private void setMediaStyleActionsInCompactView(@NonNull NotificationCompat.Builder builder) {
         int num = Math.min(numActions, ACTION_INDICES.length - 1);
@@ -117,17 +121,24 @@ public class Notifier {
         MediaStyle style = new MediaStyle().setShowActionsInCompactView(ACTION_INDICES[num]);
         builder.setStyle(style);
 
-        // Workaround a Marshmallow bug where the heads-up notification shows low contrast dark gray
-        // text on darker gray background. setColor() sometimes sets the background color although
-        // it's supposed to set the accent color. Unfortunately it also changes pull-down
-        // notifications and carries over from one notification to its replacement.
-        // See http://stackoverflow.com/q/38415467/1682419
-        //
-        // It'd be nice to call setColor() for non-MediaStyle cases to set the accent color.
-        // But on on Android N it seems to have no effect.
+        // === setColor() "the accent color" vs. Android API levels ===
+        // API 21 L - 22 L1: colors the notification are background needlessly.
+        // API 23 M: See below.
+        // API 24 N - API 27 O1: colors the small icon, action button, and app title color. Garish.
+        // API 28 P - API 30 R: colors the small icon and action button. Garish.
+        // API 21 S: See below.
+        // setColorized(false) didn't change any of these results.
         if (Build.VERSION.SDK_INT == Build.VERSION_CODES.M) {
+            // Android 6 M, API 23: setColor() colors the notification are background and avoids a
+            // low contrast dark gray text on darker gray background in the the heads-up case.
+            // setColor() also changes pull-down notifications and carries over from one
+            // notification to its replacement. http://stackoverflow.com/q/38415467/1682419
             int workaroundColor = context.getColor(R.color.gray_text);
             builder.setColor(workaroundColor);
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) { // Android 12, API 31
+            // Android 12 S, API 31: setColor() colors the background circle behind the small icon.
+            int iconBackgroundColor = context.getColor(R.color.dark_orange_red);
+            builder.setColor(iconBackgroundColor);
         }
     }
 
@@ -283,15 +294,22 @@ public class Notifier {
             builder.setSmallIcon(R.drawable.notification_icon)
                     .setContentTitle(context.getString(R.string.app_name));
 
+            // Android API < 24 stretches the small icon into a fuzzy large icon, so add a large
+            // icon. On API 24+, adopt the UI guideline, thus making the notification fit more in
+            // the compact form, which could help when the lock screen is set to
+            // "Show sensitive content only when unlocked".
+            if (Build.VERSION.SDK_INT < 24) {
+                Bitmap largeIcon = BitmapFactory.decodeResource(context.getResources(),
+                        R.drawable.ic_large_notification);
+                builder.setLargeIcon(largeIcon);
+            }
+
             if (isRunning) {
                 builder.setWhen(System.currentTimeMillis() - timer.getElapsedTime())
-                        .setUsesChronometer(true); // added in API 17
+                        .setUsesChronometer(true);
             } else {
                 // Hide the "when" field, which isn't useful while Paused, so it doesn't take space
                 // in the compact view along with 3 action buttons (Reset, Start, Stop).
-                // It doesn't actually work in API 17-18, so in API 18- it'd show the time of
-                // day when the notification is built, but it's even more broken after changing the
-                // "When" info in an open notification.
                 builder.setShowWhen(false);
             }
 
@@ -370,7 +388,7 @@ public class Notifier {
         if (soundAlarm) {
             builder.setSound(getSoundUri(R.raw.cowbell4), AudioManager.STREAM_ALARM);
             builder.setVibrate(VIBRATE_PATTERN);
-            builder.setLights(notificationLightColor, 1000, 5000);
+            builder.setLights(notificationLightColor, 1000, 2000);
         }
 
         return builder.build();
