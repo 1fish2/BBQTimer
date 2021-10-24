@@ -36,7 +36,6 @@ import android.os.Build;
 import com.onefishtwo.bbqtimer.state.ApplicationState;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.StringRes;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.app.TaskStackBuilder;
@@ -56,7 +55,6 @@ public class Notifier {
     private static final int[][] ACTION_INDICES = {{}, {0}, {0, 1}, {0, 1, 2}};
 
     static final String ALARM_NOTIFICATION_CHANNEL_ID = "alarmChannel";
-    static final String CONTROLS_NOTIFICATION_CHANNEL_ID = "controlsChannel";
     private static boolean builtNotificationChannels = false;
 
     private final Context context;
@@ -196,41 +194,26 @@ public class Notifier {
 
     /**
      * Creates a notification channel that matches the parameters #buildNotification() uses. The
-     * "Alarm" channel sounds an alarm at heads-up High importance. The "Controls" channel is silent
-     * but it ought to have at least IMPORTANCE_DEFAULT to appear/sort correctly on a busy lock
-     * screen, but that makes it never silent on Android 12 (and other releases?).
+     * "Alarm" channel sounds an alarm at heads-up High importance.
      */
     @TargetApi(26)
-    private void createNotificationChannelV26(boolean makeAlarm) {
-        // --- An alarm channel or not.
-        @StringRes int channelNameRes = makeAlarm ? R.string.notification_alarm_channel_name
-                : R.string.notification_controls_channel_name;
-        @StringRes int channelDescriptionRes = makeAlarm
-                ? R.string.notification_alarm_channel_description
-                : R.string.notification_controls_channel_description;
-        String channelId = makeAlarm ? ALARM_NOTIFICATION_CHANNEL_ID
-                : CONTROLS_NOTIFICATION_CHANNEL_ID;
-        int importance = makeAlarm ? NotificationManager.IMPORTANCE_HIGH
-                : NotificationManager.IMPORTANCE_LOW;
-        @SuppressWarnings("UnnecessaryLocalVariable") boolean lights = makeAlarm;
-        @SuppressWarnings("UnnecessaryLocalVariable") boolean vibration = makeAlarm;
-        @SuppressWarnings("UnnecessaryLocalVariable") boolean sound = makeAlarm;
+    private void createNotificationChannelV26() {
+        String name = context.getString(R.string.notification_alarm_channel_name);
+        String description = context.getString(R.string.notification_alarm_channel_description);
+        NotificationChannel channel = new NotificationChannel(
+                ALARM_NOTIFICATION_CHANNEL_ID, name, NotificationManager.IMPORTANCE_HIGH);
 
-        String name = context.getString(channelNameRes);
-        NotificationChannel channel = new NotificationChannel(channelId, name, importance);
-
-        String description = context.getString(channelDescriptionRes);
         channel.setDescription(description);
 
-        channel.enableLights(lights);
+        channel.enableLights(true);
         channel.setLightColor(notificationLightColor);
 
         channel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
 
-        channel.enableVibration(vibration);
+        channel.enableVibration(true);
         channel.setVibrationPattern(VIBRATE_PATTERN);
 
-        if (sound) {
+        {
             AudioAttributes audioAttributes = new AudioAttributes.Builder()
                     //.setLegacyStreamType(AudioManager.STREAM_ALARM)
                     .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
@@ -248,18 +231,17 @@ public class Notifier {
         notificationManager.createNotificationChannel(channel); // goofy naming
     }
 
-    /** Creates the notification channels lazily (or updates their text) on Android O+. */
+    /** Creates notification channel(s) lazily (or updates the text) on Android O+. */
     private void createNotificationChannels() {
         if (Build.VERSION.SDK_INT < 26 || builtNotificationChannels) {
             return;
         }
 
-        createNotificationChannelV26(true);
-        createNotificationChannelV26(false);
+        createNotificationChannelV26();
         builtNotificationChannels = true;
     }
 
-    /** Update state (e.g. notification channel names and descriptions) for a UI Locale change. */
+    /** Update state (e.g. notification channel text) for a UI Locale change. */
     void onLocaleChange() {
         if (android.os.Build.VERSION.SDK_INT >= 26) {
             NotificationChannel channel = notificationManager.getNotificationChannel(
@@ -280,9 +262,8 @@ public class Notifier {
     protected Notification buildNotification(@NonNull ApplicationState state) {
         createNotificationChannels();
 
-        String channelId = soundAlarm ? ALARM_NOTIFICATION_CHANNEL_ID
-                : CONTROLS_NOTIFICATION_CHANNEL_ID;
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, channelId)
+        NotificationCompat.Builder builder =
+                new NotificationCompat.Builder(context, ALARM_NOTIFICATION_CHANNEL_ID)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setCategory(NotificationCompat.CATEGORY_ALARM)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
@@ -389,6 +370,8 @@ public class Notifier {
             builder.setSound(getSoundUri(R.raw.cowbell4), AudioManager.STREAM_ALARM);
             builder.setVibrate(VIBRATE_PATTERN);
             builder.setLights(notificationLightColor, 1000, 2000);
+        } else {
+            builder.setSilent(true);
         }
 
         return builder.build();

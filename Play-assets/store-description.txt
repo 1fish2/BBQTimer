@@ -22,9 +22,8 @@ Of course it can time more things than cooking.
 <b>Note: System Settings needed to enable BBQTimer notifications and alarms</b>
 • “Alarm volume” at an audible level.
 • Lock screen - “Show all notifications”. [or non-private ones?]
-• BBQTimer notifications enabled, not silent. (You can also choose to “Override Do Not Disturb“.)
-• BBQTimer “Alarm” notification - enabled, not “Silent”, not sound choice “None”, Importance “High”, Importance “Medium” or higher to appear on the lock screen. ("Pop on screen" is useful.)
-• BBQTimer “Controls” notification - on, Importance “Medium” or higher.
+• BBQTimer notifications enabled, not Silent. (You can also choose to “Override Do Not Disturb“.)
+• BBQTimer “Alarm” notification channel - enabled, not “Silent”, not sound choice “None”, Importance “High” or higher to be audible (“Medium” or higher to appear on the lock screen and in the notification area). "Pop on screen" is also useful.
 
 You can set BBQTimer’s “Alarm” sound in the system Notification controls. To change back, uninstall and reinstall the app.
 

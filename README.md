@@ -58,11 +58,6 @@ some changes will disable the app's periodic alarm sounds or lock screen feature
   * **Sound** - you can pick any sound, but don't pick **None** if you want to hear the app’s alarms.
   * **Vibrate** and **Blink light** - you can change these alarm properties.
   * **On the lock screen** - **Show all notification content** to operate the timer from the lock screen.
-* Apps &amp; notifications / App info / BBQ Timer / App notifications / **Controls** - **On**
-  * This notification channel is used to display the timer and the pause/reset/stop controls in the
-    notification area and on the lock screen when the app doesn’t need to play the alarm sound.
-  * **Importance** - must be **Medium** or higher to appear on the lock screen and in the notification area.
-  * **On the lock screen** - **Show all notification content** to operate the timer from the lock screen.
 
 The system alarm volume controls the volume of the app’s alarms. If you turn it all the way down,
 the app won’t sound audible alarms. It will still vibrate and blink the notification LED, assuming
