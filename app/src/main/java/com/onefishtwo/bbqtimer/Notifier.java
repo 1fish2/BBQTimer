@@ -121,7 +121,7 @@ public class Notifier {
         MediaStyle style = new MediaStyle().setShowActionsInCompactView(ACTION_INDICES[num]);
         builder.setStyle(style);
 
-        // === setColor() "the accent color" vs. Android API levels ===
+        // === MediaStyle setColor() [the "accent color"] vs. Android API levels ===
         // API 21 L - 22 L1: colors the notification are background needlessly.
         // API 23 M: See below.
         // API 24 N - API 27 O1: colors the small icon, action button, and app title color. Garish.
