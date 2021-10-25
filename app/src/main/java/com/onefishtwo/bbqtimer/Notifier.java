@@ -55,6 +55,10 @@ public class Notifier {
     private static final int[][] ACTION_INDICES = {{}, {0}, {0, 1}, {0, 1, 2}};
 
     static final String ALARM_NOTIFICATION_CHANNEL_ID = "alarmChannel";
+
+    // Was in release "2.5" (v15) and will remain immutable on devices while the app is installed:
+    // static final String CONTROLS_NOTIFICATION_CHANNEL_ID = "controlsChannel";
+
     private static boolean builtNotificationChannels = false;
 
     private final Context context;
