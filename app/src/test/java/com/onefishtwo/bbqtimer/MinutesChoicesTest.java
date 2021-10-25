@@ -32,6 +32,10 @@ import static org.junit.Assume.assumeThat;
 
 public class MinutesChoicesTest {
     private final int MM = MinutesChoices.MAX_MINUTES;
+    private static final int NUM_MINUTE_CHOICES = 107;
+    private static final String[] FIRST_EN_MINUTE_STRINGS = {
+            "0.5", "1", "1.5", "2", "2.5", "3", "3.5", "4", "4.5", "5", "5.5", "6", "6.5",
+            "7", "7.5", "8", "9", "10"};
     private final String MMS = Integer.toString(MM);
 
     private Locale savedLocale;
@@ -54,30 +58,33 @@ public class MinutesChoicesTest {
         assumeThat(Locale.getDefault(), is(Locale.US));
 
         assertThat("minute choices", Arrays.asList(mc.choices),
-                ListPrefixMatcher.listPrefixMatcher(
-                        "0.5", "1", "1.5", "2", "2.5", "3", "3.5", "4", "4.5", "5", "6", "7"));
-        assertThat("number of minute choices", mc.choices.length, is(104));
+                ListPrefixMatcher.listPrefixMatcher(FIRST_EN_MINUTE_STRINGS));
+        assertThat("number of minute choices", mc.choices.length, is(NUM_MINUTE_CHOICES));
         assertThat("the last minute choice", mc.choices[mc.choices.length - 1], is(MMS));
         assertThat("the penultimate minute choice", mc.choices[mc.choices.length - 2], is("98"));
     }
 
     @Test
     public void deDeStrings() {
+        String[] de_first_choices = new String[FIRST_EN_MINUTE_STRINGS.length];
+        for (int i = 0; i < de_first_choices.length; ++i) {
+            de_first_choices[i] = FIRST_EN_MINUTE_STRINGS[i].replace('.', ',');
+        }
+
         assumeThat(Locale.getDefault(), is(Locale.US));
 
         Locale.setDefault(Locale.GERMANY);
 
         // mc has not been updated to the new locale.
         assertThat("minute choices", Arrays.asList(mc.choices),
-                ListPrefixMatcher.listPrefixMatcher("0.5", "1", "1.5", "2", "2.5", "3", "3.5"));
-        assertThat("number of minute choices", mc.choices.length, is(104));
+                ListPrefixMatcher.listPrefixMatcher(FIRST_EN_MINUTE_STRINGS));
+        assertThat("number of minute choices", mc.choices.length, is(NUM_MINUTE_CHOICES));
 
         // Update mc to German.
         mc.updateLocale();
         assertThat("minute choices", Arrays.asList(mc.choices),
-                ListPrefixMatcher.listPrefixMatcher(
-                        "0,5", "1", "1,5", "2", "2,5", "3", "3,5", "4", "4,5", "5", "6", "7"));
-        assertThat("number of minute choices", mc.choices.length, is(104));
+                ListPrefixMatcher.listPrefixMatcher(de_first_choices));
+        assertThat("number of minute choices", mc.choices.length, is(NUM_MINUTE_CHOICES));
         assertThat("the last minute choice", mc.choices[mc.choices.length - 1], is(MMS));
     }
 
@@ -92,9 +99,9 @@ public class MinutesChoicesTest {
         assertThat("-0.5 minutes", MinutesChoices.secondsToPickerChoice(-30), is(0));
         assertThat("-1 minutes", MinutesChoices.secondsToPickerChoice(-60), is(0));
 
-        assertThat("max minutes", MinutesChoices.secondsToPickerChoice(MM * 60), is(103));
-        assertThat("1 too many minutes", MinutesChoices.secondsToPickerChoice(MM1 * 60), is(103));
-        assertThat("1 too many secs", MinutesChoices.secondsToPickerChoice(MM * 60 + 1), is(103));
+        assertThat("max minutes", MinutesChoices.secondsToPickerChoice(MM * 60), is(106));
+        assertThat("1 too many minutes", MinutesChoices.secondsToPickerChoice(MM1 * 60), is(106));
+        assertThat("1 too many secs", MinutesChoices.secondsToPickerChoice(MM * 60 + 1), is(106));
 
         assertThat("max minutes", mc.secondsToMinuteChoiceString(MM * 60), is(MMS));
         assertThat("1 too many minutes", mc.secondsToMinuteChoiceString(MM1 * 60), is(MMS));
