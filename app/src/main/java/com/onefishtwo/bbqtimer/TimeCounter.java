@@ -40,6 +40,7 @@ import androidx.annotation.NonNull;
  * The run states are {Running, Paused, Stopped}, where Paused is like Stopped plus an ongoing
  * Notification so it can be viewed and resumed on the Android Lollipop lock screen.
  */
+@SuppressWarnings("SynchronizationOnStaticField")
 public class TimeCounter {
     static class InjectForTesting {
         String formatElapsedTime(@SuppressWarnings("SameParameterValue") StringBuilder recycle,
@@ -314,9 +315,10 @@ public class TimeCounter {
     /** Formats a millisecond duration in [hh:]mm:ss format like Chronometer does. */
     public static String formatHhMmSs(long elapsedMilliseconds) {
         long elapsedSeconds = elapsedMilliseconds / 1000;
+        InjectForTesting injected1 = injected;
 
         synchronized (recycledStringBuilder) {
-            return injected.formatElapsedTime(recycledStringBuilder, elapsedSeconds);
+            return injected1.formatElapsedTime(recycledStringBuilder, elapsedSeconds);
         }
     }
 
