@@ -329,7 +329,8 @@ public class Notifier {
 
             {
                 // Make an Intent to launch the Activity from the notification.
-                Intent activityIntent = new Intent(context, MainActivity.class);
+                Intent activityIntent = new Intent(context, MainActivity.class)
+                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
                 // So navigating back from the Activity goes from the app to the Home screen.
                 TaskStackBuilder stackBuilder = TaskStackBuilder.create(context)
