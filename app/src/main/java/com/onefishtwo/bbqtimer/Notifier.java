@@ -35,7 +35,10 @@ import android.os.Build;
 
 import com.onefishtwo.bbqtimer.state.ApplicationState;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
+import androidx.annotation.RawRes;
+import androidx.annotation.StringRes;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.app.TaskStackBuilder;
@@ -61,15 +64,18 @@ public class Notifier {
 
     private static boolean builtNotificationChannels = false;
 
+    @NonNull
     private final Context context;
+    @NonNull
     private final NotificationManager notificationManager;
+    @NonNull
     private final NotificationManagerCompat notificationManagerCompat;
     private final int notificationLightColor;
 
     private boolean soundAlarm = false; // whether the next notification should sound an alarm
     private int numActions; // the number of action buttons added to the notification being built
 
-    public Notifier(Context _context) {
+    public Notifier(@NonNull Context _context) {
         this.context = _context;
         notificationManager =
                 (NotificationManager) _context.getSystemService(Context.NOTIFICATION_SERVICE);
@@ -87,7 +93,7 @@ public class Notifier {
         return this;
     }
 
-    private Uri getSoundUri(int soundId) {
+    private Uri getSoundUri(@RawRes int soundId) {
         return Uri.parse("android.resource://" + context.getPackageName() + "/" + soundId);
     }
 
@@ -100,8 +106,8 @@ public class Notifier {
      * Adds an action button to the given NotificationBuilder and to the
      * {@link #setMediaStyleActionsInCompactView} list.
      */
-    private void addAction(@NonNull NotificationCompat.Builder builder, int iconId, int titleId,
-            PendingIntent intent) {
+    private void addAction(@NonNull NotificationCompat.Builder builder, @DrawableRes int iconId,
+            @StringRes int titleId, PendingIntent intent) {
         builder.addAction(iconId, context.getString(titleId), intent);
         ++numActions;
     }
@@ -263,6 +269,7 @@ public class Notifier {
      * Builds a notification. Its alarm sound, vibration, and LED light flashing are switched on/off
      * by {@link #setAlarm(boolean)}.
      */
+    @NonNull
     protected Notification buildNotification(@NonNull ApplicationState state) {
         createNotificationChannels();
 

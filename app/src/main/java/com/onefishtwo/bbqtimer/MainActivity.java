@@ -199,7 +199,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
         logTheConfiguration(getResources().getConfiguration());
     }
 
-    private void logTheConfiguration(Configuration config) {
+    private void logTheConfiguration(@NonNull Configuration config) {
         Log.v(TAG,
             String.format("Config densityDpi: %d, size DPI: %dx%d, orientation: %d",
                     config.densityDpi, config.screenWidthDp, config.screenHeightDp,
@@ -335,7 +335,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
     }
 
     /** Sets the Snackbar's action. */
-    private void setSnackbarAction(Snackbar snackbar, @StringRes int resId,
+    private void setSnackbarAction(@NonNull Snackbar snackbar, @StringRes int resId,
             View.OnClickListener listener) {
         snackbar.setAction(resId, listener)
                 .setActionTextColor(ContextCompat.getColor(this, R.color.contrasting_text));

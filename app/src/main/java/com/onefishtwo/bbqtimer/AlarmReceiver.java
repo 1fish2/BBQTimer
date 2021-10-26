@@ -31,6 +31,7 @@ import android.util.Log;
 import com.onefishtwo.bbqtimer.state.ApplicationState;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresPermission;
 
 /**
  * Uses AlarmManager to perform periodic reminder notifications.
@@ -103,6 +104,7 @@ public class AlarmReceiver extends BroadcastReceiver {
     }
 
     /** Get a string description of an Intent, including extras, for debugging. */
+    @NonNull
     @SuppressWarnings("unused")
     public static String debugDumpIntent(@NonNull Intent intent) {
         StringBuilder sb = new StringBuilder(intent.toString());
@@ -174,6 +176,7 @@ public class AlarmReceiver extends BroadcastReceiver {
      * @param nextReminder the SystemClock.elapsedRealtime() for the next reminder notification
      * @param pendingIntent the PendingIntent to wake this receiver in nextReminder msec
      */
+    @RequiresPermission("android.permission.SCHEDULE_EXACT_ALARM")
     @TargetApi(21)
     private static void setAlarmClockV21(Context context, @NonNull AlarmManager alarmMgr,
             @NonNull ApplicationState state, long nextReminder, PendingIntent pendingIntent) {

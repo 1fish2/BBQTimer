@@ -30,6 +30,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Locale;
 
+import androidx.annotation.NonNull;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assume.assumeThat;
@@ -37,6 +39,7 @@ import static org.junit.Assume.assumeThat;
 @RunWith(Parameterized.class)
 public class PickerChoiceTest {
 
+    @NonNull
     @Parameterized.Parameters(name = "picker choice {0} <-> {1} secs")
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][] { // {choice, seconds} pairs

@@ -33,6 +33,7 @@ import java.util.Formatter;
 import java.util.Locale;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 
 /**
  * A stopwatch time counter (data model).
@@ -42,6 +43,7 @@ import androidx.annotation.NonNull;
  */
 @SuppressWarnings("SynchronizationOnStaticField")
 public class TimeCounter {
+    @VisibleForTesting
     static class InjectForTesting {
         String formatElapsedTime(@SuppressWarnings("SameParameterValue") StringBuilder recycle,
                 long elapsedSeconds) {
@@ -59,6 +61,7 @@ public class TimeCounter {
     }
 
     /** Inject or mock for testing. */
+    @VisibleForTesting
     @NonNull
     static InjectForTesting injected = new InjectForTesting();
 
