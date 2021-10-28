@@ -113,7 +113,8 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
 
     /**
      * Updates the given app widgets' contents. Called when an app widget instance was added to a
-     * widget host (e.g. home screen or lock screen) and periodically at updatePeriodMillis.
+     * widget host (e.g. home screen) (including after onRestored(), when widgets get restored from
+     * backup) and periodically at updatePeriodMillis.
      */
     @Override
     public void onUpdate(@NonNull Context context, @NonNull AppWidgetManager appWidgetManager,
