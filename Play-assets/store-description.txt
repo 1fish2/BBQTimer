@@ -6,7 +6,7 @@ A combination interval timer/stopwatch with a twist:
 Of course it can time more things than cooking.
 
 • Requires minimal app permissions.  
-• No network access. No ads. No data gathering.  
+• No network access. No ads. No data collection.  
 • Simple and focused.  
 • Free.
 

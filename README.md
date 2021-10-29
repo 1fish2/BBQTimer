@@ -102,3 +102,5 @@ display different times. The workaround is to switch to a Text view when paused.
 * Formatting the elapsed time like 0:12 would look nicer than 00:12 but the latter matches Android’s Chronometer view for consistency.
 * The widget’s ViewFlipper must explicitly set android:measureAllChildren="false", otherwise
 flipping its subviews will resize the adjacent ImageButton on Galaxy Nexus Jelly Bean.
+
+[Privacy Policy](Privacy-Policy-for-the-BBQTimer-app.md).
