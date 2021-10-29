@@ -58,11 +58,6 @@ some changes will disable the app's periodic alarm sounds or lock screen feature
   * **Sound** - you can pick any sound, but don't pick **None** if you want to hear the app’s alarms.
   * **Vibrate** and **Blink light** - you can change these alarm properties.
   * **On the lock screen** - **Show all notification content** to operate the timer from the lock screen.
-* Apps &amp; notifications / App info / BBQ Timer / App notifications / **Controls** - **On**
-  * This notification channel is used to display the timer and the pause/reset/stop controls in the
-    notification area and on the lock screen when the app doesn’t need to play the alarm sound.
-  * **Importance** - must be **Medium** or higher to appear on the lock screen and in the notification area.
-  * **On the lock screen** - **Show all notification content** to operate the timer from the lock screen.
 
 The system alarm volume controls the volume of the app’s alarms. If you turn it all the way down,
 the app won’t sound audible alarms. It will still vibrate and blink the notification LED, assuming
@@ -95,8 +90,6 @@ Don’t get me wrong -- commercial software is also great!
 Notification sound composed from sampled cowbell sounds which are used by permission from Phil Burk,
 Copyright (c) 2014 Mobileer Inc.
 
-Launcher icon derived from a public domain image on [openclipart.org](http://openclipart.org).
-
 ## Keywords
 BBQ, cooking, interval timer, lock screen widget, reminder alarm, stopwatch.
 
@@ -109,3 +102,5 @@ display different times. The workaround is to switch to a Text view when paused.
 * Formatting the elapsed time like 0:12 would look nicer than 00:12 but the latter matches Android’s Chronometer view for consistency.
 * The widget’s ViewFlipper must explicitly set android:measureAllChildren="false", otherwise
 flipping its subviews will resize the adjacent ImageButton on Galaxy Nexus Jelly Bean.
+
+[Privacy Policy](Privacy-Policy-for-the-BBQTimer-app.md).
