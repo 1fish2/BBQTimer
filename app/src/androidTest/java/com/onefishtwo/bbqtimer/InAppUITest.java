@@ -26,10 +26,8 @@ import android.content.Context;
 import android.view.View;
 
 import org.hamcrest.Matcher;
-import org.hamcrest.core.IsInstanceOf;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -43,22 +41,24 @@ import androidx.test.filters.LargeTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.Espresso.pressBack;
 import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.action.ViewActions.longClick;
 import static androidx.test.espresso.action.ViewActions.pressImeActionButton;
 import static androidx.test.espresso.action.ViewActions.replaceText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.hasFocus;
 import static androidx.test.espresso.matcher.ViewMatchers.isChecked;
 import static androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
+import static androidx.test.espresso.matcher.ViewMatchers.isFocusable;
+import static androidx.test.espresso.matcher.ViewMatchers.isFocused;
 import static androidx.test.espresso.matcher.ViewMatchers.isNotChecked;
+import static androidx.test.espresso.matcher.ViewMatchers.isNotEnabled;
+import static androidx.test.espresso.matcher.ViewMatchers.isNotFocused;
 import static androidx.test.espresso.matcher.ViewMatchers.withClassName;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
-import static com.onefishtwo.bbqtimer.CustomMatchers.childAtPosition;
 import static com.onefishtwo.bbqtimer.CustomMatchers.withCompoundDrawable;
 import static com.onefishtwo.bbqtimer.CustomViewActions.waitMsec;
 import static com.onefishtwo.bbqtimer.TimeIntervalMatcher.inTimeInterval;
@@ -109,16 +109,6 @@ public class InAppUITest {
         timeView = null;
         enableRemindersToggle = null;
         minutesPicker = null;
-    }
-
-    @Test
-    public void useAppContext() {
-        // Context of the app under test.
-        Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        assertEquals("com.onefishtwo.bbqtimer", appContext.getPackageName());
-
-        Context appContext2 = ApplicationProvider.getApplicationContext();
-        assertEquals("com.onefishtwo.bbqtimer", appContext2.getPackageName());
     }
 
 // MainActivity's FSM:
@@ -236,9 +226,11 @@ public class InAppUITest {
         if (expectEnabled) {
             enableRemindersToggle.check(matches(isChecked()));
             minutesPicker.check(matches(isEnabled()));
+            minutesPicker.check(matches(isFocusable()));
         } else {
             enableRemindersToggle.check(matches(isNotChecked()));
-            minutesPicker.check(matches(not(isEnabled())));
+            minutesPicker.check(matches(isNotEnabled()));
+            minutesPicker.check(matches(isNotFocused()));
         }
     }
 
@@ -308,55 +300,53 @@ public class InAppUITest {
         // TODO: Check timeView's color state, flashing between either of two color states.
     }
 
-    @Ignore("TODO: Finish reworking this rough code from Espresso Test Recorder")
-    //@Test
+    /** Tests the minutesPicker and enableRemindersToggle widgets. */
+    @Test
     public void minutePickerUITest() {
-        ViewInteraction numberPicker = onView(withId(R.id.minutesPicker));
-        numberPicker.perform(longClick());
+        // Context of the app under test.
+        Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        assertEquals("com.onefishtwo.bbqtimer", appContext.getPackageName());
 
-        pressBack();
+        Context appContext2 = ApplicationProvider.getApplicationContext();
+        assertEquals("com.onefishtwo.bbqtimer", appContext2.getPackageName());
+
+        checkReminder(true);
+        minutesPicker.check(matches(hasFocus()));
+
+        enableRemindersToggle.perform(click());
+        checkReminder(false);
+
+        enableRemindersToggle.perform(click());
+        checkReminder(true);
+        minutesPicker.check(matches(hasFocus()));
+
+        minutesPicker.perform(click());
+        minutesPicker.check(matches(hasFocus()));
 
         ViewInteraction minutePickerEditText = onView(
                 allOf(withClassName(is("android.widget.NumberPicker$CustomEditText")),
-                        withParent(withId(R.id.minutesPicker)),
-                        isDisplayed()));
-        minutePickerEditText.perform(replaceText("0.5"), pressImeActionButton()); // closeSoftKeyboard()
+                        withParent(withId(R.id.minutesPicker))));
+        minutePickerEditText.check(matches(isFocused()));
+        minutePickerEditText.check(matches(withText("5")));
+        checkReminder(true);
 
-        ViewInteraction enableRemindersCheckBox = onView(withId(R.id.enableReminders));
-        enableRemindersCheckBox.perform(click(), click());
+        minutePickerEditText.perform(
+                replaceText("0.5"),
+                pressImeActionButton()); // closeSoftKeyboard()
+        minutePickerEditText.check(matches(withText("0.5")));
 
-        ViewInteraction button = onView(
-                allOf(withId(R.id.resetButton),
-                        childAtPosition(
-                                childAtPosition(
-                                        IsInstanceOf.instanceOf(
-                                                android.widget.LinearLayout.class),
-                                        1),
-                                1),
-                        isDisplayed()));
-        button.check(matches(isDisplayed()));
+        enableRemindersToggle.perform(click());
+        checkReminder(false);
 
-        ViewInteraction textView2 = onView(
-                allOf(withId(R.id.display), withText("00:00.0"),
-                        childAtPosition(
-                                childAtPosition(
-                                        withId(R.id.main_container),
-                                        0),
-                                0),
-                        isDisplayed()));
-        textView2.check(matches(withText("00:00.0")));
+        enableRemindersToggle.perform(click());
+        checkReminder(true);
+        checkStopped();
 
-        ViewInteraction editText = onView(
-                allOf(IsInstanceOf.instanceOf(android.widget.EditText.class),
-                        withText("1"),
-                        childAtPosition(
-                                childAtPosition(
-                                        IsInstanceOf.instanceOf(
-                                                android.widget.LinearLayout.class),
-                                        1),
-                                1),
-                        isDisplayed()));
-        editText.check(matches(withText("1")));
+        playPauseButton.perform(click()); // Play
+        playPauseButton.perform(waitMsec(30_001)); // *** TODO: Test that it alarmed once **
+        playPauseButton.perform(click()); // Pause
+        TimeIntervalMatcher time1 = inTimeInterval(30_000, 31_000);
+        checkPausedAt(time1);
     }
 
 }
