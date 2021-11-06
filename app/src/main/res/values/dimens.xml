@@ -17,6 +17,8 @@
 
     <!-- Display TextView layout height (overridden for specific screen configs). -->
     <dimen name="display_text_view_height">70dp</dimen>
+    <!-- Only relevant for portrait screens. -->
+    <dimen name="portrait_display_text_view_height">120dp</dimen>
     <!-- Display TextView layout height adjusted for landscape screen height (or portrait screen width). -->
     <dimen name="display_text_view_adjusted_height">@dimen/display_text_view_height</dimen>
 

@@ -30,11 +30,14 @@ import org.junit.runners.Parameterized.Parameters;
 import java.util.Arrays;
 import java.util.Collection;
 
+import androidx.annotation.NonNull;
+
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 @RunWith(Parameterized.class)
 public class PluralizationTest {
+    @NonNull
     @Parameters(name = "pluralization quantity for {0} -> {1}") // {index}
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][] { // {seconds, expectedQuantity} pairs

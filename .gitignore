@@ -1,31 +1,18 @@
-# Android Studio
 *.iml
 .gradle
 /local.properties
-.idea/caches/
-/.idea/workspace.xml
+/.idea/caches
+/.idea/deploymentTargetDropDown.xml
 /.idea/libraries
-build/
-/captures
-.idea/caches/
-
-# Unused source assets. They may get used later.
-/source-assets/unused/
-
-/tmp/
-
-# OS X
+/.idea/modules.xml
+/.idea/misc.xml
+/.idea/workspace.xml
+/.idea/navEditor.xml
+/.idea/assetWizardSettings.xml
 .DS_Store
-
-# Windows image file caches
-Thumbs.db
-ehthumbs.db
-
-# Folder config file
-Desktop.ini
-
-# Recycle Bin used on file shares
-$RECYCLE.BIN/
-
-# Python
-*.py[co]
+/build
+/captures
+.externalNativeBuild
+.cxx
+local.properties
+/tmp

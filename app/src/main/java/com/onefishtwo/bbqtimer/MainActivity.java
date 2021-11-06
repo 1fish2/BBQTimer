@@ -28,16 +28,9 @@ import android.content.res.Configuration;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.provider.Settings;
-import android.support.annotation.ColorRes;
-import android.support.annotation.NonNull;
-import android.support.annotation.StringRes;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.NotificationManagerCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.widget.TextViewCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.text.Spanned;
 import android.util.Log;
 import android.util.TypedValue;
@@ -48,9 +41,19 @@ import android.widget.CompoundButton;
 import android.widget.NumberPicker;
 import android.widget.TextView;
 
+import com.google.android.material.snackbar.BaseTransientBottomBar;
+import com.google.android.material.snackbar.Snackbar;
 import com.onefishtwo.bbqtimer.state.ApplicationState;
 
 import java.lang.ref.WeakReference;
+
+import androidx.annotation.ColorRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationManagerCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.widget.TextViewCompat;
 
 /**
  * The BBQ Timer's main activity.
@@ -58,18 +61,14 @@ import java.lang.ref.WeakReference;
 public class MainActivity extends AppCompatActivity implements NumberPicker.OnValueChangeListener {
     private final String TAG = "Main";
 
-    /**
-     * Hide the Reset feature (Pause @ 0:00) if the app doesn't show notifications while paused
-     * (that's on Android versions without lock screen notifications). Just use Stop.
-     */
-    static final boolean HIDE_RESET_FEATURE = !Notifier.PAUSEABLE_NOTIFICATIONS;
-
     private static final MinutesChoices minutesChoices = new MinutesChoices();
 
     private static final int SHORTCUT_NONE = 0;
     private static final int SHORTCUT_PAUSE = 1;
     private static final int SHORTCUT_START = 2;
     private int shortcutAction = SHORTCUT_NONE;
+
+    private int viewConfiguration = -1; // optimization: don't reset all the views every 100 msec
 
     private Notifier notifier;
 
@@ -97,10 +96,11 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
         private final WeakReference<MainActivity> weakActivity;
 
         private UpdateHandler(MainActivity activity) {
+            super(Looper.getMainLooper());
             weakActivity = new WeakReference<>(activity);
         }
 
-        /** Handles a message to periodically update the display. */
+        /** Handles a message to periodically update the views. */
         @Override
         public void handleMessage(@NonNull Message msg) {
             MainActivity activity = weakActivity.get();
@@ -108,7 +108,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
             super.handleMessage(msg);
             if (msg.what == MSG_UPDATE) {
                 if (activity != null) {
-                    activity.displayTime();
+                    activity.updateViews();
                 }
                 scheduleNextUpdate();
             }
@@ -149,6 +149,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        viewConfiguration = -1;
         notifier = new Notifier(this);
 
         makeLocaleStrings();
@@ -161,6 +162,12 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
         enableRemindersToggle = findViewById(R.id.enableReminders);
         minutesPicker         = findViewById(R.id.minutesPicker);
 
+        resetButton.setOnClickListener(this::onClickReset);
+        startStopButton.setOnClickListener(this::onClickStartStop);
+        stopButton.setOnClickListener(this::onClickStop);
+        displayView.setOnClickListener(this::onClickTimerText);
+        enableRemindersToggle.setOnClickListener(this::onClickEnableRemindersToggle);
+
         minutesPicker.setMinValue(0);
         minutesPicker.setMaxValue(minutesChoices.choices.length - 1);
         minutesPicker.setDisplayedValues(minutesChoices.choices);
@@ -168,12 +175,9 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
         minutesPicker.setOnValueChangedListener(this);
         minutesPicker.setFocusableInTouchMode(true);
 
-        if (android.os.Build.VERSION.SDK_INT > 15) {
-            // AutoSizeText is supposed to work on API 14+ but generates lots of NPEs on 14-15.
-            // AutoSizeText works with android:maxLines="1" but not with android:singleLine="true".
-            TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(displayView, 16, 1000, 1,
-                    TypedValue.COMPLEX_UNIT_DIP);
-        }
+        // AutoSizeText works with android:maxLines="1" but not with android:singleLine="true".
+        TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(displayView, 16,
+                1000, 1, TypedValue.COMPLEX_UNIT_DIP);
 
         setVolumeControlStream(AudioManager.STREAM_ALARM);
 
@@ -195,12 +199,11 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
         logTheConfiguration(getResources().getConfiguration());
     }
 
-    private void logTheConfiguration(Configuration config) {
-        int densityDpi = android.os.Build.VERSION.SDK_INT < 17 ? 0 : config.densityDpi;
-
-        Log.v(TAG, "Config densityDpi: " + densityDpi
-                + ", size DPI: " + config.screenWidthDp + "x" + config.screenHeightDp
-                + ", orientation: " + config.orientation);
+    private void logTheConfiguration(@NonNull Configuration config) {
+        Log.v(TAG,
+            String.format("Config densityDpi: %d, size DPI: %dx%d, orientation: %d",
+                    config.densityDpi, config.screenWidthDp, config.screenHeightDp,
+                    config.orientation));
     }
 
     @Override
@@ -217,6 +220,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
     @Override
     protected void onStart() {
         super.onStart();
+        viewConfiguration = -1;
 
         // Load persistent state.
         state = ApplicationState.sharedInstance(this);
@@ -273,21 +277,17 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
      * TODO: How to detect if the app's notifications are visible but silenced? Silencing kills the
      * audio and heads-up notification shades.
      * <p/>
-     * NOTE: The notifications-disabled test only works on API 19+ KitKat+. The notification channel
-     * misconfigured test only works on API 26+. Opening Settings to let the user Enable
-     * notifications only works on API 21+ Lollipop+.
+     * NOTE: The notification channel misconfigured test only works on API 26+.
      */
     private void informIfNotificationAlarmsMuted() {
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
 
-        // Check for disabled notifications on API 19+ KitKat+.
+        // Check for disabled notifications.
         // NOTE: If notifications are disabled, so are Toasts.
         if (!notificationManager.areNotificationsEnabled()) {
             Snackbar snackbar = makeSnackbar(R.string.notifications_disabled);
-            if (android.os.Build.VERSION.SDK_INT >= 21) { // Where this Settings Intent works.
-                setSnackbarAction(snackbar, R.string.notifications_enable,
-                        view -> openNotificationSettingsForApp());
-            }
+            setSnackbarAction(snackbar, R.string.notifications_enable,
+                    view -> openNotificationSettingsForApp());
             snackbar.show();
             return;
         }
@@ -328,21 +328,21 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
     @NonNull
     private Snackbar makeSnackbar(@StringRes int stringResId) {
         Snackbar snackbar = Snackbar.make(findViewById(R.id.main_container), stringResId,
-                Snackbar.LENGTH_LONG);
+                BaseTransientBottomBar.LENGTH_LONG);
         snackbar.getView().setBackgroundColor(
                 ContextCompat.getColor(this, R.color.dark_orange_red));
         return snackbar;
     }
 
     /** Sets the Snackbar's action. */
-    private void setSnackbarAction(Snackbar snackbar, @StringRes int resId,
+    private void setSnackbarAction(@NonNull Snackbar snackbar, @StringRes int resId,
             View.OnClickListener listener) {
         snackbar.setAction(resId, listener)
                 .setActionTextColor(ContextCompat.getColor(this, R.color.contrasting_text));
     }
 
     @Override
-    public void onConfigurationChanged(Configuration newConfig) {
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         logTheConfiguration(newConfig);
     }
@@ -443,26 +443,36 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
         displayView.setTextColor(textColors);
     }
 
-    /** Updates the whole UI for the current state: Activity, Notifications, alarms, and widgets. */
-    private void updateUI() {
+    /** Updates the Activity's views for the current state. */
+    private void updateViews() {
         boolean isRunning = timer.isRunning();
         boolean isStopped = timer.isStopped();
         boolean isPausedAt0 = timer.isPausedAt0();
         boolean areRemindersEnabled = state.isEnableReminders();
+        int newConfiguration = (isRunning ? 1 : 0) | (isStopped ? 2 : 0) | (isPausedAt0 ? 4 : 0)
+                | (areRemindersEnabled ? 8 : 0);
 
         displayTime();
-        resetButton.setCompoundDrawablesWithIntrinsicBounds(
-                isStopped ? R.drawable.ic_pause : R.drawable.ic_replay, 0, 0, 0);
-        resetButton.setVisibility(HIDE_RESET_FEATURE ? View.GONE
-                : isRunning || isPausedAt0 ? View.INVISIBLE
-                : View.VISIBLE);
-        startStopButton.setCompoundDrawablesWithIntrinsicBounds(
-                isRunning ? R.drawable.ic_pause : R.drawable.ic_play, 0, 0, 0);
-        stopButton.setVisibility(isStopped ? View.INVISIBLE : View.VISIBLE);
-        enableRemindersToggle.setChecked(areRemindersEnabled);
-        minutesPicker.setValue(MinutesChoices.secondsToPickerChoice(
-                state.getSecondsPerReminder()));
-        minutesPicker.setEnabled(areRemindersEnabled);
+
+        if (viewConfiguration != newConfiguration) { // optimize out the nearly-always no-op case
+            viewConfiguration = newConfiguration;
+
+            resetButton.setCompoundDrawablesWithIntrinsicBounds(
+                    isStopped ? R.drawable.ic_pause : R.drawable.ic_replay, 0, 0, 0);
+            resetButton.setVisibility(isRunning || isPausedAt0 ? View.INVISIBLE : View.VISIBLE);
+            startStopButton.setCompoundDrawablesWithIntrinsicBounds(
+                    isRunning ? R.drawable.ic_pause : R.drawable.ic_play, 0, 0, 0);
+            stopButton.setVisibility(isStopped ? View.INVISIBLE : View.VISIBLE);
+            enableRemindersToggle.setChecked(areRemindersEnabled);
+            minutesPicker.setValue(MinutesChoices.secondsToPickerChoice(
+                    state.getSecondsPerReminder()));
+            minutesPicker.setEnabled(areRemindersEnabled);
+        }
+    }
+
+    /** Updates the whole UI for the current state: Activity, Notifications, alarms, and widgets. */
+    private void updateUI() {
+        updateViews();
 
         AlarmReceiver.updateNotifications(this);
 

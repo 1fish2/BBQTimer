@@ -22,11 +22,7 @@
 package com.onefishtwo.bbqtimer;
 
 
-import android.support.annotation.NonNull;
-import android.support.test.espresso.ViewInteraction;
-import android.support.test.filters.LargeTest;
-import android.support.test.rule.ActivityTestRule;
-import android.support.test.runner.AndroidJUnit4;
+import android.content.Context;
 import android.view.View;
 
 import org.hamcrest.Matcher;
@@ -38,31 +34,38 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import static android.support.test.espresso.Espresso.onView;
-import static android.support.test.espresso.Espresso.pressBack;
-import static android.support.test.espresso.action.ViewActions.click;
-import static android.support.test.espresso.action.ViewActions.longClick;
-import static android.support.test.espresso.action.ViewActions.pressImeActionButton;
-import static android.support.test.espresso.action.ViewActions.replaceText;
-import static android.support.test.espresso.assertion.ViewAssertions.matches;
-import static android.support.test.espresso.matcher.ViewMatchers.isChecked;
-import static android.support.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
-import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static android.support.test.espresso.matcher.ViewMatchers.isEnabled;
-import static android.support.test.espresso.matcher.ViewMatchers.isNotChecked;
-import static android.support.test.espresso.matcher.ViewMatchers.withClassName;
-import static android.support.test.espresso.matcher.ViewMatchers.withId;
-import static android.support.test.espresso.matcher.ViewMatchers.withParent;
-import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import androidx.annotation.NonNull;
+import androidx.test.core.app.ApplicationProvider;
+import androidx.test.espresso.ViewInteraction;
+import androidx.test.ext.junit.rules.ActivityScenarioRule;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.filters.LargeTest;
+import androidx.test.platform.app.InstrumentationRegistry;
+
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.Espresso.pressBack;
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.longClick;
+import static androidx.test.espresso.action.ViewActions.pressImeActionButton;
+import static androidx.test.espresso.action.ViewActions.replaceText;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isChecked;
+import static androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
+import static androidx.test.espresso.matcher.ViewMatchers.isNotChecked;
+import static androidx.test.espresso.matcher.ViewMatchers.withClassName;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withParent;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static com.onefishtwo.bbqtimer.CustomMatchers.childAtPosition;
-import static com.onefishtwo.bbqtimer.CustomMatchers.ignoringFailures;
-import static com.onefishtwo.bbqtimer.CustomViewActions.setChecked;
 import static com.onefishtwo.bbqtimer.CustomMatchers.withCompoundDrawable;
 import static com.onefishtwo.bbqtimer.CustomViewActions.waitMsec;
 import static com.onefishtwo.bbqtimer.TimeIntervalMatcher.inTimeInterval;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.core.AllOf.allOf;
+import static org.junit.Assert.assertEquals;
 
 /** Within-app Espresso UI tests. */
 // TODO: Test the app's home screen widget.
@@ -70,8 +73,8 @@ import static org.hamcrest.core.AllOf.allOf;
 @LargeTest
 @RunWith(AndroidJUnit4.class)
 public class InAppUITest {
-    /** The resetButton is hidden on older versions of Android. */
-    private static final boolean HIDE_RESET_FEATURE = MainActivity.HIDE_RESET_FEATURE;
+    /** The resetButton was hidden on older versions of Android. */
+    private static final boolean HIDE_RESET_FEATURE = false;
 
     private ViewInteraction playPauseButton; // play/pause, formerly known as start/stop
     private ViewInteraction resetButton; // reset (pause @ 00:00); pause/replay icon or hidden
@@ -85,8 +88,8 @@ public class InAppUITest {
 
     @NonNull
     @Rule
-    public final ActivityTestRule<MainActivity> mActivityTestRule =
-            new ActivityTestRule<>(MainActivity.class);
+    public final ActivityScenarioRule<MainActivity> activityScenarioRule =
+            new ActivityScenarioRule<>(MainActivity.class);
 
     @Before
     public void setUp() {
@@ -108,15 +111,25 @@ public class InAppUITest {
         minutesPicker = null;
     }
 
+    @Test
+    public void useAppContext() {
+        // Context of the app under test.
+        Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        assertEquals("com.onefishtwo.bbqtimer", appContext.getPackageName());
+
+        Context appContext2 = ApplicationProvider.getApplicationContext();
+        assertEquals("com.onefishtwo.bbqtimer", appContext2.getPackageName());
+    }
+
 // MainActivity's FSM:
 //
-// Stopped  @ 00:00     |>  ||      --> Playing, Reset
+// Stopped  @ 00:00     |>  ||      --> Playing, Reset (= Paused @ 0:00)
 //
-// Reset    @ 00:00     |>      []  --> Playing, Stopped [on Android 21+]
+// Reset    @ 00:00     |>      []  --> Playing, Stopped
 //
 // Playing  hh:mm++     ||      []  --> Paused, Stopped
 //
-// Paused   > 00:00     |>  ®   []  --> Playing, Reset, Stopped
+// Paused   > 00:00     |>  ⟲  []  --> Playing, Reset, Stopped
 
     /**
      * Tests all the nodes and arcs in the app's play/pause/reset/stop FSM.
@@ -127,11 +140,15 @@ public class InAppUITest {
      */
     @Test
     public void playPauseStopUITest() {
-        // Click the Stop button if clickable so the test can begin in a well-defined state.
-        ignoringFailures(onView(withId(R.id.stopButton))).perform(click());
-        enableRemindersToggle.perform(setChecked(true));
+        // Given the following setting in build.grade to clear the package data before tests:
+        //    testInstrumentationRunnerArguments clearPackageData: 'true'
+        // the initial state is known: Stopped @ 0:00 with 5 minute periodic alarms
+        // so this test needn't reset state:
+        //    ignoringFailures(onView(withId(R.id.stopButton))).perform(click())
+        //    enableRemindersToggle.perform(setChecked(true))
 
         checkStopped(); // Stopped
+        checkReminder(true);
 
         enableRemindersToggle.perform(click());
         checkReminder(false);
@@ -204,6 +221,11 @@ public class InAppUITest {
 
         stopButton.perform(click());
         checkStopped();
+
+        playPauseButton.perform(click()); // Play
+        playPauseButton.perform(waitMsec(1000));
+        playPauseButton.perform(click()); // Pause
+        checkPausedAt(time1);
     }
 
     /** Checks the enable-reminders checkbox and the minutes picker. */

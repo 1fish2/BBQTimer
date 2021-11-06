@@ -22,7 +22,6 @@ package com.onefishtwo.bbqtimer;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.SystemClock;
-import android.support.annotation.NonNull;
 import android.text.Html;
 import android.text.Spanned;
 import android.text.format.DateUtils;
@@ -33,22 +32,27 @@ import java.text.NumberFormat;
 import java.util.Formatter;
 import java.util.Locale;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
+
 /**
  * A stopwatch time counter (data model).
  * <p/>
  * The run states are {Running, Paused, Stopped}, where Paused is like Stopped plus an ongoing
  * Notification so it can be viewed and resumed on the Android Lollipop lock screen.
  */
+@SuppressWarnings("SynchronizationOnStaticField")
 public class TimeCounter {
+    @VisibleForTesting
     static class InjectForTesting {
         String formatElapsedTime(@SuppressWarnings("SameParameterValue") StringBuilder recycle,
                 long elapsedSeconds) {
             return DateUtils.formatElapsedTime(recycle, elapsedSeconds);
         }
 
+        @SuppressWarnings("deprecation")
         Spanned fromHtml(String source) {
             if (Build.VERSION.SDK_INT < 24) {
-                //noinspection deprecation
                 return Html.fromHtml(source);
             } else {
                 return Html.fromHtml(source, Html.FROM_HTML_MODE_COMPACT);
@@ -57,20 +61,9 @@ public class TimeCounter {
     }
 
     /** Inject or mock for testing. */
+    @VisibleForTesting
     @NonNull
     static InjectForTesting injected = new InjectForTesting();
-
-    /**
-     * On API 21+, allow Paused notifications with control buttons as well as Running
-     * notifications with control buttons, mainly so the user can control the timer from a lock
-     * screen notification. Otherwise, unify Paused @ 0:00 with Stopped in the UI.
-     * <p/>
-     * Due to OS bugs in API 17 - 20, changing a notification to Paused would continue showing a
-     * running chronometer [despite calling setShowWhen(false) and not calling
-     * setUsesChronometer(true)] and sometimes also the notification time of day, both confusing.
-     * API < 16 has no action buttons so it has no payoff in Paused notifications.
-     */
-    static final boolean PAUSEABLE_NOTIFICATIONS = android.os.Build.VERSION.SDK_INT >= 21;
 
     /** PERSISTENT STATE identifiers. */
     private static final String PREF_IS_RUNNING = "Timer_isRunning";
@@ -165,9 +158,6 @@ public class TimeCounter {
             }
         } else if (isPaused) {
             if (startTime > pauseTime || startTime > elapsedRealtimeClock()) {
-                stop();
-                needToSave = true;
-            } else if (startTime == pauseTime && !PAUSEABLE_NOTIFICATIONS) {
                 stop();
                 needToSave = true;
             }
@@ -268,7 +258,8 @@ public class TimeCounter {
     }
 
     /**
-     * Toggles the state to Running or Paused.
+     * Toggles the state to Running or Paused for a Play/Pause button that goes
+     * Stopped or Paused -> Running -> Paused.
      *
      * @return true if the timer is now running.
      */
@@ -278,6 +269,22 @@ public class TimeCounter {
             pause();
         } else {
             start();
+        }
+        return isRunning;
+    }
+
+    /**
+     * Toggles the state to Paused or Running for a Play/Pause button that goes
+     * Stopped or Running -> Paused -> Running.
+     *
+     * @return true if the timer is now running.
+     */
+    @SuppressWarnings("UnusedReturnValue")
+    public boolean togglePauseRun() {
+        if (isPaused) {
+            start();
+        } else {
+            pause();
         }
         return isRunning;
     }
@@ -311,9 +318,10 @@ public class TimeCounter {
     /** Formats a millisecond duration in [hh:]mm:ss format like Chronometer does. */
     public static String formatHhMmSs(long elapsedMilliseconds) {
         long elapsedSeconds = elapsedMilliseconds / 1000;
+        InjectForTesting injected1 = injected;
 
         synchronized (recycledStringBuilder) {
-            return injected.formatElapsedTime(recycledStringBuilder, elapsedSeconds);
+            return injected1.formatElapsedTime(recycledStringBuilder, elapsedSeconds);
         }
     }
 

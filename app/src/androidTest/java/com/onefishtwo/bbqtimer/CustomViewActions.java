@@ -21,9 +21,6 @@
 
 package com.onefishtwo.bbqtimer;
 
-import android.support.annotation.NonNull;
-import android.support.test.espresso.UiController;
-import android.support.test.espresso.ViewAction;
 import android.view.View;
 import android.widget.Checkable;
 
@@ -31,7 +28,11 @@ import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 
-import static android.support.test.espresso.action.ViewActions.click;
+import androidx.annotation.NonNull;
+import androidx.test.espresso.UiController;
+import androidx.test.espresso.ViewAction;
+
+import static androidx.test.espresso.action.ViewActions.click;
 import static org.hamcrest.Matchers.any;
 import static org.hamcrest.Matchers.isA;
 
@@ -69,7 +70,7 @@ class CustomViewActions {
     }
 
     /** Clicks a checkbox if needed to put it into the desired state. */
-    @SuppressWarnings("SameParameterValue")
+    @SuppressWarnings({"SameParameterValue", "unused"})
     @NonNull
     static ViewAction setChecked(final boolean checked) {
         return new ViewAction() {

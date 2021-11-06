@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  xmlns:xlink="http://www.w3.org/1999/xlink"
+  version="1.1"
+  viewBox="0 0 500 500" width="500" height="500">
+  <path d="M 544.633 639.529 m -181.7 0 a 181.7 181.7 0 1 0 363.4 0 a 181.7 181.7 0 1 0 -363.4 0 Z M 544.633 639.529 m -140.258 0 a 140.258 140.258 0 0 1 280.516 0 a 140.258 140.258 0 0 1 -280.516 0 Z" data-bx-shape="ring 544.633 639.529 140.258 140.258 181.7 181.7 1@360c2ae1" style="fill: rgb(183, 28, 28);" transform="matrix(-0.629847, 0.776719, -0.776719, -0.629847, 1089.800239, 264.77085)"></path>
+  <line style="stroke-width: 30px; stroke: rgb(148, 74, 20);" x1="247.15" y1="294.383" x2="376.846" y2="249.495" transform="matrix(0.996195, -0.087156, 0.087156, 0.996195, -23.887228, 22.876038)"></line>
+  <line style="stroke-width: 40px; stroke: rgb(183, 28, 28);" x1="345.345" y1="76.689" x2="438.274" y2="154.077" transform="matrix(0.996195, -0.087156, 0.087156, 0.996195, -23.887228, 22.876038)"></line>
+  <line style="stroke: rgb(183, 28, 28); stroke-width: 40px;" x1="61.77" y1="153.314" x2="154.215" y2="76.689" transform="matrix(0.996195, -0.087156, 0.087156, 0.996195, -23.887228, 22.876038)"></line>
+</svg>

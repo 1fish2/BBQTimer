@@ -1,130 +1,60 @@
-import groovy.swing.SwingBuilder
-
-apply plugin: 'com.android.application'
+plugins {
+    id 'com.android.application'
+}
 
 android {
-    compileSdkVersion 26
-    buildToolsVersion '29.0.3'
-    dexOptions {
-        javaMaxHeapSize "2560m"
-    }
-    signingConfigs {
-        releaseSigning {
-            // The dummy passwords complete the signingConfigs so the other tasks can work without
-            // asking for passwords when not needed.
-            storeFile file(System.getenv("HOME") + "/.android/1fish2_keystore.jks")
-            storePassword "notTheRealPassword"
-            keyAlias "BBQTimer"
-            keyPassword "notTheRealPassword"
-        }
-    }
+    compileSdkVersion 31
+    buildToolsVersion '31.0.0'
+
     defaultConfig {
-        minSdkVersion 14
-        targetSdkVersion 26
-        versionCode 15
-        versionName '2.5'
+        applicationId "com.onefishtwo.bbqtimer"
+        versionCode 16
+        versionName '2.6'
+        minSdkVersion 21
+        targetSdkVersion 27
         resConfigs "en", "de"
-        testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        // The following argument makes the Android Test Orchestrator run its
+        // "pm clear" command after each test invocation. This command ensures
+        // that the app's state is completely cleared between tests.
+        testInstrumentationRunnerArguments clearPackageData: 'true'
     }
+
     buildTypes {
-        debug {
-            minifyEnabled true
-            debuggable true
-            zipAlignEnabled true
-        }
-        debugProguard {
-            minifyEnabled true
-            // shrinkResources true
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-test-rules.txt'
-            testProguardFile 'proguard-test-rules.txt'
-            signingConfig debug.signingConfig
-            debuggable true
-            zipAlignEnabled true
-        }
         release {
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.txt'
             minifyEnabled true
             shrinkResources true
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.txt'
-            //noinspection GroovyAssignabilityCheck
-            signingConfig signingConfigs.releaseSigning
-            zipAlignEnabled true
         }
     }
-    // testBuildType "debugProguard"
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-    lintOptions {
-        abortOnError false
-    }
-    android.applicationVariants.all { variant ->
-        variant.outputs.all { output ->
-            def apkName = "${rootProject.name}-${output.baseName}.apk"
-            output.outputFileName = apkName
-        }
-    }
-    productFlavors {
+
+    testOptions {
+        execution 'ANDROIDX_TEST_ORCHESTRATOR'
     }
 }
 
-// See http://stackoverflow.com/a/19350401/1682419
-// See http://stackoverflow.com/a/24360969/1682419
-// TODO: Try using the platform's keyring: http://stackoverflow.com/a/22597752/1682419
-//    and the OSX `security` command http://blog.macromates.com/2006/keychain-access-from-shell/
-task askForPasswords {
-    doLast {
-        def storePw = ''
-        def keyPw   = ''
-
-        if (System.console() == null) {
-            // The console is null in Gradle daemon builds, so use Swing.
-            new SwingBuilder().edt {
-                dialog(modal: true, title: 'Enter signing passwords', alwaysOnTop: true,
-                        resizable: false, locationRelativeTo: null, pack: true, show: true) {
-                    vbox {
-                        label(text: "Keystore password:")
-                        def storePwField = passwordField(columns: 20)
-                        label(text: "Key password:")
-                        def keyPwField = passwordField(columns: 20)
-                        button(defaultButton: true, text: 'OK', actionPerformed: {
-                            storePw = new String(storePwField.password)
-                            keyPw   = new String(keyPwField.password)
-                            dispose()
-                        })
-                    }
-                }
-            }
-        } else {
-            // Construct Strings because readPassword() returns char[] and using that fails silently.
-            storePw = new String(System.console().readPassword("\nKeystore password: "))
-            keyPw   = new String(System.console().readPassword("\nKey password: "))
-        }
-
-        if (storePw.size() <= 0 || keyPw.size() <= 0) {
-            throw new IOException("You must enter the passwords to proceed.")
-        }
-
-        android.signingConfigs.releaseSigning.storePassword = storePw
-        android.signingConfigs.releaseSigning.keyPassword = keyPw
-    }
-}
-
-tasks.whenTaskAdded { theTask ->
-    if (theTask.name in ["packageRelease"]) {
-        theTask.dependsOn "askForPasswords"
+allprojects {
+    tasks.withType(JavaCompile) {
+        options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
     }
 }
 
 dependencies {
-    implementation 'com.android.support:appcompat-v7:26.1.0'
-    implementation 'com.android.support:support-media-compat:26.1.0'
-    implementation 'com.android.support:design:26.1.0'
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:2.2.2', {
-        exclude group: 'com.android.support', module: 'support-annotations'
-    }
-    debugProguardImplementation 'com.android.support.test.espresso:espresso-core:2.2.2', {
-        exclude group: 'com.android.support', module: 'support-annotations'
-    }
+    implementation 'androidx.appcompat:appcompat:1.3.1'
+    implementation 'com.google.android.material:material:1.4.0'
+    implementation 'androidx.media:media:1.4.3'
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+    androidTestImplementation 'androidx.test:runner:1.4.0'
+    androidTestImplementation 'androidx.test:core:1.4.0'
+    androidTestImplementation 'androidx.test:rules:1.4.0'
+    androidTestUtil 'androidx.test:orchestrator:1.4.0'
 }

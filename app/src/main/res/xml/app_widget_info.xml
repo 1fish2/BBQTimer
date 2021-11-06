@@ -1,18 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- For n cells, use 70 * n - 30 dp. That's 40, 110, 180, 250, ... -->
-<!-- If resizeMode doesn't include "vertical", it'll be "small" on the lock screen. -->
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
                     xmlns:tools="http://schemas.android.com/tools"
                     tools:ignore="UnusedAttribute"
     android:minWidth="180dp"
     android:minHeight="40dp"
+    android:targetCellWidth="3"
+    android:targetCellHeight="1"
     android:minResizeWidth="180dp"
     android:minResizeHeight="40dp"
+    android:maxResizeWidth="300dp"
     android:updatePeriodMillis="0"
     android:initialLayout="@layout/app_widget"
-    android:initialKeyguardLayout="@layout/app_widget"
-    android:previewImage="@drawable/widget_preview"
     android:resizeMode="horizontal"
-    android:widgetCategory="home_screen|keyguard">
+    android:previewImage="@drawable/widget_preview"
+    android:widgetCategory="home_screen">
+    <!-- TODO: android:description, android:previewLayout (introduced in Android 12)
+     See https://developer.android.com/guide/topics/appwidgets -->
 
 </appwidget-provider>

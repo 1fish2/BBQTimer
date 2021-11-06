@@ -21,12 +21,12 @@
 
 package com.onefishtwo.bbqtimer;
 
-import android.support.annotation.NonNull;
-
 import org.hamcrest.CustomTypeSafeMatcher;
 import org.hamcrest.Description;
 
 import java.util.regex.Pattern;
+
+import androidx.annotation.NonNull;
 
 /**
  * A Matcher that matches a time string in the format "MM:SS.F" within the interval [min .. max]
@@ -41,11 +41,11 @@ public class TimeIntervalMatcher extends CustomTypeSafeMatcher<String> {
     /** The time value parsed from the last match attempt. */
     public long time;
 
-    public TimeIntervalMatcher(long min, long max) {
-        super("a time string in [" + TimeCounter.formatHhMmSsFraction(min)
-                + " .. " + TimeCounter.formatHhMmSsFraction(max) + "]");
-        this.min = min;
-        this.max = max;
+    public TimeIntervalMatcher(long _min, long _max) {
+        super("a time string in [" + TimeCounter.formatHhMmSsFraction(_min)
+                + " .. " + TimeCounter.formatHhMmSsFraction(_max) + "]");
+        this.min = _min;
+        this.max = _max;
     }
 
     /** Matches a time string "MM:SS.F" in the interval [min .. max] milliseconds. */
@@ -62,7 +62,7 @@ public class TimeIntervalMatcher extends CustomTypeSafeMatcher<String> {
             return false;
         }
 
-        time = (val(m, 1) * 60 + val(m, 2)) * 1000 + val(m, 3) * 100;
+        time = (val(m, 1) * 60L + val(m, 2)) * 1000L + val(m, 3) * 100L;
         return min <= time && time <= max;
     }
 

@@ -18,7 +18,7 @@
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/spatula_background"
+            android:background="@drawable/widget_background"
             android:baselineAligned="false"
             android:gravity="top|right"
             android:orientation="horizontal">

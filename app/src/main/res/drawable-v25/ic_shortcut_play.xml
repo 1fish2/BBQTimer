@@ -1,13 +1,5 @@
-<!-- Apache 2.0 license -->
-<vector xmlns:android="http://schemas.android.com/apk/res/android"
-        android:width="24dp"
-        android:height="24dp"
-        android:viewportWidth="24.0"
-        android:viewportHeight="24.0">
-    <path
-        android:pathData="M2,12a10,10 0,1 0,20 0a10,10 0,1 0,-20 0z"
-        android:fillColor="#F5F5F5"/>
-    <path
-        android:pathData="M9,8L9,16L15,12Z"
-        android:fillColor="@color/orange_red_text"/>
+<vector android:height="24dp" android:tint="@color/dark_orange_red"
+    android:viewportHeight="24" android:viewportWidth="24"
+    android:width="24dp" xmlns:android="http://schemas.android.com/apk/res/android">
+    <path android:fillColor="@android:color/white" android:pathData="M8,5v14l11,-7L8,5z"/>
 </vector>

@@ -22,11 +22,12 @@
 
 package com.onefishtwo.bbqtimer;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.text.Spanned;
 
 import org.junit.Test;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import static android.text.format.DateUtils.HOUR_IN_MILLIS;
 import static android.text.format.DateUtils.MINUTE_IN_MILLIS;
@@ -59,9 +60,9 @@ public class TimeCounterTest {
         @Override
         public char charAt(int index) { return 0; }
 
-        @Nullable
+        @NonNull
         @Override
-        public CharSequence subSequence(int start, int end) { return null; }
+        public CharSequence subSequence(int start, int end) { return ""; }
 
         @SuppressWarnings("EmptyMethod")  // an "empty" method just for the @NonNull annotation
         @NonNull

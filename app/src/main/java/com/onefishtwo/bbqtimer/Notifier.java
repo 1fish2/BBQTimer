@@ -29,70 +29,58 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.AudioAttributes;
+import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
-import android.support.annotation.NonNull;
-import android.support.annotation.StringRes;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationManagerCompat;
-import android.support.v4.app.TaskStackBuilder;
-import android.support.v4.content.ContextCompat;
 
-import com.onefishtwo.bbqtimer.notificationCompat.NotificationBuilder;
-import com.onefishtwo.bbqtimer.notificationCompat.NotificationBuilderFactory;
 import com.onefishtwo.bbqtimer.state.ApplicationState;
+
+import androidx.annotation.DrawableRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.RawRes;
+import androidx.annotation.StringRes;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
+import androidx.core.app.TaskStackBuilder;
+import androidx.core.content.ContextCompat;
+import androidx.media.app.NotificationCompat.MediaStyle;
 
 /**
  * Manages the app's Android Notifications.
  */
-@SuppressWarnings("SameParameterValue")
 public class Notifier {
     private static final int NOTIFICATION_ID = 7;
 
-    // Marshmallow rejects invisible notifications (IllegalArgumentException if there's no small
-    // icon, and just adding a small icon shows a nearly empty notification). Either show a visible
-    // notification in the Activity (despite the style guide) or implement another way to play
-    // the alarm on Marshmallow. Showing a notification is nice because it gives immediate feedback
-    // on starting/stopping notifications that are accessible on the Lollipop+ lock screen and
-    // visible alarm feedback (just like out-of-activity).
-    //
-    // TODO: Test in-activity notifications on earlier Android builds.
-    private static final boolean IN_ACTIVITY_NOTIFICATIONS =
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
-
-    /**
-     * On API 21+, allow Paused notifications with Reset/Stop/Start buttons and Running
-     * notifications with Pause/Stop buttons, mainly so the user can control the timer from a lock
-     * screen notification. Distinguish Stopped from Paused in the UI.
-     * <p/>
-     * Due to OS bugs in API 17 - 20, changing a notification to Paused would continue showing a
-     * running chronometer [despite calling setShowWhen(false) and not calling
-     * setUsesChronometer(true)] and sometimes also the notification time of day, both confusing.
-     * API < 16 has no action buttons so it has no payoff in Paused notifications.
-     */
-    static final boolean PAUSEABLE_NOTIFICATIONS = TimeCounter.PAUSEABLE_NOTIFICATIONS;
+    private static final int FLAG_IMMUTABLE =
+            android.os.Build.VERSION.SDK_INT >= 23 ? PendingIntent.FLAG_IMMUTABLE : 0;
 
     private static final long[] VIBRATE_PATTERN = {150, 82, 180, 96}; // ms off, ms on, ms off, ...
     private static final int[][] ACTION_INDICES = {{}, {0}, {0, 1}, {0, 1, 2}};
 
     static final String ALARM_NOTIFICATION_CHANNEL_ID = "alarmChannel";
-    static final String CONTROLS_NOTIFICATION_CHANNEL_ID = "controlsChannel";
+
+    // Was in release "2.5" (v15) and will remain immutable on devices while the app is installed:
+    // static final String CONTROLS_NOTIFICATION_CHANNEL_ID = "controlsChannel";
+
     private static boolean builtNotificationChannels = false;
 
+    @NonNull
     private final Context context;
+    @NonNull
     private final NotificationManager notificationManager;
+    @NonNull
     private final NotificationManagerCompat notificationManagerCompat;
     private final int notificationLightColor;
 
     private boolean soundAlarm = false; // whether the next notification should sound an alarm
     private int numActions; // the number of action buttons added to the notification being built
 
-    public Notifier(Context context) {
-        this.context = context;
+    public Notifier(@NonNull Context _context) {
+        this.context = _context;
         notificationManager =
-                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManagerCompat = NotificationManagerCompat.from(context);
-        notificationLightColor = ContextCompat.getColor(context, R.color.notification_light_color);
+                (NotificationManager) _context.getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManagerCompat = NotificationManagerCompat.from(_context);
+        notificationLightColor = ContextCompat.getColor(_context, R.color.notification_light_color);
     }
 
     /**
@@ -100,12 +88,12 @@ public class Notifier {
      * flash the device LED. Initially set to false.
      */
     @NonNull
-    public Notifier setAlarm(boolean soundAlarm) {
-        this.soundAlarm = soundAlarm;
+    public Notifier setAlarm(boolean _soundAlarm) {
+        this.soundAlarm = _soundAlarm;
         return this;
     }
 
-    private Uri getSoundUri(int soundId) {
+    private Uri getSoundUri(@RawRes int soundId) {
         return Uri.parse("android.resource://" + context.getPackageName() + "/" + soundId);
     }
 
@@ -118,24 +106,48 @@ public class Notifier {
      * Adds an action button to the given NotificationBuilder and to the
      * {@link #setMediaStyleActionsInCompactView} list.
      */
-    private void addAction(@NonNull NotificationBuilder builder, int iconId, int titleId,
-            PendingIntent intent) {
+    private void addAction(@NonNull NotificationCompat.Builder builder, @DrawableRes int iconId,
+            @StringRes int titleId, PendingIntent intent) {
         builder.addAction(iconId, context.getString(titleId), intent);
         ++numActions;
     }
 
     /**
-     * Makes the first 3 added {@link #addAction} actions appear in MediaStyle's compact
-     * notification view (which is the view that appears in lock screen notifications in API V21
-     * Lollipop). No-op before API 21.
+     * Makes the first 3 added {@link #addAction} actions appear in a MediaStyle notification
+     * view. The Media template should fit 3 actions in its collapsed view, 6 actions in expanded
+     * view, or 5 actions in expanded view with a large image but I haven't tested that.
+     *<p/>
+     * Calls builder.setColor() on some versions of Android to cope with OS vagaries.
      */
-    private void setMediaStyleActionsInCompactView(@NonNull NotificationBuilder builder) {
+    private void setMediaStyleActionsInCompactView(@NonNull NotificationCompat.Builder builder) {
         int num = Math.min(numActions, ACTION_INDICES.length - 1);
 
         if (num < 1) {
             return;
         }
-        builder.setMediaStyleActionsInCompactView(ACTION_INDICES[num]);
+
+        MediaStyle style = new MediaStyle().setShowActionsInCompactView(ACTION_INDICES[num]);
+        builder.setStyle(style);
+
+        // === MediaStyle setColor() [the "accent color"] vs. Android API levels ===
+        // API 21 L - 22 L1: colors the notification are background needlessly.
+        // API 23 M: See below.
+        // API 24 N - API 27 O1: colors the small icon, action button, and app title color. Garish.
+        // API 28 P - API 30 R: colors the small icon and action button. Garish.
+        // API 21 S: See below.
+        // setColorized(false) didn't change any of these results.
+        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.M) {
+            // Android 6 M, API 23: setColor() colors the notification are background and avoids a
+            // low contrast dark gray text on darker gray background in the the heads-up case.
+            // setColor() also changes pull-down notifications and carries over from one
+            // notification to its replacement. http://stackoverflow.com/q/38415467/1682419
+            int workaroundColor = context.getColor(R.color.gray_text);
+            builder.setColor(workaroundColor);
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) { // Android 12, API 31
+            // Android 12 S, API 31: setColor() colors the background circle behind the small icon.
+            int iconBackgroundColor = context.getColor(R.color.dark_orange_red);
+            builder.setColor(iconBackgroundColor);
+        }
     }
 
     /** Returns a localized description of the timer's run state, e.g. "Paused 00:12.3". */
@@ -158,32 +170,28 @@ public class Notifier {
      * @param state the ApplicationState state to display.
      */
     public void openOrCancel(@NonNull ApplicationState state) {
-        boolean isMainActivityVisible = state.isMainActivityVisible();
-        TimeCounter timer             = state.getTimeCounter();
-        boolean showable = PAUSEABLE_NOTIFICATIONS ? !timer.isStopped() : timer.isRunning();
-        boolean show     = showable && (IN_ACTIVITY_NOTIFICATIONS || !isMainActivityVisible);
+        TimeCounter timer = state.getTimeCounter();
 
-        if (!(show || soundAlarm)) {
+        if (!timer.isStopped() || soundAlarm) {
+            Notification notification = buildNotification(state);
+            notificationManagerCompat.notify(NOTIFICATION_ID, notification);
+        } else {
             cancelAll();
-            return;
         }
-
-        Notification notification = buildNotification(state, show, !isMainActivityVisible);
-        notificationManagerCompat.notify(NOTIFICATION_ID, notification);
     }
 
     /**
      * Returns true if the Alarm channel is configured On with enough Importance to hear alarms.
      * After createNotificationChannelV26() creates the channels, the user can reconfigure them and
      * the app can only set their names and descriptions. If users configure the Alarm channel to be
-     * silent but request Periodic Alarms, they'll think the app isn't working.
+     * silent but request Periodic Alarms, they'll think the app is broken.
      */
     boolean isAlarmChannelOK() {
         if (android.os.Build.VERSION.SDK_INT >= 26) {
             NotificationChannel channel = notificationManager.getNotificationChannel(
                     ALARM_NOTIFICATION_CHANNEL_ID);
 
-            if (channel == null) { // The channel hasn't been created so it can't be messed up.
+            if (channel == null) { // The channel hasn't been created so it can't be broken.
                 return true;
             }
 
@@ -196,40 +204,26 @@ public class Notifier {
 
     /**
      * Creates a notification channel that matches the parameters #buildNotification() uses. The
-     * "Alarm" channel sounds an alarm at heads-up High importance. The "Controls" channel does not.
+     * "Alarm" channel sounds an alarm at heads-up High importance.
      */
-    @SuppressWarnings("UnnecessaryLocalVariable")
     @TargetApi(26)
-    private void createNotificationChannelV26(boolean makeAlarm) {
-        // --- An alarm channel or not.
-        @StringRes int channelNameRes = makeAlarm ? R.string.notification_alarm_channel_name
-                : R.string.notification_controls_channel_name;
-        @StringRes int channelDescriptionRes = makeAlarm
-                ? R.string.notification_alarm_channel_description
-                : R.string.notification_controls_channel_description;
-        String channelId = makeAlarm ? ALARM_NOTIFICATION_CHANNEL_ID
-                : CONTROLS_NOTIFICATION_CHANNEL_ID;
-        int importance = makeAlarm ? NotificationManager.IMPORTANCE_HIGH
-                : NotificationManager.IMPORTANCE_LOW;
-        boolean lights = makeAlarm;
-        boolean vibration = makeAlarm;
-        boolean sound = makeAlarm;
+    private void createNotificationChannelV26() {
+        String name = context.getString(R.string.notification_alarm_channel_name);
+        String description = context.getString(R.string.notification_alarm_channel_description);
+        NotificationChannel channel = new NotificationChannel(
+                ALARM_NOTIFICATION_CHANNEL_ID, name, NotificationManager.IMPORTANCE_HIGH);
 
-        String name = context.getString(channelNameRes);
-        NotificationChannel channel = new NotificationChannel(channelId, name, importance);
-
-        String description = context.getString(channelDescriptionRes);
         channel.setDescription(description);
 
-        channel.enableLights(lights);
+        channel.enableLights(true);
         channel.setLightColor(notificationLightColor);
 
         channel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
 
-        channel.enableVibration(vibration);
+        channel.enableVibration(true);
         channel.setVibrationPattern(VIBRATE_PATTERN);
 
-        if (sound) {
+        {
             AudioAttributes audioAttributes = new AudioAttributes.Builder()
                     //.setLegacyStreamType(AudioManager.STREAM_ALARM)
                     .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
@@ -247,23 +241,23 @@ public class Notifier {
         notificationManager.createNotificationChannel(channel); // goofy naming
     }
 
-    /** Creates the notification channels lazily (or updates their text) on Android O+. */
+    /** Creates notification channel(s) lazily (or updates the text) on Android O+. */
     private void createNotificationChannels() {
         if (Build.VERSION.SDK_INT < 26 || builtNotificationChannels) {
             return;
         }
 
-        createNotificationChannelV26(true);
-        createNotificationChannelV26(false);
+        createNotificationChannelV26();
         builtNotificationChannels = true;
     }
 
-    /** Update state (e.g. notification channel names and descriptions) for a UI Locale change. */
+    /** Update state (e.g. notification channel text) for a UI Locale change. */
     void onLocaleChange() {
         if (android.os.Build.VERSION.SDK_INT >= 26) {
             NotificationChannel channel = notificationManager.getNotificationChannel(
                     ALARM_NOTIFICATION_CHANNEL_ID);
 
+            //noinspection VariableNotUsedInsideIf
             if (channel != null) {
                 builtNotificationChannels = false;
                 createNotificationChannels();
@@ -274,51 +268,40 @@ public class Notifier {
     /**
      * Builds a notification. Its alarm sound, vibration, and LED light flashing are switched on/off
      * by {@link #setAlarm(boolean)}.
-     *
-     * @param visible whether to make the notification visible -- overridden on Android L+ which
-     *                reject invisible notifications (at least M does). Invisible notifications
-     *                are handy for playing the same alarm sound and vibration as visible
-     *                notifications, but maybe a heads-up notification is better anyway.
-     * @param addActions whether to add a content action, delete action, and media buttons to the
-     *                   degree they're supported by the OS build. false makes a read-only
-     *                   notification (can't even dismiss itself) for when the activity is open.<br/>
-     *                   <b>Alternative:</b> In-activity audible/visual alarm feedback instead of a
-     *                   notification.
      */
-    protected Notification buildNotification(@NonNull ApplicationState state, boolean visible,
-            boolean addActions) {
+    @NonNull
+    protected Notification buildNotification(@NonNull ApplicationState state) {
         createNotificationChannels();
 
-        String channelId = soundAlarm ? ALARM_NOTIFICATION_CHANNEL_ID
-                : CONTROLS_NOTIFICATION_CHANNEL_ID;
-        NotificationBuilder builder = NotificationBuilderFactory.builder(context, channelId)
+        NotificationCompat.Builder builder =
+                new NotificationCompat.Builder(context, ALARM_NOTIFICATION_CHANNEL_ID)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setCategory(NotificationCompat.CATEGORY_ALARM)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
 
-        if (IN_ACTIVITY_NOTIFICATIONS) {
-            visible = true;
-        }
-
-        if (visible) {
+        {  // Construct the visible notification contents.
             TimeCounter timer = state.getTimeCounter();
             boolean isRunning = timer.isRunning();
-            Bitmap largeIcon = BitmapFactory.decodeResource(context.getResources(),
-                    R.drawable.ic_large_notification);
 
             builder.setSmallIcon(R.drawable.notification_icon)
-                    .setLargeIcon(largeIcon)
                     .setContentTitle(context.getString(R.string.app_name));
+
+            // Android API < 24 stretches the small icon into a fuzzy large icon, so add a large
+            // icon. On API 24+, adopt the UI guideline, thus making the notification fit more in
+            // the compact form, which could help when the lock screen is set to
+            // "Show sensitive content only when unlocked".
+            if (Build.VERSION.SDK_INT < 24) {
+                Bitmap largeIcon = BitmapFactory.decodeResource(context.getResources(),
+                        R.drawable.ic_large_notification);
+                builder.setLargeIcon(largeIcon);
+            }
 
             if (isRunning) {
                 builder.setWhen(System.currentTimeMillis() - timer.getElapsedTime())
-                        .setUsesChronometer(true); // added in API 17
+                        .setUsesChronometer(true);
             } else {
                 // Hide the "when" field, which isn't useful while Paused, so it doesn't take space
                 // in the compact view along with 3 action buttons (Reset, Start, Stop).
-                // It doesn't actually work in API 17-18, so in API 18- it'd show the time of
-                // day when the notification is built, but it's even more broken after changing the
-                // "When" info in an open notification.
                 builder.setShowWhen(false);
             }
 
@@ -335,7 +318,7 @@ public class Notifier {
                 builder.setContentText(contentText);
             } else {
                 builder.setContentText(timerRunState(timer));
-                if (addActions && timer.isPaused()) {
+                if (timer.isPaused()) {
                     builder.setSubText(context.getString(R.string.dismiss_tip));
                 } else if (isRunning) {
                     builder.setSubText(context.getString(R.string.no_reminders_tip));
@@ -344,16 +327,18 @@ public class Notifier {
 
             numActions = 0;
 
-            if (addActions) {
+            {
                 // Make an Intent to launch the Activity from the notification.
-                Intent activityIntent = new Intent(context, MainActivity.class);
+                Intent activityIntent = new Intent(context, MainActivity.class)
+                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
                 // So navigating back from the Activity goes from the app to the Home screen.
                 TaskStackBuilder stackBuilder = TaskStackBuilder.create(context)
                         .addParentStack(MainActivity.class)
                         .addNextIntent(activityIntent);
                 PendingIntent activityPendingIntent =
-                        stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+                        stackBuilder.getPendingIntent(0,
+                                PendingIntent.FLAG_UPDATE_CURRENT + FLAG_IMMUTABLE);
                 builder.setContentIntent(activityPendingIntent);
 
                 // Action button to reset the timer.
@@ -378,7 +363,7 @@ public class Notifier {
 
                 // Action button to stop the timer.
                 PendingIntent stopIntent = makeActionIntent(TimerAppWidgetProvider.ACTION_STOP);
-                if (PAUSEABLE_NOTIFICATIONS && !timer.isStopped()) {
+                if (!timer.isStopped()) {
                     addAction(builder, R.drawable.ic_action_stop, R.string.stop, stopIntent);
                 }
 
@@ -388,15 +373,17 @@ public class Notifier {
                 setMediaStyleActionsInCompactView(builder);
             }
 
-            if (isRunning || !addActions) {
+            if (isRunning) {
                 builder.setOngoing(true);
             }
         }
 
         if (soundAlarm) {
-            builder.setSound(getSoundUri(R.raw.cowbell4));
+            builder.setSound(getSoundUri(R.raw.cowbell4), AudioManager.STREAM_ALARM);
             builder.setVibrate(VIBRATE_PATTERN);
-            builder.setLights(notificationLightColor, 1000, 5000);
+            builder.setLights(notificationLightColor, 1000, 2000);
+        } else {
+            builder.setSilent(true);
         }
 
         return builder.build();

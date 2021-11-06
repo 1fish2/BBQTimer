@@ -22,8 +22,9 @@ package com.onefishtwo.bbqtimer;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.support.annotation.NonNull;
 import android.util.Log;
+
+import androidx.annotation.NonNull;
 
 /**
  * A BroadcastReceiver to resume/adjust the running timer and notification after an app upgrade,
@@ -58,7 +59,7 @@ public class ResumeReceiver extends BroadcastReceiver {
             AlarmReceiver.updateNotifications(context);
             // NOTE: The widgets should stay in the right state but if that doesn't always work, do
             // TimerAppWidgetProvider.updateAllWidgets(context, state);
-        } else if (Intent.ACTION_TIME_CHANGED.equals(action) // TIME_SET
+        } else if (Intent.ACTION_TIME_CHANGED.equals(action) // android.intent.action.TIME_SET
                 || Intent.ACTION_TIMEZONE_CHANGED.equals(action)) {
             AlarmReceiver.handleClockAdjustment(context);
         } else if (Intent.ACTION_LOCALE_CHANGED.equals(action)) {

@@ -21,21 +21,21 @@
 
 package com.onefishtwo.bbqtimer;
 
-import android.support.annotation.NonNull;
-
 import org.hamcrest.FeatureMatcher;
 import org.hamcrest.Matcher;
 
 import java.util.Arrays;
 import java.util.List;
 
+import androidx.annotation.NonNull;
+
 import static org.hamcrest.CoreMatchers.is;
 
 /** Matcher to test that a List starts with the expected prefix. */
-@SuppressWarnings("unused")
 public class ListPrefixMatcher<E> extends FeatureMatcher<List<E>, List<E>> {
     final List<E> expectedPrefix;
 
+    @SuppressWarnings("unused")
     @NonNull
     public static <T> Matcher<List<T>> listPrefixMatcher(List<T> expectedPrefix) {
         return new ListPrefixMatcher<>(expectedPrefix);
@@ -47,9 +47,9 @@ public class ListPrefixMatcher<E> extends FeatureMatcher<List<E>, List<E>> {
         return new ListPrefixMatcher<>(Arrays.asList(expectedPrefix));
     }
 
-    public ListPrefixMatcher(List<E> expectedPrefix) {
-        super(is(expectedPrefix), "prefix ", "prefix");
-        this.expectedPrefix = expectedPrefix;
+    public ListPrefixMatcher(List<E> _expectedPrefix) {
+        super(is(_expectedPrefix), "prefix ", "prefix");
+        this.expectedPrefix = _expectedPrefix;
     }
 
     @NonNull

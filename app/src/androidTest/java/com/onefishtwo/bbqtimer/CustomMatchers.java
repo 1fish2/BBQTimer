@@ -25,12 +25,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.DrawableRes;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.test.espresso.ViewInteraction;
-import android.support.test.espresso.matcher.BoundedMatcher;
-import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
@@ -39,6 +33,13 @@ import android.widget.TextView;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
+
+import androidx.annotation.DrawableRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.test.espresso.ViewInteraction;
+import androidx.test.espresso.matcher.BoundedMatcher;
 
 class CustomMatchers {
     /** Matches a child View at the given position in a parent View. From Espresso Test Recorder. */
@@ -66,6 +67,7 @@ class CustomMatchers {
      * Matches a View that has the given compound drawable resource. Cribbed and tweaked from
      * <a href="https://gist.github.com/frankiesardo/7490059">@frankiesardo</a>.
      */
+    @SuppressWarnings("SpellCheckingInspection")
     @NonNull
     static Matcher<View> withCompoundDrawable(@DrawableRes final int resourceId) {
         return new BoundedMatcher<View, TextView>(TextView.class) {
@@ -92,6 +94,8 @@ class CustomMatchers {
      *
      * @return the modified ViewInteraction
      */
+    @SuppressWarnings("unused")
+    @NonNull
     static ViewInteraction ignoringFailures(@NonNull ViewInteraction interaction) {
         return interaction.withFailureHandler((error, viewMatcher) -> {
         });
