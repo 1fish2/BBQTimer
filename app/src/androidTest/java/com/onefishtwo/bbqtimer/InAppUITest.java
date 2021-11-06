@@ -23,9 +23,7 @@ package com.onefishtwo.bbqtimer;
 
 
 import android.content.Context;
-import android.view.View;
 
-import org.hamcrest.Matcher;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -73,18 +71,12 @@ import static org.junit.Assert.assertEquals;
 @LargeTest
 @RunWith(AndroidJUnit4.class)
 public class InAppUITest {
-    /** The resetButton was hidden on older versions of Android. */
-    private static final boolean HIDE_RESET_FEATURE = false;
-
     private ViewInteraction playPauseButton; // play/pause, formerly known as start/stop
     private ViewInteraction resetButton; // reset (pause @ 00:00); pause/replay icon or hidden
     private ViewInteraction stopButton; // stop @ 00:00
     private ViewInteraction timeView;
     private ViewInteraction enableRemindersToggle;
     private ViewInteraction minutesPicker;
-    @NonNull
-    private final Matcher<View> resetIsDisplayed =
-            HIDE_RESET_FEATURE ? not(isDisplayed()) : isCompletelyDisplayed();
 
     @NonNull
     @Rule
@@ -146,13 +138,11 @@ public class InAppUITest {
         enableRemindersToggle.perform(click());
         checkReminder(true);
 
-        if (!HIDE_RESET_FEATURE) {
-            resetButton.perform(click()); // Reset
-            checkPausedAt0();
+        resetButton.perform(click()); // Reset
+        checkPausedAt0();
 
-            stopButton.perform(click()); // Stop
-            checkStopped();
-        }
+        stopButton.perform(click()); // Stop
+        checkStopped();
 
         playPauseButton.perform(click()); // Play
         checkPlaying();
@@ -165,12 +155,10 @@ public class InAppUITest {
         playPauseButton.perform(waitMsec(100));
         checkStopped();
 
-        if (!HIDE_RESET_FEATURE) {
-            resetButton.perform(click()); // Reset
-            checkPausedAt0();
-            playPauseButton.perform(waitMsec(100));
-            checkPausedAt0();
-        }
+        resetButton.perform(click()); // Reset
+        checkPausedAt0();
+        playPauseButton.perform(waitMsec(100));
+        checkPausedAt0();
 
         playPauseButton.perform(click()); // Play
         checkPlaying();
@@ -195,19 +183,17 @@ public class InAppUITest {
         TimeIntervalMatcher time5 = inTimeInterval(time4.time, time4.time + 300);
         checkPausedAt(time5);
 
-        if (!HIDE_RESET_FEATURE) {
-            resetButton.perform(click()); // Reset
-            checkPausedAt0();
+        resetButton.perform(click()); // Reset
+        checkPausedAt0();
 
-            playPauseButton.perform(click()); // Play
-            checkPlaying();
-            playPauseButton.perform(waitMsec(1000));
-            checkPlayingAt(time1);
+        playPauseButton.perform(click()); // Play
+        checkPlaying();
+        playPauseButton.perform(waitMsec(1000));
+        checkPlayingAt(time1);
 
-            playPauseButton.perform(click()); // Pause
-            TimeIntervalMatcher time6 = inTimeInterval(time1.time, time1.time + 200);
-            checkPausedAt(time6);
-        }
+        playPauseButton.perform(click()); // Pause
+        TimeIntervalMatcher time6 = inTimeInterval(time1.time, time1.time + 200);
+        checkPausedAt(time6);
 
         stopButton.perform(click());
         checkStopped();
@@ -237,7 +223,7 @@ public class InAppUITest {
     /** Checks that the UI is in the fully Stopped at 00:00 state. */
     private void checkStopped() {
         playPauseButton.check(matches(isCompletelyDisplayed()));
-        resetButton.check(matches(resetIsDisplayed));
+        resetButton.check(matches(isCompletelyDisplayed()));
         stopButton.check(matches(not(isDisplayed())));
         timeView.check(matches(withText("00:00.0")));
 
@@ -287,7 +273,7 @@ public class InAppUITest {
     /** Checks that the UI is in the Paused state at a matching time value. */
     private void checkPausedAt(@NonNull TimeIntervalMatcher time) {
         playPauseButton.check(matches(isCompletelyDisplayed()));
-        resetButton.check(matches(resetIsDisplayed));
+        resetButton.check(matches(isCompletelyDisplayed()));
         stopButton.check(matches(isCompletelyDisplayed()));
 
         playPauseButton.check(matches(withCompoundDrawable(R.drawable.ic_play)));
