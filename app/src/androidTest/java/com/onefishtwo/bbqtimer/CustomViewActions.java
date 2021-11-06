@@ -70,7 +70,7 @@ class CustomViewActions {
     }
 
     /** Clicks a checkbox if needed to put it into the desired state. */
-    @SuppressWarnings("SameParameterValue")
+    @SuppressWarnings({"SameParameterValue", "unused"})
     @NonNull
     static ViewAction setChecked(final boolean checked) {
         return new ViewAction() {

@@ -94,6 +94,7 @@ class CustomMatchers {
      *
      * @return the modified ViewInteraction
      */
+    @SuppressWarnings("unused")
     @NonNull
     static ViewInteraction ignoringFailures(@NonNull ViewInteraction interaction) {
         return interaction.withFailureHandler((error, viewMatcher) -> {

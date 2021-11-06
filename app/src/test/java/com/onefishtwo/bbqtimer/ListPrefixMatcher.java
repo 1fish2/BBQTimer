@@ -32,10 +32,10 @@ import androidx.annotation.NonNull;
 import static org.hamcrest.CoreMatchers.is;
 
 /** Matcher to test that a List starts with the expected prefix. */
-@SuppressWarnings("unused")
 public class ListPrefixMatcher<E> extends FeatureMatcher<List<E>, List<E>> {
     final List<E> expectedPrefix;
 
+    @SuppressWarnings("unused")
     @NonNull
     public static <T> Matcher<List<T>> listPrefixMatcher(List<T> expectedPrefix) {
         return new ListPrefixMatcher<>(expectedPrefix);
