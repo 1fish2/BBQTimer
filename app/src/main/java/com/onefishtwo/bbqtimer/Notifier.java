@@ -130,7 +130,7 @@ public class Notifier {
         builder.setStyle(style);
 
         // === MediaStyle setColor() [the "accent color"] vs. Android API levels ===
-        // API 21 L - 22 L1: colors the notification are background needlessly.
+        // API 21 L - 22 L1: colors the notification area background needlessly.
         // API 23 M: See below.
         // API 24 N - API 27 O1: colors the small icon, action button, and app title color. Garish.
         // API 28 P - API 30 R: colors the small icon and action button. Garish.
@@ -275,7 +275,7 @@ public class Notifier {
 
         NotificationCompat.Builder builder =
                 new NotificationCompat.Builder(context, ALARM_NOTIFICATION_CHANNEL_ID)
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setPriority(NotificationCompat.PRIORITY_MAX)
                 .setCategory(NotificationCompat.CATEGORY_ALARM)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
 
