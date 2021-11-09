@@ -71,6 +71,7 @@ public class Notifier {
     @NonNull
     private final NotificationManagerCompat notificationManagerCompat;
     private final int notificationLightColor;
+    private Bitmap largeIcon; // only for API < 24
 
     private boolean soundAlarm = false; // whether the next notification should sound an alarm
     private int numActions; // the number of action buttons added to the notification being built
@@ -291,8 +292,10 @@ public class Notifier {
             // the compact form, which could help when the lock screen is set to
             // "Show sensitive content only when unlocked".
             if (Build.VERSION.SDK_INT < 24) {
-                Bitmap largeIcon = BitmapFactory.decodeResource(context.getResources(),
-                        R.drawable.ic_large_notification);
+                if (largeIcon == null) {
+                    largeIcon = BitmapFactory.decodeResource(context.getResources(),
+                            R.drawable.ic_large_notification);
+                }
                 builder.setLargeIcon(largeIcon);
             }
 
