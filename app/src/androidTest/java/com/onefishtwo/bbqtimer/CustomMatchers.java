@@ -43,6 +43,7 @@ import androidx.test.espresso.matcher.BoundedMatcher;
 
 class CustomMatchers {
     /** Matches a child View at the given position in a parent View. From Espresso Test Recorder. */
+    @SuppressWarnings("unused")
     @NonNull
     static Matcher<View> childAtPosition(
             @NonNull final Matcher<View> parentMatcher, final int position) {

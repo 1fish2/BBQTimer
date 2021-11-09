@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="notification_alarm_channel_description">Muss auf dem Bildschirm anzeigen, Ton erzeugen und Pop auf dem Bildschirm anzeigen, um Alarme zu hören / zu sehen</string>
+
+</resources>

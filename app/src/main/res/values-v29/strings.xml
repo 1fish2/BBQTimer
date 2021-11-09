@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Description for the Alarm notification channel.
+     On API 29, "Alerting" would be easier to follow than "not-Silent" but the latter still agrees
+     with the System UI in 30-31. Space is very tight in API 30-31. -->
+    <string name="notification_alarm_channel_description">Must be non-Silent and Pop on screen to hear/see alarms</string>
+
+</resources>

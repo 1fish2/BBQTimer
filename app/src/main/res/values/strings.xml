@@ -18,8 +18,8 @@
     <!-- Name for the Alarm notification channel. Recommended maximum 40 chars. -->
     <string name="notification_alarm_channel_name">Alarm</string>
 
-    <!-- Description for the Alarm notification channel. -->
-    <string name="notification_alarm_channel_description">Importance must be High or higher for alarms; Medium or higher for the lock screen</string>
+    <!-- Description for the Alarm notification channel in API 26+. -->
+    <string name="notification_alarm_channel_description">Importance must be High or higher to hear alarms; Medium or higher to see on lock screen</string>
 
     <!-- Inform the user that the app's notifications are disabled, and thus they won't be able to
       hear or see the app's alarms. -->

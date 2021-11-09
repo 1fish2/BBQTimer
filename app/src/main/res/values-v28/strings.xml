@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Description for the Alarm notification channel. -->
+    <string name="notification_alarm_channel_description">Alarm: Must Show, Make sound, and Pop on screen to hear/see alarms</string>
+
+</resources>

@@ -19,13 +19,13 @@ Of course it can time more things than cooking.
 • Tap the time display to cycle between <i>stopped</i> → <i>running</i> → <i>paused</i> → <i>stopped.</i>
 • In the app, tap the checkbox to turn the periodic reminder alarms on/off.
 
-<b>Note: System Settings needed to enable BBQTimer notifications and alarms</b>
+<b>Note: These System Settings are required to hear and see BBQTimer alarms:</b>
 • “Alarm volume” at an audible level.
-• Lock screen - “Show all notifications”. [or non-private ones?]
-• BBQTimer notifications enabled, not Silent. (You can also choose to “Override Do Not Disturb“.)
-• BBQTimer “Alarm” notification channel - enabled, not “Silent”, not sound choice “None”, Importance “High” or higher to be audible (“Medium” or higher to appear on the lock screen and in the notification area). "Pop on screen" is also useful.
+• Lock screen - Show all or non-private notifications.
+• BBQTimer “Show notifications”, <i>not</i> Silent. (You may also choose to “Override Do Not Disturb“.)
+• BBQTimer “Alarm” notification category - “Show notifications”, <i>not</i> “Silent”, “Make sound and pop on screen”, sound choice <i>not</i> “None”, Importance “High” or higher to hear and see on the lock screen and in the notification area.
 
-You can set BBQTimer’s “Alarm” sound in the system Notification controls. To change back, uninstall and reinstall the app.
+You can change BBQTimer’s “Alarm” sound in the system Notification controls. Don’t pick “None” if you want to hear its periodic alarms. To restore the cowbell sound, uninstall and reinstall the app.
 
 
 Source code: https://github.com/1fish2/BBQTimer
