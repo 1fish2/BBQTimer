@@ -43,6 +43,7 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.pressImeActionButton;
 import static androidx.test.espresso.action.ViewActions.replaceText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.doesNotHaveFocus;
 import static androidx.test.espresso.matcher.ViewMatchers.hasFocus;
 import static androidx.test.espresso.matcher.ViewMatchers.isChecked;
 import static androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
@@ -304,7 +305,7 @@ public class InAppUITest {
 
         enableRemindersToggle.perform(click());
         checkReminder(true);
-        minutesPicker.check(matches(hasFocus()));
+        minutesPicker.check(matches(doesNotHaveFocus())); // what view has focus?
 
         minutesPicker.perform(click());
         minutesPicker.check(matches(hasFocus()));
