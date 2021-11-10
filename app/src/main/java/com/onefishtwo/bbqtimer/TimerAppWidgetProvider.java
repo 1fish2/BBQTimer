@@ -101,10 +101,6 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
             views.setChronometer(R.id.chronometer, 0, null, false);
         }
 
-        // The widget's secondaryText field is below its main contents. It's visible on the
-        // lock screen but not on the home screen.
-        views.setTextViewText(R.id.secondaryText, "");
-
         views.setOnClickPendingIntent(R.id.remoteStartStopButton, runPauseIntent);
         views.setOnClickPendingIntent(R.id.viewFlipper, cycleIntent);
 

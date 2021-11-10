@@ -5,23 +5,17 @@
     android:layout_height="fill_parent"
     android:padding="@dimen/widget_margin">
 
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:orientation="vertical"
-        android:paddingBottom="@dimen/widget_vertical_padding"
-        android:paddingLeft="@dimen/widget_horizontal_padding"
-        android:paddingRight="@dimen/widget_horizontal_padding"
-        android:paddingTop="@dimen/widget_vertical_padding"
-        tools:ignore="UselessParent,RtlHardcoded">
-
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/widget_background"
             android:baselineAligned="false"
-            android:gravity="top|right"
-            android:orientation="horizontal">
+            android:paddingTop="@dimen/widget_vertical_padding"
+            android:paddingBottom="@dimen/widget_vertical_padding"
+            android:paddingLeft="@dimen/widget_horizontal_padding"
+            android:paddingRight="@dimen/widget_horizontal_padding"
+            android:orientation="horizontal"
+            tools:ignore="RtlHardcoded">
 
             <ImageButton
                 android:id="@+id/remoteStartStopButton"
@@ -84,16 +78,5 @@
             </ViewFlipper>
 
         </LinearLayout>
-
-        <TextView
-            android:id="@+id/secondaryText"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:layout_marginTop="@dimen/widget_secondary_text_margin"
-            android:textColor="@android:color/white"
-            android:textSize="@dimen/secondary_text_size"
-            android:textStyle="bold"/>
-    </LinearLayout>
 
 </FrameLayout>
