@@ -48,8 +48,10 @@ import com.onefishtwo.bbqtimer.state.ApplicationState;
 import java.lang.ref.WeakReference;
 
 import androidx.annotation.ColorRes;
+import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
+import androidx.annotation.UiThread;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
@@ -146,6 +148,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
     private CompoundButton enableRemindersToggle;
     private NumberPicker minutesPicker;
 
+    @MainThread
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -206,6 +209,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
                     config.orientation));
     }
 
+    @UiThread
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
@@ -217,6 +221,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
     }
 
     /** The Activity is now visible. */
+    @MainThread
     @Override
     protected void onStart() {
         super.onStart();
@@ -246,6 +251,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
         updateHandler.beginScheduledUpdate();
     }
 
+    @MainThread
     @Override
     protected void onResume() {
         super.onResume();
@@ -257,6 +263,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
     }
 
     /** The Activity is no longer visible. */
+    @MainThread
     @Override
     protected void onStop() {
         updateHandler.endScheduledUpdates();
@@ -279,6 +286,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
      * <p/>
      * NOTE: The notification channel misconfigured test only works on API 26+.
      */
+    @UiThread
     private void informIfNotificationAlarmsMuted() {
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
 
@@ -325,6 +333,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
     }
 
     /** Constructs a Snackbar with the app's dark orange red color. */
+    @UiThread
     @NonNull
     private Snackbar makeSnackbar(@StringRes int stringResId) {
         Snackbar snackbar = Snackbar.make(findViewById(R.id.main_container), stringResId,
@@ -335,12 +344,14 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
     }
 
     /** Sets the Snackbar's action. */
+    @UiThread
     private void setSnackbarAction(@NonNull Snackbar snackbar, @StringRes int resId,
             View.OnClickListener listener) {
         snackbar.setAction(resId, listener)
                 .setActionTextColor(ContextCompat.getColor(this, R.color.contrasting_text));
     }
 
+    @UiThread
     @Override
     public void onConfigurationChanged(@NonNull Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
@@ -350,6 +361,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
     /** The user tapped the Run/Pause button (named "StartStop"). */
     // TODO: Use listeners to update the Activity UI and app widgets.
     // A Proguard rule keeps all Activity *(View) methods.
+    @UiThread
     @SuppressWarnings("UnusedParameters")
     public void onClickStartStop(View v) {
         timer.toggleRunPause();
@@ -362,6 +374,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
     }
 
     /** The user tapped the Reset button; go to Paused at 0:00. */
+    @UiThread
     @SuppressWarnings("UnusedParameters")
     public void onClickReset(View v) {
         boolean wasStopped = timer.isStopped();
@@ -376,6 +389,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
     }
 
     /** The user tapped the Stop button. */
+    @UiThread
     @SuppressWarnings("UnusedParameters")
     public void onClickStop(View v) {
         timer.stop();
@@ -384,6 +398,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
     }
 
     /** The user tapped the time text: Cycle Stopped | Reset -> Running -> Paused -> Stopped. */
+    @UiThread
     @SuppressWarnings("UnusedParameters")
     public void onClickTimerText(View v) {
         timer.cycle();
@@ -396,6 +411,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
     }
 
     /** The user clicked the enable/disable periodic-reminders toggle switch/checkbox. */
+    @UiThread
     @SuppressWarnings("UnusedParameters")
     public void onClickEnableRemindersToggle(View v) {
         state.setEnableReminders(enableRemindersToggle.isChecked());
@@ -409,6 +425,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
     }
 
     /** A NumberPicker value changed. */
+    @UiThread
     @Override
     public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
         if (picker == minutesPicker) {
@@ -419,7 +436,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
     }
 
     /** @return a ColorStateList resource ID; time-dependent for blinking. */
-    // TODO: In isPausedAt0(), the Pressed state should be green ("go") like reset_timer_colors.
+    @UiThread
     @ColorRes
     private int pausedTimerColors() {
         TimeCounter timeCounter = state.getTimeCounter();
@@ -431,6 +448,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
     }
 
     /** Updates the display of the elapsed time. */
+    @UiThread
     private void displayTime() {
         Spanned formatted         = timer.formatHhMmSsFraction();
         @ColorRes int textColorsId =
@@ -444,6 +462,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
     }
 
     /** Updates the Activity's views for the current state. */
+    @UiThread
     private void updateViews() {
         boolean isRunning = timer.isRunning();
         boolean isStopped = timer.isStopped();
@@ -471,6 +490,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
     }
 
     /** Updates the whole UI for the current state: Activity, Notifications, alarms, and widgets. */
+    @UiThread
     private void updateUI() {
         updateViews();
 
@@ -483,8 +503,6 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
      * Helper method for the SnackBar action: This opens the Settings screen where the user can
      * re-enable the application's notifications.
      * (From an example program for Android Wearable notifications.)
-     *<p/>
-     * NOTE: Only works on Android version 21+. Don't call it on older Androids.
      *<p/>
      * NOTE: Call this only if the user asked to do it.
      */
