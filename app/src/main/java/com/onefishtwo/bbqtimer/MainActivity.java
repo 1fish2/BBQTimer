@@ -45,9 +45,12 @@ import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 import com.onefishtwo.bbqtimer.state.ApplicationState;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.lang.ref.WeakReference;
 
 import androidx.annotation.ColorRes;
+import androidx.annotation.IntDef;
 import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
@@ -65,9 +68,14 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
 
     private static final MinutesChoices minutesChoices = new MinutesChoices();
 
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({SHORTCUT_NONE, SHORTCUT_PAUSE, SHORTCUT_START})
+    public @interface ShortcutChoice {}
+
     private static final int SHORTCUT_NONE = 0;
     private static final int SHORTCUT_PAUSE = 1;
     private static final int SHORTCUT_START = 2;
+    @ShortcutChoice
     private int shortcutAction = SHORTCUT_NONE;
 
     private int viewConfiguration = -1; // optimization: don't reset all the views every 100 msec
@@ -240,6 +248,8 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
             case SHORTCUT_START: // App Shortcut: Start @ 00:00
                 timer.reset();
                 timer.start();
+                break;
+            case SHORTCUT_NONE:
                 break;
         }
         shortcutAction = SHORTCUT_NONE;
