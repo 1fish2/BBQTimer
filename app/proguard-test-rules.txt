@@ -33,6 +33,7 @@
 -keep class com.onefishtwo.bbqtimer.TimeCounter {
     static android.text.Spanned formatHhMmSsFraction(long);
 }
+-keep class **Test { *; }
 
 # Derived from https://gist.github.com/knappador/1c7824979e1b21061b0b
 -keep class org.hamcrest.** { *; }

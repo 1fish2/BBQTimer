@@ -123,12 +123,12 @@ public class InAppUITest {
      */
     @Test
     public void playPauseStopUITest() {
-        // Given the following setting in build.grade to clear the package data before tests:
+        // If ANDROIDX_TEST_ORCHESTRATOR worked on Android 12, this test could rely on this option
+        // in build.gradle to clear the package data before tests:
         //    testInstrumentationRunnerArguments clearPackageData: 'true'
-        // the initial state is known: Stopped @ 0:00 with 5 minute periodic alarms
-        // so this test needn't reset state:
-        //    ignoringFailures(onView(withId(R.id.stopButton))).perform(click())
-        //    enableRemindersToggle.perform(setChecked(true))
+        // and wouldn't need to reset state:
+        /// ignoringFailures(onView(withId(R.id.stopButton))).perform(click());
+        /// enableRemindersToggle.perform(setChecked(true));
 
         checkStopped(); // Stopped
         checkReminder(true);
@@ -290,6 +290,14 @@ public class InAppUITest {
     /** Tests the minutesPicker and enableRemindersToggle widgets. */
     @Test
     public void minutePickerUITest() {
+        // If ANDROIDX_TEST_ORCHESTRATOR worked on Android 12, this test could rely on this option
+        // in build.gradle to clear the package data before tests:
+        //    testInstrumentationRunnerArguments clearPackageData: 'true'
+        // and wouldn't need to reset state, but this doesn't suffice to run the test:
+        /// ignoringFailures(onView(withId(R.id.stopButton))).perform(click());
+        /// enableRemindersToggle.perform(setChecked(true));
+        /// minutesPicker.perform(click());
+
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
         assertEquals("com.onefishtwo.bbqtimer", appContext.getPackageName());
@@ -330,10 +338,10 @@ public class InAppUITest {
         checkStopped();
 
         playPauseButton.perform(click()); // Play
-        playPauseButton.perform(waitMsec(30_001)); // *** TODO: Test that it alarmed once **
+        playPauseButton.perform(waitMsec(31_000)); // *** TODO: Test that it alarmed once **
         playPauseButton.perform(click()); // Pause
-        TimeIntervalMatcher time1 = inTimeInterval(30_000, 31_000);
-        checkPausedAt(time1);
+        TimeIntervalMatcher time31 = inTimeInterval(31_000, 32_000);
+        checkPausedAt(time31);
     }
 
 }
