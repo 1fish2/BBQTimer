@@ -29,6 +29,17 @@
     <dimen name="controls_text_size">18sp</dimen>
 
     <dimen name="activityMinWidth">320dp</dimen>
-    <dimen name="activityMinHeight">290dp</dimen>
+    <!-- Workaround: Android API 29 can ANR if the user splits the screen, shrinks the window to
+        where only the top pixels of the minutes picker are visible, then swipes down on the minutes
+        picker to its start. Making activityMinHeight large enough avoids that.
+
+        API 27: Predates split screen mode.
+        API 28: Insensitive to minHeight.
+        API 29: ≥ 400dp avoids the bug on Pixel XL, Pixel 3XL, Pixel 4XL, Nexus 7, WXGA, and Nexus 4
+                emulators.
+        API 30: Insensitive to minHeight, the OS has new resizing behavior, and the bug seems fixed.
+        API 31: Needs a much smaller minHeight to enable split screen mode in portrait mode.
+                See values-v31/dimens.xml. -->
+    <dimen name="activityMinHeight">400dp</dimen>
 
 </resources>

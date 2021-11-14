@@ -1,0 +1,7 @@
+<resources>
+    <!-- API 31-32: minHeight needed to enable Android split screen mode in portrait mode:
+        ≤ 238dp on Pixel 4XL.
+        ≤ 165dp on WQVGA. -->
+    <dimen name="activityMinHeight">165dp</dimen>
+
+</resources>
