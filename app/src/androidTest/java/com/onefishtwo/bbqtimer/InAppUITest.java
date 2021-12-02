@@ -181,7 +181,7 @@ public class InAppUITest {
         checkPlayingAt(time4);
 
         playPauseButton.perform(click()); // Pause
-        TimeIntervalMatcher time5 = inTimeInterval(time4.time, time4.time + 300);
+        TimeIntervalMatcher time5 = inTimeInterval(time4.time, time4.time + 500);
         checkPausedAt(time5);
 
         resetButton.perform(click()); // Reset
