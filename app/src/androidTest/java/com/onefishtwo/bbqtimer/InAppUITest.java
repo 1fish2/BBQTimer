@@ -23,6 +23,7 @@ package com.onefishtwo.bbqtimer;
 
 
 import android.content.Context;
+import android.os.Build;
 
 import org.junit.After;
 import org.junit.Before;
@@ -43,7 +44,6 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.pressImeActionButton;
 import static androidx.test.espresso.action.ViewActions.replaceText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.doesNotHaveFocus;
 import static androidx.test.espresso.matcher.ViewMatchers.hasFocus;
 import static androidx.test.espresso.matcher.ViewMatchers.isChecked;
 import static androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
@@ -217,7 +217,9 @@ public class InAppUITest {
         } else {
             enableRemindersToggle.check(matches(isNotChecked()));
             minutesPicker.check(matches(isNotEnabled()));
-            minutesPicker.check(matches(isNotFocused()));
+            if (Build.VERSION.SDK_INT > 27) { // disabled but still has focus on API ≤ 27!
+                minutesPicker.check(matches(isNotFocused()));
+            }
         }
     }
 
@@ -313,7 +315,7 @@ public class InAppUITest {
 
         enableRemindersToggle.perform(click());
         checkReminder(true);
-        minutesPicker.check(matches(doesNotHaveFocus())); // what view has focus?
+        // NOTE: minutesPicker still has focus on API ≤ 27. On API ≥ 28, what view has focus?
 
         minutesPicker.perform(click());
         minutesPicker.check(matches(hasFocus()));
