@@ -4,7 +4,7 @@ plugins {
 
 android {
     compileSdkVersion 31
-    buildToolsVersion '32.0.0-rc1'
+    buildToolsVersion '32.0.0'
 
     defaultConfig {
         applicationId "com.onefishtwo.bbqtimer"
@@ -61,5 +61,5 @@ dependencies {
     androidTestImplementation 'androidx.test:core:1.4.0'
     androidTestImplementation 'androidx.test:rules:1.4.0'
     // See https://github.com/android/android-test/issues/1042
-    androidTestUtil 'androidx.test:orchestrator:1.4.1-rc01'
+    androidTestUtil 'androidx.test:orchestrator:1.4.1'
 }
