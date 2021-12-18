@@ -52,7 +52,7 @@ public class Notifier {
     private static final int NOTIFICATION_ID = 7;
 
     private static final int FLAG_IMMUTABLE =
-            android.os.Build.VERSION.SDK_INT >= 23 ? PendingIntent.FLAG_IMMUTABLE : 0;
+            Build.VERSION.SDK_INT >= 23 ? PendingIntent.FLAG_IMMUTABLE : 0;
 
     private static final long[] VIBRATE_PATTERN = {150, 82, 180, 96}; // ms off, ms on, ms off, ...
     private static final int[][] ACTION_INDICES = {{}, {0}, {0, 1}, {0, 1, 2}};
@@ -188,7 +188,7 @@ public class Notifier {
      * silent but request Periodic Alarms, they'll think the app is broken.
      */
     boolean isAlarmChannelOK() {
-        if (android.os.Build.VERSION.SDK_INT >= 26) {
+        if (Build.VERSION.SDK_INT >= 26) {
             NotificationChannel channel = notificationManager.getNotificationChannel(
                     ALARM_NOTIFICATION_CHANNEL_ID);
 
@@ -254,7 +254,7 @@ public class Notifier {
 
     /** Update state (e.g. notification channel text) for a UI Locale change. */
     void onLocaleChange() {
-        if (android.os.Build.VERSION.SDK_INT >= 26) {
+        if (Build.VERSION.SDK_INT >= 26) {
             NotificationChannel channel = notificationManager.getNotificationChannel(
                     ALARM_NOTIFICATION_CHANNEL_ID);
 
