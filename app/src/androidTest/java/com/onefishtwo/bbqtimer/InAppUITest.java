@@ -123,13 +123,6 @@ public class InAppUITest {
      */
     @Test
     public void playPauseStopUITest() {
-        // If ANDROIDX_TEST_ORCHESTRATOR worked on Android 12, this test could rely on this option
-        // in build.gradle to clear the package data before tests:
-        //    testInstrumentationRunnerArguments clearPackageData: 'true'
-        // and wouldn't need to reset state:
-        /// ignoringFailures(onView(withId(R.id.stopButton))).perform(click());
-        /// enableRemindersToggle.perform(setChecked(true));
-
         checkStopped(); // Stopped
         checkReminder(true);
 
@@ -292,14 +285,6 @@ public class InAppUITest {
     /** Tests the minutesPicker and enableRemindersToggle widgets. */
     @Test
     public void minutePickerUITest() {
-        // If ANDROIDX_TEST_ORCHESTRATOR worked on Android 12, this test could rely on this option
-        // in build.gradle to clear the package data before tests:
-        //    testInstrumentationRunnerArguments clearPackageData: 'true'
-        // and wouldn't need to reset state, but this doesn't suffice to run the test:
-        /// ignoringFailures(onView(withId(R.id.stopButton))).perform(click());
-        /// enableRemindersToggle.perform(setChecked(true));
-        /// minutesPicker.perform(click());
-
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
         assertEquals("com.onefishtwo.bbqtimer", appContext.getPackageName());

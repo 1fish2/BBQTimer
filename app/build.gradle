@@ -35,8 +35,6 @@ android {
     }
 
     testOptions {
-        // Due to a OS/libs/tools bug, this orchestrator fails on Android 12. Commenting it out gets
-        // further but the app will have leftover state and its Activity might not start and set up.
         execution 'ANDROIDX_TEST_ORCHESTRATOR'
     }
 }
