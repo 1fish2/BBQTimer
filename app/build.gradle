@@ -11,7 +11,7 @@ android {
         versionCode 16
         versionName '2.6'
         minSdkVersion 21
-        targetSdkVersion 29
+        targetSdkVersion 30
         resConfigs 'en', 'de'
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
