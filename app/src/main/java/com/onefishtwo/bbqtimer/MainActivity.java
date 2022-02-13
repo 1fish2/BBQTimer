@@ -532,7 +532,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
         try {
             startActivity(intent);
         } catch (ActivityNotFoundException e) {
-            Log.e(TAG, "Couldn't open notification Settings: " + e.toString());
+            Log.e(TAG, "Couldn't open notification Settings: " + e);
             // TODO: Open another SnackBar? (Toasts are disabled along with notifications.)
         }
     }
@@ -555,7 +555,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
         try {
             startActivity(intent);
         } catch (ActivityNotFoundException e) {
-            Log.e(TAG, "Couldn't open notification channel Settings: " + e.toString());
+            Log.e(TAG, "Couldn't open notification channel Settings: " + e);
             // TODO: Open a toast?
         }
     }
