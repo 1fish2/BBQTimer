@@ -266,7 +266,7 @@ public class AlarmReceiver extends BroadcastReceiver {
             if (isAlarmEarly(intent, timer)) {
                 Log.i(TAG, "Early alarm " + intent);
             } else {
-                Log.d(TAG, intent.toString());
+                Log.d(TAG, intent.toString()); // intent.getAction() == null
                 Notifier notifier = new Notifier(context).setAlarm(true);
                 notifier.openOrCancel(state);
             }
