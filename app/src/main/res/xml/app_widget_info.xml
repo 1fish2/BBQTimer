@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- For n cells, use 70 * n - 30 dp. That's 40, 110, 180, 250, ... -->
+<!-- For n cells, use 70 * n - 30 dp. That's 40, 110, 180, 250, 320, ...
+     On Android 12, the cells can be much wider: 5 cells need about 610dp. -->
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
                     xmlns:tools="http://schemas.android.com/tools"
                     tools:ignore="UnusedAttribute"
@@ -9,7 +10,7 @@
     android:targetCellHeight="1"
     android:minResizeWidth="180dp"
     android:minResizeHeight="40dp"
-    android:maxResizeWidth="300dp"
+    android:maxResizeWidth="620dp"
     android:updatePeriodMillis="0"
     android:initialLayout="@layout/app_widget"
     android:resizeMode="horizontal"
