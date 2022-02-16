@@ -27,6 +27,7 @@
     <string name="timer_paused">Pausiert %1$s</string>
     <string name="timer_running">Läuft</string>
     <string name="timer_stopped">Gestoppt</string>
+    <string name="widget_preview_time">07:00</string>
     <plurals name="notification_body">
         <item quantity="one">Alarm jede Minute</item>
         <item quantity="other">Alarm alle %1$s Minuten</item>

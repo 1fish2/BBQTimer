@@ -118,4 +118,7 @@
       The Android OS standard format is "00:00" in English even though "0:00" would look better. -->
     <string name="time0">00:00.0</string>
 
+    <!-- The chronometer time value to show in the widget preview. -->
+    <string name="widget_preview_time">07:00</string>
+
 </resources>
