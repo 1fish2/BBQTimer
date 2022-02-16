@@ -40,6 +40,12 @@ import androidx.annotation.NonNull;
  * last case looks broken since the timer doesn't restore until the user opens the Activity, and if
  * the timer is running, its duration will be smaller than it was when the device powered down.
  *<p/>
+ * NOTE: With Android 7.0 (API 24) and 8.0 (API 26) Broadcast Intent limitations, apps can register
+ * for a subset of the original implicit broadcast actions, including:
+ *   ACTION_TIME_CHANGED, ACTION_TIMEZONE_CHANGED, ACTION_LOCALE_CHANGED.
+ * This intent is explicit to a specific package, so it still works:
+ *   ACTION_MY_PACKAGE_REPLACED.
+ *<p/>
  * BTW the OS doesn't send broadcasts to "stopped" applications. See
  * <a href="http://developer.android.com/about/versions/android-3.1.html#launchcontrols">Launch
  * Controls</a> and <a href="https://code.google.com/p/android/issues/detail?id=18225">Issue
@@ -57,8 +63,6 @@ public class ResumeReceiver extends BroadcastReceiver {
 
         if (Intent.ACTION_MY_PACKAGE_REPLACED.equals(action)) {
             AlarmReceiver.updateNotifications(context);
-            // NOTE: The widgets should stay in the right state but if that doesn't always work, do
-            // TimerAppWidgetProvider.updateAllWidgets(context, state);
         } else if (Intent.ACTION_TIME_CHANGED.equals(action) // android.intent.action.TIME_SET
                 || Intent.ACTION_TIMEZONE_CHANGED.equals(action)) {
             AlarmReceiver.handleClockAdjustment(context);
