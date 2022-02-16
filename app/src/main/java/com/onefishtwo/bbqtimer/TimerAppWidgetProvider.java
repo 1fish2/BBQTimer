@@ -138,7 +138,7 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
     /** Constructs a PendingIntent for the widget to send an action event to this Receiver. */
     static PendingIntent makeActionIntent(Context context, String action) {
         Intent intent = new Intent(context, TimerAppWidgetProvider.class);
-        intent.setAction(action);
+        intent.setAction(action).addFlags(Intent.FLAG_RECEIVER_FOREGROUND);
         return PendingIntent.getBroadcast(context, 0, intent, FLAG_IMMUTABLE);
     }
 
