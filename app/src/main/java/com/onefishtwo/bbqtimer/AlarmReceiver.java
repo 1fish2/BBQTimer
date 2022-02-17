@@ -27,6 +27,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.onefishtwo.bbqtimer.state.ApplicationState;
 
@@ -186,7 +187,12 @@ public class AlarmReceiver extends BroadcastReceiver {
         AlarmManager.AlarmClockInfo info =
                 new AlarmManager.AlarmClockInfo(reminderWallTime, activityPI);
 
-        alarmMgr.setAlarmClock(info, pendingIntent);
+        try {
+            alarmMgr.setAlarmClock(info, pendingIntent);
+        } catch (SecurityException e) {
+            Log.e(TAG, e.getMessage());
+            Toast.makeText(context, R.string.need_alarm_access, Toast.LENGTH_LONG).show();
+        }
     }
 
     /**
