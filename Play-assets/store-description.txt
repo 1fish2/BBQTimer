@@ -12,7 +12,7 @@ Of course it can time more things than cooking, like interval exercises.
 
 
 <b>Usage Tips</b>
-• While BBQ Timer is <i>running</i> or <i>paused</i>, you can operate it <b>from the lock screen</b> or the pull-down notification. To put it on the lock screen when the Timer is <i>stopped</i>, tap the <b>Pause</b> or <b>Play</b> buttons in the app or the <b>Play</b> button or the timer text in the home screen widget. Another way on Android 7.1 Nougat+ is to use the “Pause at 0:00” app shortcut on the app’s home screen icon.
+• While BBQ Timer is <i>running</i> or <i>paused</i>, you can operate it <b>from the lock screen</b> or the pull-down notification. To put it on the lock screen when the Timer is <i>stopped</i>, tap the <b>Pause</b> or <b>Play</b> buttons in the app or the <b>Play</b> button or the timer text in the home screen widget. Or on Android 7.1+, long-press the app’s home screen icon then tap the “Pause at 0:00” shortcut.
 • Try the home screen widget.
 • To stretch out the widget to show longer durations, long-press it then drag its resize handles.
 • To remove the widget, long-press and drag it onto “× Remove”.
@@ -24,8 +24,9 @@ Of course it can time more things than cooking, like interval exercises.
 • Lock screen - Show all or non-private notifications.
 • BBQTimer “Show notifications”, <i>not</i> Silent. (You may also choose to “Override Do Not Disturb“.)
 • BBQTimer “Alarm” notification category - “Show notifications”, <i>not</i> “Silent”, “Make sound and pop on screen”, sound choice <i>not</i> “None”, Importance “High” or higher to hear and see on the lock screen and in the notification area.
+• Apps - Special app access - Alarms & reminders - Allowed.
 
-You can change BBQTimer’s “Alarm” sound in the system Notification controls. Don’t pick “None” if you want to hear its periodic alarms. To restore the cowbell sound, uninstall and reinstall the app.
+You can change BBQTimer’s “Alarm” sound in the system Notification controls. Don’t pick “None” if you want to hear the periodic alarms. To restore the cowbell sound, uninstall and reinstall the app.
 
 
 Source code: https://github.com/1fish2/BBQTimer
