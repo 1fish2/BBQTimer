@@ -214,7 +214,7 @@ public class TimeCounter {
     /**
      * Returns the Timer's Running/Paused/Stopped state for debugging. Not localized.
      *
-     * @see com.onefishtwo.bbqtimer.Notifier#timerRunState(TimeCounter)
+     * @see Notifier#timerRunState(TimeCounter, boolean)
      */
     @NonNull
     String runState() {

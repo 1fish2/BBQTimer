@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:theme="@style/Theme.AppCompat.DayNight"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="horizontal">
+
+        <Chronometer
+            android:id="@+id/count_up_chronometer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:gravity="bottom|left"
+            android:maxLines="1"
+            android:paddingEnd="@dimen/button_margin"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:textColor="?android:attr/textColorPrimary"
+            android:typeface="sans"
+            tools:ignore="RtlSymmetry,SpUsage" />
+
+        <TextView
+            android:id="@+id/count_up_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="bottom|left"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:hyphenationFrequency="full"
+            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+            android:textColor="?android:attr/textColorSecondary"
+            tools:targetApi="m" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="horizontal">
+
+        <Chronometer
+            android:id="@+id/countdown_chronometer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:countDown="true"
+            android:ellipsize="end"
+            android:gravity="bottom|left"
+            android:maxLines="1"
+            android:paddingEnd="@dimen/button_margin"
+            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+            android:textColor="?android:attr/textColorPrimary"
+            android:typeface="sans"
+            tools:ignore="SpUsage"
+            tools:targetApi="n" />
+
+        <TextView
+            android:id="@+id/countdown_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="bottom|left"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:hyphenationFrequency="full"
+            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+            android:textColor="?android:attr/textColorSecondary"
+            tools:targetApi="m" />
+    </LinearLayout>
+</LinearLayout>

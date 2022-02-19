@@ -24,6 +24,7 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme"
+        android:supportsRtl="false"
         tools:targetApi="s"
         tools:ignore="GoogleAppIndexingWarning">
 

@@ -32,10 +32,16 @@ import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
+import android.os.SystemClock;
+import android.text.Spanned;
+import android.text.SpannedString;
+import android.view.View;
+import android.widget.RemoteViews;
 
 import com.onefishtwo.bbqtimer.state.ApplicationState;
 
 import androidx.annotation.DrawableRes;
+import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.RawRes;
 import androidx.annotation.StringRes;
@@ -43,6 +49,7 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.app.TaskStackBuilder;
 import androidx.core.content.ContextCompat;
+import androidx.media.app.NotificationCompat.DecoratedMediaCustomViewStyle;
 import androidx.media.app.NotificationCompat.MediaStyle;
 
 /**
@@ -53,6 +60,17 @@ public class Notifier {
 
     private static final int FLAG_IMMUTABLE =
             Build.VERSION.SDK_INT >= 23 ? PendingIntent.FLAG_IMMUTABLE : 0;
+
+    /**
+     * Construct a custom notification for this API level and higher. The custom notification really
+     * helps on Android 12 where MediaStyle's collapsed notification hides the Chronometer and the
+     * lock screen interferes with expanding the notification.
+     *
+     * TODO: Test these custom notifications on earlier API levels. API 24 required for a count-down
+     * Chronometer.
+     */
+    private static final int CUSTOM_NOTIFICATION_API_LEVEL = 31;
+    private static final SpannedString EMPTY_SPAN = new SpannedString("");
 
     private static final long[] VIBRATE_PATTERN = {150, 82, 180, 96}; // ms off, ms on, ms off, ...
     private static final int[][] ACTION_INDICES = {{}, {0}, {0, 1}, {0, 1, 2}};
@@ -127,7 +145,14 @@ public class Notifier {
             return;
         }
 
-        MediaStyle style = new MediaStyle().setShowActionsInCompactView(ACTION_INDICES[num]);
+        MediaStyle style;
+        if (Build.VERSION.SDK_INT >= CUSTOM_NOTIFICATION_API_LEVEL) {
+            style = new DecoratedMediaCustomViewStyle();
+        } else {
+            style = new MediaStyle();
+        }
+
+        style.setShowActionsInCompactView(ACTION_INDICES[num]);
         builder.setStyle(style);
 
         // === MediaStyle setColor() [the "accent color"] vs. Android API levels ===
@@ -144,23 +169,46 @@ public class Notifier {
             // notification to its replacement. http://stackoverflow.com/q/38415467/1682419
             int workaroundColor = context.getColor(R.color.gray_text);
             builder.setColor(workaroundColor);
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) { // Android 12, API 31
-            // Android 12 S, API 31: setColor() colors the background circle behind the small icon.
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            // Android 12, S, API 31: setColor() colors the small icon's circular background.
             int iconBackgroundColor = context.getColor(R.color.dark_orange_red);
             builder.setColor(iconBackgroundColor);
         }
     }
 
-    /** Returns a localized description of the timer's run state, e.g. "Paused 00:12.3". */
+    /**
+     * Returns a localized description of the timer's run state: "Running", "Paused 00:12.3"
+     * (optionally including the time value), or "Stopped".
+     */
     @NonNull
-    String timerRunState(@NonNull TimeCounter timer) {
+    String timerRunState(@NonNull TimeCounter timer, boolean includeTime) {
         if (timer.isRunning()) {
             return context.getString(R.string.timer_running);
         } else if (timer.isPaused()) {
-            return context.getString(R.string.timer_paused, timer.formatHhMmSsFraction());
+            Spanned pauseTime = includeTime ? timer.formatHhMmSsFraction() : EMPTY_SPAN;
+            return context.getString(R.string.timer_paused, pauseTime);
         } else {
             return context.getString(R.string.timer_stopped);
         }
+    }
+
+    /**
+     * Returns a localized description of the periodic alarms.
+     *
+     * @param state the ApplicationState.
+     * @return a localized string like "Alarm every 2 minutes", or "" for no periodic alarms.
+     */
+    @NonNull
+    String describePeriodicAlarms(@NonNull ApplicationState state) {
+        // Synthesize a "quantity" to select the right pluralization rule.
+        int reminderSecs = state.getSecondsPerReminder();
+        int quantity = MinutesChoices.secondsToMinutesPluralizationQuantity(reminderSecs);
+        String minutes = MainActivity.secondsToMinuteChoiceString(reminderSecs);
+
+        return state.isEnableReminders()
+                ? context.getResources().getQuantityString(
+                    R.plurals.notification_body, quantity, minutes)
+                : "";
     }
 
     /**
@@ -267,6 +315,45 @@ public class Notifier {
     }
 
     /**
+     * Make and initialize the RemoteViews for a Custom Notification.
+     *
+     * @param layoutId the layout resource ID for the RemoteViews.
+     * @param state the ApplicationState to show.
+     * @param countUpMessage the message to show next to the count-up (stopwatch) Chronometer. This
+     *                       Chronometer and its message are GONE if there are no periodic alarms.
+     * @param countDownMessage the message to show next to the count-down (timer) Chronometer.
+     * @return RemoteViews
+     */
+    @NonNull
+    private RemoteViews makeRemoteViews(
+            @LayoutRes int layoutId, @NonNull ApplicationState state, @NonNull String countUpMessage,
+            @NonNull String countDownMessage) {
+        TimeCounter timer = state.getTimeCounter();
+        long elapsedTime = timer.getElapsedTime();
+        boolean isRunning = timer.isRunning();
+        long rt = SystemClock.elapsedRealtime();
+        long countUpBase = rt - elapsedTime;
+        RemoteViews remoteViews = new RemoteViews(context.getPackageName(), layoutId);
+
+        remoteViews.setChronometer(R.id.count_up_chronometer, countUpBase, null, isRunning);
+        remoteViews.setTextViewText(R.id.count_up_message, countUpMessage);
+
+        if (state.isEnableReminders()) {
+            long period = state.getMillisecondsPerReminder();
+            long countdownBase = rt + Math.max(period - elapsedTime % period + 1000, 0);
+
+            remoteViews.setChronometer(
+                    R.id.countdown_chronometer, countdownBase, null, isRunning);
+            remoteViews.setTextViewText(R.id.countdown_message, countDownMessage);
+        } else {
+            remoteViews.setViewVisibility(R.id.countdown_chronometer, View.GONE);
+            remoteViews.setViewVisibility(R.id.countdown_message, View.GONE);
+        }
+
+        return remoteViews;
+    }
+
+    /**
      * Builds a notification. Its alarm sound, vibration, and LED light flashing are switched on/off
      * by {@link #setAlarm(boolean)}.
      */
@@ -299,7 +386,7 @@ public class Notifier {
                 builder.setLargeIcon(largeIcon);
             }
 
-            if (isRunning) {
+            if (Build.VERSION.SDK_INT < CUSTOM_NOTIFICATION_API_LEVEL && isRunning) {
                 builder.setWhen(System.currentTimeMillis() - timer.getElapsedTime())
                         .setUsesChronometer(true);
             } else {
@@ -308,19 +395,13 @@ public class Notifier {
                 builder.setShowWhen(false);
             }
 
-            // Set the notification body text to explain the run state.
+            String alarmEvery = describePeriodicAlarms(state);
+
             if (isRunning && state.isEnableReminders()) {
-                int reminderSecs   = state.getSecondsPerReminder();
-
-                // Synthesize a "quantity" to select the right pluralization rule.
-                int quantity = MinutesChoices.secondsToMinutesPluralizationQuantity(reminderSecs);
-                String minutes     = MainActivity.secondsToMinuteChoiceString(reminderSecs);
-                String contentText = context.getResources()
-                        .getQuantityString(R.plurals.notification_body, quantity, minutes);
-
-                builder.setContentText(contentText);
+                builder.setContentText(alarmEvery);
             } else {
-                builder.setContentText(timerRunState(timer));
+                String runPauseStop = timerRunState(timer, true); // Running/Paused 00:12.3/Stopped
+                builder.setContentText(runPauseStop);
                 if (timer.isPaused()) {
                     builder.setSubText(context.getString(R.string.dismiss_tip));
                 } else if (isRunning) {
@@ -328,6 +409,15 @@ public class Notifier {
                 }
             }
 
+            if (Build.VERSION.SDK_INT >= CUSTOM_NOTIFICATION_API_LEVEL) {
+                String countUpMessage = timerRunState(timer, false); // Running/Paused/Stopped
+                RemoteViews notificationView = makeRemoteViews(
+                        R.layout.custom_notification, state, countUpMessage, alarmEvery);
+
+                builder.setCustomContentView(notificationView);
+                builder.setCustomHeadsUpContentView(notificationView);
+                builder.setCustomBigContentView(notificationView);
+            }
             numActions = 0;
 
             {
