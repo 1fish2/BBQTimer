@@ -9,6 +9,7 @@
     <dimen name="widget_horizontal_padding">3dp</dimen>
     <dimen name="widget_vertical_padding">0dp</dimen>
     <dimen name="max_checkbox_width">300dp</dimen>
+    <dimen name="notification_spacer">5sp</dimen>
 
     <!-- Used to default this to 8dp here and override it to 0dp in values-v14/dimens.xml . -->
     <dimen name="widget_margin">0dp</dimen>
