@@ -89,8 +89,20 @@ public class MinutesChoicesTest {
     }
 
     @Test
+    public void pickerChoiceToSeconds() {
+        assertThat("1/2 minute", MinutesChoices.pickerChoiceToSeconds(0), is(30));
+        assertThat("1 minute", MinutesChoices.pickerChoiceToSeconds(1), is(60));
+        assertThat("2 minutes", MinutesChoices.pickerChoiceToSeconds(3), is(2 * 60));
+        assertThat("5 minutes", MinutesChoices.pickerChoiceToSeconds(9), is(5 * 60));
+        assertThat("5.5 minutes", MinutesChoices.pickerChoiceToSeconds(10), is(5 * 60 + 30));
+        assertThat("10 minutes", MinutesChoices.pickerChoiceToSeconds(17), is(10 * 60));
+    }
+
+    @Test
     public void boundaryCases() {
         final int MM1 = MM + 1;
+
+        assertThat("5 minutes", MinutesChoices.secondsToPickerChoice(5 * 60), is(9));
 
         assertThat("10 seconds", MinutesChoices.secondsToPickerChoice(10), is(0));
         assertThat("0 seconds", MinutesChoices.secondsToPickerChoice(0), is(0));
@@ -109,6 +121,8 @@ public class MinutesChoicesTest {
 
     @Test
     public void normalizeSeconds() {
+        assertThat("5 minutes", MinutesChoices.normalizeSeconds(5 * 60), is(5 * 60));
+
         assertThat("negative seconds", MinutesChoices.normalizeSeconds(-90), is(30));
         assertThat("0 seconds", MinutesChoices.normalizeSeconds(0), is(30));
         assertThat("just over 90 seconds", MinutesChoices.normalizeSeconds(91), is(90));
