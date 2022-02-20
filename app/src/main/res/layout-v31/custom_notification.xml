@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- The negative margins squeeze it a little so the heads-up notification
+     doesn't clip the Pause & Play action buttons. -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginBottom="-2sp"
+    android:layout_marginTop="-2sp"
     android:orientation="vertical"
     android:theme="@style/Theme.AppCompat.DayNight"
     xmlns:tools="http://schemas.android.com/tools">
@@ -19,7 +23,7 @@
             android:ellipsize="end"
             android:gravity="bottom|left"
             android:maxLines="1"
-            android:paddingEnd="@dimen/button_margin"
+            android:paddingRight="@dimen/button_margin"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             android:textColor="?android:attr/textColorPrimary"
             android:typeface="sans"
@@ -52,7 +56,7 @@
             android:ellipsize="end"
             android:gravity="bottom|left"
             android:maxLines="1"
-            android:paddingEnd="@dimen/button_margin"
+            android:paddingRight="@dimen/button_margin"
             android:textAppearance="@style/TextAppearance.AppCompat.Small"
             android:textColor="?android:attr/textColorPrimary"
             android:typeface="sans"
@@ -63,10 +67,10 @@
             android:id="@+id/countdown_message"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="bottom|left"
-            android:maxLines="1"
             android:ellipsize="end"
+            android:gravity="bottom|left"
             android:hyphenationFrequency="full"
+            android:maxLines="1"
             android:textAppearance="@style/TextAppearance.AppCompat.Small"
             android:textColor="?android:attr/textColorSecondary"
             tools:targetApi="m" />
