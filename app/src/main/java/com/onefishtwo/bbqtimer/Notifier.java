@@ -66,10 +66,10 @@ public class Notifier {
      * helps on Android 12 where MediaStyle's collapsed notification hides the Chronometer and the
      * lock screen interferes with expanding the notification.
      *
-     * TODO: Test these custom notifications on earlier API levels. API 24 required for a count-down
-     * Chronometer.
+     * API 24 is required for a count-down Chronometer and for
+     * NotificationCompat.DecoratedMediaCustomViewStyle to do more than MediaStyle.
      */
-    private static final int CUSTOM_NOTIFICATION_API_LEVEL = 31;
+    private static final int CUSTOM_NOTIFICATION_API_LEVEL = 24;
     private static final SpannedString EMPTY_SPAN = new SpannedString("");
 
     private static final long[] VIBRATE_PATTERN = {200, 40,  220, 80,  440, 45,  265, 55}; // ms off, on, off, ...
