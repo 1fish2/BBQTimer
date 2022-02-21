@@ -41,6 +41,7 @@ import android.widget.RemoteViews;
 import com.onefishtwo.bbqtimer.state.ApplicationState;
 
 import androidx.annotation.DrawableRes;
+import androidx.annotation.IdRes;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.RawRes;
@@ -79,6 +80,10 @@ public class Notifier {
 
     // Was in release "2.5" (v15) and will remain immutable on devices while the app is installed:
     // static final String CONTROLS_NOTIFICATION_CHANNEL_ID = "controlsChannel";
+
+    // --- R.id.countUpViewFlipper and R.id.countdownViewFlipper child indexes.
+    private static final int RUNNING_FLIPPER_CHILD = 0;
+    private static final int PAUSED_FLIPPER_CHILD  = 1;
 
     private static boolean builtNotificationChannels = false;
 
@@ -316,6 +321,10 @@ public class Notifier {
 
     /**
      * Make and initialize the RemoteViews for a Custom Notification.
+     *<p/>
+     * Workaround: A paused Chronometer doesn't show a stable value, e.g. switching light/dark theme
+     * can change it, and it ignores its format string thus ruling out some workarounds.
+     * *SO* when the timer is paused, flip to a TextView.
      *
      * @param layoutId the layout resource ID for the RemoteViews.
      * @param state the ApplicationState to show.
@@ -333,21 +342,37 @@ public class Notifier {
         boolean isRunning = timer.isRunning();
         long rt = SystemClock.elapsedRealtime();
         long countUpBase = rt - elapsedTime;
+        @IdRes int childId = isRunning ? RUNNING_FLIPPER_CHILD : PAUSED_FLIPPER_CHILD;
         RemoteViews remoteViews = new RemoteViews(context.getPackageName(), layoutId);
 
-        remoteViews.setChronometer(R.id.count_up_chronometer, countUpBase, null, isRunning);
-        remoteViews.setTextViewText(R.id.count_up_message, countUpMessage);
+        // Count-up time and status
+        if (!isRunning) {
+            remoteViews.setTextViewText(R.id.pausedCountUp, TimeCounter.formatHhMmSs(elapsedTime));
+        }
+        remoteViews.setDisplayedChild(R.id.countUpViewFlipper, childId);
+        remoteViews.setChronometer(
+                R.id.countUpChronometer, countUpBase, null, isRunning);
+        remoteViews.setTextViewText(R.id.countUpMessage, countUpMessage);
 
+        // Count-down time and status
         if (state.isEnableReminders()) {
             long period = state.getMillisecondsPerReminder();
-            long countdownBase = rt + Math.max(period - elapsedTime % period + 1000, 0);
+            long countdownToNextAlarm = Math.max(period - elapsedTime % period + 999, 0);
+            long countdownBase = rt + countdownToNextAlarm;
 
+            if (!isRunning) {
+                remoteViews.setTextViewText(
+                        R.id.pausedCountdown, TimeCounter.formatHhMmSs(countdownToNextAlarm));
+            }
+            remoteViews.setDisplayedChild(R.id.countdownViewFlipper, childId);
             remoteViews.setChronometer(
-                    R.id.countdown_chronometer, countdownBase, null, isRunning);
-            remoteViews.setTextViewText(R.id.countdown_message, countDownMessage);
+                    R.id.countdownChronometer, countdownBase, null, isRunning);
+            remoteViews.setTextViewText(R.id.countdownMessage, countDownMessage);
         } else {
-            remoteViews.setViewVisibility(R.id.countdown_chronometer, View.GONE);
-            remoteViews.setViewVisibility(R.id.countdown_message, View.GONE);
+            remoteViews.setChronometer(
+                    R.id.countdownChronometer, 0, null, false);
+            remoteViews.setViewVisibility(R.id.countdownChronometer, View.GONE);
+            remoteViews.setViewVisibility(R.id.countdownMessage, View.GONE);
         }
 
         return remoteViews;

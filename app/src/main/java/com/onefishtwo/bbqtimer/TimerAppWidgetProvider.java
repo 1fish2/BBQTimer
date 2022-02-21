@@ -61,18 +61,17 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
     }
 
     /**
-     * Updates the given app widgets' contents to the Timer state and date.<p/>
+     * Updates the given widgets' contents to the Timer state and time.<p/>
      *
-     * Unfortunately, a Chronometer view can't accurately set its value when paused. You can set it
-     * to (now - desiredTime) but even setting all widgets at once ends up with different displays
-     * due to propagation delays. *SO* when the timer is paused, switch to a TextView.<p/>
+     * Workaround: A paused Chronometer doesn't show a stable value. Multiple widgets might show
+     * different values, switching light/dark theme might change it, etc. Furthermore, a paused
+     * Chronometer ignores its format string thus ruling out some workarounds.
+     * *SO* when the timer is paused, flip to a TextView.<p/>
      *
-     * NOTE: A simpler implementation would stop the Chronometer then use it as the paused TextView,
-     * but that relies on it not updating its text. Anyway, this code switches between the
-     * Chronometer and two different TextViews to select the right ColorStateList for user feedback
-     * since RemoteViews can't do {@code TextView#setTextColor(ColorStateList)}.<p/>
+     * This code switches between the Chronometer and two different TextViews to select the right
+     * ColorStateList for user feedback since RemoteViews.setColor() is only in API 31+.<p/>
      *
-     * TODO: Preload the button image Bitmaps? Flip between Buttons?
+     * TODO: Preload the button image Bitmaps?
      */
     private static void updateWidgets(@NonNull Context context,
             @NonNull AppWidgetManager appWidgetManager,

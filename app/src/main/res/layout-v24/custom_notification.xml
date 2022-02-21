@@ -16,24 +16,49 @@
         android:layout_weight="1"
         android:orientation="horizontal">
 
-        <Chronometer
-            android:id="@+id/count_up_chronometer"
+        <!-- Notifier.java relies on the child views being #0 (Chronometer) and #1 (TextView) in
+             both of these ViewFlippers. -->
+        <ViewFlipper
+            android:id="@+id/countUpViewFlipper"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:gravity="bottom|left"
-            android:maxLines="1"
+            android:layout_gravity="bottom|left"
             android:paddingRight="@dimen/notification_spacer"
-            android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-            android:textColor="?android:attr/textColorPrimary"
-            android:typeface="sans"
-            tools:ignore="RtlSymmetry,SpUsage" />
+            android:measureAllChildren="false">
+
+            <Chronometer
+                android:id="@+id/countUpChronometer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:gravity="bottom|left"
+                android:layout_gravity="bottom|left"
+                android:maxLines="1"
+                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                android:textColor="?android:attr/textColorPrimary"
+                android:textStyle="bold"
+                android:typeface="sans" />
+
+            <TextView
+                android:id="@+id/pausedCountUp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:gravity="bottom|left"
+                android:layout_gravity="bottom|left"
+                android:maxLines="1"
+                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                android:textColor="?android:attr/textColorPrimary"
+                android:textStyle="bold"
+                android:typeface="sans" />
+        </ViewFlipper>
 
         <TextView
-            android:id="@+id/count_up_message"
+            android:id="@+id/countUpMessage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="bottom|left"
+            android:layout_gravity="bottom|left"
             android:maxLines="1"
             android:ellipsize="end"
             android:hyphenationFrequency="full"
@@ -48,23 +73,43 @@
         android:layout_weight="1"
         android:orientation="horizontal">
 
-        <Chronometer
-            android:id="@+id/countdown_chronometer"
+        <ViewFlipper
+            android:id="@+id/countdownViewFlipper"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:countDown="true"
-            android:ellipsize="end"
-            android:gravity="bottom|left"
-            android:maxLines="1"
+            android:layout_gravity="bottom|left"
             android:paddingRight="@dimen/notification_spacer"
-            android:textAppearance="@style/TextAppearance.AppCompat.Small"
-            android:textColor="?android:attr/textColorPrimary"
-            android:typeface="sans"
-            tools:ignore="SpUsage"
-            tools:targetApi="n" />
+            android:measureAllChildren="false">
+
+            <Chronometer
+                android:id="@+id/countdownChronometer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:countDown="true"
+                android:ellipsize="end"
+                android:gravity="bottom|left"
+                android:layout_gravity="bottom|left"
+                android:maxLines="1"
+                android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                android:textColor="?android:attr/textColorPrimary"
+                android:typeface="sans"
+                tools:targetApi="n" />
+
+            <TextView
+                android:id="@+id/pausedCountdown"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:gravity="bottom|left"
+                android:layout_gravity="bottom|left"
+                android:maxLines="1"
+                android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                android:textColor="?android:attr/textColorPrimary"
+                android:typeface="sans" />
+        </ViewFlipper>
 
         <TextView
-            android:id="@+id/countdown_message"
+            android:id="@+id/countdownMessage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ellipsize="end"
