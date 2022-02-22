@@ -1,6 +1,6 @@
 A combination interval timer/stopwatch with a twist:
 1. Quick access via a <b>lock screen notification</b>. No need to unlock your phone.
-2. <b>Periodic alarms</b> to check/flip your food while it continues tracking the overall total time. (A “stopwatch” won’t alert you while a “timer” won’t track the total time while you flip the food, check its temperature, and give it more time as needed.)
+2. <b>Periodic alarms</b> to check/flip your food while it continues tracking the overall total time. (A “stopwatch” won’t alert you while a “timer” won’t track the total time while you flip the food and check its temperature.)
 3. <b>Adjustable alarm interval</b> while it’s running.
 
 Of course it can time more things than cooking, like interval exercises.
