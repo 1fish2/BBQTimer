@@ -165,7 +165,7 @@ public class Notifier {
         // API 23 M: See below.
         // API 24 N - API 27 O1: colors the small icon, action button, and app title color. Garish.
         // API 28 P - API 30 R: colors the small icon and action button. Garish.
-        // API 21 S: See below.
+        // API 31 S: See below.
         // setColorized(false) didn't change any of these results.
         if (Build.VERSION.SDK_INT == Build.VERSION_CODES.M) {
             // Android 6 M, API 23: setColor() colors the notification are background and avoids a
@@ -334,6 +334,7 @@ public class Notifier {
      * @return RemoteViews
      */
     @NonNull
+    @TargetApi(24)
     private RemoteViews makeRemoteViews(
             @LayoutRes int layoutId, @NonNull ApplicationState state, @NonNull String countUpMessage,
             @NonNull String countDownMessage) {
