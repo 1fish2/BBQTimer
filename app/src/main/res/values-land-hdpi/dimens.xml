@@ -1,4 +1,3 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <dimen name="widget_vertical_padding">0dp</dimen>
-    <dimen name="widget_text_size" tools:ignore="SpUsage">36dp</dimen>
+    <dimen name="widget_text_size" tools:ignore="SpUsage">42dp</dimen>
 </resources>
