@@ -5,7 +5,7 @@
      https://developer.android.com/guide/topics/appwidgets/layouts#anatomy_determining_size now says
      n x m cells: ≈(73n - 16) x (118m - 16) dp available in portrait,
      ≈(142n - 15) x (66m - 15) dp in landscape;
-     use portrait cell sizes to inform minWidth, minResizeWidth, maxRexizeWidth;
+     use portrait cell sizes to inform minWidth, minResizeWidth, maxResizeWidth;
      use landscape cell sizes to inform minHeight, minResizeHeight, maxResizeHeight.
 
      Also see https://developer.android.com/guide/topics/appwidgets#widget-sizing-attributes
