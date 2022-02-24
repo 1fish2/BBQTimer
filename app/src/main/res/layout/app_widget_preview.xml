@@ -18,7 +18,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:backgroundTint="@color/widget_button_background"
-        android:contentDescription="@string/start_stop"
+        android:contentDescription="@string/start_pause"
         android:paddingLeft="@dimen/small_button_padding"
         android:paddingRight="@dimen/small_button_padding"
         android:src="@drawable/ic_action_play"

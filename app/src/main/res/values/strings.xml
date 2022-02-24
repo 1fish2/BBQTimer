@@ -66,7 +66,7 @@
 
     <!-- Accessibility description for the button that starts or resumes the stopped timer or else
       pauses the running timer. -->
-    <string name="start_stop">Start/Pause</string>
+    <string name="start_pause">Start/Pause</string>
 
     <!-- Label for the switch that enables/disables periodic reminder alarms AND ALSO the label for
       the widget for setting the number of minutes between reminders. -->

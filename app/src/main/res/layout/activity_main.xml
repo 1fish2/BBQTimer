@@ -48,35 +48,38 @@
                 style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingLeft="@dimen/button_padding"
-                android:paddingRight="@dimen/button_padding"
-                android:drawableLeft="@drawable/ic_play"
                 android:layout_marginRight="@dimen/button_margin"
-                android:focusable="true"/>
+                android:contentDescription="@string/start_pause"
+                android:drawableLeft="@drawable/ic_play"
+                android:focusable="true"
+                android:paddingLeft="@dimen/button_padding"
+                android:paddingRight="@dimen/button_padding" />
 
             <Button
                 android:id="@+id/resetButton"
                 style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingLeft="@dimen/button_padding"
-                android:paddingRight="@dimen/button_padding"
-                android:drawableLeft="@drawable/ic_replay"
                 android:layout_marginLeft="@dimen/button_margin"
                 android:layout_marginRight="@dimen/button_margin"
-                android:focusable="true"/>
+                android:contentDescription="@string/reset"
+                android:drawableLeft="@drawable/ic_replay"
+                android:focusable="true"
+                android:paddingLeft="@dimen/button_padding"
+                android:paddingRight="@dimen/button_padding" />
 
             <Button
                 android:id="@+id/stopButton"
                 style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingLeft="@dimen/button_padding"
-                android:paddingRight="@dimen/button_padding"
-                android:drawableLeft="@drawable/ic_stop"
                 android:layout_marginLeft="@dimen/button_margin"
+                android:contentDescription="@string/stop"
+                android:drawableLeft="@drawable/ic_stop"
                 android:focusable="true"
-                android:nextFocusForward="@+id/enableReminders"/>
+                android:nextFocusForward="@+id/enableReminders"
+                android:paddingLeft="@dimen/button_padding"
+                android:paddingRight="@dimen/button_padding" />
         </LinearLayout>
 
         <LinearLayout
