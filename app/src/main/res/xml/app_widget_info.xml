@@ -1,6 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- For n cells, use 70 * n - 30 dp. That's 40, 110, 180, 250, 320, ...
-     On Android 12, the cells can be much wider: 5 cells need about 610dp. -->
+     But on Android 12, the cells can be much wider: 5 cells need about 610dp.
+
+     https://developer.android.com/guide/topics/appwidgets/layouts#anatomy_determining_size now says
+     n x m cells: ≈(73n - 16) x (118m - 16) dp available in portrait,
+     ≈(142n - 15) x (66m - 15) dp in landscape;
+     use portrait cell sizes to inform minWidth, minResizeWidth, maxRexizeWidth;
+     use landscape cell sizes to inform minHeight, minResizeHeight, maxResizeHeight.
+
+     Also see https://developer.android.com/guide/topics/appwidgets#widget-sizing-attributes
+     -->
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
                     xmlns:tools="http://schemas.android.com/tools"
                     tools:ignore="UnusedAttribute"
