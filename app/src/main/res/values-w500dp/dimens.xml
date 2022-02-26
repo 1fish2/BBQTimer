@@ -1,0 +1,4 @@
+<resources>
+    <!-- Intermediate dimensions for recent phones. -->
+    <dimen name="activity_horizontal_margin">14dp</dimen>
+</resources>

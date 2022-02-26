@@ -168,6 +168,15 @@ public class ApplicationState {
         return getSecondsPerReminder() * 1000L;
     }
 
+    /** Returns the number of milliseconds until the next periodic reminder (assuming enabled). */
+    public long getMillisecondsToNextAlarm() {
+        long period = getMillisecondsPerReminder();
+        TimeCounter timer = getTimeCounter();
+        long elapsedTime = timer.getElapsedTime();
+
+        return Math.max(period - elapsedTime % period + 999, 0);
+    }
+
     /**
      * Sets the number of seconds between periodic reminder alarms. Call {@link #save} to save it.
      */

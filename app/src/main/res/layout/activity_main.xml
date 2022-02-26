@@ -32,54 +32,76 @@
             android:textColor="@color/running_timer_colors"
             android:textSize="@dimen/display_text_size"
             android:typeface="sans"
-            tools:ignore="SpUsage,Deprecated"/>
+            tools:ignore="SpUsage,DuplicateSpeakableTextCheck" />
 
         <LinearLayout
-            android:orientation="horizontal"
-            style="?android:attr/buttonBarStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:orientation="horizontal"
             android:layout_gravity="right"
-            android:gravity="center_vertical|right"
-            android:background="@color/grayer">
+            android:gravity="center_vertical|right">
 
-            <Button
-                android:id="@+id/startStopButton"
-                style="?android:attr/buttonBarButtonStyle"
+            <TextView
+                android:id="@+id/countdownDisplay"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="@dimen/button_margin"
-                android:contentDescription="@string/start_pause"
-                android:drawableLeft="@drawable/ic_play"
+                android:layout_gravity="center"
+                android:layout_marginRight="@dimen/button_padding"
+                android:layout_weight="1"
+                android:background="@color/orange_red_text"
+                android:ellipsize="end"
                 android:focusable="true"
-                android:paddingLeft="@dimen/button_padding"
-                android:paddingRight="@dimen/button_padding" />
+                android:gravity="center"
+                android:maxLines="1"
+                android:paddingLeft="@dimen/countdown_padding"
+                android:paddingRight="@dimen/countdown_padding"
+                android:text="@string/time0"
+                android:textColor="?attr/colorPrimary"
+                android:textSize="@dimen/countdown_text_size"
+                android:typeface="sans" />
 
-            <Button
-                android:id="@+id/resetButton"
-                style="?android:attr/buttonBarButtonStyle"
+            <LinearLayout
+                android:orientation="horizontal"
+                style="?android:attr/buttonBarStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/button_margin"
-                android:layout_marginRight="@dimen/button_margin"
-                android:contentDescription="@string/reset"
-                android:drawableLeft="@drawable/ic_replay"
-                android:focusable="true"
-                android:paddingLeft="@dimen/button_padding"
-                android:paddingRight="@dimen/button_padding" />
+                android:layout_gravity="right"
+                android:layout_weight="6"
+                android:gravity="center_vertical|right"
+                android:background="@color/grayer">
 
-            <Button
-                android:id="@+id/stopButton"
-                style="?android:attr/buttonBarButtonStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/button_margin"
-                android:contentDescription="@string/stop"
-                android:drawableLeft="@drawable/ic_stop"
-                android:focusable="true"
-                android:nextFocusForward="@+id/enableReminders"
-                android:paddingLeft="@dimen/button_padding"
-                android:paddingRight="@dimen/button_padding" />
+                <Button
+                    android:id="@+id/startStopButton"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="@string/start_pause"
+                    android:drawableLeft="@drawable/ic_play"
+                    android:focusable="true" />
+
+                <Button
+                    android:id="@+id/resetButton"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/button_margin"
+                    android:layout_marginRight="@dimen/button_margin"
+                    android:contentDescription="@string/reset"
+                    android:drawableLeft="@drawable/ic_replay"
+                    android:focusable="true"
+                    android:paddingLeft="@dimen/button_padding"
+                    android:paddingRight="@dimen/button_padding" />
+
+                <Button
+                    android:id="@+id/stopButton"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="@string/stop"
+                    android:drawableLeft="@drawable/ic_stop"
+                    android:focusable="true"
+                    android:nextFocusForward="@+id/enableReminders" />
+            </LinearLayout>
         </LinearLayout>
 
         <LinearLayout

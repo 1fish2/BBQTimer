@@ -152,7 +152,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
     private Button resetButton;
     private Button startStopButton;
     private Button stopButton;
-    private TextView displayView;
+    private TextView displayView, countdownDisplay;
     private CompoundButton enableRemindersToggle;
     private NumberPicker minutesPicker;
 
@@ -170,11 +170,13 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
         startStopButton       = findViewById(R.id.startStopButton);
         stopButton            = findViewById(R.id.stopButton);
         displayView           = findViewById(R.id.display);
+        countdownDisplay      = findViewById(R.id.countdownDisplay);
         enableRemindersToggle = findViewById(R.id.enableReminders);
         minutesPicker         = findViewById(R.id.minutesPicker);
 
         resetButton.setOnClickListener(this::onClickReset);
-        startStopButton.setOnClickListener(this::onClickStartStop);
+        startStopButton.setOnClickListener(this::onClickPauseResume);
+        countdownDisplay.setOnClickListener(this::onClickPauseResume);
         stopButton.setOnClickListener(this::onClickStop);
         displayView.setOnClickListener(this::onClickTimerText);
         enableRemindersToggle.setOnClickListener(this::onClickEnableRemindersToggle);
@@ -189,6 +191,8 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
         // AutoSizeText works with android:maxLines="1" but not with android:singleLine="true".
         TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(displayView, 16,
                 1000, 1, TypedValue.COMPLEX_UNIT_DIP);
+        TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(countdownDisplay, 14,
+                56, 1, TypedValue.COMPLEX_UNIT_DIP);
 
         setVolumeControlStream(AudioManager.STREAM_ALARM);
 
@@ -211,7 +215,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
     }
 
     private void logTheConfiguration(@NonNull Configuration config) {
-        Log.v(TAG,
+        Log.i(TAG,
             String.format("Config densityDpi: %d, size DPI: %dx%d, orientation: %d",
                     config.densityDpi, config.screenWidthDp, config.screenHeightDp,
                     config.orientation));
@@ -368,12 +372,12 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
         logTheConfiguration(newConfig);
     }
 
-    /** The user tapped the Run/Pause button (named "StartStop"). */
+    /** The user tapped a Run/Pause action such as the historically named "startStopButton". */
     // TODO: Use listeners to update the Activity UI and app widgets.
     // A Proguard rule keeps all Activity *(View) methods.
     @UiThread
     @SuppressWarnings("UnusedParameters")
-    public void onClickStartStop(View v) {
+    public void onClickPauseResume(View v) {
         timer.toggleRunPause();
         updateHandler.beginScheduledUpdate();
         updateUI();
@@ -442,6 +446,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
             state.setSecondsPerReminder(MinutesChoices.pickerChoiceToSeconds(newVal));
             state.save(this);
             AlarmReceiver.updateNotifications(this);
+            displayTime(); // update countdownDisplay
         }
     }
 
@@ -457,7 +462,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
                 : R.color.paused_timer_colors;
     }
 
-    /** Updates the display of the elapsed time. */
+    /** Updates the display of the elapsed time and the alarm count-down time. */
     @UiThread
     private void displayTime() {
         Spanned formatted         = timer.formatHhMmSsFraction();
@@ -466,9 +471,13 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
                 : timer.isPaused() ? pausedTimerColors()
                 : R.color.reset_timer_colors;
         ColorStateList textColors = ContextCompat.getColorStateList(this, textColorsId);
+        long countdownToNextAlarm = state.getMillisecondsToNextAlarm();
 
         displayView.setText(formatted);
         displayView.setTextColor(textColors);
+
+        countdownDisplay.setText(TimeCounter.formatHhMmSs(countdownToNextAlarm));
+        countdownDisplay.setBackgroundColor(getResources().getColor(textColorsId));
     }
 
     /** Updates the Activity's views for the current state. */
@@ -492,6 +501,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
             startStopButton.setCompoundDrawablesWithIntrinsicBounds(
                     isRunning ? R.drawable.ic_pause : R.drawable.ic_play, 0, 0, 0);
             stopButton.setVisibility(isStopped ? View.INVISIBLE : View.VISIBLE);
+            countdownDisplay.setVisibility(areRemindersEnabled ? View.VISIBLE : View.INVISIBLE);
             enableRemindersToggle.setChecked(areRemindersEnabled);
             minutesPicker.setValue(MinutesChoices.secondsToPickerChoice(
                     state.getSecondsPerReminder()));

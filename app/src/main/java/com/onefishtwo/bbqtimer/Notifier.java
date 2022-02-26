@@ -348,7 +348,7 @@ public class Notifier {
 
         // Count-up time and status
         if (!isRunning) {
-            remoteViews.setTextViewText(R.id.pausedCountUp, TimeCounter.formatHhMmSs(elapsedTime));
+            remoteViews.setTextViewText(R.id.pausedCountUp, timer.formatHhMmSs());
         }
         remoteViews.setDisplayedChild(R.id.countUpViewFlipper, childId);
         remoteViews.setChronometer(
@@ -357,8 +357,7 @@ public class Notifier {
 
         // Count-down time and status
         if (state.isEnableReminders()) {
-            long period = state.getMillisecondsPerReminder();
-            long countdownToNextAlarm = Math.max(period - elapsedTime % period + 999, 0);
+            long countdownToNextAlarm = state.getMillisecondsToNextAlarm();
             long countdownBase = rt + countdownToNextAlarm;
 
             if (!isRunning) {

@@ -1,15 +1,17 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Nexus 1 & Nexus S (320x533 dp); Galaxy Nexus (360x640 dp); Nexus 4 (384x640 dp); Nexus 5 (432x768 dp); Nexus 6 (411x731 dp). -->
-    <dimen name="activity_horizontal_margin">14dp</dimen>
+    <!-- Nexus 1 & Nexus S (320x533 dp); Galaxy Nexus (360x640 dp); Nexus 4 (384x640 dp); Nexus 5 (432x768 dp); Nexus 6 (411x731 dp);
+         Nexus S 320x509. -->
+    <dimen name="activity_horizontal_margin">12dp</dimen>
     <dimen name="activity_vertical_margin">2dp</dimen>
 
-    <dimen name="button_padding">12dp</dimen>
+    <dimen name="button_padding">10dp</dimen>
     <dimen name="button_margin">3dp</dimen>
     <dimen name="small_button_padding">8dp</dimen>
     <dimen name="widget_horizontal_padding">3dp</dimen>
     <dimen name="widget_vertical_padding">0dp</dimen>
     <dimen name="max_checkbox_width">300dp</dimen>
     <dimen name="notification_spacer">5sp</dimen>
+    <dimen name="countdown_padding">5dp</dimen>
 
     <!-- Used to default this to 8dp here and override it to 0dp in values-v14/dimens.xml . -->
     <dimen name="widget_margin">0dp</dimen>
@@ -28,6 +30,7 @@
     <dimen name="display_text_size" tools:ignore="SpUsage">66dp</dimen>
     <dimen name="widget_text_size" tools:ignore="SpUsage">48dp</dimen>
     <dimen name="controls_text_size">18sp</dimen>
+    <dimen name="countdown_text_size">32sp</dimen>
 
     <dimen name="activityMinWidth">320dp</dimen>
     <!-- Workaround: Android API 29 can ANR if the user splits the screen, shrinks the window to
