@@ -1,7 +1,8 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Nexus 1 & Nexus S (320x533 dp); Galaxy Nexus (360x640 dp); Nexus 4 (384x640 dp); Nexus 5 (432x768 dp); Nexus 6 (411x731 dp);
+    <!-- Nexus 1 & Nexus S (320x533 dp) minus top bar is 320x508 in portrait, 533x294 in landscape;
+         Galaxy Nexus (360x640 dp); Nexus 4 (384x640 dp); Nexus 5 (432x768 dp); Nexus 6 (411x731 dp);
          Nexus S 320x509. -->
-    <dimen name="activity_horizontal_margin">12dp</dimen>
+    <dimen name="activity_horizontal_margin">10dp</dimen>
     <dimen name="activity_vertical_margin">2dp</dimen>
 
     <dimen name="button_padding">10dp</dimen>
@@ -13,9 +14,7 @@
     <dimen name="notification_spacer">5sp</dimen>
     <dimen name="countdown_padding">5dp</dimen>
 
-    <!-- Used to default this to 8dp here and override it to 0dp in values-v14/dimens.xml . -->
-    <dimen name="widget_margin">0dp</dimen>
-    <dimen name="controls_top_margin">12dp</dimen>
+    <dimen name="widget_margin">8dp</dimen>
 
     <!-- Display TextView layout height (overridden for specific screen configs). -->
     <dimen name="display_text_view_height">70dp</dimen>
