@@ -41,8 +41,8 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
     private static final String TAG = "AppWidgetProvider";
 
     // --- R.id.viewFlipper child indexes.
-    private static final int RUNNING_CHRONOMETER_CHILD = 0;
-    private static final int PAUSED_CHRONOMETER_CHILD  = 1;
+    private static final int PAUSED_CHRONOMETER_CHILD  = 0;
+    private static final int RUNNING_CHRONOMETER_CHILD = 1;
     private static final int RESET_CHRONOMETER_CHILD   = 2;
 
     static final String ACTION_RUN_PAUSE  = "com.onefishtwo.bbqtimer.ACTION_RUN_PAUSE";

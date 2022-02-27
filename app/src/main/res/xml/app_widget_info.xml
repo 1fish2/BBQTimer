@@ -22,7 +22,7 @@
     android:maxResizeWidth="620dp"
     android:updatePeriodMillis="0"
     android:initialLayout="@layout/app_widget"
-    android:previewLayout="@layout/app_widget_preview"
+    android:previewLayout="@layout/app_widget"
     android:resizeMode="horizontal"
     android:previewImage="@drawable/widget_preview"
     android:widgetCategory="home_screen">

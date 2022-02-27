@@ -24,6 +24,7 @@
         android:src="@drawable/ic_action_play"
         tools:ignore="UnusedAttribute" />
 
+    <!-- Note: The code needs child indexes that match the order of children. -->
     <ViewFlipper
         android:id="@+id/viewFlipper"
         android:layout_width="0dp"
@@ -35,6 +36,20 @@
         android:focusable="true"
         android:measureAllChildren="false">
 
+        <TextView
+            android:id="@+id/pausedChronometerText"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:gravity="top|right"
+            android:layout_gravity="bottom|left"
+            android:maxLines="1"
+            android:text="@string/widget_preview_time"
+            android:textColor="@color/paused_timer_colors"
+            android:textSize="@dimen/widget_text_size"
+            android:typeface="sans"
+            tools:ignore="SpUsage" />
+
         <Chronometer
             android:id="@+id/chronometer"
             android:layout_width="fill_parent"
@@ -44,19 +59,6 @@
             android:layout_gravity="bottom|left"
             android:maxLines="1"
             android:textColor="@color/running_timer_colors"
-            android:textSize="@dimen/widget_text_size"
-            android:typeface="sans"
-            tools:ignore="SpUsage" />
-
-        <TextView
-            android:id="@+id/pausedChronometerText"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:gravity="top|right"
-            android:layout_gravity="bottom|left"
-            android:maxLines="1"
-            android:textColor="@color/paused_timer_colors"
             android:textSize="@dimen/widget_text_size"
             android:typeface="sans"
             tools:ignore="SpUsage" />
