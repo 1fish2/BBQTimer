@@ -31,7 +31,7 @@
 
     <TextView
         android:id="@+id/countdownDisplay"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/button_padding"
         android:background="@color/orange_red_text"
@@ -49,7 +49,8 @@
         app:layout_constraintEnd_toStartOf="@+id/buttonBar"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/buttonBar"
-        app:layout_constraintWidth_default="wrap"
+        app:layout_constrainedWidth="true"
+        app:layout_constrainedHeight="true"
         app:layout_constraintHorizontal_bias="1" />
 
     <LinearLayout
@@ -105,7 +106,7 @@
 
     <CheckBox
         android:id="@+id/enableReminders"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginRight="@dimen/widget_margin"
         android:ellipsize="end"
@@ -114,7 +115,7 @@
         android:paddingBottom="@dimen/small_button_padding"
         android:text="@string/reminder_switch"
         android:textSize="@dimen/controls_text_size"
-        app:layout_constraintWidth_default="wrap"
+        app:layout_constrainedWidth="true"
         app:layout_constraintWidth_max="@dimen/max_checkbox_width"
         app:layout_constraintHorizontal_bias="1"
         app:layout_constraintBottom_toBottomOf="@+id/minutesPicker"
@@ -125,10 +126,10 @@
     <NumberPicker
         android:id="@+id/minutesPicker"
         android:layout_width="wrap_content"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/widget_margin"
         android:focusable="true"
-        app:layout_constraintHeight_default="wrap"
+        app:layout_constrainedHeight="true"
         app:layout_constraintVertical_bias="0"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
