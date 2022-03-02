@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="fill_parent"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/widget_background"
     android:baselineAligned="false"
@@ -17,33 +17,83 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
+        android:layout_weight="0"
         android:backgroundTint="@color/widget_button_background"
         android:contentDescription="@string/start_pause"
         android:paddingLeft="@dimen/small_button_padding"
         android:paddingRight="@dimen/small_button_padding"
+        android:layout_margin="@dimen/widget_button_margin"
         android:src="@drawable/ic_action_play"
         tools:ignore="UnusedAttribute" />
 
     <!-- Note: The code needs child indexes that match the order of children. -->
     <ViewFlipper
-        android:id="@+id/viewFlipper"
-        android:layout_width="0dp"
+        android:id="@+id/countdownFlipper"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="top"
         android:layout_marginRight="@dimen/widget_horizontal_padding"
         android:layout_weight="1"
+        android:layout_gravity="center_vertical|right"
+        android:clickable="true"
+        android:focusable="true"
+        android:measureAllChildren="false">
+
+        <TextView
+            android:id="@+id/countdownPausedChronometerText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical|right"
+            android:text="@string/widget_preview_countdown"
+            android:maxLines="2"
+            android:ellipsize="none"
+            android:textColor="@color/widget_countdown_text"
+            android:textSize="@dimen/widget_countdown_text_size"
+            android:typeface="sans"
+            tools:ignore="SpUsage" />
+
+        <Chronometer
+            android:id="@+id/countdownChronometer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical|right"
+            android:maxLines="2"
+            android:ellipsize="none"
+            android:textColor="@color/widget_countdown_text"
+            android:textSize="@dimen/widget_countdown_text_size"
+            android:typeface="sans"
+            tools:ignore="SpUsage" />
+
+        <TextView
+            android:id="@+id/countdownResetChronometerText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical|right"
+            android:maxLines="2"
+            android:ellipsize="none"
+            android:textColor="@color/reset_timer_colors"
+            android:textSize="@dimen/widget_countdown_text_size"
+            android:typeface="sans"
+            tools:ignore="SpUsage" />
+    </ViewFlipper>
+
+    <ViewFlipper
+        android:id="@+id/viewFlipper"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="@dimen/widget_horizontal_padding"
+        android:layout_weight="1"
+        android:layout_gravity="center_vertical|right"
         android:clickable="true"
         android:focusable="true"
         android:measureAllChildren="false">
 
         <TextView
             android:id="@+id/pausedChronometerText"
-            android:layout_width="fill_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:gravity="top|right"
-            android:layout_gravity="bottom|left"
-            android:maxLines="1"
+            android:ellipsize="none"
+            android:layout_gravity="center_vertical|right"
+            android:maxLines="2"
             android:text="@string/widget_preview_time"
             android:textColor="@color/paused_timer_colors"
             android:textSize="@dimen/widget_text_size"
@@ -52,12 +102,11 @@
 
         <Chronometer
             android:id="@+id/chronometer"
-            android:layout_width="fill_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:gravity="top|right"
-            android:layout_gravity="bottom|left"
-            android:maxLines="1"
+            android:ellipsize="none"
+            android:layout_gravity="center_vertical|right"
+            android:maxLines="2"
             android:textColor="@color/running_timer_colors"
             android:textSize="@dimen/widget_text_size"
             android:typeface="sans"
@@ -65,12 +114,11 @@
 
         <TextView
             android:id="@+id/resetChronometerText"
-            android:layout_width="fill_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:gravity="top|right"
-            android:layout_gravity="bottom|left"
-            android:maxLines="1"
+            android:ellipsize="none"
+            android:layout_gravity="center_vertical|right"
+            android:maxLines="2"
             android:textColor="@color/reset_timer_colors"
             android:textSize="@dimen/widget_text_size"
             android:typeface="sans"

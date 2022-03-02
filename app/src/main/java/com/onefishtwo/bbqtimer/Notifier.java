@@ -25,7 +25,6 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.AudioAttributes;
@@ -48,7 +47,6 @@ import androidx.annotation.RawRes;
 import androidx.annotation.StringRes;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
-import androidx.core.app.TaskStackBuilder;
 import androidx.core.content.ContextCompat;
 import androidx.media.app.NotificationCompat.DecoratedMediaCustomViewStyle;
 import androidx.media.app.NotificationCompat.MediaStyle;
@@ -58,9 +56,6 @@ import androidx.media.app.NotificationCompat.MediaStyle;
  */
 public class Notifier {
     private static final int NOTIFICATION_ID = 7;
-
-    private static final int FLAG_IMMUTABLE =
-            Build.VERSION.SDK_INT >= 23 ? PendingIntent.FLAG_IMMUTABLE : 0;
 
     /**
      * Construct a custom notification for this API level and higher. The custom notification really
@@ -446,17 +441,7 @@ public class Notifier {
             numActions = 0;
 
             {
-                // Make an Intent to launch the Activity from the notification.
-                Intent activityIntent = new Intent(context, MainActivity.class)
-                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
-                // So navigating back from the Activity goes from the app to the Home screen.
-                TaskStackBuilder stackBuilder = TaskStackBuilder.create(context)
-                        .addParentStack(MainActivity.class)
-                        .addNextIntent(activityIntent);
-                PendingIntent activityPendingIntent =
-                        stackBuilder.getPendingIntent(0,
-                                PendingIntent.FLAG_UPDATE_CURRENT + FLAG_IMMUTABLE);
+                PendingIntent activityPendingIntent = MainActivity.makePendingIntent(context);
                 builder.setContentIntent(activityPendingIntent);
 
                 // Action button to reset the timer.

@@ -94,7 +94,7 @@ public class AlarmReceiver extends BroadcastReceiver {
                 PendingIntent.FLAG_UPDATE_CURRENT + FLAG_IMMUTABLE);
     }
 
-    /** Constructs a PendingIntent for setAlarmClock() to show/edit the timer. */
+    /** Constructs a PendingIntent for AlarmManager.AlarmClockInfo() to show/edit the timer. */
     private static PendingIntent makeActivityPendingIntent(Context context) {
         Intent activityIntent = new Intent(context, MainActivity.class)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -275,6 +275,7 @@ public class AlarmReceiver extends BroadcastReceiver {
                 Log.d(TAG, intent.toString()); // intent.getAction() == null
                 Notifier notifier = new Notifier(context).setAlarm(true);
                 notifier.openOrCancel(state);
+                TimerAppWidgetProvider.updateAllWidgets(context, state);
             }
 
             scheduleNextReminder(context, state);

@@ -20,12 +20,14 @@
 package com.onefishtwo.bbqtimer;
 
 import android.annotation.TargetApi;
+import android.app.PendingIntent;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.media.AudioManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -53,10 +55,12 @@ import androidx.annotation.ColorRes;
 import androidx.annotation.IntDef;
 import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.UiThread;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationManagerCompat;
+import androidx.core.app.TaskStackBuilder;
 import androidx.core.content.ContextCompat;
 import androidx.core.widget.TextViewCompat;
 
@@ -65,6 +69,9 @@ import androidx.core.widget.TextViewCompat;
  */
 public class MainActivity extends AppCompatActivity implements NumberPicker.OnValueChangeListener {
     private final String TAG = "Main";
+
+    static final int FLAG_IMMUTABLE =
+            Build.VERSION.SDK_INT >= 23 ? PendingIntent.FLAG_IMMUTABLE : 0;
 
     private static final MinutesChoices minutesChoices = new MinutesChoices();
 
@@ -90,6 +97,26 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
     /** Converts seconds/alarm to a minutesPicker choice string. */
     public static String secondsToMinuteChoiceString(int seconds) {
         return minutesChoices.secondsToMinuteChoiceString(seconds);
+    }
+
+    /**
+     * Make a PendingIntent to launch the Activity, e.g. from the notification.
+     *</p>
+     * Use TaskStackBuilder so navigating back from the Activity goes to the Home screen.
+     *
+     * @return a PendingIntent; "May return null only if PendingIntent.FLAG_NO_CREATE has been
+     *      supplied", which it hasn't.
+     */
+    @Nullable
+    static PendingIntent makePendingIntent(@NonNull Context context) {
+        Intent activityIntent = new Intent(context, MainActivity.class)
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(context)
+                .addParentStack(MainActivity.class)
+                .addNextIntent(activityIntent);
+        return stackBuilder.getPendingIntent(0,
+                PendingIntent.FLAG_UPDATE_CURRENT + FLAG_IMMUTABLE);
     }
 
     /**
@@ -430,7 +457,6 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
     public void onClickEnableRemindersToggle(View v) {
         state.setEnableReminders(enableRemindersToggle.isChecked());
         state.save(this);
-        AlarmReceiver.updateNotifications(this);
         updateUI();
 
         if (state.isEnableReminders()) {
@@ -445,8 +471,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
         if (picker == minutesPicker) {
             state.setSecondsPerReminder(MinutesChoices.pickerChoiceToSeconds(newVal));
             state.save(this);
-            AlarmReceiver.updateNotifications(this);
-            displayTime(); // update countdownDisplay
+            updateUI(); // update countdownDisplay, notifications, and widgets
         }
     }
 

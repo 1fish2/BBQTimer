@@ -25,7 +25,11 @@ import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
+import android.os.Bundle;
+import android.os.SystemClock;
 import android.util.Log;
+import android.view.View;
 import android.widget.RemoteViews;
 
 import com.onefishtwo.bbqtimer.state.ApplicationState;
@@ -68,10 +72,8 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
      * Chronometer ignores its format string thus ruling out some workarounds.
      * *SO* when the timer is paused, flip to a TextView.<p/>
      *
-     * This code switches between the Chronometer and two different TextViews to select the right
+     * This code switches between each Chronometer and two alternate TextViews to select the right
      * ColorStateList for user feedback since RemoteViews.setColor() is only in API 31+.<p/>
-     *
-     * TODO: Preload the button image Bitmaps?
      */
     private static void updateWidgets(@NonNull Context context,
             @NonNull AppWidgetManager appWidgetManager,
@@ -80,28 +82,64 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.app_widget);
         PendingIntent runPauseIntent  = makeActionIntent(context, ACTION_RUN_PAUSE);
         PendingIntent cycleIntent     = makeActionIntent(context, ACTION_CYCLE);
+        PendingIntent activityIntent  = MainActivity.makePendingIntent(context);
+        boolean visibleCountdown = false;
+
+        // Show a periodic reminder time if enabled and countdown Chronometers are supported.
+        // TODO: Hide it if the layout is narrow?
+        if (Build.VERSION.SDK_INT >= 24 && state.isEnableReminders()) {
+            visibleCountdown = true;
+            views.setViewVisibility(R.id.countdownFlipper, View.VISIBLE);
+            views.setChronometerCountDown(R.id.countdownChronometer, true);
+        } else {
+            views.setViewVisibility(R.id.countdownFlipper, View.GONE);
+        }
 
         if (timer.isRunning()) {
             views.setDisplayedChild(R.id.viewFlipper, RUNNING_CHRONOMETER_CHILD);
             views.setImageViewResource(R.id.remoteStartStopButton, R.drawable.ic_action_pause);
             views.setChronometer(R.id.chronometer, timer.getStartTime(), null, true);
+
+            if (visibleCountdown) {
+                long rt = SystemClock.elapsedRealtime();
+                long countdownToNextAlarm = state.getMillisecondsToNextAlarm();
+                long countdownBase = rt + countdownToNextAlarm;
+
+                views.setDisplayedChild(R.id.countdownFlipper, RUNNING_CHRONOMETER_CHILD);
+                views.setChronometer(R.id.countdownChronometer, countdownBase,
+                        null, true);
+            }
         } else {
             long elapsedTime = timer.getElapsedTime();
             int child = timer.isStopped() ? RESET_CHRONOMETER_CHILD : PAUSED_CHRONOMETER_CHILD;
-            @IdRes int textViewId = child == RESET_CHRONOMETER_CHILD ? R.id.resetChronometerText
+            @IdRes int textViewId = child == RESET_CHRONOMETER_CHILD
+                    ? R.id.resetChronometerText
                     : R.id.pausedChronometerText;
+            @IdRes int countdownTextViewId = child == RESET_CHRONOMETER_CHILD
+                    ? R.id.countdownResetChronometerText
+                    : R.id.countdownPausedChronometerText;
             @DrawableRes int ic_pause_or_play = child == RESET_CHRONOMETER_CHILD
                     ? R.drawable.ic_action_pause : R.drawable.ic_action_play;
 
             views.setDisplayedChild(R.id.viewFlipper, child);
-            views.setTextViewText(textViewId, TimeCounter.formatHhMmSs(elapsedTime));
+            views.setTextViewText(textViewId, timer.formatHhMmSs());
             views.setImageViewResource(R.id.remoteStartStopButton, ic_pause_or_play);
             // Stop the Chronometer in case it'd use battery power even when not displayed.
             views.setChronometer(R.id.chronometer, 0, null, false);
+
+            if (visibleCountdown) {
+                long countdownToNextAlarm = state.getMillisecondsToNextAlarm();
+
+                views.setDisplayedChild(R.id.countdownFlipper, child);
+                views.setTextViewText(countdownTextViewId,
+                        TimeCounter.formatHhMmSs(countdownToNextAlarm));
+                views.setChronometer(R.id.countdownChronometer, 0, null, false);
+            }
         }
 
         views.setOnClickPendingIntent(R.id.remoteStartStopButton, runPauseIntent);
         views.setOnClickPendingIntent(R.id.viewFlipper, cycleIntent);
+        views.setOnClickPendingIntent(R.id.countdownFlipper, activityIntent);
 
         appWidgetManager.updateAppWidget(appWidgetIds, views);
     }
@@ -109,7 +147,7 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
     /**
      * Updates the given app widgets' contents. Called when an app widget instance was added to a
      * widget host (e.g. home screen) (including after onRestored(), when widgets get restored from
-     * backup) and periodically at updatePeriodMillis.
+     * backup) and periodically at updatePeriodMillis (if it's not 0).
      */
     @Override
     public void onUpdate(@NonNull Context context, @NonNull AppWidgetManager appWidgetManager,
@@ -132,6 +170,19 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
                 updateWidgets(context, appWidgetManager, appWidgetIds, state);
             }
         }
+    }
+
+    @Override
+    public void onAppWidgetOptionsChanged(Context context, AppWidgetManager appWidgetManager,
+            int appWidgetId, Bundle newOptions) {
+        // TODO: Use the widget width from newOptions to decide whether to show/hide the countdown?
+        //  NOTE: This hook gets called when the user resizes the widget but NOT when the screen
+        //  rotates landscape/portrait so we have to get the layout manager to handle that.
+
+        newOptions.keySet(); // reify the Bundle so .toString() will elaborate
+        Log.i(TAG, "WidgetOptionsChanged: " + newOptions);
+
+        // onUpdate(context, appWidgetManager, new int[]{appWidgetId});
     }
 
     /** Constructs a PendingIntent for the widget to send an action event to this Receiver. */

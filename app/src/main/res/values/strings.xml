@@ -121,6 +121,9 @@
     <!-- The chronometer time value to show in the widget preview. -->
     <string name="widget_preview_time">07:00</string>
 
+    <!-- The countdown chronometer time value to show in the widget preview. -->
+    <string name="widget_preview_countdown">00:30</string>
+
     <!-- Toast message when Alarm access got turned off. -->
     <string name="need_alarm_access">BBQ Timer needs “Alarms &amp; reminders” Special app access to set alarms</string>
 

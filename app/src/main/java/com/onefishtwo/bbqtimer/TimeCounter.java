@@ -307,7 +307,7 @@ public class TimeCounter {
         isPaused  = true;
     }
 
-    /** Formats this imeCounter's millisecond duration in localized [hh:]mm:ss format. */
+    /** Formats this TimeCounter's millisecond duration in localized [hh:]mm:ss format. */
     public String formatHhMmSs() {
         return formatHhMmSs(getElapsedTime());
     }
