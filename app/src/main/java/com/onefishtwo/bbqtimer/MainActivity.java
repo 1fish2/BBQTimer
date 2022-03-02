@@ -496,13 +496,17 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
                 : timer.isPaused() ? pausedTimerColors()
                 : R.color.reset_timer_colors;
         ColorStateList textColors = ContextCompat.getColorStateList(this, textColorsId);
+        @ColorRes int countdownColorId = timer.isStopped()
+                ? R.color.reset_timer_colors
+                : R.color.widget_countdown_text;
         long countdownToNextAlarm = state.getMillisecondsToNextAlarm();
 
         displayView.setText(formatted);
         displayView.setTextColor(textColors);
 
         countdownDisplay.setText(TimeCounter.formatHhMmSs(countdownToNextAlarm));
-        countdownDisplay.setBackgroundColor(getResources().getColor(textColorsId));
+        countdownDisplay.setTextColor(getResources().getColor(countdownColorId));
+        // countdownDisplay.setBackgroundColor(getResources().getColor(textColorsId));
     }
 
     /** Updates the Activity's views for the current state. */
