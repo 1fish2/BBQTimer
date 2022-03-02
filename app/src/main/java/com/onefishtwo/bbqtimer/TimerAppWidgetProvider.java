@@ -138,7 +138,7 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
 
         views.setOnClickPendingIntent(R.id.remoteStartStopButton, runPauseIntent);
         views.setOnClickPendingIntent(R.id.viewFlipper, cycleIntent);
-        views.setOnClickPendingIntent(R.id.countdownFlipper, activityIntent);
+        views.setOnClickPendingIntent(R.id.background, activityIntent);
 
         appWidgetManager.updateAppWidget(appWidgetIds, views);
     }
