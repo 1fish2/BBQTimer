@@ -28,11 +28,15 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.util.ArrayMap;
 import android.util.Log;
+import android.util.SizeF;
 import android.view.View;
 import android.widget.RemoteViews;
 
 import com.onefishtwo.bbqtimer.state.ApplicationState;
+
+import java.util.Map;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.IdRes;
@@ -140,6 +144,46 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
         views.setOnClickPendingIntent(R.id.viewFlipper, cycleIntent);
         views.setOnClickPendingIntent(R.id.background, activityIntent);
 
+        // Use a view mapping to make the widget layout responsive to ever smaller sizes by first
+        // hiding the countdown view, then hiding the count-up view.
+        //
+        // The viewMapping and layout managers react to actual sizes so this works well on
+        // Android 12+. onAppWidgetOptionsChanged() only gets the size range [minWidth x maxHeight]
+        // (for portrait) to [maxWidth x minHeight] (for landscape) and rarely gets notified when
+        // the screen rotates, so that can contribute to a fallback on older Android versions.
+        //
+        // TODO: Ideas for earlier API versions:
+        //  * Set each widget to the small/medium/large view that fits its minWidth (conservative).
+        //  * Use landscape/portrait resources to make the text smaller.
+        //  * Use a portrait resource to arrange the two view flippers vertically.
+        if (Build.VERSION.SDK_INT >= 31) {
+            RemoteViews largeView  = views;
+            RemoteViews mediumView = new RemoteViews(views);
+
+            mediumView.setViewVisibility(R.id.countdownFlipper, View.GONE);
+            mediumView.setChronometer(R.id.countdownChronometer, 0, null, false);
+
+            // Workaround: When "hiding" the count-up view, don't make it GONE/INVISIBLE since that
+            // can get stuck hidden (at least on Android 31 on Nexus 7, until rotating the screen).
+            // (Is this because the widget or view shortens vertically? Attempts to maintain the
+            // height didn't fix it.) So instead, reduce the count-up view to an empty text field
+            // and make its click action act like the background's. [Setting its width to 0 or 0.1
+            // defeats the stuck-hidden workaround. setFocusable(false) does nothing.
+            // setClickable(false) makes smallView fail to load.]
+            RemoteViews smallView = new RemoteViews(mediumView);
+            smallView.setTextViewText(R.id.pausedChronometerText, "");
+            smallView.setDisplayedChild(R.id.viewFlipper, PAUSED_CHRONOMETER_CHILD);
+            smallView.setOnClickPendingIntent(R.id.viewFlipper, activityIntent);
+            smallView.setChronometer(R.id.chronometer, 0, null, false);
+
+            Map<SizeF, RemoteViews> viewMapping = new ArrayMap<>();
+            viewMapping.put(new SizeF( 40, 40), smallView);
+            viewMapping.put(new SizeF(160, 40), mediumView);
+            viewMapping.put(new SizeF(240, 40), largeView);
+
+            views = new RemoteViews(viewMapping);
+        }
+
         appWidgetManager.updateAppWidget(appWidgetIds, views);
     }
 
@@ -171,14 +215,21 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
         }
     }
 
+    /**
+     * Responds to a single widget instance getting resized. We can use this to help make the layout
+     * responsive.
+     *<p/>
+     * NOTE: newOptions provides size range, reportedly minWidth x maxHeight for portrait
+     * orientation, maxWidth x minHeight for landscape orientation.
+     *<p/>
+     * NOTE: This does not usually get called when the screen rotates landscape/portrait.
+     */
     @Override
     public void onAppWidgetOptionsChanged(Context context, AppWidgetManager appWidgetManager,
             int appWidgetId, Bundle newOptions) {
-        // TODO: Use the widget width from newOptions to decide whether to show/hide the countdown?
-        //  NOTE: This hook gets called when the user resizes the widget but NOT when the screen
-        //  rotates landscape/portrait so we have to get the layout manager to handle that.
+        super.onAppWidgetOptionsChanged(context, appWidgetManager, appWidgetId, newOptions);
 
-        newOptions.keySet(); // reify the Bundle so .toString() will elaborate
+        newOptions.keySet(); // reify the Bundle's contents so .toString() will format them
         Log.i(TAG, "WidgetOptionsChanged: " + newOptions);
 
         // onUpdate(context, appWidgetManager, new int[]{appWidgetId});

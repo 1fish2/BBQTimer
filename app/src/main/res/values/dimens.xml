@@ -14,8 +14,8 @@
     <dimen name="notification_spacer">5sp</dimen>
     <dimen name="countdown_padding">5dp</dimen>
     <dimen name="widget_button_margin">1dp</dimen>
-
     <dimen name="widget_margin">8dp</dimen>
+    <dimen name="widget_tap_margin">20dp</dimen>
 
     <!-- Display TextView layout height (overridden for specific screen configs). -->
     <dimen name="display_text_view_height">70dp</dimen>
