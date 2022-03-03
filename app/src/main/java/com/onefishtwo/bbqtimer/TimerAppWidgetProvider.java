@@ -142,7 +142,7 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
 
         views.setOnClickPendingIntent(R.id.remoteStartStopButton, runPauseIntent);
         views.setOnClickPendingIntent(R.id.viewFlipper, cycleIntent);
-        views.setOnClickPendingIntent(R.id.background, activityIntent);
+        views.setOnClickPendingIntent(android.R.id.background, activityIntent);
 
         // Use a view mapping to make the widget layout responsive to ever smaller sizes by first
         // hiding the countdown view, then hiding the count-up view.
