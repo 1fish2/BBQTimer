@@ -69,19 +69,32 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
     }
 
     /**
-     * Updates the given widgets' contents to the Timer state and time.<p/>
-     *
-     * Workaround: A paused Chronometer doesn't show a stable value. Multiple widgets might show
-     * different values, switching light/dark theme might change it, etc. Furthermore, a paused
-     * Chronometer ignores its format string thus ruling out some workarounds.
-     * *SO* when the timer is paused, flip to a TextView.<p/>
-     *
-     * This code switches between each Chronometer and two alternate TextViews to select the right
-     * ColorStateList for user feedback since RemoteViews.setColor() is only in API 31+.<p/>
+     * Updates all the given widget instances' layout and contents.
+     * <p/>
+     * TODO: API 31+ could reuse the same RemoteViews instances for all widget instances.
+     * TODO: onAppWidgetOptionsChanged() could pass in newOptions.
      */
     private static void updateWidgets(@NonNull Context context,
             @NonNull AppWidgetManager appWidgetManager,
             int[] appWidgetIds, @NonNull ApplicationState state) {
+        for (int id: appWidgetIds) {
+            updateWidget(context, appWidgetManager, id, state);
+        }
+    }
+
+    /**
+     * Updates a widget instance's layout to its size range and contents to the Timer state & time.
+     * <p/>
+     * Workaround: A paused Chronometer doesn't show a stable value. Multiple widgets might show
+     * different values, switching light/dark theme might change it, etc. So construct its time
+     * text. Furthermore, a paused Chronometer ignores its format string, so flip to a TextView.
+     * <p/>
+     * This code switches between each Chronometer and two alternate TextViews to select the right
+     * ColorStateList for user feedback since RemoteViews.setColor() is only in API 31+.<p/>
+     */
+    private static void updateWidget(@NonNull Context context,
+            @NonNull AppWidgetManager appWidgetManager,
+            int appWidgetId, @NonNull ApplicationState state) {
         TimeCounter timer = state.getTimeCounter();
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.app_widget);
         PendingIntent runPauseIntent  = makeActionIntent(context, ACTION_RUN_PAUSE);
@@ -90,7 +103,6 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
         boolean visibleCountdown = false;
 
         // Show a periodic reminder time if enabled and countdown Chronometers are supported.
-        // TODO: Hide it if the layout is narrow?
         if (Build.VERSION.SDK_INT >= 24 && state.isEnableReminders()) {
             visibleCountdown = true;
             views.setViewVisibility(R.id.countdownFlipper, View.VISIBLE);
@@ -144,47 +156,70 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
         views.setOnClickPendingIntent(R.id.viewFlipper, cycleIntent);
         views.setOnClickPendingIntent(android.R.id.background, activityIntent);
 
-        // Use a view mapping to make the widget layout responsive to ever smaller sizes by first
-        // hiding the countdown view, then hiding the count-up view.
+        // Make the widget layout responsive to ever-smaller sizes by first hiding the countdown
+        // view, then hiding the count-up view.
         //
-        // The viewMapping and layout managers react to actual sizes so this works well on
-        // Android 12+. onAppWidgetOptionsChanged() only gets the size range [minWidth x maxHeight]
-        // (for portrait) to [maxWidth x minHeight] (for landscape) and rarely gets notified when
-        // the screen rotates, so that can contribute to a fallback on older Android versions.
+        // Android 12+ supports view mappings to switch between layouts without waking the app.
+        // View mappings and layout managers react to actual sizes.
         //
-        // TODO: Ideas for earlier API versions:
-        //  * Set each widget to the small/medium/large view that fits its minWidth (conservative).
-        //  * Use landscape/portrait resources to make the text smaller.
-        //  * Use a portrait resource to arrange the two view flippers vertically.
+        // For older Android versions, use the onAppWidgetOptionsChanged() hook to find out when the
+        // user resizes a widget, but it only receives the size range [minWidth x maxHeight] (for
+        // portrait) to [maxWidth x minHeight] (for landscape), and it rarely gets called when the
+        // screen rotates, so this can just set a layout for the size range. Any finer
+        // responsiveness must be implemented by the layout managers and the resources.
+        //
+        // TODO: Improve the results on earlier Android versions:
+        //  * Use a portrait-specific resource to arrange the two view flippers vertically.
+        //  * Smaller portrait-specific text dimens, then adjust the layout thresholds.
         if (Build.VERSION.SDK_INT >= 31) {
-            RemoteViews largeView  = views;
-            RemoteViews mediumView = new RemoteViews(views);
+            RemoteViews mediumViews = new RemoteViews(views);
+            trimToMediumLayout(mediumViews);
 
-            mediumView.setViewVisibility(R.id.countdownFlipper, View.GONE);
-            mediumView.setChronometer(R.id.countdownChronometer, 0, null, false);
-
-            // Workaround: When "hiding" the count-up view, don't make it GONE/INVISIBLE since that
-            // can get stuck hidden (at least on Android 31 on Nexus 7, until rotating the screen).
-            // (Is this because the widget or view shortens vertically? Attempts to maintain the
-            // height didn't fix it.) So instead, reduce the count-up view to an empty text field
-            // and make its click action act like the background's. [Setting its width to 0 or 0.1
-            // defeats the stuck-hidden workaround. setFocusable(false) does nothing.
-            // setClickable(false) makes smallView fail to load.]
-            RemoteViews smallView = new RemoteViews(mediumView);
-            smallView.setTextViewText(R.id.pausedChronometerText, "");
-            smallView.setDisplayedChild(R.id.viewFlipper, PAUSED_CHRONOMETER_CHILD);
-            smallView.setOnClickPendingIntent(R.id.viewFlipper, activityIntent);
-            smallView.setChronometer(R.id.chronometer, 0, null, false);
+            RemoteViews smallViews = new RemoteViews(mediumViews);
+            trimMediumToSmallLayout(smallViews, activityIntent);
 
             Map<SizeF, RemoteViews> viewMapping = new ArrayMap<>();
-            viewMapping.put(new SizeF( 40, 40), smallView);
-            viewMapping.put(new SizeF(160, 40), mediumView);
-            viewMapping.put(new SizeF(240, 40), largeView);
+            viewMapping.put(new SizeF( 40, 40), smallViews);
+            viewMapping.put(new SizeF(160, 40), mediumViews);
+            viewMapping.put(new SizeF(240, 40), views);
 
             views = new RemoteViews(viewMapping);
+        } else {
+            Bundle widgetOptions = appWidgetManager.getAppWidgetOptions(appWidgetId);
+            int minWidth = widgetOptions.getInt(
+                    AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH, 160);
+
+            if (minWidth < 240) {
+                trimToMediumLayout(views);
+            }
+            if (minWidth < 160) {
+                trimMediumToSmallLayout(views, activityIntent);
+            }
         }
 
-        appWidgetManager.updateAppWidget(appWidgetIds, views);
+        appWidgetManager.updateAppWidget(appWidgetId, views);
+    }
+
+    /** Trim the original (large) layout down to the medium layout. */
+    // Unfortunately, the RemoteViews copy constructor is available only in API 28+.
+    private static void trimToMediumLayout(RemoteViews rv) {
+        rv.setViewVisibility(R.id.countdownFlipper, View.GONE);
+        rv.setChronometer(R.id.countdownChronometer, 0, null, false);
+    }
+
+    /** Trim the medium layout down to the small layout. */
+    // Workaround: When "hiding" the count-up view, don't make it GONE/INVISIBLE since it can get
+    // stuck hidden (at least on Android 31 on Nexus 7, until rotating the screen). (Is this because
+    // the widget or view shortens vertically? Attempts to hold the height didn't fix it.) So
+    // instead, shrink the count-up view to an empty text field and make its click action the same
+    // as the background's action. [Setting the text view's width to 0 or 0.1 defeats the
+    // stuck-hidden workaround. setFocusable(false) does nothing. setClickable(false) makes the
+    // RemoteViews fail to load.]
+    private static void trimMediumToSmallLayout(RemoteViews rv, PendingIntent activityIntent) {
+        rv.setTextViewText(R.id.pausedChronometerText, "");
+        rv.setDisplayedChild(R.id.viewFlipper, PAUSED_CHRONOMETER_CHILD);
+        rv.setOnClickPendingIntent(R.id.viewFlipper, activityIntent);
+        rv.setChronometer(R.id.chronometer, 0, null, false);
     }
 
     /**
@@ -216,23 +251,29 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
     }
 
     /**
-     * Responds to a single widget instance getting resized. We can use this to help make the layout
-     * responsive.
+     * Responds to a single widget instance resized by the user. Use this to adjust the layout,
+     * except on API >= 31 where the viewMapping handles it without waking the app.
      *<p/>
-     * NOTE: newOptions provides size range, reportedly minWidth x maxHeight for portrait
-     * orientation, maxWidth x minHeight for landscape orientation.
+     * NOTE: newOptions provides a size range as minWidth x maxHeight for portrait orientation;
+     * maxWidth x minHeight for landscape orientation.
      *<p/>
      * NOTE: This does not usually get called when the screen rotates landscape/portrait.
+     *<p/>
+     * TODO: Passing newOptions to updateWidget() might save a little time.
      */
     @Override
     public void onAppWidgetOptionsChanged(Context context, AppWidgetManager appWidgetManager,
             int appWidgetId, Bundle newOptions) {
+        ApplicationState state = ApplicationState.sharedInstance(context);
+
         super.onAppWidgetOptionsChanged(context, appWidgetManager, appWidgetId, newOptions);
 
         newOptions.keySet(); // reify the Bundle's contents so .toString() will format them
         Log.i(TAG, "WidgetOptionsChanged: " + newOptions);
 
-        // onUpdate(context, appWidgetManager, new int[]{appWidgetId});
+        if (Build.VERSION.SDK_INT < 31) {
+            updateWidget(context, appWidgetManager, appWidgetId, state);
+        }
     }
 
     /** Constructs a PendingIntent for the widget to send an action event to this Receiver. */

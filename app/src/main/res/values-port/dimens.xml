@@ -3,6 +3,6 @@
     <dimen name="display_text_view_adjusted_height">@dimen/portrait_display_text_view_height</dimen>
 
     <dimen name="widget_vertical_padding">1dp</dimen>
-    <dimen name="widget_text_size" tools:ignore="SpUsage">56dp</dimen>
-    <dimen name="widget_countdown_text_size" tools:ignore="SpUsage">26dp</dimen>
+    <dimen name="widget_text_size" tools:ignore="SpUsage">48dp</dimen>
+    <dimen name="widget_countdown_text_size" tools:ignore="SpUsage">22dp</dimen>
 </resources>
