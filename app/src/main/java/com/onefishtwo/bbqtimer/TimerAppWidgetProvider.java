@@ -171,6 +171,12 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
         // TODO: Improve the results on earlier Android versions:
         //  * Use a portrait-specific resource to arrange the two view flippers vertically.
         //  * Smaller portrait-specific text dimens, then adjust the layout thresholds.
+        //
+        // NOTES:
+        //  * autoSizeText (API 26+) doesn't work well. The text shrinks very small then won't grow
+        //    back when the space grows.
+        //  * word wrapping is ugly.
+        //  * singleLine is uglier, forcing ellipses that hide more digits.
         if (Build.VERSION.SDK_INT >= 31) {
             RemoteViews mediumViews = new RemoteViews(views);
             trimToMediumLayout(mediumViews);
