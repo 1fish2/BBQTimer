@@ -165,16 +165,19 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
         // view, then hiding the count-up view.
         //
         // Android 12+ supports view mappings to switch between layouts without waking the app.
-        // View mappings and layout managers react to actual sizes.
+        // View mappings and layout managers react to ACTUAL SIZES. The layout size must be less
+        // than the view size. The layout sizes in this mapping need not match the Android < 12
+        // minWidth thresholds.
         //
         // For Android < 12, use the onAppWidgetOptionsChanged() hook for when the user resizes a
-        // widget, but it only receives the size range [minWidth x maxHeight] (for portrait) to
+        // widget, but it only receives the SIZE RANGE [minWidth x maxHeight] (for portrait) to
         // [maxWidth x minHeight] (for landscape), and it rarely gets called when the screen
         // rotates, so it can only set a layout for the size range. Any finer responsiveness must be
         // implemented by the layout managers and density/size/orientation specific resources.
         //
         // TODO: Improve the results on earlier Android versions:
-        //  * Shrink the portrait-specific text dimens then adjust the layout thresholds?
+        //  * Fit "00:00" into a 1x2 cell by shrinking the portrait text dimens and reducing the
+        //    medium size threshold?
         //  * Use a portrait-specific resource to arrange the two view flippers vertically?
         //
         // NOTES:
@@ -191,19 +194,19 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
 
             Map<SizeF, RemoteViews> viewMapping = new ArrayMap<>();
             viewMapping.put(new SizeF( 40, 40), smallViews);
-            viewMapping.put(new SizeF(160, 40), mediumViews);
-            viewMapping.put(new SizeF(240, 40), views);
+            viewMapping.put(new SizeF(180, 40), mediumViews);
+            viewMapping.put(new SizeF(274, 40), views);
 
             views = new RemoteViews(viewMapping);
         } else {
             Bundle widgetOptions = appWidgetManager.getAppWidgetOptions(appWidgetId);
             int minWidth = widgetOptions.getInt(
-                    AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH, 160);
+                    AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH, 180);
 
-            if (minWidth < 240) {
+            if (minWidth < 274) { // < 4 cells; this threshold must be in 273 .. 275
                 trimToMediumLayout(views);
             }
-            if (minWidth < 160) {
+            if (minWidth < 180) { // < 3 cells; this threshold must be in 177 .. 202
                 trimMediumToSmallLayout(views);
             }
         }
