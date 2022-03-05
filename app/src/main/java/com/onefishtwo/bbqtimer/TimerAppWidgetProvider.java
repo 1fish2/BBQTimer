@@ -90,7 +90,11 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
      * text. Furthermore, a paused Chronometer ignores its format string, so flip to a TextView.
      * <p/>
      * This code switches between each Chronometer and two alternate TextViews to select the right
-     * ColorStateList for user feedback since RemoteViews.setColor() is only in API 31+.<p/>
+     * ColorStateList for user feedback since RemoteViews.setColor() is only in API 31+.
+     * <p/>
+     * A ViewFlipper is larger than its displayed child due to margins, the LinearLayout's size
+     * adjustments, and maybe more factors. So make its child view and the Pause/Play button react
+     * to taps and let the rest of the widget be the "background" where tapping opens the Activity.
      */
     private static void updateWidget(@NonNull Context context,
             @NonNull AppWidgetManager appWidgetManager,
@@ -115,6 +119,7 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
             views.setDisplayedChild(R.id.viewFlipper, RUNNING_CHRONOMETER_CHILD);
             views.setImageViewResource(R.id.remoteStartStopButton, R.drawable.ic_action_pause);
             views.setChronometer(R.id.chronometer, timer.getStartTime(), null, true);
+            views.setOnClickPendingIntent(R.id.chronometer, cycleIntent);
 
             if (visibleCountdown) {
                 long rt = SystemClock.elapsedRealtime();
@@ -141,6 +146,7 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
             views.setImageViewResource(R.id.remoteStartStopButton, ic_pause_or_play);
             // Stop the Chronometer in case it'd use battery power even when not displayed.
             views.setChronometer(R.id.chronometer, 0, null, false);
+            views.setOnClickPendingIntent(textViewId, cycleIntent);
 
             if (visibleCountdown) {
                 long countdownToNextAlarm = state.getMillisecondsToNextAlarm();
@@ -153,7 +159,6 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
         }
 
         views.setOnClickPendingIntent(R.id.remoteStartStopButton, runPauseIntent);
-        views.setOnClickPendingIntent(R.id.viewFlipper, cycleIntent);
         views.setOnClickPendingIntent(android.R.id.background, activityIntent);
 
         // Make the widget layout responsive to ever-smaller sizes by first hiding the countdown
@@ -162,27 +167,27 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
         // Android 12+ supports view mappings to switch between layouts without waking the app.
         // View mappings and layout managers react to actual sizes.
         //
-        // For older Android versions, use the onAppWidgetOptionsChanged() hook to find out when the
-        // user resizes a widget, but it only receives the size range [minWidth x maxHeight] (for
-        // portrait) to [maxWidth x minHeight] (for landscape), and it rarely gets called when the
-        // screen rotates, so this can just set a layout for the size range. Any finer
-        // responsiveness must be implemented by the layout managers and the resources.
+        // For Android < 12, use the onAppWidgetOptionsChanged() hook for when the user resizes a
+        // widget, but it only receives the size range [minWidth x maxHeight] (for portrait) to
+        // [maxWidth x minHeight] (for landscape), and it rarely gets called when the screen
+        // rotates, so it can only set a layout for the size range. Any finer responsiveness must be
+        // implemented by the layout managers and density/size/orientation specific resources.
         //
         // TODO: Improve the results on earlier Android versions:
-        //  * Use a portrait-specific resource to arrange the two view flippers vertically.
-        //  * Smaller portrait-specific text dimens, then adjust the layout thresholds.
+        //  * Shrink the portrait-specific text dimens then adjust the layout thresholds?
+        //  * Use a portrait-specific resource to arrange the two view flippers vertically?
         //
         // NOTES:
         //  * autoSizeText (API 26+) doesn't work well. The text shrinks very small then won't grow
         //    back when the space grows.
-        //  * word wrapping is ugly.
-        //  * singleLine is uglier, forcing ellipses that hide more digits.
+        //  * Word wrapping is ugly.
+        //  * SingleLine is uglier, forcing ellipses that hide more digits.
         if (Build.VERSION.SDK_INT >= 31) {
             RemoteViews mediumViews = new RemoteViews(views);
             trimToMediumLayout(mediumViews);
 
             RemoteViews smallViews = new RemoteViews(mediumViews);
-            trimMediumToSmallLayout(smallViews, activityIntent);
+            trimMediumToSmallLayout(smallViews);
 
             Map<SizeF, RemoteViews> viewMapping = new ArrayMap<>();
             viewMapping.put(new SizeF( 40, 40), smallViews);
@@ -199,7 +204,7 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
                 trimToMediumLayout(views);
             }
             if (minWidth < 160) {
-                trimMediumToSmallLayout(views, activityIntent);
+                trimMediumToSmallLayout(views);
             }
         }
 
@@ -207,24 +212,21 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
     }
 
     /** Trim the original (large) layout down to the medium layout. */
-    // Unfortunately, the RemoteViews copy constructor is available only in API 28+.
+    // Unfortunately, the RemoteViews copy constructor requires API 28+.
     private static void trimToMediumLayout(RemoteViews rv) {
         rv.setViewVisibility(R.id.countdownFlipper, View.GONE);
         rv.setChronometer(R.id.countdownChronometer, 0, null, false);
     }
 
     /** Trim the medium layout down to the small layout. */
-    // Workaround: When "hiding" the count-up view, don't make it GONE/INVISIBLE since it can get
+    // Workaround: When "hiding" the count-up view, don't make it GONE/INVISIBLE since that can get
     // stuck hidden (at least on Android 31 on Nexus 7, until rotating the screen). (Is this because
-    // the widget or view shortens vertically? Attempts to hold the height didn't fix it.) So
-    // instead, shrink the count-up view to an empty text field and make its click action the same
-    // as the background's action. [Setting the text view's width to 0 or 0.1 defeats the
-    // stuck-hidden workaround. setFocusable(false) does nothing. setClickable(false) makes the
-    // RemoteViews fail to load.]
-    private static void trimMediumToSmallLayout(RemoteViews rv, PendingIntent activityIntent) {
+    // the widget or view shortens vertically? Attempts to hold the height didn't fix it.) So shrink
+    // the count-up view to an empty text field. [Setting the text view's width to 0 or 0.1 defeats
+    // the stuck-hidden workaround.]
+    private static void trimMediumToSmallLayout(RemoteViews rv) {
         rv.setTextViewText(R.id.pausedChronometerText, "");
         rv.setDisplayedChild(R.id.viewFlipper, PAUSED_CHRONOMETER_CHILD);
-        rv.setOnClickPendingIntent(R.id.viewFlipper, activityIntent);
         rv.setChronometer(R.id.chronometer, 0, null, false);
     }
 

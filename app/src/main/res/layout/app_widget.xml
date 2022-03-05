@@ -22,7 +22,6 @@
         android:layout_gravity="center_vertical"
         android:layout_marginLeft="@dimen/widget_button_margin"
         android:layout_marginTop="@dimen/widget_button_margin"
-        android:layout_marginRight="@dimen/widget_tap_margin"
         android:layout_marginBottom="@dimen/widget_button_margin"
         android:layout_weight="0"
         android:backgroundTint="@color/widget_button_background"
@@ -81,11 +80,10 @@
         android:id="@+id/viewFlipper"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/widget_tap_margin"
         android:layout_marginRight="@dimen/widget_horizontal_padding"
         android:layout_weight="1"
         android:layout_gravity="center_vertical|right"
-        android:clickable="true"
-        android:focusable="true"
         android:measureAllChildren="false">
 
         <TextView
