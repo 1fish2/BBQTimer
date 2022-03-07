@@ -162,7 +162,7 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
         views.setOnClickPendingIntent(android.R.id.background, activityIntent);
 
         // Make the widget layout responsive to ever-smaller sizes by first hiding the countdown
-        // view, then hiding the count-up view.
+        // view, then shrinking the count-up view (if viable), then hiding the count-up view.
         //
         // Android 12+ supports view mappings to switch between layouts without waking the app.
         // View mappings and layout managers react to ACTUAL SIZES. The layout size must be less
@@ -176,11 +176,10 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
         // implemented by the layout managers and density/size/orientation specific resources.
         //
         // TODO: Improve the results on earlier Android versions:
-        //  * Fit "00:00" into a 1x2 cell via smaller portrait text dimen resources and a smaller
-        //    size threshold?
-        //    Android Bug: Reducing the text size via rv.setTextViewTextSize() sticks even after
-        //    constructing new RemoteViews, like how autoresize sticks at the smallest size.
-        //  * Use a portrait-specific resource to arrange the two view flippers vertically?
+        //  * Fit "00:00" into a 1x2 cell via separate TextViews that have smaller dimen resources?
+        //  * Android Bug: Reducing the text size via rv.setTextViewTextSize() sticks even after
+        //    constructing new RemoteViews and still has side effects after explicitly restoring the
+        //    size. It confounds multiple widgets and the portrait/landscape sizes.
         //
         // NOTES:
         //  * autoSizeText (API 26+) doesn't work well. The text shrinks very small then won't grow
@@ -205,11 +204,14 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
             int minWidth = widgetOptions.getInt(
                     AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH, 180);
 
-            if (minWidth < 274) { // < 4 cells; this threshold in 273 .. 275
+            if (minWidth < 274) { // < 5 cells on API 29 Nexus 5, else < 4 cells
                 hideTheCountdown(views);
             }
-            if (minWidth < 184) { // < 3 cells; this threshold in 177 .. 182
-                // (Actually, this threshold has to do < 4 cells on API 29 Nexus 5.)
+
+            // TODO: in [117 .. 184) [3 cells on API 29 Nexus 5, else 2 cells], shrink rather than
+            //  hide it the count-up text.
+
+            if (minWidth < 184) { // < 3 cells on API 29 Nexus 5, else < 2 cells
                 hideTheCountUp(views);
             }
         }
@@ -219,7 +221,7 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
 
     /** Hide the countdown from the remote views for a smaller layout. */
     // Unfortunately, the RemoteViews copy constructor requires API 28+.
-    private static void hideTheCountdown(RemoteViews rv) {
+    private static void hideTheCountdown(@NonNull RemoteViews rv) {
         rv.setViewVisibility(R.id.countdownFlipper, View.GONE);
         rv.setChronometer(R.id.countdownChronometer, 0, null, false);
     }
@@ -230,7 +232,7 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
     // the widget or view shortens vertically? Attempts to hold the height didn't fix it.) So shrink
     // the count-up view to an empty text field. [Setting the text view's width to 0 or 0.1 defeats
     // the stuck-hidden workaround.]
-    private static void hideTheCountUp(RemoteViews rv) {
+    private static void hideTheCountUp(@NonNull RemoteViews rv) {
         rv.setTextViewText(R.id.pausedChronometerText, "");
         rv.setDisplayedChild(R.id.viewFlipper, PAUSED_CHRONOMETER_CHILD);
         rv.setChronometer(R.id.chronometer, 0, null, false);
