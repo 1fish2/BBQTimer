@@ -52,6 +52,16 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
     private static final int PAUSED_CHRONOMETER_CHILD  = 0;
     private static final int RUNNING_CHRONOMETER_CHILD = 1;
     private static final int RESET_CHRONOMETER_CHILD   = 2;
+    // + parallel "small" children.
+
+    @IdRes private static final int[] CHILD_IDS = {
+            R.id.pausedChronometerText,
+            R.id.chronometer,
+            R.id.resetChronometerText,
+            R.id.smallPausedChronometerText,
+            R.id.smallChronometer,
+            R.id.smallResetChronometerText,
+    };
 
     static final String ACTION_RUN_PAUSE  = "com.onefishtwo.bbqtimer.ACTION_RUN_PAUSE";
     static final String ACTION_RUN        = "com.onefishtwo.bbqtimer.ACTION_RUN";
@@ -95,97 +105,108 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
      * A ViewFlipper is larger than its displayed child due to margins, the LinearLayout's size
      * adjustments, and maybe more factors. So make its child view and the Pause/Play button react
      * to taps and let the rest of the widget be the "background" where tapping opens the Activity.
+     * <p/>
+     * Make the widget layout responsive to ever-smaller sizes by first hiding the countdown view,
+     * then shrinking the count-up view (if viable), then hiding the count-up view. The "shrunken"
+     * size is to fit in the narrow portrait mode width or landscape mode height.
+     * <p/>
+     * Android 12+ supports view mappings to switch between layouts without waking the app.
+     * View mappings and layout managers react to ACTUAL SIZES. The layout size must be less than
+     * the view size. The layout sizes in this mapping need not match the minWidth thresholds used
+     * for Android < 12.
+     * <p/>
+     * For Android < 12, use the onAppWidgetOptionsChanged() hook to respond when the user resizes a
+     * widget. It only receives the SIZE RANGE [minWidth x maxHeight] (portrait) TO
+     * [maxWidth x minHeight] (landscape), and it rarely gets called when the screen rotates, so it
+     * can only set a layout for the size range. Any finer responsiveness must be implemented by the
+     * layout managers and density/size/orientation-specific resources.
+     * <p/>
+     * Stop hidden Chronometers in case they'd use battery power.
+     * <p/>
+     * NOTES:
+     *  * autoSizeText (API 26+) doesn't work well. The text shrinks very small then won't grow
+     *    back when the space grows.
+     *  * Reducing the text size via rv.setTextViewTextSize() sticks even after constructing new
+     *    RemoteViews and still has side effects after explicitly restoring the size. It confounds
+     *    multiple widgets and the portrait/landscape sizes.
+     *  * Word wrapping is ugly.
+     *  * SingleLine is uglier, forcing ellipses that hide more digits.
      */
     private static void updateWidget(@NonNull Context context,
             @NonNull AppWidgetManager appWidgetManager,
             int appWidgetId, @NonNull ApplicationState state) {
         TimeCounter timer = state.getTimeCounter();
+        long countUpBase = timer.getStartTime();
+
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.app_widget);
+
         PendingIntent runPauseIntent  = makeActionIntent(context, ACTION_RUN_PAUSE);
         PendingIntent cycleIntent     = makeActionIntent(context, ACTION_CYCLE);
         PendingIntent activityIntent  = MainActivity.makePendingIntent(context);
-        boolean visibleCountdown = false;
 
-        // Show a periodic reminder time if enabled and countdown Chronometers are supported.
+        boolean visibleCountdown = false;
+        Bundle widgetOptions = appWidgetManager.getAppWidgetOptions(appWidgetId);
+        int minWidth = widgetOptions.getInt(
+                AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH, 180);
+        int child = timer.isRunning() ? RUNNING_CHRONOMETER_CHILD
+                : timer.isStopped() ? RESET_CHRONOMETER_CHILD
+                : PAUSED_CHRONOMETER_CHILD;
+        int bankOffset = Build.VERSION.SDK_INT < 31 && minWidth >= 117 && minWidth < 184 ? 3 : 0;
+        int extendedChildIndex = child + bankOffset;
+        @IdRes int extendedChildId = CHILD_IDS[extendedChildIndex];
+        @DrawableRes int actionButton =
+                child == PAUSED_CHRONOMETER_CHILD ? R.drawable.ic_action_play
+                : R.drawable.ic_action_pause;
+
+        // Enable the countdown time view if periodic alarms are enabled and countdown Chronometers
+        // are supported.
         if (Build.VERSION.SDK_INT >= 24 && state.isEnableReminders()) {
             visibleCountdown = true;
             views.setViewVisibility(R.id.countdownFlipper, View.VISIBLE);
+            views.setDisplayedChild(R.id.countdownFlipper, child);
             views.setChronometerCountDown(R.id.countdownChronometer, true);
         } else {
             views.setViewVisibility(R.id.countdownFlipper, View.GONE);
         }
 
+        views.setChronometer(R.id.chronometer, 0, null, false);
+        views.setChronometer(R.id.smallChronometer, 0, null, false);
+        views.setChronometer(R.id.countdownChronometer, 0, null, false);
+
         if (timer.isRunning()) {
-            views.setDisplayedChild(R.id.viewFlipper, RUNNING_CHRONOMETER_CHILD);
-            views.setImageViewResource(R.id.remoteStartStopButton, R.drawable.ic_action_pause);
-            views.setChronometer(R.id.chronometer, timer.getStartTime(), null, true);
-            views.setOnClickPendingIntent(R.id.chronometer, cycleIntent);
+            views.setChronometer(extendedChildId, countUpBase, null, true);
 
             if (visibleCountdown) {
                 long rt = SystemClock.elapsedRealtime();
                 long countdownToNextAlarm = state.getMillisecondsToNextAlarm();
                 long countdownBase = rt + countdownToNextAlarm;
 
-                views.setDisplayedChild(R.id.countdownFlipper, RUNNING_CHRONOMETER_CHILD);
                 views.setChronometer(R.id.countdownChronometer, countdownBase,
                         null, true);
             }
         } else {
-            int child = timer.isStopped() ? RESET_CHRONOMETER_CHILD : PAUSED_CHRONOMETER_CHILD;
-            @IdRes int textViewId = child == RESET_CHRONOMETER_CHILD
-                    ? R.id.resetChronometerText
-                    : R.id.pausedChronometerText;
-            @IdRes int countdownTextViewId = child == RESET_CHRONOMETER_CHILD
-                    ? R.id.countdownResetChronometerText
-                    : R.id.countdownPausedChronometerText;
-            @DrawableRes int ic_pause_or_play = child == RESET_CHRONOMETER_CHILD
-                    ? R.drawable.ic_action_pause : R.drawable.ic_action_play;
-
-            views.setDisplayedChild(R.id.viewFlipper, child);
-            views.setTextViewText(textViewId, timer.formatHhMmSs());
-            views.setImageViewResource(R.id.remoteStartStopButton, ic_pause_or_play);
-            // Stop the Chronometer in case it'd use battery power even when not displayed.
-            views.setChronometer(R.id.chronometer, 0, null, false);
-            views.setOnClickPendingIntent(textViewId, cycleIntent);
+            views.setTextViewText(extendedChildId, timer.formatHhMmSs());
 
             if (visibleCountdown) {
+                @IdRes int countdownTextViewId = child == RESET_CHRONOMETER_CHILD
+                        ? R.id.countdownResetChronometerText
+                        : R.id.countdownPausedChronometerText;
                 long countdownToNextAlarm = state.getMillisecondsToNextAlarm();
 
-                views.setDisplayedChild(R.id.countdownFlipper, child);
                 views.setTextViewText(countdownTextViewId,
                         TimeCounter.formatHhMmSs(countdownToNextAlarm));
-                views.setChronometer(R.id.countdownChronometer, 0, null, false);
             }
         }
 
+        views.setImageViewResource(R.id.remoteStartStopButton, actionButton);
+        views.setDisplayedChild(R.id.viewFlipper, extendedChildIndex);
+
         views.setOnClickPendingIntent(R.id.remoteStartStopButton, runPauseIntent);
         views.setOnClickPendingIntent(android.R.id.background, activityIntent);
+        views.setOnClickPendingIntent(extendedChildId, cycleIntent);
 
         // Make the widget layout responsive to ever-smaller sizes by first hiding the countdown
         // view, then shrinking the count-up view (if viable), then hiding the count-up view.
-        //
-        // Android 12+ supports view mappings to switch between layouts without waking the app.
-        // View mappings and layout managers react to ACTUAL SIZES. The layout size must be less
-        // than the view size. The layout sizes in this mapping need not match the Android < 12
-        // minWidth thresholds.
-        //
-        // For Android < 12, use the onAppWidgetOptionsChanged() hook for when the user resizes a
-        // widget, but it only receives the SIZE RANGE [minWidth x maxHeight] (for portrait) to
-        // [maxWidth x minHeight] (for landscape), and it rarely gets called when the screen
-        // rotates, so it can only set a layout for the size range. Any finer responsiveness must be
-        // implemented by the layout managers and density/size/orientation specific resources.
-        //
-        // TODO: Improve the results on earlier Android versions:
-        //  * Fit "00:00" into a 1x2 cell via separate TextViews that have smaller dimen resources?
-        //  * Android Bug: Reducing the text size via rv.setTextViewTextSize() sticks even after
-        //    constructing new RemoteViews and still has side effects after explicitly restoring the
-        //    size. It confounds multiple widgets and the portrait/landscape sizes.
-        //
-        // NOTES:
-        //  * autoSizeText (API 26+) doesn't work well. The text shrinks very small then won't grow
-        //    back when the space grows.
-        //  * Word wrapping is ugly.
-        //  * SingleLine is uglier, forcing ellipses that hide more digits.
         if (Build.VERSION.SDK_INT >= 31) {
             RemoteViews mediumViews = new RemoteViews(views);
             hideTheCountdown(mediumViews);
@@ -200,18 +221,16 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
 
             views = new RemoteViews(viewMapping);
         } else {
-            Bundle widgetOptions = appWidgetManager.getAppWidgetOptions(appWidgetId);
-            int minWidth = widgetOptions.getInt(
-                    AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH, 180);
+            // ≥ 5 cells on API 29 Nexus 5, else ≥ 4 cells ==> Show all views.
 
             if (minWidth < 274) { // < 5 cells on API 29 Nexus 5, else < 4 cells
                 hideTheCountdown(views);
             }
 
-            // TODO: in [117 .. 184) [3 cells on API 29 Nexus 5, else 2 cells], shrink rather than
-            //  hide it the count-up text.
+            // minWidth in [117 .. 184) -- 3 cells on API 29 Nexus 5, else 2 cells
+            // ==> The code above switched to the small count-up views.
 
-            if (minWidth < 184) { // < 3 cells on API 29 Nexus 5, else < 2 cells
+            if (minWidth < 117) { // < 3 cells on API 29 Nexus 5, else < 2 cells
                 hideTheCountUp(views);
             }
         }
@@ -227,15 +246,15 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
     }
 
     /** Hide the count-up from the remote views for a smaller layout. */
-    // Workaround: When "hiding" the count-up view, don't make it GONE/INVISIBLE since that can get
-    // stuck hidden (at least on Android 31 on Nexus 7, until rotating the screen). (Is this because
-    // the widget or view shortens vertically? Attempts to hold the height didn't fix it.) So shrink
-    // the count-up view to an empty text field. [Setting the text view's width to 0 or 0.1 defeats
-    // the stuck-hidden workaround.]
+    // Workaround: When hiding the count-up view, just making the ViewFlipper GONE/INVISIBLE can get
+    // it stuck hidden (at least on Android 31 on Nexus 7, until rotating the screen), so show a
+    // full-size but empty TextView in the ViewFlipper. (Alternative: Show a GONE TextView inside
+    // the ViewFlipper and an empty TextView outside it.)
     private static void hideTheCountUp(@NonNull RemoteViews rv) {
         rv.setTextViewText(R.id.pausedChronometerText, "");
         rv.setDisplayedChild(R.id.viewFlipper, PAUSED_CHRONOMETER_CHILD);
         rv.setChronometer(R.id.chronometer, 0, null, false);
+        rv.setChronometer(R.id.smallChronometer, 0, null, false);
     }
 
     /**

@@ -1,4 +1,5 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <dimen name="widget_text_size" tools:ignore="SpUsage">42dp</dimen>
+    <dimen name="widget_shrunken_text_size" tools:ignore="SpUsage">42dp</dimen>
     <dimen name="widget_countdown_text_size" tools:ignore="SpUsage">20dp</dimen>
 </resources>

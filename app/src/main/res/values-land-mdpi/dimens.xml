@@ -1,0 +1,3 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <dimen name="widget_shrunken_text_size" tools:ignore="SpUsage">32dp</dimen>
+</resources>

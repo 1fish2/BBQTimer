@@ -1,5 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <dimen name="widget_vertical_padding">0dp</dimen>
     <dimen name="widget_text_size" tools:ignore="SpUsage">48dp</dimen>
+    <dimen name="widget_shrunken_text_size" tools:ignore="SpUsage">26dp</dimen>
     <dimen name="widget_countdown_text_size" tools:ignore="SpUsage">22dp</dimen>
 </resources>

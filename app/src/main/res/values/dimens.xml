@@ -29,6 +29,7 @@
         Now affects non-AutoSize versions and the IDE's design view. -->
     <dimen name="display_text_size" tools:ignore="SpUsage">66dp</dimen>
     <dimen name="widget_text_size" tools:ignore="SpUsage">48dp</dimen>
+    <dimen name="widget_shrunken_text_size" tools:ignore="SpUsage">30dp</dimen>
     <dimen name="widget_countdown_text_size" tools:ignore="SpUsage">22dp</dimen>
     <dimen name="controls_text_size">18sp</dimen>
     <dimen name="countdown_text_size">36sp</dimen>
