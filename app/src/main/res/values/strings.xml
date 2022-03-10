@@ -70,7 +70,7 @@
 
     <!-- Label for the switch that enables/disables periodic reminder alarms AND ALSO the label for
       the widget for setting the number of minutes between reminders. -->
-    <string name="reminder_switch">Periodic alarms this many minutes apart:</string>
+    <string name="reminder_switch">Periodic alarm interval:</string>
 
     <!-- Notification body message: The number of minutes (parameter 1$) between periodic reminder
       alarms (user alerts). There should be an item here for each "quantity" that the locale needs.

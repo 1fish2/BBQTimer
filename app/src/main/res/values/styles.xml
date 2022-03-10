@@ -2,7 +2,7 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat">
+    <style name="AppTheme" parent="Theme.Material3.DynamicColors.DayNight">
         <!-- Customize your theme here. -->
         <item name="actionBarStyle">@style/FireyActionBar</item>
         <item name="android:colorPrimary">@color/orange_red_text</item>

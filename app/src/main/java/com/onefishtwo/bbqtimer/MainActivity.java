@@ -45,6 +45,8 @@ import android.widget.TextView;
 
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.timepicker.MaterialTimePicker;
+import com.google.android.material.timepicker.TimeFormat;
 import com.onefishtwo.bbqtimer.state.ApplicationState;
 
 import java.lang.annotation.Retention;
@@ -179,7 +181,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
     private Button resetButton;
     private Button startStopButton;
     private Button stopButton;
-    private TextView displayView, countdownDisplay;
+    private TextView displayView, countdownDisplay, alarmPeriodView;
     private CompoundButton enableRemindersToggle;
     private NumberPicker minutesPicker;
 
@@ -198,12 +200,14 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
         stopButton            = findViewById(R.id.stopButton);
         displayView           = findViewById(R.id.display);
         countdownDisplay      = findViewById(R.id.countdownDisplay);
+        alarmPeriodView       = findViewById(R.id.alarmPeriod);
         enableRemindersToggle = findViewById(R.id.enableReminders);
         minutesPicker         = findViewById(R.id.minutesPicker);
 
         resetButton.setOnClickListener(this::onClickReset);
         startStopButton.setOnClickListener(this::onClickPauseResume);
         countdownDisplay.setOnClickListener(this::onClickPauseResume);
+        alarmPeriodView.setOnClickListener(this::onClickAlarmPeriod);
         stopButton.setOnClickListener(this::onClickStop);
         displayView.setOnClickListener(this::onClickTimerText);
         enableRemindersToggle.setOnClickListener(this::onClickEnableRemindersToggle);
@@ -475,6 +479,21 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
         }
     }
 
+    /** The user clicked the Alarm Period TextView. Open a TimePicker to set the period. */
+    @UiThread
+    public void onClickAlarmPeriod(View v) {
+        // TODO: Actual minutes:seconds.
+        // TODO: Listen and use the results.
+        // TODO: Hack the TimePicker keyboard mode labels from "Hour", "Minute" to "Minute", "Second".
+        MaterialTimePicker picker = new MaterialTimePicker.Builder()
+                .setTimeFormat(TimeFormat.CLOCK_24H)
+                .setHour(5)
+                .setMinute(30)
+                .setTitleText(R.string.reminder_switch)
+                .build();
+        picker.show(getSupportFragmentManager(), "pick_alarm_interval");
+    }
+
     /** @return a ColorStateList resource ID; time-dependent for blinking. */
     @UiThread
     @ColorRes
@@ -496,17 +515,17 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
                 : timer.isPaused() ? pausedTimerColors()
                 : R.color.reset_timer_colors;
         ColorStateList textColors = ContextCompat.getColorStateList(this, textColorsId);
-        @ColorRes int countdownColorId = timer.isStopped()
-                ? R.color.reset_timer_colors
-                : R.color.widget_countdown_text;
+        // TODO: Restore the dim stopped color but use Material3 colors w/day-night contrast.
+        //@ColorRes int countdownColorId = timer.isStopped()
+        //        ? R.color.reset_timer_colors
+        //        : R.color.widget_countdown_text;
         long countdownToNextAlarm = state.getMillisecondsToNextAlarm();
 
         displayView.setText(formatted);
         displayView.setTextColor(textColors);
 
         countdownDisplay.setText(TimeCounter.formatHhMmSs(countdownToNextAlarm));
-        countdownDisplay.setTextColor(getResources().getColor(countdownColorId));
-        // countdownDisplay.setBackgroundColor(getResources().getColor(textColorsId));
+        //countdownDisplay.setTextColor(getResources().getColor(countdownColorId));
     }
 
     /** Updates the Activity's views for the current state. */

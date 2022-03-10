@@ -17,7 +17,7 @@
     <string name="pause">Anhalten</string>
     <string name="pause_at_0_long">Anhalten bei 00:00</string>
     <string name="pause_at_0_short">Anhalten 0:00</string>
-    <string name="reminder_switch">Periodische Alarme so viele Minuten auseinander:</string>
+    <string name="reminder_switch">Periodisches Alarmintervall:</string>
     <string name="reset">Zurücksetzen</string>
     <string name="start">Start</string>
     <string name="start_at_0_long">Start</string>
