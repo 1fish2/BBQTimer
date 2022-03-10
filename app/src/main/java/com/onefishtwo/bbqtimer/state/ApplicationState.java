@@ -192,4 +192,9 @@ public class ApplicationState {
     public void setSecondsPerReminder(int _secondsPerReminder) {
         this.secondsPerReminder = boundIntervalTimeSeconds(_secondsPerReminder);
     }
+
+    /** Formats the reminder interval time like hh:mm:ss. */
+    public String formatIntervalTimeHhMmSs() {
+        return TimeCounter.formatHhMmSs(getMillisecondsPerReminder());
+    }
 }

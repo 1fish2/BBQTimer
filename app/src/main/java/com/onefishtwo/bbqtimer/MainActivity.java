@@ -505,8 +505,7 @@ public class MainActivity extends AppCompatActivity {
         countdownDisplay.setText(TimeCounter.formatHhMmSs(countdownToNextAlarm));
         //countdownDisplay.setTextColor(getResources().getColor(countdownColorId));
 
-        alarmPeriodView.setText(TimeCounter.formatHhMmSs(
-                state.getSecondsPerReminder() * 1000L));
+        alarmPeriodView.setText(state.formatIntervalTimeHhMmSs());
     }
 
     /** Updates the Activity's views for the current state. */
