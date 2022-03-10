@@ -23,7 +23,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
-import com.onefishtwo.bbqtimer.MinutesChoices;
 import com.onefishtwo.bbqtimer.TimeCounter;
 
 import androidx.annotation.NonNull;
@@ -38,6 +37,9 @@ import androidx.annotation.NonNull;
  */
 public class ApplicationState {
     private static final String TAG = "ApplicationState";
+
+    public static final int MINIMUM_ALARM_SECONDS = 5;
+    public static final int MAXIMUM_ALARM_SECONDS = 24 * 60 * 60;
 
     /** PERSISTENT STATE filename. */
     private static final String APPLICATION_PREF_FILE = "BBQ_Timer_Prefs";
@@ -84,6 +86,11 @@ public class ApplicationState {
     ApplicationState() {
     }
 
+    /** Clips the given interval time in seconds to sane bounds. */
+    public static int boundIntervalTimeSeconds(int seconds) {
+        return Math.min(Math.max(seconds, MINIMUM_ALARM_SECONDS), MAXIMUM_ALARM_SECONDS);
+    }
+
     /**
      * Loads and normalizes persistent state using context. Overridable for tests.
      * Normalization matters if the device rebooted while the timer was running or if the app was
@@ -100,7 +107,7 @@ public class ApplicationState {
         mainActivityIsVisible = prefs.getBoolean(PREF_MAIN_ACTIVITY_IS_VISIBLE, false);
         enableReminders       = prefs.getBoolean(PREF_ENABLE_REMINDERS, true);
         int secs              = prefs.getInt(PREF_SECONDS_PER_REMINDER, 5 * 60);
-        secondsPerReminder    = MinutesChoices.normalizeSeconds(secs);
+        secondsPerReminder    = boundIntervalTimeSeconds(secs);
 
         return needToSave;
     }
@@ -178,9 +185,11 @@ public class ApplicationState {
     }
 
     /**
-     * Sets the number of seconds between periodic reminder alarms. Call {@link #save} to save it.
+     * Sets the number of seconds between periodic reminder alarms, within limits.
+     * </p>
+     * Call {@link #save} to save the updated state.
      */
     public void setSecondsPerReminder(int _secondsPerReminder) {
-        this.secondsPerReminder = _secondsPerReminder;
+        this.secondsPerReminder = boundIntervalTimeSeconds(_secondsPerReminder);
     }
 }

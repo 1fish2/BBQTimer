@@ -140,17 +140,4 @@
         app:layout_constraintBaseline_toBaselineOf="@+id/enableReminders"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <NumberPicker
-        android:id="@+id/minutesPicker"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/widget_margin"
-        android:visibility="gone"
-        android:focusable="true"
-        app:layout_constrainedHeight="true"
-        app:layout_constraintVertical_bias="0"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/fold" />
-
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -41,6 +41,7 @@ public class ListPrefixMatcher<E> extends FeatureMatcher<List<E>, List<E>> {
         return new ListPrefixMatcher<>(expectedPrefix);
     }
 
+    @SuppressWarnings("unused")
     @NonNull
     @SafeVarargs
     public static <T> Matcher<List<T>> listPrefixMatcher(T... expectedPrefix) {

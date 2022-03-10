@@ -23,7 +23,6 @@ package com.onefishtwo.bbqtimer;
 
 
 import android.content.Context;
-import android.os.Build;
 
 import org.junit.After;
 import org.junit.Before;
@@ -41,32 +40,21 @@ import androidx.test.platform.app.InstrumentationRegistry;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.action.ViewActions.pressImeActionButton;
-import static androidx.test.espresso.action.ViewActions.replaceText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.hasFocus;
 import static androidx.test.espresso.matcher.ViewMatchers.isChecked;
 import static androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
-import static androidx.test.espresso.matcher.ViewMatchers.isFocusable;
-import static androidx.test.espresso.matcher.ViewMatchers.isFocused;
 import static androidx.test.espresso.matcher.ViewMatchers.isNotChecked;
-import static androidx.test.espresso.matcher.ViewMatchers.isNotEnabled;
-import static androidx.test.espresso.matcher.ViewMatchers.isNotFocused;
-import static androidx.test.espresso.matcher.ViewMatchers.withClassName;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static com.onefishtwo.bbqtimer.CustomMatchers.withCompoundDrawable;
 import static com.onefishtwo.bbqtimer.CustomViewActions.waitMsec;
 import static com.onefishtwo.bbqtimer.TimeIntervalMatcher.inTimeInterval;
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
-import static org.hamcrest.core.AllOf.allOf;
 import static org.junit.Assert.assertEquals;
 
 /** Within-app Espresso UI tests. */
+// TODO: Update for the new alarm interval TimePicker.
 // TODO: Test the app's home screen widget.
 // TODO: Add a multi-app test that checks the app's notifications.
 @LargeTest
@@ -77,7 +65,6 @@ public class InAppUITest {
     private ViewInteraction stopButton; // stop @ 00:00
     private ViewInteraction timeView;
     private ViewInteraction enableRemindersToggle;
-    private ViewInteraction minutesPicker;
 
     @NonNull
     @Rule
@@ -91,7 +78,6 @@ public class InAppUITest {
         stopButton = onView(withId(R.id.stopButton));
         timeView = onView(withId(R.id.display));
         enableRemindersToggle = onView(withId(R.id.enableReminders));
-        minutesPicker = onView(withId(R.id.minutesPicker));
     }
 
     @After
@@ -101,7 +87,6 @@ public class InAppUITest {
         stopButton = null;
         timeView = null;
         enableRemindersToggle = null;
-        minutesPicker = null;
     }
 
 // MainActivity's FSM:
@@ -198,21 +183,15 @@ public class InAppUITest {
         checkPausedAt(time1);
     }
 
-    /** Checks the enable-reminders checkbox and the minutes picker. */
+    /** Checks the enable-reminders checkbox and the interval TimePicker. */
     private void checkReminder(boolean expectEnabled) {
         enableRemindersToggle.check(matches(isCompletelyDisplayed()));
-        minutesPicker.check(matches(isCompletelyDisplayed()));
+        //minutesPicker.check(matches(isCompletelyDisplayed()));
 
         if (expectEnabled) {
             enableRemindersToggle.check(matches(isChecked()));
-            minutesPicker.check(matches(isEnabled()));
-            minutesPicker.check(matches(isFocusable()));
         } else {
             enableRemindersToggle.check(matches(isNotChecked()));
-            minutesPicker.check(matches(isNotEnabled()));
-            if (Build.VERSION.SDK_INT > 27) { // disabled but still has focus on API ≤ 27!
-                minutesPicker.check(matches(isNotFocused()));
-            }
         }
     }
 
@@ -282,7 +261,7 @@ public class InAppUITest {
         // TODO: Check timeView's color state, flashing between either of two color states.
     }
 
-    /** Tests the minutesPicker and enableRemindersToggle widgets. */
+    /** Tests the interval TimePicker and enableRemindersToggle widgets. */
     @Test
     public void minutePickerUITest() {
         // Context of the app under test.
@@ -293,29 +272,13 @@ public class InAppUITest {
         assertEquals("com.onefishtwo.bbqtimer", appContext2.getPackageName());
 
         checkReminder(true);
-        minutesPicker.check(matches(hasFocus()));
+        //minutesPicker.check(matches(hasFocus()));
 
         enableRemindersToggle.perform(click());
         checkReminder(false);
 
         enableRemindersToggle.perform(click());
         checkReminder(true);
-        // NOTE: minutesPicker still has focus on API ≤ 27. On API ≥ 28, what view has focus?
-
-        minutesPicker.perform(click());
-        minutesPicker.check(matches(hasFocus()));
-
-        ViewInteraction minutePickerEditText = onView(
-                allOf(withClassName(is("android.widget.NumberPicker$CustomEditText")),
-                        withParent(withId(R.id.minutesPicker))));
-        minutePickerEditText.check(matches(isFocused()));
-        minutePickerEditText.check(matches(withText("5")));
-        checkReminder(true);
-
-        minutePickerEditText.perform(
-                replaceText("0.5"),
-                pressImeActionButton()); // closeSoftKeyboard()
-        minutePickerEditText.check(matches(withText("0.5")));
 
         enableRemindersToggle.perform(click());
         checkReminder(false);

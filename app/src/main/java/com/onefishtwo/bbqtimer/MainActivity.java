@@ -40,7 +40,6 @@ import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
-import android.widget.NumberPicker;
 import android.widget.TextView;
 
 import com.google.android.material.snackbar.BaseTransientBottomBar;
@@ -69,13 +68,11 @@ import androidx.core.widget.TextViewCompat;
 /**
  * The BBQ Timer's main activity.
  */
-public class MainActivity extends AppCompatActivity implements NumberPicker.OnValueChangeListener {
+public class MainActivity extends AppCompatActivity {
     private final String TAG = "Main";
 
     static final int FLAG_IMMUTABLE =
             Build.VERSION.SDK_INT >= 23 ? PendingIntent.FLAG_IMMUTABLE : 0;
-
-    private static final MinutesChoices minutesChoices = new MinutesChoices();
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({SHORTCUT_NONE, SHORTCUT_PAUSE, SHORTCUT_START})
@@ -90,16 +87,6 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
     private int viewConfiguration = -1; // optimization: don't reset all the views every 100 msec
 
     private Notifier notifier;
-
-    /** (Re)makes all locale-dependent strings. */
-    private static void makeLocaleStrings() {
-        minutesChoices.updateLocale();
-    }
-
-    /** Converts seconds/alarm to a minutesPicker choice string. */
-    public static String secondsToMinuteChoiceString(int seconds) {
-        return minutesChoices.secondsToMinuteChoiceString(seconds);
-    }
 
     /**
      * Make a PendingIntent to launch the Activity, e.g. from the notification.
@@ -183,7 +170,6 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
     private Button stopButton;
     private TextView displayView, countdownDisplay, alarmPeriodView;
     private CompoundButton enableRemindersToggle;
-    private NumberPicker minutesPicker;
 
     @MainThread
     @Override
@@ -192,7 +178,6 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
         viewConfiguration = -1;
         notifier = new Notifier(this);
 
-        makeLocaleStrings();
         setContentView(R.layout.activity_main);
 
         resetButton           = findViewById(R.id.resetButton);
@@ -202,7 +187,6 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
         countdownDisplay      = findViewById(R.id.countdownDisplay);
         alarmPeriodView       = findViewById(R.id.alarmPeriod);
         enableRemindersToggle = findViewById(R.id.enableReminders);
-        minutesPicker         = findViewById(R.id.minutesPicker);
 
         resetButton.setOnClickListener(this::onClickReset);
         startStopButton.setOnClickListener(this::onClickPauseResume);
@@ -211,13 +195,6 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
         stopButton.setOnClickListener(this::onClickStop);
         displayView.setOnClickListener(this::onClickTimerText);
         enableRemindersToggle.setOnClickListener(this::onClickEnableRemindersToggle);
-
-        minutesPicker.setMinValue(0);
-        minutesPicker.setMaxValue(minutesChoices.choices.length - 1);
-        minutesPicker.setDisplayedValues(minutesChoices.choices);
-        minutesPicker.setWrapSelectorWheel(false);
-        minutesPicker.setOnValueChangedListener(this);
-        minutesPicker.setFocusableInTouchMode(true);
 
         // AutoSizeText works with android:maxLines="1" but not with android:singleLine="true".
         TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(displayView, 16,
@@ -300,9 +277,6 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
     @Override
     protected void onResume() {
         super.onResume();
-
-        // Take focus from minutesPicker's EditText child.
-        minutesPicker.requestFocus();
 
         informIfNotificationAlarmsMuted();
     }
@@ -468,29 +442,32 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
         }
     }
 
-    /** A NumberPicker value changed. */
-    @UiThread
-    @Override
-    public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-        if (picker == minutesPicker) {
-            state.setSecondsPerReminder(MinutesChoices.pickerChoiceToSeconds(newVal));
-            state.save(this);
-            updateUI(); // update countdownDisplay, notifications, and widgets
-        }
-    }
-
-    /** The user clicked the Alarm Period TextView. Open a TimePicker to set the period. */
+    /**
+     * The user clicked the alarm interval period TextView. Open a TimePicker to set the period.
+     * </p>
+     * Repurpose Material Component's refined HH:MM TimePicker dialog as MM:SS duration picker.
+     */
     @UiThread
     public void onClickAlarmPeriod(View v) {
-        // TODO: Actual minutes:seconds.
-        // TODO: Listen and use the results.
-        // TODO: Hack the TimePicker keyboard mode labels from "Hour", "Minute" to "Minute", "Second".
+        int secondsPerReminder = state.getSecondsPerReminder();
+        int minutes = secondsPerReminder / 60;
+        int seconds = secondsPerReminder % 60;
+
+        // TODO: Set the OK action title to "SET"?
         MaterialTimePicker picker = new MaterialTimePicker.Builder()
                 .setTimeFormat(TimeFormat.CLOCK_24H)
-                .setHour(5)
-                .setMinute(30)
+                .setHour(minutes)
+                .setMinute(seconds)
                 .setTitleText(R.string.reminder_switch)
                 .build();
+
+        picker.addOnPositiveButtonClickListener(view -> {
+            int newSeconds = picker.getHour() * 60 + picker.getMinute();
+            state.setSecondsPerReminder(newSeconds);
+            state.save(this);
+            updateUI(); // update countdownDisplay, alarmPeriodView, notifications, and widgets
+        });
+
         picker.show(getSupportFragmentManager(), "pick_alarm_interval");
     }
 
@@ -506,7 +483,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
                 : R.color.paused_timer_colors;
     }
 
-    /** Updates the display of the elapsed time and the alarm count-down time. */
+    /** Updates the elapsed time, alarm interval time, and the alarm count-down time displays. */
     @UiThread
     private void displayTime() {
         Spanned formatted         = timer.formatHhMmSsFraction();
@@ -515,7 +492,8 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
                 : timer.isPaused() ? pausedTimerColors()
                 : R.color.reset_timer_colors;
         ColorStateList textColors = ContextCompat.getColorStateList(this, textColorsId);
-        // TODO: Restore the dim stopped color but use Material3 colors w/day-night contrast.
+
+        // TODO: Restore the dim stopped color using Material3 colors w/day-night contrast.
         //@ColorRes int countdownColorId = timer.isStopped()
         //        ? R.color.reset_timer_colors
         //        : R.color.widget_countdown_text;
@@ -526,6 +504,9 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
 
         countdownDisplay.setText(TimeCounter.formatHhMmSs(countdownToNextAlarm));
         //countdownDisplay.setTextColor(getResources().getColor(countdownColorId));
+
+        alarmPeriodView.setText(TimeCounter.formatHhMmSs(
+                state.getSecondsPerReminder() * 1000L));
     }
 
     /** Updates the Activity's views for the current state. */
@@ -551,9 +532,6 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
             stopButton.setVisibility(isStopped ? View.INVISIBLE : View.VISIBLE);
             countdownDisplay.setVisibility(areRemindersEnabled ? View.VISIBLE : View.INVISIBLE);
             enableRemindersToggle.setChecked(areRemindersEnabled);
-            minutesPicker.setValue(MinutesChoices.secondsToPickerChoice(
-                    state.getSecondsPerReminder()));
-            minutesPicker.setEnabled(areRemindersEnabled);
         }
     }
 

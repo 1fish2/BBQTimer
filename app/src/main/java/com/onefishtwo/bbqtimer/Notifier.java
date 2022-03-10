@@ -202,12 +202,10 @@ public class Notifier {
     String describePeriodicAlarms(@NonNull ApplicationState state) {
         // Synthesize a "quantity" to select the right pluralization rule.
         int reminderSecs = state.getSecondsPerReminder();
-        int quantity = MinutesChoices.secondsToMinutesPluralizationQuantity(reminderSecs);
-        String minutes = MainActivity.secondsToMinuteChoiceString(reminderSecs);
+        String intervalMmSs = TimeCounter.formatHhMmSs(reminderSecs * 1000L);
 
         return state.isEnableReminders()
-                ? context.getResources().getQuantityString(
-                    R.plurals.notification_body, quantity, minutes)
+                ? context.getResources().getString(R.string.notification_body, intervalMmSs)
                 : "";
     }
 
