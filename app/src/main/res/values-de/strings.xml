@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- String -Ressourcen für den Grill Timer-Anwendung . -->
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="alarm_muted">Alarm stummgeschaltet</string>
     <string name="alarm_unmute">STUMMSCHALTUNG AUFHEBEN</string>
     <string name="app_name">BBQ Timer</string>
@@ -34,4 +34,6 @@
         <item quantity="one">Alarm jede Minute</item>
         <item quantity="other">Alarm alle %1$s Minuten</item>
     </plurals>
+    <string name="material_timepicker_minute" tools:override="true">Sekunde</string>
+    <string name="material_timepicker_hour" tools:override="true">Minute</string>
 </resources>

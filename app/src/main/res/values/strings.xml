@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- String resources for the BBQ Timer application. -->
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Inform the user that the system Alarm volume is muted, and thus they won't be able to hear
       the app's alarms. This wording comes right out of the Clock app. -->
@@ -126,5 +126,10 @@
 
     <!-- Toast message when Alarm access got turned off. -->
     <string name="need_alarm_access">BBQ Timer needs “Alarms &amp; reminders” Special app access to set alarms</string>
+
+    <!-- Override these resources marked as private in com.google.android.material:material in order
+      to repurpose the fancy HH:MM TimePicker dialog as a MM:SS TimePicker. -->
+    <string name="material_timepicker_minute" tools:override="true" description="TimePicker label for a text field to select the time ***SECOND*** unit [CHAR_LIMIT=24]">Second</string>
+    <string name="material_timepicker_hour" tools:override="true" description="TimePicker label for a text field to select the time ***MINUTE*** unit [CHAR_LIMIT=24]">Minute</string>
 
 </resources>
