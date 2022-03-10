@@ -73,7 +73,7 @@ public class InAppUITest {
 
     @Before
     public void setUp() {
-        playPauseButton = onView(withId(R.id.startStopButton));
+        playPauseButton = onView(withId(R.id.pauseResumeButton));
         resetButton = onView(withId(R.id.resetButton));
         stopButton = onView(withId(R.id.stopButton));
         timeView = onView(withId(R.id.display));

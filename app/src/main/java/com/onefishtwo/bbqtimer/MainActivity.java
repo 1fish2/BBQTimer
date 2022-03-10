@@ -166,7 +166,7 @@ public class MainActivity extends AppCompatActivity {
     private TimeCounter timer;
 
     private Button resetButton;
-    private Button startStopButton;
+    private Button pauseResumeButton;
     private Button stopButton;
     private TextView displayView, countdownDisplay, alarmPeriodView;
     private CompoundButton enableRemindersToggle;
@@ -181,7 +181,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         resetButton           = findViewById(R.id.resetButton);
-        startStopButton       = findViewById(R.id.startStopButton);
+        pauseResumeButton     = findViewById(R.id.pauseResumeButton);
         stopButton            = findViewById(R.id.stopButton);
         displayView           = findViewById(R.id.display);
         countdownDisplay      = findViewById(R.id.countdownDisplay);
@@ -189,7 +189,7 @@ public class MainActivity extends AppCompatActivity {
         enableRemindersToggle = findViewById(R.id.enableReminders);
 
         resetButton.setOnClickListener(this::onClickReset);
-        startStopButton.setOnClickListener(this::onClickPauseResume);
+        pauseResumeButton.setOnClickListener(this::onClickPauseResume);
         countdownDisplay.setOnClickListener(this::onClickPauseResume);
         alarmPeriodView.setOnClickListener(this::onClickAlarmPeriod);
         stopButton.setOnClickListener(this::onClickStop);
@@ -377,7 +377,7 @@ public class MainActivity extends AppCompatActivity {
         logTheConfiguration(newConfig);
     }
 
-    /** The user tapped a Run/Pause action such as the historically named "startStopButton". */
+    /** The user tapped a Run/Pause action. */
     // TODO: Use listeners to update the Activity UI and app widgets.
     // A Proguard rule keeps all Activity *(View) methods.
     @UiThread
@@ -527,7 +527,7 @@ public class MainActivity extends AppCompatActivity {
             resetButton.setCompoundDrawablesWithIntrinsicBounds(
                     isStopped ? R.drawable.ic_pause : R.drawable.ic_replay, 0, 0, 0);
             resetButton.setVisibility(isRunning || isPausedAt0 ? View.INVISIBLE : View.VISIBLE);
-            startStopButton.setCompoundDrawablesWithIntrinsicBounds(
+            pauseResumeButton.setCompoundDrawablesWithIntrinsicBounds(
                     isRunning ? R.drawable.ic_pause : R.drawable.ic_play, 0, 0, 0);
             stopButton.setVisibility(isStopped ? View.INVISIBLE : View.VISIBLE);
             countdownDisplay.setVisibility(areRemindersEnabled ? View.VISIBLE : View.INVISIBLE);

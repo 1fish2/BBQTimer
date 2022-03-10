@@ -62,7 +62,7 @@
         app:layout_constraintTop_toBottomOf="@+id/display">
 
         <Button
-            android:id="@+id/startStopButton"
+            android:id="@+id/pauseResumeButton"
             style="?android:attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
