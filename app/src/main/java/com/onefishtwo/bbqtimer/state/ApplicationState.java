@@ -39,7 +39,7 @@ public class ApplicationState {
     private static final String TAG = "ApplicationState";
 
     public static final int MINIMUM_ALARM_SECONDS = 5;
-    public static final int MAXIMUM_ALARM_SECONDS = 24 * 60 * 60;
+    public static final int MAXIMUM_ALARM_SECONDS = 23 * 60 + 59; // 23:59 max for TimePicker
 
     /** PERSISTENT STATE filename. */
     private static final String APPLICATION_PREF_FILE = "BBQ_Timer_Prefs";
