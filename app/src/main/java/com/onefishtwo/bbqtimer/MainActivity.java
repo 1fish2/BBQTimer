@@ -36,16 +36,17 @@ import android.provider.Settings;
 import android.text.Spanned;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.android.material.timepicker.MaterialTimePicker;
-import com.google.android.material.timepicker.TimeFormat;
 import com.onefishtwo.bbqtimer.state.ApplicationState;
 
 import java.lang.annotation.Retention;
@@ -168,7 +169,8 @@ public class MainActivity extends AppCompatActivity {
     private Button resetButton;
     private Button pauseResumeButton;
     private Button stopButton;
-    private TextView displayView, countdownDisplay, alarmPeriodView;
+    private TextView displayView, countdownDisplay;
+    private EditText alarmPeriodView;
     private CompoundButton enableRemindersToggle;
 
     @MainThread
@@ -191,7 +193,7 @@ public class MainActivity extends AppCompatActivity {
         resetButton.setOnClickListener(this::onClickReset);
         pauseResumeButton.setOnClickListener(this::onClickPauseResume);
         countdownDisplay.setOnClickListener(this::onClickPauseResume);
-        alarmPeriodView.setOnClickListener(this::onClickAlarmPeriod);
+        alarmPeriodView.setOnEditorActionListener(this::onEditAction);
         stopButton.setOnClickListener(this::onClickStop);
         displayView.setOnClickListener(this::onClickTimerText);
         enableRemindersToggle.setOnClickListener(this::onClickEnableRemindersToggle);
@@ -378,7 +380,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /** The user tapped a Run/Pause action. */
-    // TODO: Use listeners to update the Activity UI and app widgets.
     // A Proguard rule keeps all Activity *(View) methods.
     @UiThread
     @SuppressWarnings("UnusedParameters")
@@ -442,33 +443,43 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * The user clicked the alarm interval period TextView. Open a TimePicker to set the period.
-     * </p>
-     * Repurpose Material Component's refined HH:MM TimePicker dialog as MM:SS duration picker.
-     */
+    /** Hides the soft keyboard, if we're lucky. */
+    // https://stackoverflow.com/a/17789187/1682419
+    public void hideKeyboard(View v) {
+        InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+        View focussed = getCurrentFocus();
+
+        if (v != null) {
+            imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+        }
+        if (focussed != null) {
+            imm.hideSoftInputFromWindow(focussed.getWindowToken(), 0);
+        }
+    }
+
+    /** The user tapped a TextEdit completion action button. */
     @UiThread
-    public void onClickAlarmPeriod(View v) {
-        int secondsPerReminder = state.getSecondsPerReminder();
-        int minutes = secondsPerReminder / 60;
-        int seconds = secondsPerReminder % 60;
+    public boolean onEditAction(TextView view, int actionId, KeyEvent event) {
+        if (view == alarmPeriodView) {
+            String input = alarmPeriodView.getText().toString();
+            int newSeconds = TimeCounter.parseHhMmSs(input);
 
-        // TODO: Set the OK action title to "SET"?
-        MaterialTimePicker picker = new MaterialTimePicker.Builder()
-                .setTimeFormat(TimeFormat.CLOCK_24H)
-                .setHour(minutes)
-                .setMinute(seconds)
-                .setTitleText(R.string.reminder_switch)
-                .build();
+            alarmPeriodView.clearFocus();
+            hideKeyboard(alarmPeriodView);
+            // TODO: On action=ACTION_DOWN, keyCode=KEYCODE_ENTER, stop it from focussing displayView.
 
-        picker.addOnPositiveButtonClickListener(view -> {
-            int newSeconds = picker.getHour() * 60 + picker.getMinute();
-            state.setSecondsPerReminder(newSeconds);
-            state.save(this);
-            updateUI(); // update countdownDisplay, alarmPeriodView, notifications, and widgets
-        });
+            // Parse, bound, and adopt the new alarm period value.
+            if (newSeconds >= 0) {
+                state.setSecondsPerReminder(newSeconds); // clips the value
+                state.save(this);
+                alarmPeriodView.setText(state.formatIntervalTimeHhMmSs());
+                updateUI(); // update countdownDisplay, notifications, and widgets
+                Log.i(TAG, "alarmPeriod newSeconds " + newSeconds);
+            }
 
-        picker.show(getSupportFragmentManager(), "pick_alarm_interval");
+            return true;
+        }
+        return false;
     }
 
     /** @return a ColorStateList resource ID; time-dependent for blinking. */
@@ -493,7 +504,7 @@ public class MainActivity extends AppCompatActivity {
                 : R.color.reset_timer_colors;
         ColorStateList textColors = ContextCompat.getColorStateList(this, textColorsId);
 
-        // TODO: Restore the dim stopped color using Material3 colors w/day-night contrast.
+        // TODO: Reimplement the dim "stopped" color using Material3 colors w/day-night contrast.
         //@ColorRes int countdownColorId = timer.isStopped()
         //        ? R.color.reset_timer_colors
         //        : R.color.widget_countdown_text;
@@ -504,8 +515,6 @@ public class MainActivity extends AppCompatActivity {
 
         countdownDisplay.setText(TimeCounter.formatHhMmSs(countdownToNextAlarm));
         //countdownDisplay.setTextColor(getResources().getColor(countdownColorId));
-
-        alarmPeriodView.setText(state.formatIntervalTimeHhMmSs());
     }
 
     /** Updates the Activity's views for the current state. */
@@ -531,6 +540,7 @@ public class MainActivity extends AppCompatActivity {
             stopButton.setVisibility(isStopped ? View.INVISIBLE : View.VISIBLE);
             countdownDisplay.setVisibility(areRemindersEnabled ? View.VISIBLE : View.INVISIBLE);
             enableRemindersToggle.setChecked(areRemindersEnabled);
+            alarmPeriodView.setText(state.formatIntervalTimeHhMmSs());
         }
     }
 

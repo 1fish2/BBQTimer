@@ -31,6 +31,7 @@ import java.text.FieldPosition;
 import java.text.NumberFormat;
 import java.util.Formatter;
 import java.util.Locale;
+import java.util.regex.Pattern;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
@@ -43,6 +44,10 @@ import androidx.annotation.VisibleForTesting;
  */
 @SuppressWarnings("SynchronizationOnStaticField")
 public class TimeCounter {
+
+    /** Separator pattern to split hh:mm:ss strings. */
+    static final Pattern HMS_SEPARATOR = Pattern.compile("[\\s:]+");
+
     @VisibleForTesting
     static class InjectForTesting {
         String formatElapsedTime(@SuppressWarnings("SameParameterValue") StringBuilder recycle,
@@ -356,6 +361,54 @@ public class TimeCounter {
         }
 
         return injected.fromHtml(html);
+    }
+
+    /**
+     * Parses a field of an hh:mm:ss string.
+     * Returns -1 if it's not an unsigned integer, but "" is OK.
+     */
+    private static int parseField(String field) {
+        if (field.length() == 0) {
+            return 0;
+        }
+
+        try {
+            return Integer.parseInt(field);
+        } catch (NumberFormatException e) {
+            return -1;
+        }
+    }
+
+    /**
+     * Parses a time duration in the form: hh:mm:ss, mm:ss, mm. Each field has one or more digits,
+     * but commonly two digits. dd[:dd[:dd]]. Returns -1 if the input isn't in the right format.
+     * Each field separator can be a ":" or a " ", and spaces get trimmed from the fields.
+     * <p/>
+     * Returns -1 if the input is not in the right format.
+     */
+    public static int parseHhMmSs(String duration) {
+        String[] fields = HMS_SEPARATOR.split(duration.trim(), 4);
+        int result = 0;
+
+        if (fields.length < 1 || fields.length > 3) {
+            return -1;
+        }
+
+        for (String field : fields) { // hh:mm:ss, or mm:ss, or mm parsed so far as ss
+            int f = parseField(field);
+
+            if (f < 0) {
+                return -1;
+            }
+
+            result = result * 60 + f;
+        }
+
+        if (fields.length == 1) { // mm
+            result *= 60;
+        }
+
+        return result;
     }
 
     @NonNull

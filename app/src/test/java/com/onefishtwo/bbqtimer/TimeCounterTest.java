@@ -36,6 +36,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 
+import static com.onefishtwo.bbqtimer.TimeCounter.parseHhMmSs;
+
 public class TimeCounterTest {
     static class MockSpanned implements Spanned {
         @Nullable
@@ -103,5 +105,56 @@ public class TimeCounterTest {
         };
 
         assertSame(mockSpanned, TimeCounter.formatHhMmSsFraction(inputMsec));
+    }
+
+    @Test
+    public void testParseHhMmSs() {
+        // seconds
+        assertEquals(12, parseHhMmSs(":12"));
+        assertEquals(99, parseHhMmSs(":99"));
+        assertEquals(12, parseHhMmSs("0:12"));
+        assertEquals(12, parseHhMmSs("00:000:012"));
+        assertEquals(34, parseHhMmSs("  : 34  "));
+        assertEquals(34, parseHhMmSs("  0  : 34  "));
+        assertEquals(34, parseHhMmSs("  0 : 0  : 34  "));
+        assertEquals(34, parseHhMmSs("  :  : 34  "));
+        assertEquals(0, parseHhMmSs("  ::: "));
+
+        // minutes
+        assertEquals(12 * 60, parseHhMmSs("12"));
+        assertEquals(12 * 60, parseHhMmSs("12:0"));
+        assertEquals(12 * 60, parseHhMmSs("012:"));
+        assertEquals(12 * 60, parseHhMmSs(":12:"));
+        assertEquals(34 * 60, parseHhMmSs("  34  "));
+        assertEquals(34 * 60, parseHhMmSs("  34 : "));
+        assertEquals(34 * 60, parseHhMmSs(" :: : 34 : "));
+        assertEquals(34 * 60, parseHhMmSs(" 0 34 : "));
+
+        // minutes:seconds
+        assertEquals(60 + 59, parseHhMmSs(" 1   59 "));
+        assertEquals(60 + 59, parseHhMmSs(" 1 : 59 "));
+        assertEquals(6000 + 59, parseHhMmSs(" 100 ::: 59 "));
+        assertEquals(3 * 60 + 12, parseHhMmSs("3:12"));
+
+        // hours:minutes:seconds
+        assertEquals(123 * 3600 + 4 * 60 + 5,
+                parseHhMmSs("123:0004:0005"));
+
+        // no fields, but split() returns [""]
+        assertEquals(0, parseHhMmSs(""));
+
+        // an empty field
+        assertEquals(0, parseHhMmSs("   "));
+
+        // too many fields
+        assertEquals(-1, parseHhMmSs(" 0 0 34 : "));
+        assertEquals(-1, parseHhMmSs(" 0 0 34 : 0 "));
+
+        // bad fields
+        assertEquals(-1, parseHhMmSs("-15"));
+        assertEquals(-1, parseHhMmSs("-15:"));
+        assertEquals(-1, parseHhMmSs(": -15 :"));
+        assertEquals(-1, parseHhMmSs("10.20.2000"));
+        assertEquals(-1, parseHhMmSs(" ten "));
     }
 }
