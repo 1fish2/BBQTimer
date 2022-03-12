@@ -52,7 +52,6 @@
 
     <LinearLayout
         android:id="@+id/buttonBar"
-        style="?android:attr/buttonBarStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@color/grayer"
