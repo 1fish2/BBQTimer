@@ -70,7 +70,9 @@
 
     <!-- Label for the switch that enables/disables periodic reminder alarms AND ALSO the label for
       the widget for setting the number of minutes between reminders. -->
-    <string name="reminder_switch">Periodic alarm interval (mm or mm:ss):</string>
+    <string name="reminder_switch">Periodic alarm interval (mm or mm:ss or h:mm:ss):</string>
+
+    <string name="interval_hint">h:mm:ss</string>
 
     <!-- Notification body message: The interval time (parameter 1$) between periodic reminder
       alarms. "%1$s" is placeholder #1 for the number of minutes:seconds. -->
@@ -120,10 +122,5 @@
 
     <!-- Toast message when Alarm access got turned off. -->
     <string name="need_alarm_access">BBQ Timer needs “Alarms &amp; reminders” Special app access to set alarms</string>
-
-    <!-- Override these resources marked as private in com.google.android.material:material in order
-      to repurpose the fancy HH:MM TimePicker dialog as a MM:SS TimePicker. -->
-    <string name="material_timepicker_minute" tools:override="true" description="TimePicker label for a text field to select the time ***SECOND*** unit [CHAR_LIMIT=24]">Second</string>
-    <string name="material_timepicker_hour" tools:override="true" description="TimePicker label for a text field to select the time ***MINUTE*** unit [CHAR_LIMIT=24]">Minute</string>
 
 </resources>

@@ -381,8 +381,8 @@ public class TimeCounter {
 
     /**
      * Parses a time duration in the form: hh:mm:ss, mm:ss, mm. Each field has one or more digits,
-     * but commonly two digits. dd[:dd[:dd]]. Returns -1 if the input isn't in the right format.
-     * Each field separator can be a ":" or a " ", and spaces get trimmed from the fields.
+     * but commonly two digits. dd[:dd[:dd]]. This is forgiving but it returns -1 if the input isn't
+     * in the right format. The input gets trimmed. The field separator is "[\s:]+".
      * <p/>
      * Returns -1 if the input is not in the right format.
      */
@@ -390,7 +390,13 @@ public class TimeCounter {
         String[] fields = HMS_SEPARATOR.split(duration.trim(), 4);
         int result = 0;
 
+        // Too few or too many fields.
         if (fields.length < 1 || fields.length > 3) {
+            return -1;
+        }
+
+        // split() returns [""] for empty (trimmed) input.
+        if (fields.length == 1 && fields[0].length() == 0) {
             return -1;
         }
 

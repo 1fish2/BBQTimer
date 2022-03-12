@@ -140,11 +140,9 @@ public class TimeCounterTest {
         assertEquals(123 * 3600 + 4 * 60 + 5,
                 parseHhMmSs("123:0004:0005"));
 
-        // no fields, but split() returns [""]
-        assertEquals(0, parseHhMmSs(""));
-
-        // an empty field
-        assertEquals(0, parseHhMmSs("   "));
+        // empty or just white space: no fields but split() returns [""]
+        assertEquals(-1, parseHhMmSs(""));
+        assertEquals(-1, parseHhMmSs("   "));
 
         // too many fields
         assertEquals(-1, parseHhMmSs(" 0 0 34 : "));

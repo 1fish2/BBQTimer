@@ -472,9 +472,13 @@ public class MainActivity extends AppCompatActivity {
             if (newSeconds >= 0) {
                 state.setSecondsPerReminder(newSeconds); // clips the value
                 state.save(this);
-                alarmPeriodView.setText(state.formatIntervalTimeHhMmSs());
+                String newHhMmSs = state.formatIntervalTimeHhMmSs();
+                alarmPeriodView.setText(newHhMmSs);
                 updateUI(); // update countdownDisplay, notifications, and widgets
-                Log.i(TAG, "alarmPeriod newSeconds " + newSeconds);
+                Log.i(TAG, "alarmPeriod: " + newSeconds + " seconds -> " + newHhMmSs);
+            } else {
+                // Revert the invalid input.
+                alarmPeriodView.setText(state.formatIntervalTimeHhMmSs());
             }
 
             return true;

@@ -5,19 +5,21 @@
     <string name="alarm_unmute">STUMMSCHALTUNG AUFHEBEN</string>
     <string name="app_name">BBQ Timer</string>
     <string name="app_description">Eine Stoppuhr, die Sie auf dem Sperrbildschirm verwenden können.</string>
+    <string name="dismiss_tip">Wischen um zu stoppen</string>
     <string name="need_alarm_access">BBQ Timer benötigt „Wecker und Erinnerungen“ Spezieller App-Zugriff zum Einstellen von Alarmen</string>
+    <string name="interval_hint">h:mm:ss</string>
     <string name="notification_alarm_channel_name">Alarm</string>
     <string name="notification_alarm_channel_description">Wichtigkeit muss für Alarme hoch oder höher sein; Mittel oder höher für den Sperrbildschirm</string>
+    <string name="notification_body">Alarm alle %1$s</string>
     <string name="notifications_disabled">Benachrichtigungen sind deaktiviert</string>
     <string name="notifications_enable">AKTIVIEREN</string>
     <string name="notifications_misconfigured">Der Alarmkanal muss eingeschaltet sein und hoch oder höher sein, um Alarme zu hören</string>
     <string name="notifications_configure">KONFIGURIEREN</string>
-    <string name="dismiss_tip">Wischen um zu stoppen</string>
     <string name="no_reminders_tip">Keine regelmäßigen Alarme</string>
     <string name="pause">Anhalten</string>
     <string name="pause_at_0_long">Anhalten bei 00:00</string>
     <string name="pause_at_0_short">Anhalten 0:00</string>
-    <string name="reminder_switch">Periodisches Alarmintervall (mm oder mm:ss):</string>
+    <string name="reminder_switch">Periodisches Alarmintervall (mm oder mm:ss oder h:mm:ss):</string>
     <string name="reset">Zurücksetzen</string>
     <string name="start">Start</string>
     <string name="start_at_0_long">Start</string>
@@ -30,7 +32,4 @@
     <string name="timer_stopped">Gestoppt</string>
     <string name="widget_preview_time">07:00</string>
     <string name="widget_preview_countdown">00:30</string>
-    <string name="notification_body">Alarm alle %1$s</string>
-    <string name="material_timepicker_minute" tools:override="true">Sekunde</string>
-    <string name="material_timepicker_hour" tools:override="true">Minute</string>
 </resources>

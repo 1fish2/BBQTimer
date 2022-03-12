@@ -54,7 +54,7 @@ import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 
 /** Within-app Espresso UI tests. */
-// TODO: Update for the new alarm interval TimePicker.
+// TODO: Update for the new alarm interval text field.
 // TODO: Test the app's home screen widget.
 // TODO: Add a multi-app test that checks the app's notifications.
 @LargeTest

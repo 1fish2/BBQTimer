@@ -44,7 +44,7 @@
         API 29: ≥ 400dp avoids the bug on Pixel XL, Pixel 3XL, Pixel 4XL, Nexus 7, WXGA, and Nexus 4
                 emulators.
         API 30: Insensitive to minHeight, the OS has new resizing behavior, and the bug seems fixed.
-        API 31: Needs a much smaller minHeight to enable split screen mode in portrait mode.
+        API 31: minHeight has to be much smaller to enable split screen mode in portrait mode.
                 See values-v31/dimens.xml. -->
     <dimen name="activityMinHeight">400dp</dimen>
 
