@@ -113,7 +113,6 @@
         android:paddingBottom="@dimen/small_button_padding"
         android:text="@string/reminder_switch"
         android:textSize="@dimen/controls_text_size"
-        android:labelFor="@+id/alarmPeriod"
         app:layout_constrainedHeight="true"
         app:layout_constrainedWidth="true"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -139,6 +138,7 @@
         android:ems="4"
         android:text="@string/widget_preview_countdown"
         android:textSize="@dimen/controls_text_size"
+        android:importantForAutofill="no"
         app:layout_constrainedHeight="true"
         app:layout_constraintBottom_toBottomOf="@+id/enableReminders"
         app:layout_constraintEnd_toEndOf="parent" />

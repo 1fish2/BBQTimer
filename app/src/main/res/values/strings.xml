@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- String resources for the BBQ Timer application. -->
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
 
     <!-- Inform the user that the system Alarm volume is muted, and thus they won't be able to hear
       the app's alarms. This wording comes right out of the Clock app. -->

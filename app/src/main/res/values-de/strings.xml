@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- String -Ressourcen für den Grill Timer-Anwendung . -->
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
     <string name="alarm_muted">Alarm stummgeschaltet</string>
     <string name="alarm_unmute">STUMMSCHALTUNG AUFHEBEN</string>
     <string name="app_name">BBQ Timer</string>
