@@ -462,28 +462,47 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Sets the alarmPeriod EditText contents, skipping the no-op case to maintain any selection and
+     * minimize log warnings from InputConnectionWrapper.
+     * <p/>
+     * Also for reducing those log warnings, it might help to hideKeyboard() before setText(), but
+     * this means passing hideSoftInputFromWindow() a ResultReceiver to do the setText() after it
+     * finishes animating away.
+     * https://stackoverflow.com/a/29470242/1682419
+     */
+    @UiThread
+    private void displayAlarmPeriod(@NonNull String newText) {
+        if (!newText.equals(alarmPeriodView.getText().toString())) {
+            alarmPeriodView.setText(newText);
+        }
+    }
+
     /** Parse, bound, and (if valid) adopt the alarmPeriod input text. */
     @UiThread
     private void processAlarmPeriodInput() {
         String input = alarmPeriodView.getText().toString();
         int newSeconds = TimeCounter.parseHhMmSs(input);
 
-        if (newSeconds < 0) { // Revert the invalid input.
-            alarmPeriodView.setText(state.formatIntervalTimeHhMmSs());
-        } else if (newSeconds != state.getSecondsPerReminder()) {
+        hideKeyboard(alarmPeriodView);
+
+        if (newSeconds >= 0 && newSeconds != state.getSecondsPerReminder()) {
             state.setSecondsPerReminder(newSeconds); // clips the value
             state.save(this);
             String newHhMmSs = state.formatIntervalTimeHhMmSs();
-            alarmPeriodView.setText(newHhMmSs);
+            displayAlarmPeriod(newHhMmSs);
             updateUI(); // update countdownDisplay, notifications, and widgets
             Log.i(TAG, "alarmPeriod: " + newSeconds + " seconds -> " + newHhMmSs);
+        } else { // revert invalid input or normalize the unchanged value
+            displayAlarmPeriod(state.formatIntervalTimeHhMmSs());
         }
 
-        alarmPeriodView.clearFocus();
-        hideKeyboard(alarmPeriodView);
-    }
+        alarmPeriodView.clearFocus(); // TODO: Keep this from running onEditTextFocusChange work?
+   }
 
     /** The user tapped the background => Accept pending alarmPeriod text input. */
+    // TODO: Why doesn't this always remove the blinking caret? Depends on OS version? Need to wait
+    //  for the soft keyboard to close?
     @UiThread
     @SuppressWarnings("UnusedParameters")
     public void onClickBackground(View view) {
@@ -508,12 +527,12 @@ public class MainActivity extends AppCompatActivity {
     @UiThread
     public void onEditTextFocusChange(View view, boolean nowHasFocus) {
         if (view == alarmPeriodView && !nowHasFocus) {
-            alarmPeriodView.setText(state.formatIntervalTimeHhMmSs());
             hideKeyboard(view);
+            displayAlarmPeriod(state.formatIntervalTimeHhMmSs());
         }
     }
 
-    /** The user tapped a TextEdit completion action button. */
+    /** The user tapped a TextEdit soft keyboard completion action or physical Enter key. */
     // TODO: On action=ACTION_DOWN, keyCode=KEYCODE_ENTER, keep it from focussing displayView? Maybe
     //  it's OK since it was a keyboard action, thus leaving "touch mode."
     @UiThread
@@ -583,7 +602,7 @@ public class MainActivity extends AppCompatActivity {
             stopButton.setVisibility(isStopped ? View.INVISIBLE : View.VISIBLE);
             countdownDisplay.setVisibility(areRemindersEnabled ? View.VISIBLE : View.INVISIBLE);
             enableRemindersToggle.setChecked(areRemindersEnabled);
-            alarmPeriodView.setText(state.formatIntervalTimeHhMmSs());
+            displayAlarmPeriod(state.formatIntervalTimeHhMmSs());
         }
     }
 
