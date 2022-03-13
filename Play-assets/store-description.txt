@@ -21,8 +21,8 @@ Of course it can time more things than cooking, like interval exercises.
 • Tap the time display to cycle between <i>stopped</i> → <i>running</i> → <i>paused</i> → <i>stopped.</i>
 • In the app, tap the checkbox to turn on/off the periodic reminder alarms.
 • Tap the widget's background or its countdown time to open the app.
-• Enter a periodic alarm interval in any of these formats: <i>10</i> [10 minutes], <i>7:30</i> [7 minutes, 30 seconds], <i>3:15:00</i> [3 hours, 15 minutes]. <i>2:00:00</i> can be shortened to <i>2:0:0</i> or <i>2::</i> [2 hours]. <i>10:00</i> can be shortened to <i>10:0</i> or <i>10:</i> or <i>10</i>. <i>:40</i> can be shortened to <i>0:40</i>.
-• The app, widget, and notification show the the countdown interval timer as well as the total time (except on Android 6 and earlier).
+• Enter a periodic alarm interval in any of these formats: <i>10</i> [10 minutes], <i>7:30</i> [7 minutes, 30 seconds], <i>3:15:00</i> [3 hours, 15 minutes]. <i>12:00</i> can be shortened to <i>12:0</i> or <i>12:</i> or <i>12</i>. <i>0:09</i> can be shortened to <i>:9</i>. <i>2:00:00</i> [2 hours] can be shortened to <i>2:0:0</i> or <i>2::</i> or <i>120</i>.
+• The app, widget, and notification display the the countdown interval time as well as the total time (requires Android 7+).
 
 <b>Note: These System Settings are required to hear and see BBQTimer alarms:</b>
 • “Alarm volume” at an audible level.
