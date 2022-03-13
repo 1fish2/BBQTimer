@@ -166,6 +166,7 @@ public class MainActivity extends AppCompatActivity {
     private ApplicationState state;
     private TimeCounter timer;
 
+    private View backgroundView;
     private Button resetButton;
     private Button pauseResumeButton;
     private Button stopButton;
@@ -182,6 +183,7 @@ public class MainActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_main);
 
+        backgroundView        = findViewById(R.id.main_container);
         resetButton           = findViewById(R.id.resetButton);
         pauseResumeButton     = findViewById(R.id.pauseResumeButton);
         stopButton            = findViewById(R.id.stopButton);
@@ -190,10 +192,12 @@ public class MainActivity extends AppCompatActivity {
         alarmPeriodView       = findViewById(R.id.alarmPeriod);
         enableRemindersToggle = findViewById(R.id.enableReminders);
 
+        backgroundView.setOnClickListener(this::onClickBackground);
         resetButton.setOnClickListener(this::onClickReset);
         pauseResumeButton.setOnClickListener(this::onClickPauseResume);
         countdownDisplay.setOnClickListener(this::onClickPauseResume);
         alarmPeriodView.setOnEditorActionListener(this::onEditAction);
+        alarmPeriodView.setOnFocusChangeListener(this::onEditTextFocusChange);
         stopButton.setOnClickListener(this::onClickStop);
         displayView.setOnClickListener(this::onClickTimerText);
         enableRemindersToggle.setOnClickListener(this::onClickEnableRemindersToggle);
@@ -357,7 +361,7 @@ public class MainActivity extends AppCompatActivity {
     @UiThread
     @NonNull
     private Snackbar makeSnackbar(@StringRes int stringResId) {
-        Snackbar snackbar = Snackbar.make(findViewById(R.id.main_container), stringResId,
+        Snackbar snackbar = Snackbar.make(backgroundView, stringResId,
                 BaseTransientBottomBar.LENGTH_LONG);
         snackbar.getView().setBackgroundColor(
                 ContextCompat.getColor(this, R.color.dark_orange_red));
@@ -445,42 +449,77 @@ public class MainActivity extends AppCompatActivity {
 
     /** Hides the soft keyboard, if we're lucky. */
     // https://stackoverflow.com/a/17789187/1682419
-    public void hideKeyboard(View v) {
+    public void hideKeyboard(@Nullable View v) {
         InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-        View focussed = getCurrentFocus();
 
         if (v != null) {
             imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
         }
+
+        View focussed = getCurrentFocus();
         if (focussed != null) {
             imm.hideSoftInputFromWindow(focussed.getWindowToken(), 0);
         }
     }
 
+    /** Parse, bound, and (if valid) adopt the alarmPeriod input text. */
+    @UiThread
+    private void processAlarmPeriodInput() {
+        String input = alarmPeriodView.getText().toString();
+        int newSeconds = TimeCounter.parseHhMmSs(input);
+
+        if (newSeconds < 0) { // Revert the invalid input.
+            alarmPeriodView.setText(state.formatIntervalTimeHhMmSs());
+        } else if (newSeconds != state.getSecondsPerReminder()) {
+            state.setSecondsPerReminder(newSeconds); // clips the value
+            state.save(this);
+            String newHhMmSs = state.formatIntervalTimeHhMmSs();
+            alarmPeriodView.setText(newHhMmSs);
+            updateUI(); // update countdownDisplay, notifications, and widgets
+            Log.i(TAG, "alarmPeriod: " + newSeconds + " seconds -> " + newHhMmSs);
+        }
+
+        alarmPeriodView.clearFocus();
+        hideKeyboard(alarmPeriodView);
+    }
+
+    /** The user tapped the background => Accept pending alarmPeriod text input. */
+    @UiThread
+    @SuppressWarnings("UnusedParameters")
+    public void onClickBackground(View view) {
+        View focussed = getCurrentFocus();
+
+        if (focussed == alarmPeriodView) {
+            processAlarmPeriodInput();
+        }
+
+        view.clearFocus();
+    }
+
+    /**
+     * The user moved focus out of the TextEdit field. Cancel any text changes.
+     * <p/>
+     * NOTE: Without this code, tapping any other widget will reset the input text as part of taking
+     * an action, but just moving focus wouldn't accept or cancel the input nor close the keyboard.
+     * <p/>
+     * TODO: Is this UI intuitive?
+     * TODO: How else to support cancel (revert)?
+     */
+    @UiThread
+    public void onEditTextFocusChange(View view, boolean nowHasFocus) {
+        if (view == alarmPeriodView && !nowHasFocus) {
+            alarmPeriodView.setText(state.formatIntervalTimeHhMmSs());
+            hideKeyboard(view);
+        }
+    }
+
     /** The user tapped a TextEdit completion action button. */
+    // TODO: On action=ACTION_DOWN, keyCode=KEYCODE_ENTER, keep it from focussing displayView? Maybe
+    //  it's OK since it was a keyboard action, thus leaving "touch mode."
     @UiThread
     public boolean onEditAction(TextView view, int actionId, KeyEvent event) {
         if (view == alarmPeriodView) {
-            String input = alarmPeriodView.getText().toString();
-            int newSeconds = TimeCounter.parseHhMmSs(input);
-
-            alarmPeriodView.clearFocus();
-            hideKeyboard(alarmPeriodView);
-            // TODO: On action=ACTION_DOWN, keyCode=KEYCODE_ENTER, stop it from focussing displayView.
-
-            // Parse, bound, and adopt the new alarm period value.
-            if (newSeconds >= 0) {
-                state.setSecondsPerReminder(newSeconds); // clips the value
-                state.save(this);
-                String newHhMmSs = state.formatIntervalTimeHhMmSs();
-                alarmPeriodView.setText(newHhMmSs);
-                updateUI(); // update countdownDisplay, notifications, and widgets
-                Log.i(TAG, "alarmPeriod: " + newSeconds + " seconds -> " + newHhMmSs);
-            } else {
-                // Revert the invalid input.
-                alarmPeriodView.setText(state.formatIntervalTimeHhMmSs());
-            }
-
+            processAlarmPeriodInput();
             return true;
         }
         return false;
