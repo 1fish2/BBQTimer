@@ -533,8 +533,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /** The user tapped a TextEdit soft keyboard completion action or physical Enter key. */
-    // TODO: On action=ACTION_DOWN, keyCode=KEYCODE_ENTER, keep it from focussing displayView? Maybe
-    //  it's OK since it was a keyboard action, thus leaving "touch mode."
+    // TODO: After any physical keystrokes (action=ACTION_DOWN + keyCode=KEYCODE_ENTER, arrow keys,
+    //  or digits), is there a way to keep it from focussing displayView? Maybe it's OK since there
+    //  was a keyboard action, thus leaving "touch mode." Does this vary by Android version?
     @UiThread
     public boolean onEditAction(TextView view, int actionId, KeyEvent event) {
         if (view == alarmPeriodView) {

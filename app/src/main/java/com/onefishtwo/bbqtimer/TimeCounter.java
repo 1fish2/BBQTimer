@@ -45,8 +45,13 @@ import androidx.annotation.VisibleForTesting;
 @SuppressWarnings("SynchronizationOnStaticField")
 public class TimeCounter {
 
-    /** Separator pattern to split hh:mm:ss strings. */
-    static final Pattern HMS_SEPARATOR = Pattern.compile("[\\s:]+");
+    /**
+     * Separator pattern to split an hh:mm:ss string into fields: a ":".
+     * <p/>
+     * This needn't handle spaces since the EditText with inputType="time" rejects spaces even from
+     * a physical keyboard, restricting typed or pasted characters to [0-9:apm] (maybe more).
+     */
+    static final Pattern HMS_SEPARATOR = Pattern.compile(":");
 
     @VisibleForTesting
     static class InjectForTesting {
@@ -382,12 +387,12 @@ public class TimeCounter {
     /**
      * Parses a time duration in the form: hh:mm:ss, mm:ss, mm. Each field has one or more digits,
      * but commonly two digits. dd[:dd[:dd]]. This is forgiving but it returns -1 if the input isn't
-     * in the right format. The input gets trimmed. The field separator is "[\s:]+".
+     * in a recognized format. All spaces get squeezed out. The field separator is ":".
      * <p/>
-     * Returns -1 if the input is not in the right format.
+     * Returns the parsed number of seconds, or -1 if the input is not in the right format.
      */
     public static int parseHhMmSs(String duration) {
-        String[] fields = HMS_SEPARATOR.split(duration.trim(), 4);
+        String[] fields = HMS_SEPARATOR.split(duration.replace(" ", ""), 4);
         int result = 0;
 
         // Too few or too many fields.
@@ -400,7 +405,7 @@ public class TimeCounter {
             return -1;
         }
 
-        for (String field : fields) { // hh:mm:ss, or mm:ss, or mm parsed so far as ss
+        for (String field : fields) { // hh:mm:ss, or mm:ss, or mm parsed so far as if ss
             int f = parseField(field);
 
             if (f < 0) {

@@ -118,22 +118,25 @@ public class TimeCounterTest {
         assertEquals(34, parseHhMmSs("  0  : 34  "));
         assertEquals(34, parseHhMmSs("  0 : 0  : 34  "));
         assertEquals(34, parseHhMmSs("  :  : 34  "));
-        assertEquals(0, parseHhMmSs("  ::: "));
+        assertEquals(0, parseHhMmSs("  :: "));
 
         // minutes
         assertEquals(12 * 60, parseHhMmSs("12"));
         assertEquals(12 * 60, parseHhMmSs("12:0"));
+        assertEquals(12 * 60, parseHhMmSs("12:000"));
+        assertEquals(12 * 60, parseHhMmSs("12: 0 "));
         assertEquals(12 * 60, parseHhMmSs("012:"));
         assertEquals(12 * 60, parseHhMmSs(":12:"));
         assertEquals(34 * 60, parseHhMmSs("  34  "));
         assertEquals(34 * 60, parseHhMmSs("  34 : "));
-        assertEquals(34 * 60, parseHhMmSs(" :: : 34 : "));
-        assertEquals(34 * 60, parseHhMmSs(" 0 34 : "));
+        assertEquals(34 * 60, parseHhMmSs("  : 34 : "));
+        assertEquals(34 * 60, parseHhMmSs(" 0 3 4 : "));
+        assertEquals(34 * 60, parseHhMmSs(" 0 3 4 : 0 0 "));
+        assertEquals(134 * 60, parseHhMmSs(" 1 3 4 : "));
 
         // minutes:seconds
-        assertEquals(60 + 59, parseHhMmSs(" 1   59 "));
         assertEquals(60 + 59, parseHhMmSs(" 1 : 59 "));
-        assertEquals(6000 + 59, parseHhMmSs(" 100 ::: 59 "));
+        assertEquals(6000 + 99, parseHhMmSs(" 100 : 99 "));
         assertEquals(3 * 60 + 12, parseHhMmSs("3:12"));
 
         // hours:minutes:seconds
@@ -145,10 +148,15 @@ public class TimeCounterTest {
         assertEquals(-1, parseHhMmSs("   "));
 
         // too many fields
-        assertEquals(-1, parseHhMmSs(" 0 0 34 : "));
-        assertEquals(-1, parseHhMmSs(" 0 0 34 : 0 "));
+        assertEquals(-1, parseHhMmSs(" ::: "));
+        assertEquals(-1, parseHhMmSs(" : :  :  "));
+        assertEquals(-1, parseHhMmSs("1:2:3:4"));
+        assertEquals(-1, parseHhMmSs(" :1:: "));
 
         // bad fields
+        assertEquals(-1, parseHhMmSs("2pm"));
+        assertEquals(-1, parseHhMmSs("10:15 am"));
+        assertEquals(-1, parseHhMmSs("-15"));
         assertEquals(-1, parseHhMmSs("-15"));
         assertEquals(-1, parseHhMmSs("-15:"));
         assertEquals(-1, parseHhMmSs(": -15 :"));
