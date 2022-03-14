@@ -40,21 +40,28 @@ import androidx.test.platform.app.InstrumentationRegistry;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.longClick;
+import static androidx.test.espresso.action.ViewActions.pressImeActionButton;
+import static androidx.test.espresso.action.ViewActions.typeTextIntoFocusedView;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.doesNotHaveFocus;
+import static androidx.test.espresso.matcher.ViewMatchers.hasFocus;
 import static androidx.test.espresso.matcher.ViewMatchers.isChecked;
+import static androidx.test.espresso.matcher.ViewMatchers.isClickable;
 import static androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
 import static androidx.test.espresso.matcher.ViewMatchers.isNotChecked;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static com.onefishtwo.bbqtimer.CustomMatchers.withCompoundDrawable;
 import static com.onefishtwo.bbqtimer.CustomViewActions.waitMsec;
 import static com.onefishtwo.bbqtimer.TimeIntervalMatcher.inTimeInterval;
+import static com.onefishtwo.bbqtimer.TimeIntervalMatcher.inWholeTimeInterval;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 
 /** Within-app Espresso UI tests. */
-// TODO: Update for the new alarm interval text field.
 // TODO: Test the app's home screen widget.
 // TODO: Add a multi-app test that checks the app's notifications.
 @LargeTest
@@ -65,6 +72,9 @@ public class InAppUITest {
     private ViewInteraction stopButton; // stop @ 00:00
     private ViewInteraction timeView;
     private ViewInteraction enableRemindersToggle;
+    private ViewInteraction alarmPeriodTextField;
+    private ViewInteraction countdownDisplay;
+    private ViewInteraction background;
 
     @NonNull
     @Rule
@@ -78,6 +88,9 @@ public class InAppUITest {
         stopButton = onView(withId(R.id.stopButton));
         timeView = onView(withId(R.id.display));
         enableRemindersToggle = onView(withId(R.id.enableReminders));
+        alarmPeriodTextField = onView(withId(R.id.alarmPeriod));
+        countdownDisplay = onView(withId(R.id.countdownDisplay));
+        background = onView(withId(R.id.main_container));
     }
 
     @After
@@ -87,6 +100,9 @@ public class InAppUITest {
         stopButton = null;
         timeView = null;
         enableRemindersToggle = null;
+        alarmPeriodTextField = null;
+        countdownDisplay = null;
+        background = null;
     }
 
 // MainActivity's FSM:
@@ -108,8 +124,13 @@ public class InAppUITest {
      */
     @Test
     public void playPauseStopUITest() {
+        final long minutes5 = 5 * 60_000L;
+
         checkStopped(); // Stopped
         checkReminder(true);
+        alarmPeriodTextField.check(matches(withText("05:00")));
+        countdownDisplay.check(matches(withText("05:00")));
+        countdownDisplay.check(matches(withText(inWholeTimeInterval(minutes5, minutes5))));
 
         enableRemindersToggle.perform(click());
         checkReminder(false);
@@ -117,7 +138,7 @@ public class InAppUITest {
         enableRemindersToggle.perform(click());
         checkReminder(true);
 
-        resetButton.perform(click()); // Reset
+        resetButton.perform(click()); // Pause/Reset
         checkPausedAt0();
 
         stopButton.perform(click()); // Stop
@@ -126,7 +147,7 @@ public class InAppUITest {
         playPauseButton.perform(click()); // Play
         checkPlaying();
         playPauseButton.perform(waitMsec(1000));
-        TimeIntervalMatcher time1 = inTimeInterval(1000, 1700); // ARM emulators need latitude
+        TimeIntervalMatcher time1 = inTimeInterval(1000, 1800);
         checkPlayingAt(time1);
 
         stopButton.perform(click()); // Stop
@@ -134,7 +155,7 @@ public class InAppUITest {
         playPauseButton.perform(waitMsec(100));
         checkStopped();
 
-        resetButton.perform(click()); // Reset
+        resetButton.perform(click()); // Pause/Reset
         checkPausedAt0();
         playPauseButton.perform(waitMsec(100));
         checkPausedAt0();
@@ -162,6 +183,11 @@ public class InAppUITest {
         TimeIntervalMatcher time5 = inTimeInterval(time4.time, time4.time + 500);
         checkPausedAt(time5);
 
+        long downFrom5lo = (minutes5 - time5.time - 100L) / 1000L * 1000L;
+        long downFrom5hi = (minutes5 - time5.time       ) / 1000L * 1000L + 1000L;
+        TimeIntervalMatcher countdown5 = inWholeTimeInterval(downFrom5lo, downFrom5hi);
+        countdownDisplay.check(matches(withText(countdown5)));
+
         resetButton.perform(click()); // Reset
         checkPausedAt0();
 
@@ -174,25 +200,31 @@ public class InAppUITest {
         TimeIntervalMatcher time6 = inTimeInterval(time1.time, time1.time + 200);
         checkPausedAt(time6);
 
-        stopButton.perform(click());
+        stopButton.perform(click()); // Stop
         checkStopped();
 
-        playPauseButton.perform(click()); // Play
-        playPauseButton.perform(waitMsec(1000));
-        playPauseButton.perform(click()); // Pause
+        countdownDisplay.perform(click()); // Play
+        checkPlaying();
+        countdownDisplay.perform(waitMsec(1000));
+        countdownDisplay.perform(click()); // Pause
         checkPausedAt(time1);
     }
 
-    /** Checks the enable-reminders checkbox and the interval TimePicker. */
+    /** Checks the enable-reminders checkbox and related widgets. */
     private void checkReminder(boolean expectEnabled) {
         enableRemindersToggle.check(matches(isCompletelyDisplayed()));
-        //minutesPicker.check(matches(isCompletelyDisplayed()));
 
         if (expectEnabled) {
             enableRemindersToggle.check(matches(isChecked()));
+            countdownDisplay.check(matches(isCompletelyDisplayed()));
+            countdownDisplay.check(matches(isClickable()));
         } else {
             enableRemindersToggle.check(matches(isNotChecked()));
+            countdownDisplay.check(matches(not(isDisplayed())));
         }
+
+        alarmPeriodTextField.check(matches(isCompletelyDisplayed()));
+        alarmPeriodTextField.check(matches(isEnabled()));
     }
 
     /** Checks that the UI is in the fully Stopped at 00:00 state. */
@@ -261,9 +293,9 @@ public class InAppUITest {
         // TODO: Check timeView's color state, flashing between either of two color states.
     }
 
-    /** Tests the interval TimePicker and enableRemindersToggle widgets. */
+    /** Tests the alarm time interval TextEdit field and enableRemindersToggle widgets. */
     @Test
-    public void minutePickerUITest() {
+    public void alarmTimeUITest() {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
         assertEquals("com.onefishtwo.bbqtimer", appContext.getPackageName());
@@ -272,13 +304,7 @@ public class InAppUITest {
         assertEquals("com.onefishtwo.bbqtimer", appContext2.getPackageName());
 
         checkReminder(true);
-        //minutesPicker.check(matches(hasFocus()));
-
-        enableRemindersToggle.perform(click());
-        checkReminder(false);
-
-        enableRemindersToggle.perform(click());
-        checkReminder(true);
+        alarmPeriodTextField.check(matches(withText("05:00")));
 
         enableRemindersToggle.perform(click());
         checkReminder(false);
@@ -287,11 +313,27 @@ public class InAppUITest {
         checkReminder(true);
         checkStopped();
 
+        alarmPeriodTextField.perform(longClick());
+        alarmPeriodTextField.check(matches(hasFocus()));
+        alarmPeriodTextField.perform(typeTextIntoFocusedView("1:2:35\n"));
+        //background.perform(click()); // TODO: Why doesn't this work? Need to wait for something?
+        alarmPeriodTextField.check(matches(withText("1:02:35")));
+        alarmPeriodTextField.check(matches(doesNotHaveFocus()));
+
+        alarmPeriodTextField.perform(longClick());
+        alarmPeriodTextField.check(matches(hasFocus()));
+        alarmPeriodTextField.perform(typeTextIntoFocusedView(":5"));
+        alarmPeriodTextField.perform(pressImeActionButton());
+        alarmPeriodTextField.check(matches(withText("00:05")));
+        alarmPeriodTextField.check(matches(doesNotHaveFocus()));
+
+        // TODO: Test cancelling text input by tapping the Periodic Alarm checkbox.
+
         playPauseButton.perform(click()); // Play
-        playPauseButton.perform(waitMsec(31_000)); // *** TODO: Test that it alarmed once **
+        playPauseButton.perform(waitMsec(6_000)); // *** TODO: Test that it alarmed once **
         playPauseButton.perform(click()); // Pause
-        TimeIntervalMatcher time31 = inTimeInterval(31_000, 32_000);
-        checkPausedAt(time31);
+        TimeIntervalMatcher time6 = inTimeInterval(6_000, 7_000);
+        checkPausedAt(time6);
     }
 
 }

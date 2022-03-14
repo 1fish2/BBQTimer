@@ -35,17 +35,24 @@ import androidx.annotation.NonNull;
  */
 public class TimeIntervalMatcher extends CustomTypeSafeMatcher<String> {
     private static final Pattern TIME_PATTERN = Pattern.compile("(\\d\\d):(\\d\\d)[.,](\\d)");
+    private static final Pattern SHORT_PATTERN = Pattern.compile("(\\d\\d):(\\d\\d)");
 
     private final long min, max;
+    private final boolean expectFraction;
 
     /** The time value parsed from the last match attempt. */
     public long time;
 
-    public TimeIntervalMatcher(long _min, long _max) {
+    public TimeIntervalMatcher(long _min, long _max, boolean _expectFraction) {
         super("a time string in [" + TimeCounter.formatHhMmSsFraction(_min)
                 + " .. " + TimeCounter.formatHhMmSsFraction(_max) + "]");
         this.min = _min;
         this.max = _max;
+        this.expectFraction = _expectFraction;
+    }
+
+    public TimeIntervalMatcher(long _min, long _max) {
+        this(_min, _max, true);
     }
 
     /** Matches a time string "MM:SS.F" in the interval [min .. max] milliseconds. */
@@ -54,9 +61,15 @@ public class TimeIntervalMatcher extends CustomTypeSafeMatcher<String> {
         return new TimeIntervalMatcher(min, max);
     }
 
+    /** Matches a time string "MM:SS" in the interval [min .. max] milliseconds. */
+    @NonNull
+    public static TimeIntervalMatcher inWholeTimeInterval(long min, long max) {
+        return new TimeIntervalMatcher(min, max, false);
+    }
+
     @Override
     protected boolean matchesSafely(@NonNull String item) {
-        java.util.regex.Matcher m = TIME_PATTERN.matcher(item);
+        java.util.regex.Matcher m = (expectFraction ? TIME_PATTERN : SHORT_PATTERN).matcher(item);
 
         if (!m.matches()) {
             return false;
@@ -75,6 +88,10 @@ public class TimeIntervalMatcher extends CustomTypeSafeMatcher<String> {
 
     /** Gets the integer value of a capturing group from the Matcher. */
     private int val(@NonNull java.util.regex.Matcher matcher, int group) {
+        if (!expectFraction && group == 3) {
+            return 0;
+        }
+
         final String s = matcher.group(group);
         return s == null ? 0 : Integer.parseInt(s);
     }
