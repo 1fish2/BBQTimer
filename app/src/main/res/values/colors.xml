@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <color name="primaryColor">#d32f2f</color>
     <color name="orange_red_text">@color/primaryColor</color>
     <color name="gray_orange_text">#ff6659</color>
     <color name="dark_orange_red">#9a0007</color>
     <color name="to_stop_text">#f44336</color>
 
-    <color name="secondaryColor">#388e3c</color>
+    <color name="secondaryColor" tools:ignore="UnusedResources">#388e3c</color>
     <color name="to_go_text">#6abf69</color>
-    <color name="secondaryDarkColor">#00600f</color>
+    <color name="secondaryDarkColor" tools:ignore="UnusedResources">#00600f</color>
 
     <color name="gray_text">#9e9e9e</color>
     <color name="grayer">#C0646464</color>
