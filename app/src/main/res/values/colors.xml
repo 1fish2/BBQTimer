@@ -5,6 +5,7 @@
     <color name="gray_orange_text">#ff6659</color>
     <color name="dark_orange_red">#9a0007</color>
     <color name="to_stop_text">#f44336</color>
+    <color name="notification_light_color">#d50000</color>
 
     <color name="secondaryColor" tools:ignore="UnusedResources">#388e3c</color>
     <color name="to_go_text">#6abf69</color>
@@ -12,7 +13,6 @@
 
     <color name="gray_text">#9e9e9e</color>
     <color name="grayer">#C0646464</color>
-    <color name="notification_light_color">#d50000</color>
     <color name="to_reset_text">#616161</color>
     <color name="translucent_background">#90000000</color>
     <color name="widget_button_background">#616161</color>

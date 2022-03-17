@@ -566,18 +566,12 @@ public class MainActivity extends AppCompatActivity {
                 : timer.isPaused() ? pausedTimerColors()
                 : R.color.reset_timer_colors;
         ColorStateList textColors = ContextCompat.getColorStateList(this, textColorsId);
-
-        // TODO: Reimplement the dim "stopped" color using Material3 colors w/day-night contrast.
-        //@ColorRes int countdownColorId = timer.isStopped()
-        //        ? R.color.reset_timer_colors
-        //        : R.color.widget_countdown_text;
         long countdownToNextAlarm = state.getMillisecondsToNextAlarm();
 
         displayView.setText(formatted);
         displayView.setTextColor(textColors);
 
         countdownDisplay.setText(TimeCounter.formatHhMmSs(countdownToNextAlarm));
-        //countdownDisplay.setTextColor(getResources().getColor(countdownColorId));
     }
 
     /** Updates the Activity's views for the current state. */
