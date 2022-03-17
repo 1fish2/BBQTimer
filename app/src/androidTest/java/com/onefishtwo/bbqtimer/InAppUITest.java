@@ -316,16 +316,21 @@ public class InAppUITest {
         alarmPeriodTextField.perform(longClick());
         alarmPeriodTextField.check(matches(hasFocus()));
         alarmPeriodTextField.perform(typeTextIntoFocusedView("1:2:35\n"));
-        //background.perform(click()); // TODO: Why doesn't this work? Need to wait for something?
         alarmPeriodTextField.check(matches(withText("1:02:35")));
         alarmPeriodTextField.check(matches(doesNotHaveFocus()));
 
         alarmPeriodTextField.perform(longClick());
         alarmPeriodTextField.check(matches(hasFocus()));
         alarmPeriodTextField.perform(typeTextIntoFocusedView(":5"));
+
+        // This background click might accept input and might de-focus the text field:
+        //    background.perform(click())
+        // so do this instead:
         alarmPeriodTextField.perform(pressImeActionButton());
-        alarmPeriodTextField.check(matches(withText("00:05")));
+
+        alarmPeriodTextField.check(matches(withText("00:05"))); // normalized
         alarmPeriodTextField.check(matches(doesNotHaveFocus()));
+        background.perform(waitMsec(10)); // avoid "never accessed" inspection warning
 
         // TODO: Test cancelling text input by tapping the Periodic Alarm checkbox.
 
@@ -334,6 +339,8 @@ public class InAppUITest {
         playPauseButton.perform(click()); // Pause
         TimeIntervalMatcher time6 = inTimeInterval(6_000, 7_000);
         checkPausedAt(time6);
+
+        // TODO: Test moving focus with TAB and arrow keys.
     }
 
 }
