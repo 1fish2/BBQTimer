@@ -79,9 +79,7 @@
             android:layout_marginRight="@dimen/button_margin"
             android:contentDescription="@string/reset"
             android:drawableLeft="@drawable/ic_replay"
-            android:focusable="true"
-            android:paddingLeft="@dimen/button_padding"
-            android:paddingRight="@dimen/button_padding" />
+            android:focusable="true" />
 
         <Button
             android:id="@+id/stopButton"

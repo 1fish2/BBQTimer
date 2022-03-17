@@ -4,9 +4,17 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.Material3.DynamicColors.DayNight">
         <!-- Customize your theme here. -->
+
         <item name="actionBarStyle">@style/FireyActionBar</item>
-        <item name="android:colorPrimary">@color/orange_red_text</item>
-        <item name="android:colorPrimaryDark">@color/dark_orange_red</item>
+
+        <!-- primary branding color: action bar, checked check boxes, and touch feedback tint -->
+        <item name="colorPrimary">@color/orange_red_text</item>
+
+        <!-- dark variant of colorPrimary: the status bar and nav bar -->
+        <item name="colorPrimaryDark">@color/dark_orange_red</item>
+
+        <!-- bright complement to colorPrimary: activated controls like text fields -->
+        <item name="colorAccent">@color/to_go_text</item>
     </style>
 
     <!-- ActionBar styles -->
