@@ -13,7 +13,7 @@
     tools:context="com.onefishtwo.bbqtimer.MainActivity">
 
     <TextView
-        android:id="@+id/display"
+        android:id="@+id/countUpDisplay"
         android:layout_width="0dp"
         android:layout_height="@dimen/display_text_view_adjusted_height"
         android:clickable="true"
@@ -59,7 +59,7 @@
         android:gravity="center_vertical|right"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/display">
+        app:layout_constraintTop_toBottomOf="@+id/countUpDisplay">
 
         <Button
             android:id="@+id/pauseResumeButton"

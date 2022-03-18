@@ -4,7 +4,7 @@ plugins {
 
 android {
     compileSdk 32
-    buildToolsVersion '33.0.0 rc1'
+    buildToolsVersion '33.0.0 rc2'
 
     defaultConfig {
         applicationId "com.onefishtwo.bbqtimer"
@@ -19,6 +19,10 @@ android {
         // The following argument makes ANDROIDX_TEST_ORCHESTRATOR run
         // "adb shell pm clear <package>" before each test run, which resets the app's state.
         testInstrumentationRunnerArguments clearPackageData: 'true'
+    }
+
+    viewBinding {
+        enabled = false
     }
 
     buildTypes {

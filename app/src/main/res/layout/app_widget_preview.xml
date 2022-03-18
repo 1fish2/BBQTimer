@@ -10,6 +10,7 @@
     android:paddingTop="@dimen/widget_vertical_padding"
     android:paddingRight="@dimen/widget_horizontal_padding"
     android:paddingBottom="@dimen/widget_vertical_padding"
+    tools:viewBindingIgnore="true"
     tools:ignore="RtlHardcoded">
 
     <ImageButton

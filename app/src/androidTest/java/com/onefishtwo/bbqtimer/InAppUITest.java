@@ -86,7 +86,7 @@ public class InAppUITest {
         playPauseButton = onView(withId(R.id.pauseResumeButton));
         resetButton = onView(withId(R.id.resetButton));
         stopButton = onView(withId(R.id.stopButton));
-        timeView = onView(withId(R.id.display));
+        timeView = onView(withId(R.id.countUpDisplay));
         enableRemindersToggle = onView(withId(R.id.enableReminders));
         alarmPeriodTextField = onView(withId(R.id.alarmPeriod));
         countdownDisplay = onView(withId(R.id.countdownDisplay));

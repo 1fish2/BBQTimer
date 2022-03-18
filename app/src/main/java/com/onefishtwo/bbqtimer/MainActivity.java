@@ -41,7 +41,7 @@ import android.view.Menu;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
-import android.widget.CompoundButton;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -61,6 +61,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.UiThread;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.app.TaskStackBuilder;
 import androidx.core.content.ContextCompat;
@@ -166,13 +167,13 @@ public class MainActivity extends AppCompatActivity {
     private ApplicationState state;
     private TimeCounter timer;
 
-    private View backgroundView;
+    private ConstraintLayout mainContainer;
     private Button resetButton;
     private Button pauseResumeButton;
     private Button stopButton;
-    private TextView displayView, countdownDisplay;
-    private EditText alarmPeriodView;
-    private CompoundButton enableRemindersToggle;
+    private TextView countUpDisplay, countdownDisplay;
+    private EditText alarmPeriod;
+    private CheckBox enableReminders;
 
     @MainThread
     @Override
@@ -181,29 +182,34 @@ public class MainActivity extends AppCompatActivity {
         viewConfiguration = -1;
         notifier = new Notifier(this);
 
+        // View Binding has potential but it makes project inspections create a lot of spurious
+        // warnings about unused resource IDs, methods, and method arguments.
+        //ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater())
+        //mainContainer = binding.getRoot()
+        //setContentView(mainContainer)
         setContentView(R.layout.activity_main);
+        mainContainer = findViewById(R.id.main_container);
 
-        backgroundView        = findViewById(R.id.main_container);
-        resetButton           = findViewById(R.id.resetButton);
-        pauseResumeButton     = findViewById(R.id.pauseResumeButton);
-        stopButton            = findViewById(R.id.stopButton);
-        displayView           = findViewById(R.id.display);
-        countdownDisplay      = findViewById(R.id.countdownDisplay);
-        alarmPeriodView       = findViewById(R.id.alarmPeriod);
-        enableRemindersToggle = findViewById(R.id.enableReminders);
+        resetButton = findViewById(R.id.resetButton);
+        pauseResumeButton = findViewById(R.id.pauseResumeButton);
+        stopButton = findViewById(R.id.stopButton);
+        countUpDisplay = findViewById(R.id.countUpDisplay);
+        countdownDisplay = findViewById(R.id.countdownDisplay);
+        alarmPeriod = findViewById(R.id.alarmPeriod);
+        enableReminders = findViewById(R.id.enableReminders);
 
-        backgroundView.setOnClickListener(this::onClickBackground);
+        mainContainer.setOnClickListener(this::onClickBackground);
         resetButton.setOnClickListener(this::onClickReset);
         pauseResumeButton.setOnClickListener(this::onClickPauseResume);
         countdownDisplay.setOnClickListener(this::onClickPauseResume);
-        alarmPeriodView.setOnEditorActionListener(this::onEditAction);
-        alarmPeriodView.setOnFocusChangeListener(this::onEditTextFocusChange);
+        alarmPeriod.setOnEditorActionListener(this::onEditAction);
+        alarmPeriod.setOnFocusChangeListener(this::onEditTextFocusChange);
         stopButton.setOnClickListener(this::onClickStop);
-        displayView.setOnClickListener(this::onClickTimerText);
-        enableRemindersToggle.setOnClickListener(this::onClickEnableRemindersToggle);
+        countUpDisplay.setOnClickListener(this::onClickTimerText);
+        enableReminders.setOnClickListener(this::onClickEnableRemindersToggle);
 
         // AutoSizeText works with android:maxLines="1" but not with android:singleLine="true".
-        TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(displayView, 16,
+        TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(countUpDisplay, 16,
                 1000, 1, TypedValue.COMPLEX_UNIT_DIP);
         TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(countdownDisplay, 14,
                 56, 1, TypedValue.COMPLEX_UNIT_DIP);
@@ -361,7 +367,7 @@ public class MainActivity extends AppCompatActivity {
     @UiThread
     @NonNull
     private Snackbar makeSnackbar(@StringRes int stringResId) {
-        Snackbar snackbar = Snackbar.make(backgroundView, stringResId,
+        Snackbar snackbar = Snackbar.make(mainContainer, stringResId,
                 BaseTransientBottomBar.LENGTH_LONG);
         snackbar.getView().setBackgroundColor(
                 ContextCompat.getColor(this, R.color.dark_orange_red));
@@ -438,7 +444,7 @@ public class MainActivity extends AppCompatActivity {
     @UiThread
     @SuppressWarnings("UnusedParameters")
     public void onClickEnableRemindersToggle(View v) {
-        state.setEnableReminders(enableRemindersToggle.isChecked());
+        state.setEnableReminders(enableReminders.isChecked());
         state.save(this);
         updateUI();
 
@@ -473,18 +479,18 @@ public class MainActivity extends AppCompatActivity {
      */
     @UiThread
     private void displayAlarmPeriod(@NonNull String newText) {
-        if (!newText.equals(alarmPeriodView.getText().toString())) {
-            alarmPeriodView.setText(newText);
+        if (!newText.equals(alarmPeriod.getText().toString())) {
+            alarmPeriod.setText(newText);
         }
     }
 
     /** Parse, bound, and (if valid) adopt the alarmPeriod input text. */
     @UiThread
     private void processAlarmPeriodInput() {
-        String input = alarmPeriodView.getText().toString();
+        String input = alarmPeriod.getText().toString();
         int newSeconds = TimeCounter.parseHhMmSs(input);
 
-        hideKeyboard(alarmPeriodView);
+        hideKeyboard(alarmPeriod);
 
         if (newSeconds >= 0 && newSeconds != state.getSecondsPerReminder()) {
             state.setSecondsPerReminder(newSeconds); // clips the value
@@ -497,7 +503,7 @@ public class MainActivity extends AppCompatActivity {
             displayAlarmPeriod(state.formatIntervalTimeHhMmSs());
         }
 
-        alarmPeriodView.clearFocus(); // TODO: Keep this from running onEditTextFocusChange work?
+        alarmPeriod.clearFocus(); // TODO: Keep this from running onEditTextFocusChange work?
    }
 
     /** The user tapped the background => Accept pending alarmPeriod text input. */
@@ -508,7 +514,7 @@ public class MainActivity extends AppCompatActivity {
     public void onClickBackground(View view) {
         View focussed = getCurrentFocus();
 
-        if (focussed == alarmPeriodView) {
+        if (focussed == alarmPeriod) {
             processAlarmPeriodInput();
         }
 
@@ -526,7 +532,7 @@ public class MainActivity extends AppCompatActivity {
      */
     @UiThread
     public void onEditTextFocusChange(View view, boolean nowHasFocus) {
-        if (view == alarmPeriodView && !nowHasFocus) {
+        if (view == alarmPeriod && !nowHasFocus) {
             hideKeyboard(view);
             displayAlarmPeriod(state.formatIntervalTimeHhMmSs());
         }
@@ -538,7 +544,7 @@ public class MainActivity extends AppCompatActivity {
     //  was a keyboard action, thus leaving "touch mode." Does this vary by Android version?
     @UiThread
     public boolean onEditAction(TextView view, int actionId, KeyEvent event) {
-        if (view == alarmPeriodView) {
+        if (view == alarmPeriod) {
             processAlarmPeriodInput();
             return true;
         }
@@ -568,8 +574,8 @@ public class MainActivity extends AppCompatActivity {
         ColorStateList textColors = ContextCompat.getColorStateList(this, textColorsId);
         long countdownToNextAlarm = state.getMillisecondsToNextAlarm();
 
-        displayView.setText(formatted);
-        displayView.setTextColor(textColors);
+        countUpDisplay.setText(formatted);
+        countUpDisplay.setTextColor(textColors);
 
         countdownDisplay.setText(TimeCounter.formatHhMmSs(countdownToNextAlarm));
     }
@@ -596,7 +602,7 @@ public class MainActivity extends AppCompatActivity {
                     isRunning ? R.drawable.ic_pause : R.drawable.ic_play, 0, 0, 0);
             stopButton.setVisibility(isStopped ? View.INVISIBLE : View.VISIBLE);
             countdownDisplay.setVisibility(areRemindersEnabled ? View.VISIBLE : View.INVISIBLE);
-            enableRemindersToggle.setChecked(areRemindersEnabled);
+            enableReminders.setChecked(areRemindersEnabled);
             displayAlarmPeriod(state.formatIntervalTimeHhMmSs());
         }
     }
