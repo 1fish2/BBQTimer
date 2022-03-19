@@ -2,10 +2,10 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.Material3.DynamicColors.DayNight">
-        <!-- Customize your theme here. -->
+    <style name="AppTheme" parent="Theme.Material3.DayNight">
 
         <item name="actionBarStyle">@style/FireyActionBar</item>
+        <item name="actionBarSize">40dp</item>
 
         <!-- primary branding color: action bar, checked check boxes, and touch feedback tint -->
         <item name="colorPrimary">@color/to_go_text</item>
