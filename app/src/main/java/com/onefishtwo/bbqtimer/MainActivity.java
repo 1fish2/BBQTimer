@@ -394,6 +394,8 @@ public class MainActivity extends AppCompatActivity {
     @UiThread
     @SuppressWarnings("UnusedParameters")
     public void onClickPauseResume(View v) {
+        alarmPeriod.clearFocus(); // defocus and hide the soft keyboard
+
         timer.toggleRunPause();
         updateHandler.beginScheduledUpdate();
         updateUI();
@@ -409,6 +411,8 @@ public class MainActivity extends AppCompatActivity {
     public void onClickReset(View v) {
         boolean wasStopped = timer.isStopped();
 
+        alarmPeriod.clearFocus();
+
         timer.reset();
         updateHandler.beginScheduledUpdate();
         updateUI();
@@ -422,6 +426,8 @@ public class MainActivity extends AppCompatActivity {
     @UiThread
     @SuppressWarnings("UnusedParameters")
     public void onClickStop(View v) {
+        alarmPeriod.clearFocus();
+
         timer.stop();
         updateHandler.endScheduledUpdates();
         updateUI();
@@ -431,6 +437,8 @@ public class MainActivity extends AppCompatActivity {
     @UiThread
     @SuppressWarnings("UnusedParameters")
     public void onClickTimerText(View v) {
+        alarmPeriod.clearFocus();
+
         timer.cycle();
         updateHandler.beginScheduledUpdate();
         updateUI();
@@ -444,6 +452,8 @@ public class MainActivity extends AppCompatActivity {
     @UiThread
     @SuppressWarnings("UnusedParameters")
     public void onClickEnableRemindersToggle(View v) {
+        alarmPeriod.clearFocus();
+
         state.setEnableReminders(enableReminders.isChecked());
         state.save(this);
         updateUI();
