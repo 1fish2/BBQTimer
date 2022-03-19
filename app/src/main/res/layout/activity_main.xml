@@ -63,33 +63,39 @@
 
         <Button
             android:id="@+id/pauseResumeButton"
-            style="?android:attr/buttonBarButtonStyle"
+            style="?attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:contentDescription="@string/start_pause"
             android:drawableLeft="@drawable/ic_play"
-            android:focusable="true" />
+            android:drawableTint="@color/button_tint_color"
+            android:focusable="true"
+            tools:targetApi="m" />
 
         <Button
             android:id="@+id/resetButton"
-            style="?android:attr/buttonBarButtonStyle"
+            style="?attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/button_margin"
             android:layout_marginRight="@dimen/button_margin"
             android:contentDescription="@string/reset"
             android:drawableLeft="@drawable/ic_replay"
-            android:focusable="true" />
+            android:drawableTint="@color/button_tint_color"
+            android:focusable="true"
+            tools:targetApi="m" />
 
         <Button
             android:id="@+id/stopButton"
-            style="?android:attr/buttonBarButtonStyle"
+            style="?attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:contentDescription="@string/stop"
             android:drawableLeft="@drawable/ic_stop"
+            android:drawableTint="@color/button_tint_color"
             android:focusable="true"
-            android:nextFocusForward="@+id/enableReminders" />
+            android:nextFocusForward="@+id/enableReminders"
+            tools:targetApi="m" />
     </LinearLayout>
 
     <androidx.constraintlayout.widget.Barrier
