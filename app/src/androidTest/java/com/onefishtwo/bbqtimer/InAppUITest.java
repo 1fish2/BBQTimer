@@ -328,17 +328,24 @@ public class InAppUITest {
         // so do this instead:
         alarmPeriodTextField.perform(pressImeActionButton());
 
+        // Since background.perform(click()) hasn't yet panned out, check the background View to
+        // avoid a "Field is assigned but never accessed" inspection warning.
+        //
+        // BEWARE: Attempts to do background.perform(waitMsec(...)) before the click() or instead of
+        // the playPauseButton.perform(waitMsec(...)) can make the "wait" occur BEFORE the click and
+        // thus break the test! Why?
+        background.check(matches(isDisplayed()));
+
         alarmPeriodTextField.check(matches(withText("00:05"))); // normalized
         alarmPeriodTextField.check(matches(doesNotHaveFocus()));
-        background.perform(waitMsec(10)); // avoid "never accessed" inspection warning
-
-        // TODO: Test cancelling text input by tapping the Periodic Alarm checkbox.
 
         playPauseButton.perform(click()); // Play
         playPauseButton.perform(waitMsec(6_000)); // *** TODO: Test that it alarmed once **
         playPauseButton.perform(click()); // Pause
         TimeIntervalMatcher time6 = inTimeInterval(6_000, 7_000);
         checkPausedAt(time6);
+
+        // TODO: Test cancelling text input by tapping the Periodic Alarm checkbox.
 
         // TODO: Test moving focus with TAB and arrow keys.
     }
