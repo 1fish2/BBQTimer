@@ -40,6 +40,7 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.view.textclassifier.TextClassifier;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -207,6 +208,21 @@ public class MainActivity extends AppCompatActivity {
         stopButton.setOnClickListener(this::onClickStop);
         countUpDisplay.setOnClickListener(this::onClickTimerText);
         enableReminders.setOnClickListener(this::onClickEnableRemindersToggle);
+
+        // Workaround an Android bug where double-clicking the alarmPeriod EditText field would
+        // cause the following log errors:
+        //
+        // TextClassifierImpl: Error suggesting selection for text. No changes to selection suggested.
+        //   java.io.FileNotFoundException: No file for null locale
+        //       at android.view.textclassifier.TextClassifierImpl.getSmartSelection(TextClassifierImpl.java:208)
+        //       ...
+        // TextClassifierImpl: Error getting assist info.
+        //   java.io.FileNotFoundException: No file for null locale
+        //       at android.view.textclassifier.TextClassifierImpl.getSmartSelection(TextClassifierImpl.java:208)
+        //       ...
+        if (Build.VERSION.SDK_INT == 27) {
+            alarmPeriod.setTextClassifier(TextClassifier.NO_OP);
+        }
 
         // AutoSizeText works with android:maxLines="1" but not with android:singleLine="true".
         TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(countUpDisplay, 16,
@@ -517,8 +533,8 @@ public class MainActivity extends AppCompatActivity {
    }
 
     /** The user tapped the background => Accept pending alarmPeriod text input. */
-    // TODO: Why doesn't this always remove the blinking caret? Depends on OS version? Need to wait
-    //  for the soft keyboard to close?
+    // TODO: Why doesn't this always remove the blinking caret? Works in API 28+? Would it help to
+    //  wait for the soft keyboard to close?
     @UiThread
     @SuppressWarnings("UnusedParameters")
     public void onClickBackground(View view) {
