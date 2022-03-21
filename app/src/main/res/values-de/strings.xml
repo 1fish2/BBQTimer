@@ -7,7 +7,7 @@
     <string name="app_description">Eine Stoppuhr, die Sie auf dem Sperrbildschirm verwenden können.</string>
     <string name="dismiss_tip">Wischen um zu stoppen</string>
     <string name="need_alarm_access">BBQ Timer benötigt „Wecker und Erinnerungen“ Spezieller App-Zugriff zum Einstellen von Alarmen</string>
-    <string name="interval_hint">h:mm:ss</string>
+    <string name="interval_hint">h:m:s</string>
     <string name="notification_alarm_channel_name">Alarm</string>
     <string name="notification_alarm_channel_description">Wichtigkeit muss für Alarme hoch oder höher sein; Mittel oder höher für den Sperrbildschirm</string>
     <string name="notification_body">Alarm alle %1$s</string>
@@ -19,7 +19,7 @@
     <string name="pause">Anhalten</string>
     <string name="pause_at_0_long">Anhalten bei 00:00</string>
     <string name="pause_at_0_short">Anhalten 0:00</string>
-    <string name="reminder_switch">Periodisches Alarmintervall (mm oder mm:ss):</string>
+    <string name="reminder_switch">Periodisches Alarmintervall (m oder m:s oder h:m:s):</string>
     <string name="reset">Zurücksetzen</string>
     <string name="start">Start</string>
     <string name="start_at_0_long">Start</string>
