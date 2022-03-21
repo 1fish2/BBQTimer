@@ -67,6 +67,8 @@ import static org.junit.Assert.assertEquals;
 @LargeTest
 @RunWith(AndroidJUnit4.class)
 public class InAppUITest {
+    private static final TimeIntervalMatcher TIME_ZERO = inTimeInterval(0, 0); // supports locales
+
     private ViewInteraction playPauseButton; // play/pause, formerly known as start/stop
     private ViewInteraction resetButton; // reset (pause @ 00:00); pause/replay icon or hidden
     private ViewInteraction stopButton; // stop @ 00:00
@@ -232,7 +234,7 @@ public class InAppUITest {
         playPauseButton.check(matches(isCompletelyDisplayed()));
         resetButton.check(matches(isCompletelyDisplayed()));
         stopButton.check(matches(not(isDisplayed())));
-        timeView.check(matches(withText("00:00.0")));
+        timeView.check(matches(withText(TIME_ZERO)));
 
         playPauseButton.check(matches(withCompoundDrawable(R.drawable.ic_play)));
         resetButton.check(matches(withCompoundDrawable(R.drawable.ic_pause)));
@@ -247,7 +249,7 @@ public class InAppUITest {
         playPauseButton.check(matches(isCompletelyDisplayed()));
         resetButton.check(matches(not(isDisplayed())));
         stopButton.check(matches(isCompletelyDisplayed()));
-        timeView.check(matches(withText("00:00.0")));
+        timeView.check(matches(withText(TIME_ZERO)));
 
         playPauseButton.check(matches(withCompoundDrawable(R.drawable.ic_play)));
         stopButton.check(matches(withCompoundDrawable(R.drawable.ic_stop)));
