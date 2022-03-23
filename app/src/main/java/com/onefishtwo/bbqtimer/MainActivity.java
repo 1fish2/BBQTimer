@@ -209,20 +209,7 @@ public class MainActivity extends AppCompatActivity {
         countUpDisplay.setOnClickListener(this::onClickTimerText);
         enableReminders.setOnClickListener(this::onClickEnableRemindersToggle);
 
-        // Workaround an Android bug where double-clicking the alarmPeriod EditText field would
-        // cause the following log errors:
-        //
-        // TextClassifierImpl: Error suggesting selection for text. No changes to selection suggested.
-        //   java.io.FileNotFoundException: No file for null locale
-        //       at android.view.textclassifier.TextClassifierImpl.getSmartSelection(TextClassifierImpl.java:208)
-        //       ...
-        // TextClassifierImpl: Error getting assist info.
-        //   java.io.FileNotFoundException: No file for null locale
-        //       at android.view.textclassifier.TextClassifierImpl.getSmartSelection(TextClassifierImpl.java:208)
-        //       ...
-        if (Build.VERSION.SDK_INT == 27) {
-            alarmPeriod.setTextClassifier(TextClassifier.NO_OP);
-        }
+        workaroundTextClassifier(alarmPeriod);
 
         // AutoSizeText works with android:maxLines="1" but not with android:singleLine="true".
         TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(countUpDisplay, 16,
@@ -248,6 +235,35 @@ public class MainActivity extends AppCompatActivity {
         }
 
         logTheConfiguration(getResources().getConfiguration());
+    }
+
+    /**
+     * API 27: Work around an Android bug where double-clicking the EditText field would cause these
+     * log errors:
+     *
+     *   TextClassifierImpl: Error suggesting selection for text. No changes to selection suggested.
+     *     java.io.FileNotFoundException: No file for null locale
+     *         at android.view.textclassifier.TextClassifierImpl.getSmartSelection(TextClassifierImpl.java:208)
+     *         ...
+     *   TextClassifierImpl: Error getting assist info.
+     *     java.io.FileNotFoundException: No file for null locale
+     *         at android.view.textclassifier.TextClassifierImpl.getSmartSelection(TextClassifierImpl.java:208)
+     *         ...
+     *
+     * API > 27: Work around an Android bug that calls the TextClassifier on the main thread
+     * (UI thread) [e.g. when the user double-taps the EditText field, or long-presses it, or
+     * dismisses the soft keyboard when there's a text selection], causing this log warning even
+     * though no app code is on the call stack:
+     *
+     *   W/androidtc: TextClassifier called on main thread.
+     *
+     * To avoid the delay and potential ANR, just bypass the irrelevant TextClassifier. (This
+     * problem might not occur on API 28 - 29, but it's safer to do this uniformly.)
+     */
+    private static void workaroundTextClassifier(EditText editText) {
+        if (Build.VERSION.SDK_INT >= 27) {
+            editText.setTextClassifier(TextClassifier.NO_OP);
+        }
     }
 
     private void logTheConfiguration(@NonNull Configuration config) {
