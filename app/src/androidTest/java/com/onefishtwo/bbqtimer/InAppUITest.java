@@ -340,6 +340,7 @@ public class InAppUITest {
 
         alarmPeriodTextField.check(matches(withText("00:05"))); // normalized
         alarmPeriodTextField.check(matches(doesNotHaveFocus()));
+        playPauseButton.perform(waitMsec(100)); // work around Espresso test flakiness
 
         playPauseButton.perform(click()); // Play
         playPauseButton.perform(waitMsec(6_000)); // *** TODO: Test that it alarmed once **
