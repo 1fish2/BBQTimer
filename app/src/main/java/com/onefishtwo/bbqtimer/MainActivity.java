@@ -260,6 +260,7 @@ public class MainActivity extends AppCompatActivity {
      * To avoid the delay and potential ANR, just bypass the irrelevant TextClassifier. (This
      * problem might not occur on API 28 - 29, but it's safer to do this uniformly.)
      */
+    @SuppressWarnings("SpellCheckingInspection")
     private static void workaroundTextClassifier(EditText editText) {
         if (Build.VERSION.SDK_INT >= 27) {
             editText.setTextClassifier(TextClassifier.NO_OP);
