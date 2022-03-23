@@ -12,18 +12,12 @@
 #   public *;
 #}
 
-# Uncomment this to preserve the line number information for
+# Uncomment these lines to preserve the line number information for
 # debugging stack traces.
 -keepattributes SourceFile,LineNumberTable
-
-# If you keep the line number information, uncomment this to
-# hide the original source file name.
 -renamesourcefileattribute SourceFile
 
 #-keep class androidx.core.** { *; }
 #-keep class androidx.core.content.ContextCompat { *; }
 -keepattributes Signature
 -keepattributes Exceptions
-
-# Optionally log the full report of R8 proguard rules.
--printconfiguration app/build/outputs/logs/full-r8-config.txt

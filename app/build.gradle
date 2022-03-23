@@ -9,7 +9,7 @@ android {
     defaultConfig {
         applicationId "com.onefishtwo.bbqtimer"
         versionCode 16
-        versionName '2.6'
+        versionName '3.0'
         minSdk 21
         targetSdk 30
         resConfigs 'en', 'de'
@@ -26,6 +26,15 @@ android {
     }
 
     buildTypes {
+        debugProguard {
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-test-rules.txt'
+            testProguardFile 'proguard-test-rules.txt'
+            minifyEnabled true
+            shrinkResources true
+            signingConfig debug.signingConfig
+            debuggable true
+            //zipAlignEnabled true
+        }
         release {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.txt'
             minifyEnabled true

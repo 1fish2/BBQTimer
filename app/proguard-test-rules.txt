@@ -12,8 +12,28 @@
 #   public *;
 #}
 
+# Uncomment these lines to preserve the line number information for
+# debugging stack traces.
+-keepattributes SourceFile,LineNumberTable
+-renamesourcefileattribute SourceFile
+
+#-keep class androidx.core.** { *; }
+#-keep class androidx.core.content.ContextCompat { *; }
 -keepattributes Signature
 -keepattributes Exceptions
+
+# Log the full report of R8 proguard rules.
+# Seems the same as app/build/outputs/mapping/debugProguard/configuration.txt
+#-printconfiguration build/outputs/logs/full-r8-config.txt
+
+# Log the entry points R8 determined from the project's keep rules.
+# Seems the same as app/build/outputs/mapping/debugProguard/seeds.txt
+#-printseeds build/outputs/logs/r8-code-seeds.txt
+
+# Log the code that R8 removed.
+# Seems the same as app/build/outputs/mapping/debugProguard/usage.txt
+#-printusage build/outputs/logs/r8-code-removed.txt
+
 
 # The support library contains references to newer platform versions.
 # Don't warn about those in case this app is linking against an older
