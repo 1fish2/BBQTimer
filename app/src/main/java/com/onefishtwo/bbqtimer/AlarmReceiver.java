@@ -19,7 +19,6 @@
 
 package com.onefishtwo.bbqtimer;
 
-import android.annotation.TargetApi;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
@@ -178,7 +177,6 @@ public class AlarmReceiver extends BroadcastReceiver {
      * @param pendingIntent the PendingIntent to wake this receiver in nextReminder msec
      */
     @RequiresPermission("android.permission.SCHEDULE_EXACT_ALARM")
-    @TargetApi(21)
     private static void setAlarmClockV21(Context context, @NonNull AlarmManager alarmMgr,
             @NonNull ApplicationState state, long nextReminder, PendingIntent pendingIntent) {
         PendingIntent activityPI = makeActivityPendingIntent(context);
