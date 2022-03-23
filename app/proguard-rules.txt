@@ -24,3 +24,6 @@
 #-keep class androidx.core.content.ContextCompat { *; }
 -keepattributes Signature
 -keepattributes Exceptions
+
+# Optionally log the full report of R8 proguard rules.
+-printconfiguration app/build/outputs/logs/full-r8-config.txt
