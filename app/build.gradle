@@ -31,7 +31,7 @@ android {
             testProguardFile 'proguard-test-rules.txt'
             minifyEnabled true
             shrinkResources true
-            signingConfig debug.signingConfig
+            signingConfig signingConfigs.debug
             debuggable true
             //zipAlignEnabled true
         }
