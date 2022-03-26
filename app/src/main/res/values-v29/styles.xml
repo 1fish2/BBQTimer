@@ -2,7 +2,7 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.Material3.Dark">
+    <style name="AppTheme" parent="Theme.Material3.DayNight">
 
         <item name="actionBarStyle">@style/FireyActionBar</item>
         <item name="actionBarSize">40dp</item>
@@ -15,18 +15,6 @@
 
         <!-- bright complement to colorPrimary: activated controls like text fields -->
         <item name="colorAccent">@color/to_go_text</item>
-    </style>
-
-    <!-- ActionBar styles -->
-    <style name="FireyActionBar" parent="Widget.AppCompat.ActionBar">
-        <!-- Android API < 28 shows the theme's colorPrimary rather than this background color in
-             the app switcher, but no need to work around that. -->
-        <item name="background">@color/orange_red_text</item>
-        <item name="titleTextStyle">@style/FireyActionBar.Text</item>
-    </style>
-
-    <style name="FireyActionBar.Text" parent="TextAppearance.AppCompat.Widget.ActionBar.Title">
-        <item name="android:textStyle">bold</item>
     </style>
 
 </resources>
