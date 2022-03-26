@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
     <color name="orange_red_text">#d32f2f</color>
-    <color name="gray_orange_text">#ff6659</color>
+    <color name="deep_orange_text">#e64a19</color>
     <color name="dark_orange_red">#9a0007</color>
-    <color name="to_stop_text">#f44336</color>
+    <color name="to_stop_text">#ef6c00</color>
     <color name="notification_light_color">#d50000</color>
 
     <color name="secondaryColor" tools:ignore="UnusedResources">#388e3c</color>
