@@ -34,6 +34,7 @@
         android:id="@+id/countdownDisplay"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:minHeight="@dimen/countdown_text_size"
         android:layout_marginEnd="@dimen/button_padding"
         android:focusable="true"
         android:gravity="center"
