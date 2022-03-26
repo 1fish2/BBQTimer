@@ -70,7 +70,7 @@
 
     <!-- Label for the switch that enables/disables periodic reminder alarms AND ALSO the label for
       the widget for setting the number of minutes between reminders. -->
-    <string name="reminder_switch">Periodic alarm interval (m or m:s or h:m:s):</string>
+    <string name="reminder_switch">Periodic alarm interval (m, m:s, h:m:s):</string>
 
     <!-- Text field "hint" to explain what to type in. -->
     <string name="interval_hint">h:m:s</string>
