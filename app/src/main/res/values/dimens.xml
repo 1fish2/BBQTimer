@@ -16,6 +16,7 @@
     <dimen name="widget_button_margin">1dp</dimen>
     <dimen name="widget_margin">8dp</dimen>
     <dimen name="widget_tap_margin">6dp</dimen>
+    <dimen name="fold_margin">16dp</dimen>
 
     <!-- Display TextView layout height (overridden for specific screen configs). -->
     <dimen name="display_text_view_height">70dp</dimen>
@@ -23,6 +24,8 @@
     <dimen name="portrait_display_text_view_height">120dp</dimen>
     <!-- Display TextView layout height adjusted for landscape screen height (or portrait screen width). -->
     <dimen name="display_text_view_adjusted_height">@dimen/display_text_view_height</dimen>
+    <!-- Minimum layout width for the interval time period text field. -->
+    <dimen name="alarm_period_min_width">120dp</dimen>
 
     <!-- Text sizes. -->
     <!-- Uses dp instead of sp to fit the space, independent of the user's font size setting.

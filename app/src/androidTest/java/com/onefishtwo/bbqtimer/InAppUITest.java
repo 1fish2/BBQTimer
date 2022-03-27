@@ -40,6 +40,7 @@ import androidx.test.platform.app.InstrumentationRegistry;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.doubleClick;
 import static androidx.test.espresso.action.ViewActions.longClick;
 import static androidx.test.espresso.action.ViewActions.pressImeActionButton;
 import static androidx.test.espresso.action.ViewActions.typeTextIntoFocusedView;
@@ -315,13 +316,20 @@ public class InAppUITest {
         checkReminder(true);
         checkStopped();
 
+        // NOTE: Changing the EditText to a Material EditText with a Clear (X) button made this test
+        // fragile, so longClick() or doubleClick() alone fails to select the text.
+        // doubleClick() is understandable since the first click shows the (X) and slides the text
+        // leftwards.
+        alarmPeriodTextField.check(matches(not(hasFocus())));
+        alarmPeriodTextField.perform(click());
+        alarmPeriodTextField.check(matches(hasFocus()));
         alarmPeriodTextField.perform(longClick());
         alarmPeriodTextField.check(matches(hasFocus()));
         alarmPeriodTextField.perform(typeTextIntoFocusedView("1:2:35\n"));
         alarmPeriodTextField.check(matches(withText("1:02:35")));
         alarmPeriodTextField.check(matches(doesNotHaveFocus()));
 
-        alarmPeriodTextField.perform(longClick());
+        alarmPeriodTextField.perform(doubleClick());
         alarmPeriodTextField.check(matches(hasFocus()));
         alarmPeriodTextField.perform(typeTextIntoFocusedView(":5"));
 
@@ -330,8 +338,8 @@ public class InAppUITest {
         // so do this instead:
         alarmPeriodTextField.perform(pressImeActionButton());
 
-        // Since background.perform(click()) hasn't yet panned out, check the background View to
-        // avoid a "Field is assigned but never accessed" inspection warning.
+        // Since background.perform(click()) hasn't yet worked in this test, do something with the
+        // background View to avoid a "Field is assigned but never accessed" inspection warning.
         //
         // BEWARE: Attempts to do background.perform(waitMsec(...)) before the click() or instead of
         // the playPauseButton.perform(waitMsec(...)) can make the "wait" occur BEFORE the click and

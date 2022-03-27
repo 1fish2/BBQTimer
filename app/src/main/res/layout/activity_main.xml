@@ -44,10 +44,10 @@
         android:text="@string/time0"
         android:textSize="@dimen/countdown_text_size"
         android:background="?attr/selectableItemBackground"
-        app:layout_constraintBottom_toBottomOf="@+id/buttonBar"
-        app:layout_constraintEnd_toStartOf="@+id/buttonBar"
+        app:layout_constraintBottom_toBottomOf="@id/buttonBar"
+        app:layout_constraintEnd_toStartOf="@id/buttonBar"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/buttonBar"
+        app:layout_constraintTop_toTopOf="@id/buttonBar"
         app:layout_constrainedWidth="true"
         app:layout_constrainedHeight="true"
         app:layout_constraintHorizontal_bias="1" />
@@ -60,7 +60,7 @@
         android:gravity="center_vertical|right"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/countUpDisplay">
+        app:layout_constraintTop_toBottomOf="@id/countUpDisplay">
 
         <Button
             android:id="@+id/pauseResumeButton"
@@ -95,7 +95,7 @@
             android:drawableLeft="@drawable/ic_stop"
             android:drawableTint="@color/button_tint_color"
             android:focusable="true"
-            android:nextFocusForward="@+id/enableReminders"
+            android:nextFocusForward="@id/enableReminders"
             tools:targetApi="m" />
     </LinearLayout>
 
@@ -122,32 +122,40 @@
         app:layout_constrainedHeight="true"
         app:layout_constrainedWidth="true"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/alarmPeriod"
+        app:layout_constraintEnd_toStartOf="@id/alarmPeriodLayout"
         app:layout_constraintHorizontal_bias="1"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/fold"
+        app:layout_constraintTop_toBottomOf="@id/fold"
         app:layout_constraintVertical_bias="0"
         app:layout_constraintWidth_max="@dimen/max_checkbox_width" />
 
-    <EditText
-        android:id="@+id/alarmPeriod"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/alarmPeriodLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="right"
-        android:maxLines="1"
-        android:lines="1"
-        android:minHeight="48dp"
-        android:paddingLeft="@dimen/small_button_padding"
-        android:inputType="time"
+        android:layout_marginTop="@dimen/fold_margin"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
         android:hint="@string/interval_hint"
-        android:maxLength="9"
-        android:ems="4"
-        android:text="@string/widget_preview_countdown"
-        android:textSize="@dimen/controls_text_size"
-        android:importantForAutofill="no"
-        app:layout_constrainedHeight="true"
         app:layout_constraintTop_toBottomOf="@id/fold"
         app:layout_constraintBottom_toBottomOf="@+id/enableReminders"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintVertical_bias="0.5"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/alarmPeriod"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minWidth="@dimen/alarm_period_min_width"
+            android:gravity="right"
+            android:maxLines="1"
+            android:lines="1"
+            android:paddingLeft="@dimen/small_button_padding"
+            android:inputType="time"
+            android:maxLength="9"
+            android:ems="8"
+            android:text="@string/widget_preview_countdown"
+            android:textSize="@dimen/controls_text_size"
+            android:importantForAutofill="no" />
+    </com.google.android.material.textfield.TextInputLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

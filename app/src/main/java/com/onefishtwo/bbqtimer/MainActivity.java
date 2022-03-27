@@ -48,6 +48,7 @@ import android.widget.TextView;
 
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.textfield.TextInputLayout;
 import com.onefishtwo.bbqtimer.state.ApplicationState;
 
 import java.lang.annotation.Retention;
@@ -209,7 +210,23 @@ public class MainActivity extends AppCompatActivity {
         countUpDisplay.setOnClickListener(this::onClickTimerText);
         enableReminders.setOnClickListener(this::onClickEnableRemindersToggle);
 
+        // Set the TextClassifier *THEN* enable the CLEAR_TEXT (X) endIcon.
+        //
+        // Workaround: On Android SDK ≤ 27, the (X) endIcon is extra distracting and annoying when
+        // the Activity opens with the text selection/caret in the EditText field.
+        //
+        // Q. Is there a way to avoid that selection initially and when the user tries to defocus
+        // the EditText by closing the soft keyboard or tapping another view? Typing Enter or TAB
+        // works, although that focuses on countUpDisplay, so tap the background afterwards.
+        //
+        // Also, when the EditText has a selection but the soft keyboard is closed, tapping the (X)
+        // clears the text but doesn't open the soft keyboard. A setEndIconOnClickListener() could
+        // probably work around that.
         workaroundTextClassifier(alarmPeriod);
+        TextInputLayout alarmPeriodLayout = findViewById(R.id.alarmPeriodLayout);
+        if (Build.VERSION.SDK_INT > 27) {
+            alarmPeriodLayout.setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT);
+        }
 
         // AutoSizeText works with android:maxLines="1" but not with android:singleLine="true".
         TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(countUpDisplay, 16,
