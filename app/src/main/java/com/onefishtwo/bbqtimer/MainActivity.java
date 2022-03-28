@@ -19,6 +19,7 @@
 
 package com.onefishtwo.bbqtimer;
 
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.PendingIntent;
 import android.content.ActivityNotFoundException;
@@ -211,22 +212,9 @@ public class MainActivity extends AppCompatActivity {
         enableReminders.setOnClickListener(this::onClickEnableRemindersToggle);
 
         // Set the TextClassifier *THEN* enable the CLEAR_TEXT (X) endIcon.
-        //
-        // Workaround: On Android SDK ≤ 27, the (X) endIcon is extra distracting and annoying when
-        // the Activity opens with the text selection/caret in the EditText field.
-        //
-        // Q. Is there a way to avoid that selection initially and when the user tries to defocus
-        // the EditText by closing the soft keyboard or tapping another view? Typing Enter or TAB
-        // works, although that focuses on countUpDisplay, so tap the background afterwards.
-        //
-        // Also, when the EditText has a selection but the soft keyboard is closed, tapping the (X)
-        // clears the text but doesn't open the soft keyboard. A setEndIconOnClickListener() could
-        // probably work around that.
         workaroundTextClassifier(alarmPeriod);
         TextInputLayout alarmPeriodLayout = findViewById(R.id.alarmPeriodLayout);
-        if (Build.VERSION.SDK_INT > 27) {
-            alarmPeriodLayout.setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT);
-        }
+        alarmPeriodLayout.setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT);
 
         // AutoSizeText works with android:maxLines="1" but not with android:singleLine="true".
         TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(countUpDisplay, 16,
@@ -340,6 +328,11 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
+        // Workaround: On Android SDK ≤ 27, the automatic focus/caret in the text field on Activity
+        // start, app switch, or screen rotation is distracting and annoying, esp. with the
+        // CLEAR_TEXT (X) endIcon. So defocus it and reset its contents.
+        cancelEditingTheAlarmField();
+
         informIfNotificationAlarmsMuted();
     }
 
@@ -440,11 +433,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /** The user tapped a Run/Pause action. */
-    // A Proguard rule keeps all Activity *(View) methods.
     @UiThread
     @SuppressWarnings("UnusedParameters")
     public void onClickPauseResume(View v) {
-        alarmPeriod.clearFocus(); // defocus and hide the soft keyboard
+        cancelEditingTheAlarmField();
 
         timer.toggleRunPause();
         updateHandler.beginScheduledUpdate();
@@ -461,7 +453,7 @@ public class MainActivity extends AppCompatActivity {
     public void onClickReset(View v) {
         boolean wasStopped = timer.isStopped();
 
-        alarmPeriod.clearFocus();
+        cancelEditingTheAlarmField();
 
         timer.reset();
         updateHandler.beginScheduledUpdate();
@@ -476,7 +468,7 @@ public class MainActivity extends AppCompatActivity {
     @UiThread
     @SuppressWarnings("UnusedParameters")
     public void onClickStop(View v) {
-        alarmPeriod.clearFocus();
+        cancelEditingTheAlarmField();
 
         timer.stop();
         updateHandler.endScheduledUpdates();
@@ -487,7 +479,7 @@ public class MainActivity extends AppCompatActivity {
     @UiThread
     @SuppressWarnings("UnusedParameters")
     public void onClickTimerText(View v) {
-        alarmPeriod.clearFocus();
+        cancelEditingTheAlarmField();
 
         timer.cycle();
         updateHandler.beginScheduledUpdate();
@@ -502,7 +494,7 @@ public class MainActivity extends AppCompatActivity {
     @UiThread
     @SuppressWarnings("UnusedParameters")
     public void onClickEnableRemindersToggle(View v) {
-        alarmPeriod.clearFocus();
+        cancelEditingTheAlarmField();
 
         state.setEnableReminders(enableReminders.isChecked());
         state.save(this);
@@ -529,46 +521,79 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
+     * Remove focus from the text field.
+     *</p>
+     * Workaround: Force it on older Android versions which grab and hold focus where newer Android
+     * versions wouldn't. https://stackoverflow.com/a/11044709/1682419
+     *
+     * TODO: Fix the field's keyboard focus handling, e.g. re-enable focus on a relevant key event
+     *  like TAB or arrow key.
+     *
+     * TODO: When the EditText has focus, tapping the (X) to clear the text should also open the
+     *  soft keyboard. A setEndIconOnClickListener() could probably work around that via
+     *  imm.requestImeShow() or imm.showSoftInput().
+     */
+    @UiThread
+    @SuppressLint("ClickableViewAccessibility")
+    private void defocusTextField(EditText textField) {
+        if (Build.VERSION.SDK_INT <= 27) {
+            textField.setFocusable(false);
+
+            textField.setOnTouchListener((v, event) -> {
+                v.setFocusable(true);
+                v.setFocusableInTouchMode(true);
+                return false; // don't consume the event; continue with normal processing
+            });
+        } else {
+            textField.clearFocus();
+        }
+    }
+
+    /**
+     * Cancels editing the alarmPeriod text field by removing focus, hiding the soft keyboard, and
+     * reverting its contents to the current `state`.
+     */
+    @UiThread
+    private void cancelEditingTheAlarmField() {
+        hideKeyboard(alarmPeriod);
+        defocusTextField(alarmPeriod);
+        displayAlarmPeriod();
+    }
+
+    /**
      * Sets the alarmPeriod EditText contents, skipping the no-op case to maintain any selection and
      * minimize log warnings from InputConnectionWrapper.
      * <p/>
      * Also for reducing those log warnings, it might help to hideKeyboard() before setText(), but
-     * this means passing hideSoftInputFromWindow() a ResultReceiver to do the setText() after it
+     * that means passing a ResultReceiver to hideSoftInputFromWindow() to do the setText() after it
      * finishes animating away.
      * https://stackoverflow.com/a/29470242/1682419
      */
     @UiThread
-    private void displayAlarmPeriod(@NonNull String newText) {
+    private void displayAlarmPeriod() {
+        String newText = state.formatIntervalTimeHhMmSs();
+
         if (!newText.equals(alarmPeriod.getText().toString())) {
             alarmPeriod.setText(newText);
         }
     }
 
-    /** Parse, bound, and (if valid) adopt the alarmPeriod input text. */
+    /** Parse, bound, then adopt the alarmPeriod input text if valid, else revert it. */
     @UiThread
     private void processAlarmPeriodInput() {
         String input = alarmPeriod.getText().toString();
         int newSeconds = TimeCounter.parseHhMmSs(input);
 
-        hideKeyboard(alarmPeriod);
-
-        if (newSeconds >= 0 && newSeconds != state.getSecondsPerReminder()) {
+        if (newSeconds > 0 && newSeconds != state.getSecondsPerReminder()) {
             state.setSecondsPerReminder(newSeconds); // clips the value
             state.save(this);
-            String newHhMmSs = state.formatIntervalTimeHhMmSs();
-            displayAlarmPeriod(newHhMmSs);
             updateUI(); // update countdownDisplay, notifications, and widgets
-            Log.i(TAG, "alarmPeriod: " + newSeconds + " seconds -> " + newHhMmSs);
-        } else { // revert invalid input or normalize the unchanged value
-            displayAlarmPeriod(state.formatIntervalTimeHhMmSs());
         }
 
-        alarmPeriod.clearFocus(); // TODO: Keep this from running onEditTextFocusChange work?
+        cancelEditingTheAlarmField();
    }
 
     /** The user tapped the background => Accept pending alarmPeriod text input. */
-    // TODO: Why doesn't this always remove the blinking caret? Works in API 28+? Would it help to
-    //  wait for the soft keyboard to close?
     @UiThread
     @SuppressWarnings("UnusedParameters")
     public void onClickBackground(View view) {
@@ -587,6 +612,8 @@ public class MainActivity extends AppCompatActivity {
      * NOTE: Without this code, tapping any other widget will reset the input text as part of taking
      * an action, but just moving focus wouldn't accept or cancel the input nor close the keyboard.
      * <p/>
+     * TODO: TAB-ing out of the field should revert or accept its edits. Why doesn't TAB run
+     *  onEditTextFocusChange()?
      * TODO: Is this UI intuitive?
      * TODO: How else to support cancel (revert)?
      */
@@ -594,7 +621,7 @@ public class MainActivity extends AppCompatActivity {
     public void onEditTextFocusChange(View view, boolean nowHasFocus) {
         if (view == alarmPeriod && !nowHasFocus) {
             hideKeyboard(view);
-            displayAlarmPeriod(state.formatIntervalTimeHhMmSs());
+            displayAlarmPeriod();
         }
     }
 
@@ -663,7 +690,7 @@ public class MainActivity extends AppCompatActivity {
             stopButton.setVisibility(isStopped ? View.INVISIBLE : View.VISIBLE);
             countdownDisplay.setVisibility(areRemindersEnabled ? View.VISIBLE : View.INVISIBLE);
             enableReminders.setChecked(areRemindersEnabled);
-            displayAlarmPeriod(state.formatIntervalTimeHhMmSs());
+            displayAlarmPeriod();
         }
     }
 
