@@ -39,7 +39,7 @@ public class ApplicationState {
     private static final String TAG = "ApplicationState";
 
     public static final int MINIMUM_ALARM_SECONDS = 5;
-    public static final int MAXIMUM_ALARM_SECONDS = 99 * 3600; // 99 h
+    public static final int MAXIMUM_ALARM_SECONDS = 100 * 3600 - 1; // 99:59:59
 
     /** PERSISTENT STATE filename. */
     private static final String APPLICATION_PREF_FILE = "BBQ_Timer_Prefs";
@@ -63,6 +63,7 @@ public class ApplicationState {
      *<p/>
      * NOTE: After updating the shared instance, call {@link #save} to save it persistently.
      */
+    @NonNull
     public static ApplicationState sharedInstance(@NonNull Context context) {
         if (sharedInstance == null) {
             ApplicationState state = new ApplicationState();
@@ -194,6 +195,7 @@ public class ApplicationState {
     }
 
     /** Formats the reminder interval time like hh:mm:ss. */
+    @NonNull
     public String formatIntervalTimeHhMmSs() {
         return TimeCounter.formatHhMmSs(getMillisecondsPerReminder());
     }
