@@ -207,6 +207,7 @@ public class MainActivity extends AppCompatActivity {
         countdownDisplay.setOnClickListener(this::onClickPauseResume);
         alarmPeriod.setOnEditorActionListener(this::onEditAction);
         alarmPeriod.setOnFocusChangeListener(this::onEditTextFocusChange);
+        //alarmPeriod.setSelectAllOnFocus(true); // TODO: Use this instead of the (X) clear button?
         stopButton.setOnClickListener(this::onClickStop);
         countUpDisplay.setOnClickListener(this::onClickTimerText);
         enableReminders.setOnClickListener(this::onClickEnableRemindersToggle);
@@ -528,10 +529,6 @@ public class MainActivity extends AppCompatActivity {
      *
      * TODO: Fix the field's keyboard focus handling, e.g. re-enable focus on a relevant key event
      *  like TAB or arrow key.
-     *
-     * TODO: When the EditText has focus, tapping the (X) to clear the text should also open the
-     *  soft keyboard. A setEndIconOnClickListener() could probably work around that via
-     *  imm.requestImeShow() or imm.showSoftInput().
      */
     @UiThread
     @SuppressLint("ClickableViewAccessibility")
@@ -612,8 +609,8 @@ public class MainActivity extends AppCompatActivity {
      * NOTE: Without this code, tapping any other widget will reset the input text as part of taking
      * an action, but just moving focus wouldn't accept or cancel the input nor close the keyboard.
      * <p/>
-     * TODO: TAB-ing out of the field should revert or accept its edits. Why doesn't TAB run
-     *  onEditTextFocusChange()?
+     * TODO: Using TAB, arrow keys, etc. to move focus out of the field should accept (or revert)
+     *  its edits. Why doesn't moving focus out call this? Why doesn't tapping in/out call this?
      * TODO: Is this UI intuitive?
      * TODO: How else to support cancel (revert)?
      */
