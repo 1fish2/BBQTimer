@@ -34,6 +34,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.provider.Settings;
+import android.text.Editable;
 import android.text.Spanned;
 import android.util.Log;
 import android.util.TypedValue;
@@ -95,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * Make a PendingIntent to launch the Activity, e.g. from the notification.
-     *</p>
+     * <p/>
      * Use TaskStackBuilder so navigating back from the Activity goes to the Home screen.
      *
      * @return a PendingIntent; "May return null only if PendingIntent.FLAG_NO_CREATE has been
@@ -175,7 +176,7 @@ public class MainActivity extends AppCompatActivity {
     private Button pauseResumeButton;
     private Button stopButton;
     private TextView countUpDisplay, countdownDisplay;
-    private EditText alarmPeriod;
+    private EditText2 alarmPeriod;
     private CheckBox enableReminders;
 
     @MainThread
@@ -206,7 +207,7 @@ public class MainActivity extends AppCompatActivity {
         pauseResumeButton.setOnClickListener(this::onClickPauseResume);
         countdownDisplay.setOnClickListener(this::onClickPauseResume);
         alarmPeriod.setOnEditorActionListener(this::onEditAction);
-        alarmPeriod.setOnFocusChangeListener(this::onEditTextFocusChange);
+        alarmPeriod.setOnFocusChangeListener2(this::onEditTextFocusChange);
         //alarmPeriod.setSelectAllOnFocus(true); // TODO: Use this instead of the (X) clear button?
         stopButton.setOnClickListener(this::onClickStop);
         countUpDisplay.setOnClickListener(this::onClickTimerText);
@@ -329,10 +330,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        // Workaround: On Android SDK ≤ 27, the automatic focus/caret in the text field on Activity
-        // start, app switch, or screen rotation is distracting and annoying, esp. with the
-        // CLEAR_TEXT (X) endIcon. So defocus it and reset its contents.
-        cancelEditingTheAlarmField();
+        // Workaround: On Android SDK ≤ 27, the automatic focus in the text field is distracting and
+        // annoying on Activity start, app switch, or screen rotation, esp. with the (X) endIcon.
+        defocusTextField(alarmPeriod);
 
         informIfNotificationAlarmsMuted();
     }
@@ -437,7 +437,7 @@ public class MainActivity extends AppCompatActivity {
     @UiThread
     @SuppressWarnings("UnusedParameters")
     public void onClickPauseResume(View v) {
-        cancelEditingTheAlarmField();
+        defocusTextField(alarmPeriod);
 
         timer.toggleRunPause();
         updateHandler.beginScheduledUpdate();
@@ -454,7 +454,7 @@ public class MainActivity extends AppCompatActivity {
     public void onClickReset(View v) {
         boolean wasStopped = timer.isStopped();
 
-        cancelEditingTheAlarmField();
+        defocusTextField(alarmPeriod);
 
         timer.reset();
         updateHandler.beginScheduledUpdate();
@@ -469,7 +469,7 @@ public class MainActivity extends AppCompatActivity {
     @UiThread
     @SuppressWarnings("UnusedParameters")
     public void onClickStop(View v) {
-        cancelEditingTheAlarmField();
+        defocusTextField(alarmPeriod);
 
         timer.stop();
         updateHandler.endScheduledUpdates();
@@ -480,7 +480,7 @@ public class MainActivity extends AppCompatActivity {
     @UiThread
     @SuppressWarnings("UnusedParameters")
     public void onClickTimerText(View v) {
-        cancelEditingTheAlarmField();
+        defocusTextField(alarmPeriod);
 
         timer.cycle();
         updateHandler.beginScheduledUpdate();
@@ -495,7 +495,7 @@ public class MainActivity extends AppCompatActivity {
     @UiThread
     @SuppressWarnings("UnusedParameters")
     public void onClickEnableRemindersToggle(View v) {
-        cancelEditingTheAlarmField();
+        defocusTextField(alarmPeriod);
 
         state.setEnableReminders(enableReminders.isChecked());
         state.save(this);
@@ -523,12 +523,15 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * Remove focus from the text field.
-     *</p>
+     * NOTE: The alarmPeriod has an OnFocusChangeListener. Defocussing it, if it had focus, will
+     * (re)set its contents to the current state and close its soft keyboard.
+     * <p/>
      * Workaround: Force it on older Android versions which grab and hold focus where newer Android
      * versions wouldn't. https://stackoverflow.com/a/11044709/1682419
-     *
-     * TODO: Fix the field's keyboard focus handling, e.g. re-enable focus on a relevant key event
-     *  like TAB or arrow key.
+     * <p/>
+     * TODO: This workaround seems to break the ability to TAB or arrow into and out of the field.
+     *  Maybe fix that by re-enabling focus on a relevant key event. Or maybe it's just an edge case
+     *  for a dwindling number of Androids.
      */
     @UiThread
     @SuppressLint("ClickableViewAccessibility")
@@ -547,17 +550,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * Cancels editing the alarmPeriod text field by removing focus, hiding the soft keyboard, and
-     * reverting its contents to the current `state`.
-     */
-    @UiThread
-    private void cancelEditingTheAlarmField() {
-        hideKeyboard(alarmPeriod);
-        defocusTextField(alarmPeriod);
-        displayAlarmPeriod();
-    }
-
-    /**
      * Sets the alarmPeriod EditText contents, skipping the no-op case to maintain any selection and
      * minimize log warnings from InputConnectionWrapper.
      * <p/>
@@ -568,9 +560,10 @@ public class MainActivity extends AppCompatActivity {
      */
     @UiThread
     private void displayAlarmPeriod() {
+        Editable text = alarmPeriod.getText();
         String newText = state.formatIntervalTimeHhMmSs();
 
-        if (!newText.equals(alarmPeriod.getText().toString())) {
+        if (text == null || !newText.equals(text.toString())) {
             alarmPeriod.setText(newText);
         }
     }
@@ -578,7 +571,8 @@ public class MainActivity extends AppCompatActivity {
     /** Parse, bound, then adopt the alarmPeriod input text if valid, else revert it. */
     @UiThread
     private void processAlarmPeriodInput() {
-        String input = alarmPeriod.getText().toString();
+        Editable text = alarmPeriod.getText();
+        String input = text == null ? "" : text.toString();
         int newSeconds = TimeCounter.parseHhMmSs(input);
 
         if (newSeconds > 0 && newSeconds != state.getSecondsPerReminder()) {
@@ -587,12 +581,11 @@ public class MainActivity extends AppCompatActivity {
             updateUI(); // update countdownDisplay, notifications, and widgets
         }
 
-        cancelEditingTheAlarmField();
-   }
+        defocusTextField(alarmPeriod);
+    }
 
     /** The user tapped the background => Accept pending alarmPeriod text input. */
     @UiThread
-    @SuppressWarnings("UnusedParameters")
     public void onClickBackground(View view) {
         View focussed = getCurrentFocus();
 
@@ -600,19 +593,17 @@ public class MainActivity extends AppCompatActivity {
             processAlarmPeriodInput();
         }
 
-        view.clearFocus();
+        view.clearFocus(); // defocus the background
     }
 
     /**
-     * The user moved focus out of the TextEdit field. Cancel any text changes.
+     * The TextEdit field's focus changed, e.g. by TAB, arrow keys, or a call to view.clearFocus().
+     * If it lost focus, cancel any pending edits and hide the soft keyboard.
      * <p/>
      * NOTE: Without this code, tapping any other widget will reset the input text as part of taking
-     * an action, but just moving focus wouldn't accept or cancel the input nor close the keyboard.
+     * an action, but just moving focus wouldn't accept or cancel the input nor hide the keyboard.
      * <p/>
-     * TODO: Using TAB, arrow keys, etc. to move focus out of the field should accept (or revert)
-     *  its edits. Why doesn't moving focus out call this? Why doesn't tapping in/out call this?
-     * TODO: Is this UI intuitive?
-     * TODO: How else to support cancel (revert)?
+     * TODO: Is this UI intuitive? How else to support cancel (revert)?
      */
     @UiThread
     public void onEditTextFocusChange(View view, boolean nowHasFocus) {
