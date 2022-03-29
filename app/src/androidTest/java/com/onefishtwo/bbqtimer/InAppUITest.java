@@ -329,6 +329,9 @@ public class InAppUITest {
         alarmPeriodTextField.check(matches(withText("1:02:35")));
         alarmPeriodTextField.check(matches(doesNotHaveFocus()));
 
+        // Adding the click() avoids on SDK 22 "SecurityException: Injecting to another application
+        // requires INJECT_EVENTS permission" from innerInjectMotionEvent().
+        alarmPeriodTextField.perform(click());
         alarmPeriodTextField.perform(doubleClick());
         alarmPeriodTextField.check(matches(hasFocus()));
         alarmPeriodTextField.perform(typeTextIntoFocusedView(":5"));
