@@ -8,7 +8,7 @@ android {
 
     defaultConfig {
         applicationId "com.onefishtwo.bbqtimer"
-        versionCode 16
+        versionCode 17
         versionName '3.0'
         minSdk 21
         targetSdk 30
