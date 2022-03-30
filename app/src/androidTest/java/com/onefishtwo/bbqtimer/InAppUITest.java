@@ -40,6 +40,7 @@ import androidx.test.platform.app.InstrumentationRegistry;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static androidx.test.espresso.action.ViewActions.doubleClick;
 import static androidx.test.espresso.action.ViewActions.longClick;
 import static androidx.test.espresso.action.ViewActions.pressImeActionButton;
@@ -53,12 +54,14 @@ import static androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
 import static androidx.test.espresso.matcher.ViewMatchers.isNotChecked;
+import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static com.onefishtwo.bbqtimer.CustomMatchers.withCompoundDrawable;
 import static com.onefishtwo.bbqtimer.CustomViewActions.waitMsec;
 import static com.onefishtwo.bbqtimer.TimeIntervalMatcher.inTimeInterval;
 import static com.onefishtwo.bbqtimer.TimeIntervalMatcher.inWholeTimeInterval;
+import static org.hamcrest.Matchers.anyOf;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 
@@ -316,8 +319,8 @@ public class InAppUITest {
         checkReminder(true);
         checkStopped();
 
-        // NOTE: Changing the EditText to a Material EditText with a Clear (X) button made this test
-        // fragile, so longClick() or doubleClick() alone fails to select the text.
+        // FRAGILE: Changing the EditText to a Material EditText with a Clear (X) button made this
+        // test fragile, where longClick() or doubleClick() alone fails to select the text.
         // doubleClick() is understandable since the first click shows the (X) and slides the text
         // leftwards.
         alarmPeriodTextField.check(matches(not(hasFocus())));
@@ -329,39 +332,63 @@ public class InAppUITest {
         alarmPeriodTextField.check(matches(withText("1:02:35")));
         alarmPeriodTextField.check(matches(doesNotHaveFocus()));
 
-        // Adding the click() avoids on SDK 22 "SecurityException: Injecting to another application
-        // requires INJECT_EVENTS permission" from innerInjectMotionEvent().
-        alarmPeriodTextField.perform(click());
-        alarmPeriodTextField.perform(doubleClick());
+        // FRAGILE: Adding the click() avoids on SDK 22 "SecurityException: Injecting to another
+        // application requires INJECT_EVENTS permission" from innerInjectMotionEvent().
+        alarmPeriodTextField.perform(click(), doubleClick());
         alarmPeriodTextField.check(matches(hasFocus()));
         alarmPeriodTextField.perform(typeTextIntoFocusedView(":5"));
 
-        // This background click might accept input and might de-focus the text field:
-        //    background.perform(click())
-        // so do this instead:
-        alarmPeriodTextField.perform(pressImeActionButton());
+        // FRAGILE: background.perform(click()) might accept text input, or click on a different
+        // widget which will discard text input, or do something else. So do this instead:
+        alarmPeriodTextField.perform(pressImeActionButton(), closeSoftKeyboard());
 
         // Since background.perform(click()) hasn't yet worked in this test, do something with the
         // background View to avoid a "Field is assigned but never accessed" inspection warning.
         //
-        // BEWARE: Attempts to do background.perform(waitMsec(...)) before the click() or instead of
-        // the playPauseButton.perform(waitMsec(...)) can make the "wait" occur BEFORE the click and
-        // thus break the test! Why?
+        // FRAGILE: Attempts to do background.perform(waitMsec(...)) before the click() or instead
+        // of the playPauseButton.perform(waitMsec(...)) can make the "wait" occur BEFORE the click
+        // and thus break the test! Why?
         background.check(matches(isDisplayed()));
 
         alarmPeriodTextField.check(matches(withText("00:05"))); // normalized
         alarmPeriodTextField.check(matches(doesNotHaveFocus()));
         playPauseButton.perform(waitMsec(100)); // work around Espresso test flakiness
 
-        playPauseButton.perform(click()); // Play
-        playPauseButton.perform(waitMsec(6_000)); // *** TODO: Test that it alarmed once **
-        playPauseButton.perform(click()); // Pause
+        playPauseButton.perform(click(), waitMsec(6_000), click()); // Play for 6 secs then Pause
+        // *** TODO: Test that it alarmed once **
         TimeIntervalMatcher time6 = inTimeInterval(6_000, 7_000);
         checkPausedAt(time6);
-
-        // TODO: Test cancelling text input by tapping the Periodic Alarm checkbox.
 
         // TODO: Test moving focus with TAB and arrow keys.
     }
 
+    /** Tests the CLEAR_TEXT endIcon in the alarmPeriodLayout TextInputLayout. */
+    @Test
+    public void endIconTest() {
+        ViewInteraction clearTextImageButton = onView(anyOf(
+                withContentDescription("Clear text"),     // en
+                withContentDescription("Text löschen"))); // de
+        clearTextImageButton.check(matches(not(isDisplayed())));
+        alarmPeriodTextField.check(matches(withText("05:00")));
+
+        alarmPeriodTextField.perform(click());
+        clearTextImageButton.check(matches(isDisplayed()));
+
+        // Click the CLEAR_TEXT endIcon.
+        clearTextImageButton.perform(click());
+        alarmPeriodTextField.check(matches(withText("")));
+
+        // Type into the empty text field.
+        alarmPeriodTextField.perform(typeTextIntoFocusedView("7:3\n"));
+        alarmPeriodTextField.check(matches(withText("07:03")));
+        alarmPeriodTextField.check(matches(doesNotHaveFocus()));
+
+        // Start typing into the text field, then click another widget to cancel the edit.
+        enableRemindersToggle.check(matches(isChecked()));
+        alarmPeriodTextField.perform(click(), typeTextIntoFocusedView("88"));
+        enableRemindersToggle.perform(click());
+        alarmPeriodTextField.check(matches(withText("07:03")));
+        alarmPeriodTextField.check(matches(doesNotHaveFocus()));
+        enableRemindersToggle.check(matches(isNotChecked()));
+    }
 }
