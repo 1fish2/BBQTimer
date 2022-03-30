@@ -13,7 +13,7 @@
     <string name="notification_body">Alarm alle %1$s</string>
     <string name="notifications_disabled">Benachrichtigungen sind deaktiviert</string>
     <string name="notifications_enable">AKTIVIEREN</string>
-    <string name="notifications_misconfigured">Der Alarmkanal muss eingeschaltet sein und hoch oder höher sein, um Alarme zu hören</string>
+    <string name="notifications_misconfigured">Der Alarmkanal muss eingeschaltet und darf nicht stumm sein, um Alarme zu hören</string>
     <string name="notifications_configure">KONFIGURIEREN</string>
     <string name="no_reminders_tip">Keine regelmäßigen Alarme</string>
     <string name="pause">Anhalten</string>

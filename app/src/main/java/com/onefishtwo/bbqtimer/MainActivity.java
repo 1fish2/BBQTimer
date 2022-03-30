@@ -407,23 +407,24 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    /** Constructs a Snackbar with the app's dark orange red color. */
+    /** Constructs a Snackbar. */
     @UiThread
     @NonNull
     private Snackbar makeSnackbar(@StringRes int stringResId) {
-        Snackbar snackbar = Snackbar.make(mainContainer, stringResId,
-                BaseTransientBottomBar.LENGTH_LONG);
-        snackbar.getView().setBackgroundColor(
-                ContextCompat.getColor(this, R.color.dark_orange_red));
-        return snackbar;
+        return Snackbar.make(mainContainer, stringResId, BaseTransientBottomBar.LENGTH_LONG);
     }
 
-    /** Sets the Snackbar's action. */
+    /**
+     * Sets the Snackbar's action.
+     * </p>
+     * NOTE: This used to set the action's text color but a custom background color gets overridden
+     * now in day or night theme, so the custom text color became low-contrast. The two colors might
+     * be settable in AppTheme but why bother?
+     */
     @UiThread
     private void setSnackbarAction(@NonNull Snackbar snackbar, @StringRes int resId,
             View.OnClickListener listener) {
-        snackbar.setAction(resId, listener)
-                .setActionTextColor(ContextCompat.getColor(this, R.color.contrasting_text));
+        snackbar.setAction(resId, listener);
     }
 
     @UiThread

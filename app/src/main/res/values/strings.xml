@@ -28,9 +28,9 @@
     <!-- The "enable" action (hence all upper-case) for the notifications_disabled Snackbar. -->
     <string name="notifications_enable">ENABLE</string>
 
-    <!-- Inform the user that the app's Alarm notification Importance is set too low, and thus it
-      won't be audible and maybe not visible. -->
-    <string name="notifications_misconfigured">Alarm Channel must be On and High or higher to hear alarms</string>
+    <!-- Inform the user that the app's Alarm notification is set to Silent or low Importance, and
+      thus it won't be audible and maybe not visible. -->
+    <string name="notifications_misconfigured">The Alarm channel must be on and not silent to hear alarms</string>
 
     <!-- The "configure" action (hence all upper-case) for the notifications_misconfigured Snackbar. -->
     <string name="notifications_configure">CONFIGURE</string>
