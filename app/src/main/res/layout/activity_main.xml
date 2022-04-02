@@ -43,6 +43,7 @@
         android:paddingRight="@dimen/countdown_padding"
         android:text="@string/time0"
         android:textSize="@dimen/countdown_text_size"
+        android:textColor="?android:attr/textColorPrimary"
         android:background="?attr/selectableItemBackground"
         app:layout_constraintBottom_toBottomOf="@id/buttonBar"
         app:layout_constraintEnd_toStartOf="@id/buttonBar"
@@ -152,9 +153,9 @@
             android:paddingLeft="@dimen/small_button_padding"
             android:inputType="time"
             android:maxLength="9"
-            android:ems="8"
             android:text="@string/widget_preview_countdown"
             android:textSize="@dimen/controls_text_size"
+            android:textColor="?android:attr/textColorPrimary"
             android:importantForAutofill="no" />
     </com.google.android.material.textfield.TextInputLayout>
 
