@@ -334,7 +334,9 @@ public class InAppUITest {
 
         // FRAGILE: Adding the click() avoids on SDK 22 "SecurityException: Injecting to another
         // application requires INJECT_EVENTS permission" from innerInjectMotionEvent().
-        alarmPeriodTextField.perform(click(), doubleClick());
+        // Adding the waitMsec() works around this code failing to select the text, which would
+        // happen when running all the InAppUITest tests together.
+        alarmPeriodTextField.perform(click(), waitMsec(100), doubleClick());
         alarmPeriodTextField.check(matches(hasFocus()));
         alarmPeriodTextField.perform(typeTextIntoFocusedView(":5"));
 
@@ -379,16 +381,20 @@ public class InAppUITest {
         alarmPeriodTextField.check(matches(withText("")));
 
         // Type into the empty text field.
-        alarmPeriodTextField.perform(typeTextIntoFocusedView("7:3\n"));
-        alarmPeriodTextField.check(matches(withText("07:03")));
+        alarmPeriodTextField.perform(typeTextIntoFocusedView("1:3\n"));
+        alarmPeriodTextField.check(matches(withText("01:03")));
         alarmPeriodTextField.check(matches(doesNotHaveFocus()));
 
         // Start typing into the text field, then click another widget to cancel the edit.
         enableRemindersToggle.check(matches(isChecked()));
         alarmPeriodTextField.perform(click(), typeTextIntoFocusedView("88"));
         enableRemindersToggle.perform(click());
-        alarmPeriodTextField.check(matches(withText("07:03")));
+        alarmPeriodTextField.check(matches(withText("01:03")));
         alarmPeriodTextField.check(matches(doesNotHaveFocus()));
         enableRemindersToggle.check(matches(isNotChecked()));
+
+        // Leave reminders enabled to aid manual testing.
+        enableRemindersToggle.perform(click());
+        enableRemindersToggle.check(matches(isChecked()));
     }
 }
