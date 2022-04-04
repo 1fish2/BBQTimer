@@ -11,6 +11,7 @@
     <color name="secondaryDarkColor" tools:ignore="UnusedResources">#00600f</color>
     <color name="m_notification_background">#9F8F7F</color>
 
+    <color name="notification_text">#080808</color>
     <color name="gray_text">#9e9e9e</color>
     <color name="grayer">#C0646464</color>
     <color name="to_reset_text">#616161</color>
