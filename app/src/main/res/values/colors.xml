@@ -15,7 +15,7 @@
     <color name="gray_text">#9e9e9e</color>
     <color name="grayer">#C0646464</color>
     <color name="to_reset_text">#616161</color>
-    <color name="translucent_background">#90000000</color>
+    <color name="translucent_background">#B0000000</color>
     <color name="widget_button_background">#616161</color>
     <color name="widget_countdown_text">#f8f8f8</color>
 </resources>
