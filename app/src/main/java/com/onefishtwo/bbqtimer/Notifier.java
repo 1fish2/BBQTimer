@@ -156,18 +156,21 @@ public class Notifier {
         builder.setStyle(style);
 
         // === MediaStyle setColor() [the "accent color"] vs. Android API levels ===
-        // API 21 L - 22 L1: colors the notification area background needlessly.
-        // API 23 M: See below.
+        // API 21 L - 22 L1: colors the notification area background needlessly. By default,
+        //   * Heads-up notifications: Medium gray text on light white background.
+        //   * Pull-down notifications: Light white text on dark gray background.
+        // API 23 M: colors the notification area background; needed to work around low contrast:
+        //   * Heads-up notifications: Medium gray text.
+        //   * Pull-down notifications: Light white text on the SAME background.
+        //   The color setting carries over from a notification to its replacement so there's no
+        //   way to get consistently different background colors for the two cases.
+        //   http://stackoverflow.com/q/38415467/1682419
         // API 24 N - API 27 O1: colors the small icon, action button, and app title color. Garish.
         // API 28 P - API 30 R: colors the small icon and action button. Garish.
         // API 31 S: See below.
         // setColorized(false) didn't change any of these results.
         if (Build.VERSION.SDK_INT == Build.VERSION_CODES.M) {
-            // Android 6 M, API 23: setColor() colors the notification are background and avoids a
-            // low contrast dark gray text on darker gray background in the the heads-up case.
-            // setColor() also changes pull-down notifications and carries over from one
-            // notification to its replacement. http://stackoverflow.com/q/38415467/1682419
-            int workaroundColor = context.getColor(R.color.gray_text);
+            int workaroundColor = context.getColor(R.color.m_notification_background);
             builder.setColor(workaroundColor);
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             // Android 12, S, API 31: setColor() colors the small icon's circular background.

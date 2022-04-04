@@ -9,6 +9,7 @@
     <color name="secondaryColor" tools:ignore="UnusedResources">#388e3c</color>
     <color name="to_go_text">#6abf69</color>
     <color name="secondaryDarkColor" tools:ignore="UnusedResources">#00600f</color>
+    <color name="m_notification_background">#9F8F7F</color>
 
     <color name="gray_text">#9e9e9e</color>
     <color name="grayer">#C0646464</color>
