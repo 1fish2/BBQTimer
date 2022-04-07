@@ -68,7 +68,11 @@ public class Notifier {
     private static final int CUSTOM_NOTIFICATION_API_LEVEL = 24;
     private static final SpannedString EMPTY_SPAN = new SpannedString("");
 
-    private static final long[] VIBRATE_PATTERN = {200, 40,  220, 80,  440, 45,  265, 55}; // ms off, on, off, ...
+    // Vibration pattern: ms off, on, off, ...
+    // Match the notification sound to the degree feasible.
+    // Workaround: Start with a tiny pulse for when Android drops the initial "off" interval.
+    private static final long[] VIBRATE_PATTERN = {0, 1,  280, 40,  220, 80,  440, 45,  265, 55};
+
     private static final int[][] ACTION_INDICES = {{}, {0}, {0, 1}, {0, 1, 2}};
 
     static final String ALARM_NOTIFICATION_CHANNEL_ID = "alarmChannel";
