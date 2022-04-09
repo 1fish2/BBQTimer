@@ -6,11 +6,11 @@ October 28, 2021
 
 **Analytics:** None.
 
-**App Permissions:** This app requires only basic Android app permissions to set exact alarms and to vibrate the device when an alarm rings. The alarm sounds and vibrations may be controlled in the Notification section of the Android Settings app.
+**App Permissions:** This app requires only basic Android app permissions to _set exact alarms_ and to _vibrate_ the device when an alarm rings. You can adjust the alarm sounds and vibrations in the Android Settings app's Notifications section.
 
-**Content ratings:** The contents in this app are suitable for all ages but the app is not specifically designed to appeal to children.
+**Content Ratings:** The contents in this app are suitable for all ages. The app is not specifically designed to appeal to children.
 
-**Data collection:** This app does not access or collect any personally identifiable information, device identification, or network address. There are no personal information records to opt out of, encrypt, or delete.
+**Data Collection:** This app does not access or collect any personally identifiable information, device identification, or network address. There are no personal information records to opt out of, encrypt, or delete.
 
 **GPS:** This app does not access any device location data.
 
