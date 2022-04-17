@@ -1,9 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- Description for the Alarm notification channel.
-     On API 29, "Alerting" would be easier to follow than "not-Silent" but the latter still agrees
-     with the System UI in 30-31. Space is very tight in API 30-31. -->
-    <string name="notification_alarm_channel_description">Must be non-Silent and Pop on screen to hear/see alarms</string>
+    <!-- The settings needed for the app's Alarm notification channel to work.
+     This should match the strings in the Android Settings UI:
+     "Show notifications", not "Silent", and "Pop on screen".
+     [On Android 10, Settings uses the term "Alerting" but on Android 11 - 12 it
+     uses the term "Silent".]
+     On Android 11 - 12, space is very tight for this string: one line of
+     ≈53 characters on Pixel 3; ≈32 characters on a WQVGA screen, so put the
+     essential instructions in the first part of the text and squeeze.
+     "&amp;" counts as one character. -->
+    <string name="notification_alarm_channel_description">Must Show, be non-Silent &amp; Pop on screen to hear/see alarms</string>
 
 </resources>

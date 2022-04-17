@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="notification_alarm_channel_description">Muss nicht lautlos sein und auf dem Bildschirm erscheinen, um Alarme zu hören / zu sehen</string>
+    <string name="notification_alarm_channel_description">Anzeigen, nicht Lautlos, Aufpoppen um hören/sehen</string>
 
 </resources>

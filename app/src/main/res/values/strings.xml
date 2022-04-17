@@ -18,7 +18,11 @@
     <!-- Name for the Alarm notification channel. Recommended maximum 40 chars. -->
     <string name="notification_alarm_channel_name">Alarm</string>
 
-    <!-- Description for the Alarm notification channel in API 26+. -->
+    <!-- The settings needed for the app's Alarm notification channel to work.
+     This should match the strings in the Android version's Settings UI.
+     API 27: Urgent to hear + pop-on-screen alerts; High to hear.
+     This string is specialized by language and Android API version to match their Settings.
+       -->
     <string name="notification_alarm_channel_description">Importance must be High or higher to hear alarms; Medium or higher to see on lock screen</string>
 
     <!-- Inform the user that the app's notifications are disabled, and thus they won't be able to
@@ -28,11 +32,16 @@
     <!-- The "enable" action (hence all upper-case) for the notifications_disabled Snackbar. -->
     <string name="notifications_enable">ENABLE</string>
 
-    <!-- Inform the user that the app's Alarm notification is set to Silent or low Importance, and
-      thus it won't be audible and maybe not visible. -->
+    <!-- Contents of a Snackbar to inform the user that the app's Alarm notification channel is set
+      so it won't be audible and/or visible, making for unexpectedly bad behavior that users will
+      find hard to debug. The relevant Settings app settings vary between Android versions.
+      The version- and language-specific specializations of the
+      notification_alarm_channel_description string aim to match those settings, while this string
+      just aims to summarize it in the space of a Snackbar.
+      -->
     <string name="notifications_misconfigured">The Alarm channel must be on and not silent to hear alarms</string>
 
-    <!-- The "configure" action (hence all upper-case) for the notifications_misconfigured Snackbar. -->
+    <!-- The "configure" Snackbar action (hence all upper-case) for the notifications_misconfigured. -->
     <string name="notifications_configure">CONFIGURE</string>
 
     <!-- Label for the button that resets the timer to be stopped at 00:00. -->
@@ -64,19 +73,28 @@
     <!-- Label for the button that stops and resets the timer and hides its notification. -->
     <string name="stop">Stop</string>
 
-    <!-- Accessibility description for the button that starts or resumes the stopped timer or else
-      pauses the running timer. -->
+    <!-- Accessibility description for the button that starts or resumes a timer or else
+      pauses a running timer. -->
     <string name="start_pause">Start/Pause</string>
 
-    <!-- Label for the switch that enables/disables periodic reminder alarms AND ALSO the label for
-      the widget for setting the number of minutes between reminders. -->
+    <!-- The checkbox that turns periodic reminder interval alarms on/off; this checkbox ALSO acts
+      as the label for the adjacent text field used to set the reminder interval time period. -->
     <string name="reminder_switch">Periodic alarm interval:</string>
 
-    <!-- Text field "hint" to explain the interval time period text field's meaning and format. -->
+    <!-- The "hint" to explain the meaning and format of what to type into the interval time period
+      text field. This hint conveys that the user can type in one, two, or three ":"-separated
+      numbers meaning minutes (like "5" or "30"), or minutes and seconds (like "5:05", "5:5",
+      "0:30", or ":30"), or hours and minutes and seconds (like "2:05:00" or "2:5:").
+      This hint must be very short, preferably 13 characters. -->
     <string name="interval_hint">m, m:s, h:m:s</string>
 
     <!-- Notification body message: The interval time (parameter 1$) between periodic reminder
-      alarms. "%1$s" is placeholder #1 for the number of minutes:seconds. -->
+      alarms. "%1$s" is placeholder #1 for the number of hours:minutes:seconds or minutes:seconds.
+      Examples: "Alarm every 00:30", "Alarm every 05:30", and "Alarm every 2:10:30".
+      This needs to be very short to fit in one line in a pull-down notification, esp. on narrow
+      screens.
+      This could be in command form, meaning "Sound an alarm every...", or a noun phrase, meaning
+      "(There will be an) alarm every...". -->
     <string name="notification_body">Alarm every %1$s</string>
 
     <!-- Notification body message: The timer is running with no reminder alarms. This message must
@@ -121,7 +139,10 @@
     <!-- The countdown chronometer time value to show in the widget preview. -->
     <string name="widget_preview_countdown">00:30</string>
 
-    <!-- Toast message when Alarm access got turned off. -->
-    <string name="need_alarm_access">BBQ Timer needs “Alarms &amp; reminders” Special app access to set alarms</string>
+    <!-- Toast message explaining how to fix the app's Alarm access on Android 12+.
+      The quoted strings refer to labels in the Android Settings app.
+      This message includes the app name since the toast can appear over another app.
+      Space is tight in a toast; this might not fit. -->
+    <string name="need_alarm_access">BBQ Timer needs “Special app access” “Alarms &amp; reminders” to set alarms</string>
 
 </resources>

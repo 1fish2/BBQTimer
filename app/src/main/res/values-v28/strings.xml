@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- Description for the Alarm notification channel. -->
-    <string name="notification_alarm_channel_description">Alarm: Must Show, Make sound, and Pop on screen to hear/see alarms</string>
+    <!-- The settings needed for the app's Alarm notification channel to work.
+      This should match the strings in the Android Settings UI:
+      "Show notifications" and "Make sound and pop on screen".
+      Android 9 allows multiple lines for this string so it doesn't have to be
+      as short as on Android 11+. -->
+    <string name="notification_alarm_channel_description">Must “Show” and “Make sound and Pop on screen” to hear/see alarms</string>
 
 </resources>

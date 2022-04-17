@@ -187,7 +187,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 
         try {
             alarmMgr.setAlarmClock(info, pendingIntent);
-        } catch (SecurityException e) {
+        } catch (SecurityException e) { // targetSdk 32+ needs SCHEDULE_EXACT_ALARM/USE_EXACT_ALARM
             Log.e(TAG, e.getMessage());
             Toast.makeText(context, R.string.need_alarm_access, Toast.LENGTH_LONG).show();
         }
