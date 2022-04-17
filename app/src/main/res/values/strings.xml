@@ -78,7 +78,7 @@
     <string name="start_pause">Start/Pause</string>
 
     <!-- The checkbox that turns periodic reminder interval alarms on/off; this checkbox ALSO acts
-      as the label for the adjacent text field used to set the reminder interval time period. -->
+      as the label for the adjacent text field used to enter the interval time period. -->
     <string name="reminder_switch">Periodic alarm interval:</string>
 
     <!-- The "hint" to explain the meaning and format of what to type into the interval time period
@@ -88,8 +88,8 @@
       This hint must be very short, preferably 13 characters. -->
     <string name="interval_hint">m, m:s, h:m:s</string>
 
-    <!-- Notification body message: The interval time (parameter 1$) between periodic reminder
-      alarms. "%1$s" is placeholder #1 for the number of hours:minutes:seconds or minutes:seconds.
+    <!-- Notification body message: The interval time (parameter 1$) between reminder alarms.
+      "%1$s" is placeholder #1 for the number of hours:minutes:seconds or minutes:seconds.
       Examples: "Alarm every 00:30", "Alarm every 05:30", and "Alarm every 2:10:30".
       This needs to be very short to fit in one line in a pull-down notification, esp. on narrow
       screens.
