@@ -29,4 +29,8 @@
         <item name="android:textStyle">bold</item>
     </style>
 
+    <style name="HintTextAppearance" parent="TextAppearance.Material3.LabelSmall">
+        <item name="android:textSize">@dimen/hint_text_size</item>
+    </style>
+
 </resources>

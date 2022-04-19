@@ -136,6 +136,7 @@
         android:layout_marginTop="@dimen/fold_margin"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
         android:hint="@string/interval_hint"
+        app:hintTextAppearance="@style/HintTextAppearance"
         app:layout_constraintTop_toBottomOf="@id/fold"
         app:layout_constraintBottom_toBottomOf="@+id/enableReminders"
         app:layout_constraintVertical_bias="0.5"

@@ -6,6 +6,8 @@
 
 SCALE="${1:-0.0}"
 
+echo Setting Android animation time scale to $SCALE
+
 adb -e shell settings put global window_animation_scale $SCALE
 adb -e shell settings put global transition_animation_scale $SCALE
 adb -e shell settings put global animator_duration_scale $SCALE

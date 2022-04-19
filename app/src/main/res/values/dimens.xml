@@ -36,6 +36,7 @@
     <dimen name="widget_countdown_text_size" tools:ignore="SpUsage">22dp</dimen>
     <dimen name="controls_text_size">18sp</dimen>
     <dimen name="countdown_text_size">38sp</dimen>
+    <dimen name="hint_text_size">14dp</dimen>
 
     <dimen name="activityMinWidth">320dp</dimen>
     <!-- Workaround: Android API 29 can ANR if the user splits the screen, shrinks the window to
