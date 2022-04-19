@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Base application theme.
+         Support the Day/Night setting and an animated splash screen. -->
+    <style name="AppTheme" parent="Theme.Material3.DayNight">
+
+        <item name="android:windowSplashScreenIconBackgroundColor">@color/ic_launcher_background</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/ic_launcher_anim_fg</item>
+        <item name="android:windowSplashScreenAnimationDuration">1000</item>
+
+        <item name="actionBarStyle">@style/FireyActionBar</item>
+        <item name="actionBarSize">40dp</item>
+
+        <!-- primary branding color: action bar, checked check boxes, and touch feedback tint -->
+        <item name="colorPrimary">@color/to_go_text</item>
+
+        <!-- dark variant of colorPrimary: the status bar and nav bar -->
+        <item name="colorPrimaryDark">@color/dark_orange_red</item>
+
+        <!-- bright complement to colorPrimary: activated controls like text fields -->
+        <item name="colorAccent">@color/to_go_text</item>
+    </style>
+
+</resources>

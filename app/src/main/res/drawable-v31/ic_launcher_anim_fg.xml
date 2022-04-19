@@ -1,0 +1,112 @@
+<!-- Animated version of the app's launcher icon for the splash screen.
+     The Android emulator or device needs animations enabled to test this. -->
+<animated-vector
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt">
+    <aapt:attr name="android:drawable">
+        <vector
+            android:width="108dp"
+            android:height="108dp"
+            android:viewportWidth="108"
+            android:viewportHeight="108">
+            <group
+                android:translateX="18.9"
+                android:translateY="18.9"
+                android:scaleX="0.1404"
+                android:scaleY="0.1404">
+                <path
+                    android:name="circle"
+                    android:pathData="M250.031,284.992m114.443,-141.13a181.7,181.7 84.039,1 0,-228.886 282.26a181.7,181.7 84.039,1 0,228.886 -282.26ZM250.031,284.992m88.341,-108.941a140.258,140.258 84.039,0 1,-176.682 217.882a140.258,140.258 84.039,0 1,176.682 -217.882Z"
+                    android:fillColor="#B71C1C"/>
+            </group>
+            <group
+                android:name="sweep"
+                android:pivotX="54"
+                android:pivotY="58">
+                <group
+                    android:translateX="18.9"
+                    android:translateY="18.9"
+                    android:scaleX="0.1404"
+                    android:scaleY="0.1404">
+                    <path
+                        android:name="seconds_hand"
+                        android:pathData="M251.173,271.585L362.999,298.075L362.999,298.075L377.564,310.015L359.19,314.153L359.19,314.153L247.364,287.663L251.173,271.585Z"
+                        android:fillColor="#B71C1C"/>
+                </group>
+            </group>
+            <group
+                android:name="ring"
+                android:pivotX="54"
+                android:pivotY="58">
+                <group
+                    android:name="bells"
+                    android:translateX="18.9"
+                    android:translateY="18.9"
+                    android:scaleX="0.1404"
+                    android:scaleY="0.1404">
+                    <path
+                        android:name="right_bell"
+                        android:pathData="M326.828,69.174L426.148,138.168"
+                        android:strokeColor="#B71C1C"
+                        android:strokeWidth="40"/>
+                    <path
+                        android:name="left_bell"
+                        android:pathData="M51.01,170.223L136.425,85.832"
+                        android:strokeColor="#B71C1C"
+                        android:strokeWidth="40"/>
+                </group>
+            </group>
+        </vector>
+    </aapt:attr>
+
+    <target android:name="sweep">
+        <aapt:attr name="android:animation">
+            <objectAnimator
+                android:propertyName="rotation"
+                android:duration="1000"
+                android:valueFrom="0"
+                android:valueTo="360"
+                android:valueType="floatType"
+                android:interpolator="@android:anim/linear_interpolator"/>
+        </aapt:attr>
+    </target>
+
+    <target android:name="ring">
+        <aapt:attr name="android:animation">
+            <set>
+                <objectAnimator
+                    android:propertyName="rotation"
+                    android:startOffset="500"
+                    android:duration="80"
+                    android:valueFrom="0"
+                    android:valueTo="10"
+                    android:valueType="floatType"
+                    android:interpolator="@android:anim/linear_interpolator"/>
+                <objectAnimator
+                    android:propertyName="rotation"
+                    android:startOffset="600"
+                    android:duration="80"
+                    android:valueFrom="10"
+                    android:valueTo="0"
+                    android:valueType="floatType"
+                    android:interpolator="@android:anim/linear_interpolator"/>
+                <objectAnimator
+                    android:propertyName="rotation"
+                    android:startOffset="700"
+                    android:duration="80"
+                    android:valueFrom="0"
+                    android:valueTo="10"
+                    android:valueType="floatType"
+                    android:interpolator="@android:anim/linear_interpolator"/>
+                <objectAnimator
+                    android:propertyName="rotation"
+                    android:startOffset="800"
+                    android:duration="80"
+                    android:valueFrom="10"
+                    android:valueTo="0"
+                    android:valueType="floatType"
+                    android:interpolator="@android:anim/linear_interpolator"/>
+            </set>
+        </aapt:attr>
+    </target>
+</animated-vector>
