@@ -19,6 +19,7 @@ BBQ Timer ist ein kombinierter Intervalltimer/Stoppuhr:
   • Um es auf den Sperrbildschirm zu bringen, versetzen Sie es in den Modus <b>Pause</b> oder <b>Wiedergabe</b>, indem Sie auf Schaltflächen in der App oder im Startbildschirm-Widget tippen.
   • Sie können auch lange auf das Startbildschirmsymbol der App drücken und dann auf die Verknüpfung „Pause um 00:00“ (auf Android 7.1+) tippen, um sie anzuhalten und einsatzbereit zu machen.
 • Die App, das Startbildschirm-Widget und die Pulldown-Benachrichtigung zeigen alle die Countdown-Intervallzeit sowie die verstrichene Gesamtzeit an (erfordert Android 7+).
+• Sie können den „Alarm“-Ton von BBQ Timer in Einstellungen – Benachrichtigungen ändern. Wählen Sie nicht „Keine“, wenn Sie die Intervallalarme hören möchten. Um den Kuhglockenklang der App wiederherzustellen, deinstallieren Sie die App und installieren Sie sie erneut.
 
 <b>Hinweis: Diese Systemeinstellungen sind erforderlich, um BBQTimer-Alarme zu hören und zu sehen:</b>
 • „Alarmlautstärke“ auf hörbarem Niveau.
@@ -26,8 +27,6 @@ BBQ Timer ist ein kombinierter Intervalltimer/Stoppuhr:
 • BBQTimer „Benachrichtigungen anzeigen“, <i>nicht</i> lautlos. (Sie können auch „Nicht stören“ außer Kraft setzen.)
 • BBQTimer-Benachrichtigungskategorie „Alarm“ – „Benachrichtigungen anzeigen“, <i>nicht</i> „Stumm“, „Ton erzeugen und auf dem Bildschirm anzeigen“, Tonauswahl <i>nicht</i> „Keine“, Wichtigkeit „ Hoch“ oder höher auf dem Sperrbildschirm und im Benachrichtigungsbereich zu hören und zu sehen.
 • Einstellungen / Apps / Spezieller App-Zugriff / Wecker und Erinnerungen / Erlauben
-
-Sie können den „Alarm“-Ton von BBQTimer in den Benachrichtigungseinstellungen des Systems ändern. Wählen Sie nicht „Keine“, wenn Sie die regelmäßigen Erinnerungsalarme hören möchten. Um den Kuhglockenklang der App wiederherzustellen, deinstallieren Sie die App und installieren Sie sie erneut.
 
 
 Quellcode: https://github.com/1fish2/BBQTimer

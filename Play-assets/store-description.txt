@@ -19,6 +19,7 @@ BBQ Timer is a combined interval timer/stopwatch:
   • To get it on the lock screen, put it in <b>Pause</b> or <b>Play</b> mode by tapping buttons in the app or the home screen widget.
   • You can also long-press the app’s home screen icon, then tap the “Pause at 00:00” shortcut (on Android 7.1+) to make it Paused and ready to go.
 • The app, home screen widget, and pull-down notification all show the countdown interval time as well as the total elapsed time (requires Android 7+).
+• You can change BBQ Timer’s “Alarm” sound in Settings - Notifications. Don’t pick “None” if you want to hear the interval alarms. To restore the app’s cowbell sound, uninstall and reinstall the app.
 
 <b>Note: These System Settings are required to hear and see BBQTimer alarms:</b>
 • “Alarm volume” at an audible level.
@@ -26,8 +27,6 @@ BBQ Timer is a combined interval timer/stopwatch:
 • BBQTimer “Show notifications”, <i>not</i> Silent. (You may also choose to “Override Do Not Disturb“.)
 • BBQTimer “Alarm” notification category - “Show notifications”, <i>not</i> “Silent”, “Make sound and pop on screen”, sound choice <i>not</i> “None”, Importance “High” or higher to hear and see on the lock screen and in the notification area.
 • Apps - Special app access - Alarms & reminders - Allowed.
-
-You can change BBQTimer’s “Alarm” sound in the system Notification controls. Don’t pick “None” if you want to hear the periodic reminder alarms. To restore the app’s cowbell sound, uninstall and reinstall the app.
 
 
 Source code: https://github.com/1fish2/BBQTimer

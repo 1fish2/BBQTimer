@@ -29,6 +29,7 @@ version, screen size, problem symptom, Android "bugreport" file).
   * To get it on the lock screen, put it in **Pause** or **Play** mode by tapping buttons in the app or the home screen widget.
   * You can also long-press the app’s home screen icon, then tap the “Pause at 00:00” shortcut (on Android 7.1+) to make it Paused and ready to go.
 * The app, home screen widget, and pull-down notification all show the countdown interval time and the total elapsed time (requires Android 7+).
+* You can change BBQ Timer’s “Alarm” sound in Settings - Notifications. Don’t pick “None” if you want to hear the interval alarms. To restore the app’s cowbell sound, uninstall and reinstall the app.
 
 ### System Settings needed to hear and see BBQTimer notification alarms
 * “Alarm volume” at an audible level.
