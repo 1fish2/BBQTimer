@@ -7,13 +7,6 @@ BBQ Timer is a combined interval timer/stopwatch:
 2. **Periodic interval alarms** remind you to check/turn your food while the app also displays the total elapsed time. (A count-up “stopwatch” won’t alert you and a countdown “timer” won’t track the total time.)
 3. **Changeable alarms** while it’s running.
 
-Of course it can time more things than cooking, like interval exercises.
-
-* Requires minimal app permissions.  
-* No network access. No ads. No data collection.  
-* Simple and focused.  
-* Free.
-
 
 ## System Requirements
 
