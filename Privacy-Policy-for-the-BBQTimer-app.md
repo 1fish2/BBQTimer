@@ -2,6 +2,10 @@
 
 October 28, 2021
 
+**Summary:** This app does nothing that could be a privacy concern. No ads, analytics, concerning content,
+data collection, location or sensor access, in-app purchases, information sharing, logins, network access,
+social media, or user-generated content. It's an interval timer.
+
 **Ads:** None.
 
 **Analytics:** None.
