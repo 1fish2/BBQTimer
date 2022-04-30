@@ -2,7 +2,7 @@
 
 BBQ Timer ist ein kombinierter Intervalltimer/Stoppuhr:
 1. Schneller Zugriff über eine <b>Sperrbildschirmbenachrichtigung</b> (Sie müssen Ihr Telefon nicht entsperren) und ein Startbildschirm-Widget.
-2. <b>Regelmäßige Intervallalarme</b> erinnern Sie daran, Ihr Essen zu überprüfen/zu wenden, während die App auch die verstrichene Gesamtzeit anzeigt. (Eine hochzählende „Stoppuhr“ warnt Sie nicht und ein herunterzählender „Timer“ erfasst nicht die Gesamtzeit.)
+2. <b>Periodische Intervallalarme</b> erinnern Sie daran, Ihr Essen zu überprüfen/zu wenden, während die App auch die insgesamt verstrichene Garzeit anzeigt. (Eine hochzählende „Stoppuhr“ warnt Sie nicht und ein herunterzählender „Timer“ erfasst nicht die Gesamtzeit.)
 3. <b>Änderbare Alarme</b> während es läuft.
 
 
