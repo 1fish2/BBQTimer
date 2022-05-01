@@ -1,0 +1,31 @@
+<i>BBQ Timer</i>Bietet Erinnerungsalarme, während die Gesamtzeit verfolgt wird.
+
+<i>BBQ Timer</i> ist ein kombinierter Intervalltimer/Stoppuhr:
+
+* Schneller Zugriff über eine <b>Sperrbildschirmbenachrichtigung</b> (Sie müssen Ihr Telefon nicht entsperren) und ein Startbildschirm-Widget.
+* <b>Regelmäßige Intervallalarme</b> erinnern Sie daran, Ihr Essen zu überprüfen/zu wenden, während die App auch die verstrichene Gesamtzeit anzeigt. (Eine hochzählende „Stoppuhr“ warnt Sie nicht und ein herunterzählender „Timer“ erfasst nicht die Gesamtzeit.)
+* <b>Änderbare Alarme</b> während es läuft.
+
+<br><b>Tipps</b>
+
+* Tippen Sie in der App auf das Kontrollkästchen, um die regelmäßigen Erinnerungsalarme ein-/auszuschalten.
+    * Geben Sie ein periodisches Alarmintervall wie in den folgenden Beispielen ein: <i>10</i> [10 Minuten], <i>7:30</i> [7 Minuten, 30 Sekunden], <i>3:15:00 </i> [3 Stunden, 15 Minuten]. <i>12:00</i> kann zu <i>12:0</i> oder <i>12:</i> oder <i>12</i> abgekürzt werden. <i>0:09</i> kann auf <i>:9</i> gekürzt werden. <i>2:00:00</i> kann zu <i>2:0:0</i> oder <i>2::</i> oder <i>120</i> abgekürzt werden. Das Format ist <i>Minuten</i>, <i>Minuten:Sekunden</i> oder <i>Stunden:Minuten:Sekunden</i>.
+    * Tippen Sie auf die Zeitanzeige, um zwischen <i>angehalten</i> → <i>läuft</i> → <i>angehalten</i> → <i>angehalten</i> zu wechseln.
+* Versuchen Sie, das BBQ-Timer-Widget zum Startbildschirm hinzuzufügen.
+    * Tippen Sie auf das Widget, um den Timer zu starten/pausieren/stoppen.
+    * Tippen Sie auf den Hintergrund des Widgets oder seine Countdown-Zeit, um die App zu öffnen.
+    * Ändern Sie die Größe des Widgets, um mehr oder weniger Informationen anzuzeigen: Drücken Sie lange darauf und ziehen Sie dann an den Ziehpunkten zur Größenänderung.
+    * Um das Widget zu entfernen, drücken Sie lange darauf und ziehen Sie es auf „× Entfernen“.
+* Während der BBQ-Timer <i>läuft</i> oder <i>pausiert</i> ist, erscheint er <b>auf dem Sperrbildschirm</b> und <b>in der Pulldown-Benachrichtigung</b> damit Sie es an diesen Stellen sehen und steuern können.
+    * Um es auf den Sperrbildschirm zu bringen, versetzen Sie es in den Modus <b>Pause</b> oder <b>Wiedergabe</b>, indem Sie auf Schaltflächen in der App oder im Startbildschirm-Widget tippen.
+    * Sie können auch lange auf das Startbildschirmsymbol der App drücken und dann auf die Verknüpfung „Pause um 00:00“ (auf Android 7.1+) tippen, um sie anzuhalten und einsatzbereit zu machen.
+* Die App, das Startbildschirm-Widget und die Pulldown-Benachrichtigung zeigen alle die Countdown-Intervallzeit sowie die verstrichene Gesamtzeit an (erfordert Android 7+).
+* Sie können den „Alarm“-Ton von BBQ Timer in Einstellungen – Benachrichtigungen ändern. Wählen Sie nicht „Keine“, wenn Sie die Intervallalarme hören möchten. Um den Kuhglockenklang der App wiederherzustellen, deinstallieren Sie die App und installieren Sie sie erneut.
+
+<b>Hinweis: Diese Systemeinstellungen sind erforderlich, um BBQTimer-Alarme zu hören und zu sehen:</b>
+
+* „Alarmlautstärke“ auf hörbarem Niveau.
+* Sperrbildschirm – Alle oder nicht private Benachrichtigungen anzeigen.
+* BBQTimer „Benachrichtigungen anzeigen“, <i>nicht</i> lautlos. (Sie können auch „Nicht stören“ außer Kraft setzen.)
+* BBQTimer-Benachrichtigungskategorie „Alarm“ – „Benachrichtigungen anzeigen“, <i>nicht</i> „Stumm“, „Ton erzeugen und auf dem Bildschirm anzeigen“, Tonauswahl <i>nicht</i> „Keine“, Wichtigkeit „ Hoch“ oder höher auf dem Sperrbildschirm und im Benachrichtigungsbereich zu hören und zu sehen.
+* Einstellungen / Apps / Spezieller App-Zugriff / Wecker und Erinnerungen / Erlauben
