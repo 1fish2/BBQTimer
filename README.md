@@ -1,16 +1,18 @@
 # BBQTimer Android app
 
-[See it in the Google Play store](https://play.google.com/store/apps/details?id=com.onefishtwo.bbqtimer)
+[<img alt='Get it on Google Play' height="80" src='https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png'>](https://play.google.com/store/apps/details?id=com.onefishtwo.bbqtimer&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1)
+[<img alt="Get it on IzzyOnDroid" height="80" src="https://gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroid.png">](https://apt.izzysoft.de/fdroid/index/apk/com.onefishtwo.bbqtimer)
 
-BBQ Timer is a combined interval timer/stopwatch:
+
+**BBQ Timer** is a combined interval timer/stopwatch:
 1. Quick access via a **lock screen notification** (no need to unlock your phone) and a home screen widget.
 2. **Periodic interval alarms** remind you to check/turn your food while the app also displays the total elapsed time. (A count-up “stopwatch” won’t alert you and a countdown “timer” won’t track the total time.)
 3. **Changeable alarms** while it’s running.
 
 
-## System Requirements
+## Android Requirements
 
-BBQ Timer is for phones and tablets running Android 5.0+ (Lollipop and later).
+**BBQ Timer** is for phones and tablets running Android 5.0+ (Lollipop and later).
 
 If it encounters problems on your Android device, email me the details (device model, Android
 version, screen size, problem symptom, Android "bugreport" file).
@@ -42,6 +44,8 @@ version, screen size, problem symptom, Android "bugreport" file).
 ## License
 
 [MIT License](https://github.com/1fish2/BBQTimer/blob/master/LICENSE.md).
+
+Google Play and the Google Play logo are trademarks of Google LLC.
 
 
 ## Notes
