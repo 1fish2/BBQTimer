@@ -3,11 +3,26 @@
 [<img alt='Get it on Google Play' height="80" src='https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png'>](https://play.google.com/store/apps/details?id=com.onefishtwo.bbqtimer&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1)
 [<img alt="Get it on IzzyOnDroid" height="80" src="https://gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroid.png">](https://apt.izzysoft.de/fdroid/index/apk/com.onefishtwo.bbqtimer)
 
+* **Combined interval timer/stopwatch** = periodic alarms + elapsed time.  
+  Reminds you periodically to turn the food while it tracks the total cooking time.
+* Quick access via **lock screen notification** and **home screen widget**.
+* **Changeable alarms** while it’s running.
+* No ads.
 
-**BBQ Timer** is a combined interval timer/stopwatch:
-1. Quick access via a **lock screen notification** (no need to unlock your phone) and a home screen widget.
-2. **Periodic interval alarms** remind you to check/turn your food while the app also displays the total elapsed time. (A count-up “stopwatch” won’t alert you and a countdown “timer” won’t track the total time.)
-3. **Changeable alarms** while it’s running.
+Type in the interval time in `minutes`, `minutes:seconds`, or `hours:minutes:seconds`.
+
+Example intervals:
+* `10` = 10 minutes
+* `7:30` = 7 minutes, 30 seconds
+* `3:15:00` = 3 hours, 15 minutes
+
+Short forms:
+* `12:00` = `12:0` = `12:` = `12` = 12 minutes
+* `0:09` = `:9` = 9 seconds
+* `2:00:00` = `2:0:0` = `2::` = `120` = 2 hours
+
+<img alt="paused screenshot" height="540" src="Play-assets/Pixel 3 screenshots/screenshot paused.png">
+<img alt="lock-screen screenshot" height="540" src="Play-assets/Pixel 3 screenshots/screenshot lock screen.png">
 
 
 ## Android Requirements
@@ -19,18 +34,17 @@ version, screen size, problem symptom, Android "bugreport" file).
 
 
 ## Usage Tips
-* In the app, tap the checkbox to turn the periodic alarms on/off.
-  * Type in a periodic alarm interval like these examples: *10* \[10 minutes], *7:30* \[7 minutes, 30 seconds], *3:15:00* \[3 hours, 15 minutes]. *12:00* can be shortened to *12:0* or *12:* or *12*. *0:09* can be shortened to *:9*. *2:00:00* can be shortened to *2:0:0* or *2::* or *120*. The format is *minutes*, *minutes:seconds*, or *hours:minutes:seconds*.
-  * Tap the time display to cycle between *stopped* → *running* → *paused* → *stopped.*
-* Try adding the BBQ Timer widget to the home screen.
-  * Tap in the widget to start/pause/stop the timer.
+* Tap the checkbox to turn the periodic reminder alarms on/off.
+* Tap the time display to cycle between *stopped* → *running* → *paused* → *stopped*.
+* Add the BBQ Timer widget to the home screen.
+  * Tap the widget's elapsed time to start/pause/stop.
   * Tap the widget's background or its countdown time to open the app.
-  * Resize the widget to see more or less info: long-press it then drag its resize handles.
-  * To remove the widget, long-press and drag it onto “× Remove”.
-* While BBQ Timer is *running* or *paused*, it will appear **on the lock screen** and **in the pull-down notification** so you can see and control it in those places.
-  * To get it on the lock screen, put it in **Pause** or **Play** mode by tapping buttons in the app or the home screen widget.
-  * You can also long-press the app’s home screen icon, then tap the “Pause at 00:00” shortcut (on Android 7.1+) to make it Paused and ready to go.
-* The app, home screen widget, and pull-down notification all show the countdown interval time and the total elapsed time (requires Android 7+).
+  * Resize the widget (long-press it then drag its resize handles) to see more or less info.
+  * To remove the widget, long-press and drag it to “× Remove”.
+* While BBQ Timer is *running* or *paused*, it appears **on the lock screen** and **in the pull-down notification** so you can see and control it in those places.
+  * To put it on the lock screen, put it in **Pause** or **Play** mode by tapping buttons in the app or the home screen widget.
+  * You can long-press the app’s home screen icon, then tap the “Pause at 00:00” shortcut (on Android 7.1+) to make it Paused and ready on the lock screen.
+* The app, home screen widget, and pull-down notification show the countdown interval time as well as the total elapsed time (requires Android 7+).
 * You can change BBQ Timer’s “Alarm” sound in Settings - Notifications. Don’t pick “None” if you want to hear the interval alarms. To restore the app’s cowbell sound, uninstall and reinstall the app.
 
 ### System Settings needed to hear and see BBQTimer notification alarms
