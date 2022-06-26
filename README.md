@@ -36,8 +36,8 @@ version, screen size, problem symptom, Android "bugreport" file).
 * Tap the checkbox to turn the periodic reminder alarms on/off.
 * Tap the time display to cycle between *stopped* → *running* → *paused* → *stopped*.
 * Add the BBQ Timer widget to the home screen.
-  * Tap the widget's elapsed time to start/pause/stop.
-  * Tap the widget's background or its countdown time to open the app.
+  * Tap the widget’s elapsed time to start/pause/stop.
+  * Tap the widget’s background or its countdown time to open the app.
   * Resize the widget (long-press it then drag its resize handles) to see more or less info.
   * To remove the widget, long-press and drag it to “× Remove”.
 * While BBQ Timer is *running* or *paused*, it appears **on the lock screen** and **in the pull-down notification** so you can see and control it in those places.
@@ -64,7 +64,7 @@ Google Play and the Google Play logo are trademarks of Google LLC.
 ## Notes
 * There’s some clock skew between the stopwatch time as displayed in widgets vs. the
   notification area. To see more precise times, open the application.
-* At Font Size **Largest** in Settings **Display Size Default**, the home screen widget's text may get clipped at the bottom.
+* At Font Size **Largest** in Settings **Display Size Default**, the home screen widget’s text may get clipped at the bottom.
 
 ## Building from Source Code
 Use [Android Studio](http://developer.android.com/sdk/installing/studio.html) (an excellent tool!).

@@ -21,8 +21,8 @@ Short forms:
 • Tap the checkbox to turn the periodic reminder alarms on/off.
 • Tap the time display to cycle between <i>stopped</i> → <i>running</i> → <i>paused</i> → <i>stopped</i>.
 • Add the BBQ Timer widget to the home screen.
-  • Tap the widget's elapsed time to start/pause/stop.
-  • Tap the widget's background or its countdown time to open the app.
+  • Tap the widget’s elapsed time to start/pause/stop.
+  • Tap the widget’s background or its countdown time to open the app.
   • Resize the widget (long-press it then drag its resize handles) to see more or less info.
   • To remove the widget, long-press and drag it to “× Remove”.
 • While BBQ Timer is <i>running</i> or <i>paused</i>, it appears <b>on the lock screen</b> and <b>in the pull-down notification</b> so you can see and control it in those places.
