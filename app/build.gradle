@@ -3,12 +3,12 @@ plugins {
 }
 
 android {
-    compileSdk 31
+    compileSdk 32
     buildToolsVersion '33.0.0'
 
     defaultConfig {
         applicationId "com.onefishtwo.bbqtimer"
-        versionCode 21
+        versionCode 22
         versionName '3.0'
         minSdk 21
         targetSdk 30
