@@ -134,7 +134,7 @@ public class InAppUITest {
 
         checkStopped(); // Stopped
         checkReminder(true);
-        alarmPeriodTextField.check(matches(withText("05:00")));
+        alarmPeriodTextField.check(matches(withText("5")));
         countdownDisplay.check(matches(withText("05:00")));
         countdownDisplay.check(matches(withText(inWholeTimeInterval(minutes5, minutes5))));
 
@@ -310,7 +310,7 @@ public class InAppUITest {
         assertEquals("com.onefishtwo.bbqtimer", appContext2.getPackageName());
 
         checkReminder(true);
-        alarmPeriodTextField.check(matches(withText("05:00")));
+        alarmPeriodTextField.check(matches(withText("5")));
 
         enableRemindersToggle.perform(click());
         checkReminder(false);
@@ -352,7 +352,7 @@ public class InAppUITest {
         // and thus break the test! Why?
         background.check(matches(isDisplayed()));
 
-        alarmPeriodTextField.check(matches(withText("00:05"))); // normalized
+        alarmPeriodTextField.check(matches(withText("0:05"))); // normalized
         alarmPeriodTextField.check(matches(doesNotHaveFocus()));
         playPauseButton.perform(waitMsec(100)); // work around Espresso test flakiness
 
@@ -371,7 +371,7 @@ public class InAppUITest {
                 withContentDescription("Clear text"),     // en
                 withContentDescription("Text löschen"))); // de
         clearTextImageButton.check(matches(not(isDisplayed())));
-        alarmPeriodTextField.check(matches(withText("05:00")));
+        alarmPeriodTextField.check(matches(withText("5")));
 
         alarmPeriodTextField.perform(click());
         clearTextImageButton.check(matches(isDisplayed()));
@@ -382,14 +382,14 @@ public class InAppUITest {
 
         // Type into the empty text field.
         alarmPeriodTextField.perform(typeTextIntoFocusedView("1:3\n"));
-        alarmPeriodTextField.check(matches(withText("01:03")));
+        alarmPeriodTextField.check(matches(withText("1:03")));
         alarmPeriodTextField.check(matches(doesNotHaveFocus()));
 
         // Start typing into the text field, then click another widget to cancel the edit.
         enableRemindersToggle.check(matches(isChecked()));
         alarmPeriodTextField.perform(click(), typeTextIntoFocusedView("88"));
         enableRemindersToggle.perform(click());
-        alarmPeriodTextField.check(matches(withText("01:03")));
+        alarmPeriodTextField.check(matches(withText("1:03")));
         alarmPeriodTextField.check(matches(doesNotHaveFocus()));
         enableRemindersToggle.check(matches(isNotChecked()));
 

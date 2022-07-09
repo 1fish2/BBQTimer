@@ -194,9 +194,18 @@ public class ApplicationState {
         this.secondsPerReminder = boundIntervalTimeSeconds(_secondsPerReminder);
     }
 
-    /** Formats the reminder interval time like hh:mm:ss. */
+    /** Formats the reminder interval time like h:mm:ss. */
     @NonNull
     public String formatIntervalTimeHhMmSs() {
         return TimeCounter.formatHhMmSs(getMillisecondsPerReminder());
+    }
+
+    /**
+     * Formats the reminder interval time compactly like m or m:ss (or h:mm:ss) for the EditText
+     * field, so as not to suggest to the user that the long format is needed on input.
+     */
+    @NonNull
+    public String formatIntervalTimeHhMmSsCompact() {
+        return TimeCounter.formatHhMmSsCompact(getMillisecondsPerReminder());
     }
 }

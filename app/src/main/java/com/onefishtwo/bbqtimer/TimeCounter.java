@@ -53,6 +53,10 @@ public class TimeCounter {
      */
     static final Pattern HMS_SEPARATOR = Pattern.compile(":");
 
+    /**
+     * Injectable mocks of DateUtils.formatElapsedTime() and Html.fromHtml() SINCE THE UNIT TEST
+     * VERSION OF android.jar DOESN'T IMPLEMENT THOSE METHODS OR SPANNABLE STRINGS.
+     */
     @VisibleForTesting
     static class InjectForTesting {
         String formatElapsedTime(@SuppressWarnings("SameParameterValue") StringBuilder recycle,
@@ -369,6 +373,39 @@ public class TimeCounter {
     }
 
     /**
+     * Formats a millisecond duration in the compact format that parseHhMmSs supports, that is,
+     * h:mm:ss or m:ss or m, e.g. "7" rather than "07:00".
+     *
+     * Derived from {@link DateUtils#formatElapsedTime(long)}.
+     */
+    public static String formatHhMmSsCompact(long elapsedMilliseconds) {
+        long elapsedSeconds = elapsedMilliseconds / 1000;
+
+        if (elapsedSeconds > 3600) {
+            return formatHhMmSs(elapsedMilliseconds);
+        }
+
+        long minutes = 0;
+
+        if (elapsedSeconds >= 60) {
+            minutes = elapsedSeconds / 60;
+            elapsedSeconds -= minutes * 60;
+        }
+
+        long seconds = elapsedSeconds;
+
+        synchronized (recycledStringBuilder) {
+            recycledStringBuilder.setLength(0);
+
+            try (Formatter f = new Formatter(recycledStringBuilder, Locale.getDefault())) {
+                String format = seconds == 0 ? "%1$d" : "%1$d:%2$02d";
+
+                return f.format(format, minutes, seconds).toString();
+            }
+        }
+    }
+
+    /**
      * Parses a field of an hh:mm:ss string.
      * Returns -1 if it's not an unsigned integer, but "" is OK.
      */
@@ -385,7 +422,7 @@ public class TimeCounter {
     }
 
     /**
-     * Parses a time duration in the form: hh:mm:ss, mm:ss, mm. Each field has one or more digits,
+     * Parses a time duration in the form: hh:mm:ss, mm:ss, mm. Each field has zero or more digits,
      * but commonly two digits. dd[:dd[:dd]]. This is forgiving but it returns -1 if the input isn't
      * in a recognized format. All spaces get squeezed out. The field separator is ":".
      * <p/>

@@ -562,7 +562,7 @@ public class MainActivity extends AppCompatActivity {
     @UiThread
     private void displayAlarmPeriod() {
         Editable text = alarmPeriod.getText();
-        String newText = state.formatIntervalTimeHhMmSs();
+        String newText = state.formatIntervalTimeHhMmSsCompact();
 
         if (text == null || !newText.equals(text.toString())) {
             alarmPeriod.setText(newText);

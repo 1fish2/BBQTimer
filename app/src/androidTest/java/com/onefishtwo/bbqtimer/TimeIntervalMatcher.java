@@ -86,9 +86,14 @@ public class TimeIntervalMatcher extends CustomTypeSafeMatcher<String> {
         mismatchDescription.appendText("; was ").appendText(item);
     }
 
-    /** Gets the integer value of a capturing group from the Matcher. */
+    /**
+     * Gets the integer value of a capturing group from the Matcher; or 0 if the group isn't in the
+     * matcher.
+     *
+     * @throws NumberFormatException if the group is "" or otherwise not an integer.
+     */
     private int val(@NonNull java.util.regex.Matcher matcher, int group) {
-        if (!expectFraction && group == 3) {
+        if (group > matcher.groupCount()) {
             return 0;
         }
 

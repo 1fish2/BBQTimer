@@ -74,37 +74,41 @@ public class TimeCounterTest {
         }
     }
 
+    static class MockFormatHook extends TimeCounter.InjectForTesting {
+        long inputMsec =
+                987 * HOUR_IN_MILLIS + 45 * MINUTE_IN_MILLIS + 23 * SECOND_IN_MILLIS + 600;
+        String hhmmssText = "987:45:23";
+        String htmlText = hhmmssText + "<small>.6</small>";
+        MockSpanned mockSpanned = new MockSpanned();
+
+        @NonNull
+        @Override
+        String formatElapsedTime(StringBuilder recycle, long elapsedSeconds) {
+            assertNotNull(recycle);
+            assertEquals(inputMsec / 1000, elapsedSeconds);
+            return hhmmssText;
+        }
+
+        @NonNull
+        @Override
+        Spanned fromHtml(String source) {
+            assertEquals(htmlText, source);
+            return mockSpanned;
+        }
+    }
+
     /**
      * Unit test for formatHhMmSsFraction(); injects mocks of DateUtils.formatElapsedTime() and
-     * Html.fromHtml() since the unit test Android.jar doesn't implement them or even spannable
-     * strings.
+     * Html.fromHtml() SINCE THE UNIT TEST VERSION OF android.jar DOESN'T IMPLEMENT THOSE METHODS OR
+     * SPANNABLE STRINGS.
      */
     @Test
     public void testFormatHhMmSsFraction() {
-        final long inputMsec =
-                987 * HOUR_IN_MILLIS + 45 * MINUTE_IN_MILLIS + 23 * SECOND_IN_MILLIS + 600;
-        final String hhmmssText = "987:45:23";
-        final String htmlText = hhmmssText + "<small>.6</small>";
-        final MockSpanned mockSpanned = new MockSpanned();
+        MockFormatHook hook = new MockFormatHook();
 
-        TimeCounter.injected = new TimeCounter.InjectForTesting() {
-            @NonNull
-            @Override
-            String formatElapsedTime(StringBuilder recycle, long elapsedSeconds) {
-                assertNotNull(recycle);
-                assertEquals(inputMsec / 1000, elapsedSeconds);
-                return hhmmssText;
-            }
+        TimeCounter.injected = hook;
 
-            @NonNull
-            @Override
-            Spanned fromHtml(String source) {
-                assertEquals(htmlText, source);
-                return mockSpanned;
-            }
-        };
-
-        assertSame(mockSpanned, TimeCounter.formatHhMmSsFraction(inputMsec));
+        assertSame(hook.mockSpanned, TimeCounter.formatHhMmSsFraction(hook.inputMsec));
     }
 
     @Test
@@ -162,5 +166,39 @@ public class TimeCounterTest {
         assertEquals(-1, parseHhMmSs(": -15 :"));
         assertEquals(-1, parseHhMmSs("10.20.2000"));
         assertEquals(-1, parseHhMmSs(" ten "));
+    }
+
+    /**
+     * Make a test call to formatHhMmSsCompact(). When hours > 0, that calls
+     * DateUtils.formatElapsedTime(), in which case this must mock out the underlying Formatter.
+     * Otherwise it doesn't, so the mock returns the wrong string result there, thus testing that
+     * formatHhMmSsCompact() doesn't use it.
+     */
+    private static String fc(long hours, long minutes, long seconds) {
+        long totalSeconds = hours * 3600 + minutes * 60 + seconds;
+        MockFormatHook hook = new MockFormatHook();
+
+        hook.inputMsec = totalSeconds * 1000L;
+        hook.hhmmssText = String.format("%d:%02d:%02d", hours, minutes, seconds);
+        hook.htmlText = hook.hhmmssText;
+
+        TimeCounter.injected = hook;
+
+        return TimeCounter.formatHhMmSsCompact(totalSeconds * 1000L);
+    };
+
+    @Test
+    public void testFormatHhMmSsCompact() {
+        // No hours: formatHhMmSsCompact() does its own formatting as "m:ss" or "m".
+        assertEquals("34:56", fc(0, 34, 56));
+        assertEquals("4:56", fc(0, 4, 56));
+        assertEquals("4", fc(0, 4, 0));
+        assertEquals("24", fc(0, 24, 0));
+
+        // With hours: formatHhMmSsCompact() calls DateUtils.formatElapsedTime(), which has to be
+        // mocked for unit testing.
+        assertEquals("2:34:56", fc(2, 34, 56));
+        assertEquals("5:04:00", fc(5, 4, 0));
+        assertEquals("15:00:00", fc(15, 0, 0));
     }
 }
