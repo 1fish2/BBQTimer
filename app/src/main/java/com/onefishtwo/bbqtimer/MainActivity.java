@@ -127,7 +127,7 @@ public class MainActivity extends AppCompatActivity {
         @NonNull
         private final WeakReference<MainActivity> weakActivity;
 
-        private UpdateHandler(MainActivity activity) {
+        UpdateHandler(MainActivity activity) {
             super(Looper.getMainLooper());
             weakActivity = new WeakReference<>(activity);
         }
@@ -150,7 +150,7 @@ public class MainActivity extends AppCompatActivity {
         private void scheduleNextUpdate() {
             MainActivity activity = weakActivity.get();
 
-            if (activity != null && !activity.timer.isStopped()) {
+            if (activity != null && !activity.getTimer().isStopped()) {
                 sendEmptyMessageDelayed(MSG_UPDATE, UPDATE_INTERVAL);
             }
         }
@@ -178,6 +178,10 @@ public class MainActivity extends AppCompatActivity {
     private TextView countUpDisplay, countdownDisplay;
     private EditText2 alarmPeriod;
     private CheckBox enableReminders;
+
+    TimeCounter getTimer() {
+        return timer;
+    }
 
     @MainThread
     @Override
@@ -658,7 +662,7 @@ public class MainActivity extends AppCompatActivity {
 
     /** Updates the Activity's views for the current state. */
     @UiThread
-    private void updateViews() {
+    void updateViews() {
         boolean isRunning = timer.isRunning();
         boolean isStopped = timer.isStopped();
         boolean isPausedAt0 = timer.isPausedAt0();

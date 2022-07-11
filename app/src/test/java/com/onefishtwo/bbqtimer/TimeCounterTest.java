@@ -79,7 +79,7 @@ public class TimeCounterTest {
                 987 * HOUR_IN_MILLIS + 45 * MINUTE_IN_MILLIS + 23 * SECOND_IN_MILLIS + 600;
         String hhmmssText = "987:45:23";
         String htmlText = hhmmssText + "<small>.6</small>";
-        MockSpanned mockSpanned = new MockSpanned();
+        final MockSpanned mockSpanned = new MockSpanned();
 
         @NonNull
         @Override
@@ -185,7 +185,7 @@ public class TimeCounterTest {
         TimeCounter.injected = hook;
 
         return TimeCounter.formatHhMmSsCompact(totalSeconds * 1000L);
-    };
+    }
 
     @Test
     public void testFormatHhMmSsCompact() {
