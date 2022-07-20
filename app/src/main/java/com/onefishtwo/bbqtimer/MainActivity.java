@@ -21,12 +21,15 @@ package com.onefishtwo.bbqtimer;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
+import android.graphics.Typeface;
 import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -35,17 +38,21 @@ import android.os.Looper;
 import android.os.Message;
 import android.provider.Settings;
 import android.text.Editable;
+import android.text.SpannableString;
 import android.text.Spanned;
+import android.text.style.StyleSpan;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.view.textclassifier.TextClassifier;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import com.google.android.material.snackbar.BaseTransientBottomBar;
@@ -64,18 +71,19 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.UiThread;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.app.TaskStackBuilder;
 import androidx.core.content.ContextCompat;
 import androidx.core.widget.TextViewCompat;
+import androidx.fragment.app.FragmentActivity;
 
 /**
  * The BBQ Timer's main activity.
  */
-public class MainActivity extends AppCompatActivity {
-    private final String TAG = "Main";
+public class MainActivity extends FragmentActivity
+        implements RecipeEditorDialogFragment.RecipeEditorDialogFragmentListener {
+    private static final String TAG = "Main";
 
     static final int FLAG_IMMUTABLE =
             Build.VERSION.SDK_INT >= 23 ? PendingIntent.FLAG_IMMUTABLE : 0;
@@ -170,6 +178,7 @@ public class MainActivity extends AppCompatActivity {
     private final UpdateHandler updateHandler = new UpdateHandler(this);
     private ApplicationState state;
     private TimeCounter timer;
+    private PopupMenu popupMenu;
 
     private ConstraintLayout mainContainer;
     private Button resetButton;
@@ -212,7 +221,6 @@ public class MainActivity extends AppCompatActivity {
         countdownDisplay.setOnClickListener(this::onClickPauseResume);
         alarmPeriod.setOnEditorActionListener(this::onEditAction);
         alarmPeriod.setOnFocusChangeListener2(this::onEditTextFocusChange);
-        //alarmPeriod.setSelectAllOnFocus(true); // TODO: Use this instead of the (X) clear button?
         stopButton.setOnClickListener(this::onClickStop);
         countUpDisplay.setOnClickListener(this::onClickTimerText);
         enableReminders.setOnClickListener(this::onClickEnableRemindersToggle);
@@ -221,6 +229,8 @@ public class MainActivity extends AppCompatActivity {
         workaroundTextClassifier(alarmPeriod);
         TextInputLayout alarmPeriodLayout = findViewById(R.id.alarmPeriodLayout);
         alarmPeriodLayout.setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT);
+        alarmPeriodLayout.setStartIconOnClickListener(this::onClickRecipeMenuButton);
+        // TODO: setStartIconContentDescription(), setStartIconOnLongClickListener()?
 
         // AutoSizeText works with android:maxLines="1" but not with android:singleLine="true".
         TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(countUpDisplay, 16,
@@ -352,6 +362,11 @@ public class MainActivity extends AppCompatActivity {
         state.save(this);
 
         AlarmReceiver.updateNotifications(this); // after setMainActivityIsVisible()
+
+        if (popupMenu != null) {
+            popupMenu.dismiss(); // avoid android.view.WindowLeaked PopupWindow$PopupViewContainer
+            popupMenu = null;
+        }
 
         super.onStop();
     }
@@ -511,19 +526,108 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /** Extracts the leading time token from the ***trimmed*** string. */
+    @NonNull
+    public static String extractLeadingToken(@NonNull String input) {
+        // TODO: Extract the first (:\d)+.
+        String[] tokens = input.split("\\s+", 2);
+
+        return tokens.length > 1 ? tokens[0] : input;
+    }
+
+    /** The user clicked the button to open the "recipes" menu of alarm periods. */
+    @UiThread
+    public void onClickRecipeMenuButton(View v) {
+        popupMenu = new PopupMenu(this, v);
+        Menu menu = popupMenu.getMenu();
+
+        popupMenu.getMenuInflater().inflate(R.menu.recipe_menu, menu);
+        popupMenu.setOnMenuItemClickListener(this::onRecipeMenuItemClick);
+
+        MenuItem item = menu.findItem(R.id.edit_recipes);
+        if (item != null) {
+            CharSequence title = item.getTitle();
+            SpannableString ss = new SpannableString(title);
+            ss.setSpan(new StyleSpan(Typeface.ITALIC), 0, ss.length(), 0);
+            item.setTitle(ss);
+        }
+
+        String[] lines = state.getRecipes().split("\n");
+        for (String r : lines) { // Italicize the notes that follow each recipe's leading token.
+            String recipe = r.trim();
+            int recipeLength = recipe.length();
+            int tokenLength = extractLeadingToken(recipe).length();
+            SpannableString ss = new SpannableString(recipe);
+
+            ss.setSpan(new StyleSpan(Typeface.ITALIC), tokenLength, recipeLength, 0);
+            menu.add(ss);
+        }
+
+        popupMenu.show();
+    }
+
+    /** Opens the recipe list editor dialog. */
+    void showRecipeEditor() {
+        String recipeLines = String.join("\n", state.getRecipes());
+        RecipeEditorDialogFragment dialog = RecipeEditorDialogFragment.newInstance(recipeLines);
+
+        dialog.show(getSupportFragmentManager(), RecipeEditorDialogFragment.TAG);
+    }
+
+    @Override
+    public void onEditorDialogPositiveClick(DialogInterface dialog, String text) {
+        state.setRecipes(text);
+        state.save(this);
+        Log.i(TAG, "Saved contents: " + text); // ***DEBUG***
+    }
+
+    @Override
+    public void onEditorDialogNegativeClick(DialogInterface dialog) {
+        Log.i(TAG, "Cancelled the editor dialog"); // ***DEBUG***
+    }
+
+    @SuppressWarnings("SameReturnValue")
+    @UiThread
+    public boolean onRecipeMenuItemClick(MenuItem item) {
+        String itemTitle = item.getTitle().toString();
+
+        popupMenu = null;
+
+        if (item.getItemId() == R.id.edit_recipes) {
+            Log.i(TAG, "Clicked: " + itemTitle);
+            showRecipeEditor();
+            return true;
+        }
+
+        String token = extractLeadingToken(itemTitle);
+        Log.i(TAG, "Picked: " + token);
+        alarmPeriod.setText(token);
+
+        // If the text field doesn't have focus, accept the new input now.
+        processAlarmPeriodInput();
+        return true;
+    }
+
     /** Hides the soft keyboard, if we're lucky. */
     // https://stackoverflow.com/a/17789187/1682419
-    public void hideKeyboard(@Nullable View v) {
-        InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+    public static void hideKeyboard(@NonNull Activity activity, @Nullable View v) {
+        InputMethodManager imm = (InputMethodManager) activity.getSystemService(INPUT_METHOD_SERVICE);
 
         if (v != null) {
             imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
         }
 
-        View focussed = getCurrentFocus();
+        View focussed = activity.getCurrentFocus();
+        // TODO: Another fallback: if (focussed == null) focussed = new View(activity);
         if (focussed != null) {
             imm.hideSoftInputFromWindow(focussed.getWindowToken(), 0);
         }
+    }
+
+    /** Hides the soft keyboard, if we're lucky. */
+    // https://stackoverflow.com/a/17789187/1682419
+    public void hideKeyboard(@Nullable View v) {
+        hideKeyboard(this, v);
     }
 
     /**
@@ -584,6 +688,8 @@ public class MainActivity extends AppCompatActivity {
             state.setSecondsPerReminder(newSeconds); // clips the value
             state.save(this);
             updateUI(); // update countdownDisplay, notifications, and widgets
+        } else {
+            displayAlarmPeriod();
         }
 
         defocusTextField(alarmPeriod);

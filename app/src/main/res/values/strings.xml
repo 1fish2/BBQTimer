@@ -145,4 +145,22 @@
       Space is tight in a toast; this might not fit. -->
     <string name="need_alarm_access">BBQ Timer needs “Special app access” “Alarms &amp; reminders” to set alarms</string>
 
+    <!-- The initial "recipes" of alarm intervals with optional notes -->
+    <string name="recipes">7 fish, cook to 145°F\n7 burgers, cook to 165°F\n:30\n1\n1:30\n2\n3\n4\n5\n6\n7\n8\n9\n10\n1:30:00</string>
+
+    <!-- Menu command to edit the pop-up list of "recipes" of alarm intervals with optional notes. -->
+    <string name="edit_this_list">Edit these intervals…</string>
+
+    <!-- Title for the the dialog to edit "recipes" of alarm intervals with optional notes. -->
+    <string name="edit_list_title">Alarm intervals</string>
+
+    <!-- Hint for what to type into the recipe editor. -->
+    <string name="edit_list_hint">alarm intervals in minutes, minutes:seconds, or hours:minutes:seconds, plus optional space and notes</string>
+
+    <!-- Save edits in the recipe editor. -->
+    <string name="save_edits">Save</string>
+
+    <!-- Cancel edits in the recipe editor. -->
+    <string name="cancel_edits">Cancel</string>
+
 </resources>

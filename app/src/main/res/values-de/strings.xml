@@ -5,7 +5,11 @@
     <string name="alarm_unmute">STUMMSCHALTUNG AUFHEBEN</string>
     <string name="app_name">BBQ Timer</string>
     <string name="app_description">Eine Stoppuhr, die Sie auf dem Sperrbildschirm verwenden können.</string>
+    <string name="cancel_edits">Abbrechen</string>
     <string name="dismiss_tip">Wischen um zu stoppen</string>
+    <string name="edit_list_hint">Alarmintervalle in Minuten, Minuten:Sekunden oder Stunden:Minuten:Sekunden, plus optionales Leerzeichen und Anmerkungen</string>
+    <string name="edit_list_title">Alarmintervalle</string>
+    <string name="edit_this_list">Bearbeiten Sie diese Intervalle…</string>
     <string name="interval_hint">M, M:S, H:M:S</string>
     <string name="need_alarm_access">BBQ Timer benötigt „Spezieller App-Zugriff“ „Wecker und Erinnerungen“, um Alarme einzustellen</string>
     <string name="notification_alarm_channel_name">Alarm</string>
@@ -20,7 +24,9 @@
     <string name="pause_at_0_long">Anhalten bei 00:00</string>
     <string name="pause_at_0_short">Anhalten 0:00</string>
     <string name="reminder_switch">Periodisches Alarmintervall:</string>
+    <string name="recipes">7 Fisch, bis 63°C\n7 Burgers, bis 74°C\n:30\n1\n1:30\n2\n3\n4\n5\n6\n7\n8\n9\n10\n1:30:00</string>
     <string name="reset">Zurücksetzen</string>
+    <string name="save_edits">Speichern</string>
     <string name="start">Start</string>
     <string name="start_at_0_long">Start</string>
     <string name="start_at_0_short">Start</string>
