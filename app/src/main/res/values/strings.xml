@@ -155,7 +155,7 @@
     <string name="edit_list_title">Alarm intervals</string>
 
     <!-- Hint for what to type into the recipe editor. -->
-    <string name="edit_list_hint">alarm intervals in minutes, minutes:seconds, or hours:minutes:seconds, plus optional space and notes</string>
+    <string name="edit_list_hint">minutes\nminutes:seconds or\nhours:minutes:seconds\nwith optional notes</string>
 
     <!-- Save edits in the recipe editor. -->
     <string name="save_edits">Save</string>

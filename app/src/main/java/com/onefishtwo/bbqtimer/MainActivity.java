@@ -551,7 +551,7 @@ public class MainActivity extends FragmentActivity
         if (item != null) {
             CharSequence title = item.getTitle();
             SpannableString ss = new SpannableString(title);
-            ss.setSpan(new StyleSpan(Typeface.ITALIC), 0, ss.length(), 0);
+            ss.setSpan(new StyleSpan(Typeface.BOLD), 0, ss.length(), 0);
             item.setTitle(ss);
         }
 

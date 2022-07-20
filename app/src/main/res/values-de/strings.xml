@@ -7,7 +7,7 @@
     <string name="app_description">Eine Stoppuhr, die Sie auf dem Sperrbildschirm verwenden können.</string>
     <string name="cancel_edits">Abbrechen</string>
     <string name="dismiss_tip">Wischen um zu stoppen</string>
-    <string name="edit_list_hint">Alarmintervalle in Minuten, Minuten:Sekunden oder Stunden:Minuten:Sekunden, plus optionales Leerzeichen und Anmerkungen</string>
+    <string name="edit_list_hint">Minuten\nMinuten:Sekunden oder\nStunden:Minuten:Sekunden\nmit optionalen Anmerkungen</string>
     <string name="edit_list_title">Alarmintervalle</string>
     <string name="edit_this_list">Bearbeiten Sie diese Intervalle…</string>
     <string name="interval_hint">M, M:S, H:M:S</string>

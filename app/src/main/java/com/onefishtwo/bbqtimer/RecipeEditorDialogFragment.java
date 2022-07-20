@@ -43,7 +43,7 @@ public class RecipeEditorDialogFragment extends DialogFragment {
         Bundle bundle = new Bundle();
 
         // The text is stored in the Arguments Bundle so it's available on re-create.
-        // TODO: Save contents at some juncture?
+        // TODO: Save contents in onPause() or onDestroy()?
         if (text.trim().length() == 0) {
             text = FALLBACK_CONTENTS;
         }
@@ -94,7 +94,7 @@ public class RecipeEditorDialogFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(requireActivity(),
-                R.style.Theme_Material3_DayNight_Dialog); // TODO: Pass in a theme ID? R.style.Theme_Material_Dialog_Alert? Theme_Material3_DayNight_Dialog? Theme_AppCompat_Dialog_Alert? Theme_Material3_Dark_Dialog_Alert?
+                R.style.ThemeOverlay_Material3_TextInputEditText_OutlinedBox);
         LayoutInflater inflater = requireActivity().getLayoutInflater();
         View content = inflater.inflate(R.layout.dialog_edit_recipes, null);
         // "To ensure consistent styling, the custom view should be inflated or constructed using
@@ -105,6 +105,11 @@ public class RecipeEditorDialogFragment extends DialogFragment {
 
         textField = content.findViewById(R.id.recipes_text_field);
         textField.setOnFocusChangeListener(this::onEditTextFocusChange);
+
+        // Workaround: The XML scrolling attributes don't work very well.
+        textField.setHorizontallyScrolling(true);
+        textField.setHorizontalScrollBarEnabled(true);
+        textField.setScrollbarFadingEnabled(false);
 
         if (textField != null) {
             textField.setText(getInitContents());
