@@ -198,6 +198,7 @@ public class MainActivity extends FragmentActivity
         super.onCreate(savedInstanceState);
         viewConfiguration = -1;
         notifier = new Notifier(this);
+        popupMenu = null;
 
         // View Binding has potential but it makes project inspections create a lot of spurious
         // warnings about unused resource IDs, methods, and method arguments.
@@ -365,6 +366,7 @@ public class MainActivity extends FragmentActivity
 
         if (popupMenu != null) {
             popupMenu.dismiss(); // avoid android.view.WindowLeaked PopupWindow$PopupViewContainer
+            // TODO: It still throws WindowLeaked PopupWindow$PopupDecorView on API 32.
             popupMenu = null;
         }
 
@@ -543,6 +545,7 @@ public class MainActivity extends FragmentActivity
 
         popupMenu.getMenuInflater().inflate(R.menu.recipe_menu, menu);
         popupMenu.setOnMenuItemClickListener(this::onRecipeMenuItemClick);
+        popupMenu.setOnDismissListener(this::onDismissRecipeMenu);
 
         MenuItem item = menu.findItem(R.id.edit_recipes);
         if (item != null) {
@@ -567,6 +570,7 @@ public class MainActivity extends FragmentActivity
     }
 
     /** Opens the recipe list editor dialog. */
+    @UiThread
     void showRecipeEditor() {
         String recipeLines = String.join("\n", state.getRecipes());
         RecipeEditorDialogFragment dialog = RecipeEditorDialogFragment.newInstance(recipeLines);
@@ -575,23 +579,26 @@ public class MainActivity extends FragmentActivity
     }
 
     @Override
+    @UiThread
     public void onEditorDialogPositiveClick(DialogInterface dialog, String text) {
         state.setRecipes(text);
         state.save(this);
-        Log.i(TAG, "Saved contents: " + text); // ***DEBUG***
     }
 
     @Override
+    @UiThread
     public void onEditorDialogNegativeClick(DialogInterface dialog) {
-        Log.i(TAG, "Cancelled the editor dialog"); // ***DEBUG***
+    }
+
+    @UiThread
+    public void onDismissRecipeMenu(PopupMenu menu) {
+        popupMenu = null;
     }
 
     @SuppressWarnings("SameReturnValue")
     @UiThread
     public boolean onRecipeMenuItemClick(MenuItem item) {
         String itemTitle = item.getTitle().toString();
-
-        popupMenu = null;
 
         if (item.getItemId() == R.id.edit_recipes) {
             Log.i(TAG, "Clicked: " + itemTitle);
