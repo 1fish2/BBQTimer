@@ -18,7 +18,6 @@
         android:hint="@string/edit_list_hint"
         android:inputType="textMultiLine|textNoSuggestions"
         android:minLines="2"
-        android:maxLines="14"
         android:maxLength="2000"
         android:scrollbarAlwaysDrawHorizontalTrack="true"
         android:scrollbars="horizontal|vertical"

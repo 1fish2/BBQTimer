@@ -129,6 +129,10 @@ public class RecipeEditorDialogFragment extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
+        // This theme shows the dialog full-width and scrolling in a way that the soft keyboard
+        // nicely resizes it, keeping the Reset/Cancel/Save buttons visible and accessible.
+        // Using MaterialAlertDialogBuilder doesn't seem to accomplish that, but maybe it's a
+        // question of the right theme.
         AlertDialog.Builder builder = new AlertDialog.Builder(requireActivity(),
                 R.style.ThemeOverlay_Material3_TextInputEditText_OutlinedBox);
         LayoutInflater inflater = requireActivity().getLayoutInflater();
