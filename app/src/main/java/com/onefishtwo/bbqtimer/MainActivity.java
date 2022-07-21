@@ -528,15 +528,6 @@ public class MainActivity extends FragmentActivity
         }
     }
 
-    /** Extracts the leading time token from the ***trimmed*** string. */
-    @NonNull
-    public static String extractLeadingToken(@NonNull String input) {
-        // TODO: Extract the first (:\d)+.
-        String[] tokens = input.split("\\s+", 2);
-
-        return tokens.length > 1 ? tokens[0] : input;
-    }
-
     /** The user clicked the button to open the "recipes" menu of alarm periods. */
     @UiThread
     public void onClickRecipeMenuButton(View v) {
@@ -559,7 +550,7 @@ public class MainActivity extends FragmentActivity
         for (String r : lines) { // Italicize the notes that follow each recipe's leading token.
             String recipe = r.trim();
             int recipeLength = recipe.length();
-            int tokenLength = extractLeadingToken(recipe).length();
+            int tokenLength = TimeCounter.lengthOfLeadingIntervalTime(recipe);
             SpannableString ss = new SpannableString(recipe);
 
             ss.setSpan(new StyleSpan(Typeface.ITALIC), tokenLength, recipeLength, 0);
@@ -598,16 +589,15 @@ public class MainActivity extends FragmentActivity
     @SuppressWarnings("SameReturnValue")
     @UiThread
     public boolean onRecipeMenuItemClick(MenuItem item) {
-        String itemTitle = item.getTitle().toString();
-
         if (item.getItemId() == R.id.edit_recipes) {
-            Log.i(TAG, "Clicked: " + itemTitle);
             showRecipeEditor();
             return true;
         }
 
-        String token = extractLeadingToken(itemTitle);
-        Log.i(TAG, "Picked: " + token);
+        String itemTitle = item.getTitle().toString();
+        int tokenLength = TimeCounter.lengthOfLeadingIntervalTime(itemTitle);
+        String token = itemTitle.substring(0, tokenLength);
+
         alarmPeriod.setText(token);
 
         // If the text field doesn't have focus, accept the new input now.

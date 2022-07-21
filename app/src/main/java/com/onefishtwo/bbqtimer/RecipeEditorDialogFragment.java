@@ -124,15 +124,24 @@ public class RecipeEditorDialogFragment extends DialogFragment {
         return builder.create();
     }
 
-    /** DialogInterface.OnClickListener for the "Save" button. */
+    /**
+     * DialogInterface.OnClickListener for the "Save" button: Hides the soft keyboard and returns
+     * the edited text to the Activity. Returns the default text if the edited text is empty.
+     */
     private void saveEdits(DialogInterface dialog, int which) {
+        String result = textField.getText().toString();
+
+        if (result.trim().length() == 0) {
+            result = ApplicationState.getDefaultRecipes(textField.getContext());
+        }
+
         hideKeyboard(textField);
-        listener.onEditorDialogPositiveClick(dialog, textField.getText().toString());
+        listener.onEditorDialogPositiveClick(dialog, result);
     }
 
     /** DialogInterface.OnClickListener for the "Reset" button. */
     private void resetEdits(DialogInterface dialog, int which) {
-        textField.setText(ApplicationState.getDefaultRecipes(textField.getContext()));
+        textField.setText("");
         saveEdits(dialog, which);
     }
 
