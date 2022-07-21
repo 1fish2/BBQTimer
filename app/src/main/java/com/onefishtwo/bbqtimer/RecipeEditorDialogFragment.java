@@ -8,6 +8,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 
+import com.onefishtwo.bbqtimer.state.ApplicationState;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -114,18 +116,30 @@ public class RecipeEditorDialogFragment extends DialogFragment {
         if (textField != null) {
             textField.setText(getInitContents());
 
-            builder.setPositiveButton(R.string.save_edits, (dialog, which) -> {
-                        hideKeyboard(textField);
-                        listener.onEditorDialogPositiveClick(
-                                dialog, textField.getText().toString());
-                    })
-                    .setNegativeButton(R.string.cancel_edits, (dialog, which) -> {
-                        hideKeyboard(textField);
-                        listener.onEditorDialogNegativeClick(dialog);
-                        dialog.cancel();
-                    });
+            builder.setPositiveButton(R.string.save_edits, this::saveEdits)
+                    .setNeutralButton(R.string.reset, this::resetEdits)
+                    .setNegativeButton(R.string.cancel_edits, this::cancelEdits);
         }
 
         return builder.create();
+    }
+
+    /** DialogInterface.OnClickListener for the "Save" button. */
+    private void saveEdits(DialogInterface dialog, int which) {
+        hideKeyboard(textField);
+        listener.onEditorDialogPositiveClick(dialog, textField.getText().toString());
+    }
+
+    /** DialogInterface.OnClickListener for the "Reset" button. */
+    private void resetEdits(DialogInterface dialog, int which) {
+        textField.setText(ApplicationState.getDefaultRecipes(textField.getContext()));
+        saveEdits(dialog, which);
+    }
+
+    /** DialogInterface.OnClickListener for the "Cancel" button. */
+    private void cancelEdits(DialogInterface dialog, int which) {
+        hideKeyboard(textField);
+        listener.onEditorDialogNegativeClick(dialog);
+        dialog.cancel();
     }
 }

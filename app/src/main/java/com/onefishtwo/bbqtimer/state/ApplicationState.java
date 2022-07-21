@@ -117,15 +117,21 @@ public class ApplicationState {
         int secs              = prefs.getInt(PREF_SECONDS_PER_REMINDER, 5 * 60);
         secondsPerReminder    = boundIntervalTimeSeconds(secs);
 
-        String defaultRecipes;
-        try {
-            defaultRecipes = context.getString(R.string.recipes);
-        } catch (Resources.NotFoundException e) {
-            defaultRecipes = FALLBACK_RECIPES;
-        }
+        String defaultRecipes = getDefaultRecipes(context);
         recipes = prefs.getString(PREF_RECIPES, defaultRecipes);
 
         return needToSave;
+    }
+
+    /** Returns the default recipes text. */
+    // TODO: If LocaleData.getMeasurementSystem(ULocale locale) == LocaleData.MeasurementSystem.US
+    //  use °F else °C.
+    public static String getDefaultRecipes(@NonNull Context context) {
+        try {
+            return context.getString(R.string.recipes);
+        } catch (Resources.NotFoundException e) {
+            return FALLBACK_RECIPES;
+        }
     }
 
     /** Saves persistent state using context. */

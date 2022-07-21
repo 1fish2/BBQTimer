@@ -5,9 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <!-- TODO: Make maxLines vary with window (or screen) height,
-       e.g. 7 lines on WQVGA 240x432. Better yet, somehow adapt to
-       the space available above the soft keyboard. -->
     <EditText
         android:id="@+id/recipes_text_field"
         android:layout_width="match_parent"
