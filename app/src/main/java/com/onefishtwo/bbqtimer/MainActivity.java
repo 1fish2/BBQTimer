@@ -48,7 +48,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.view.textclassifier.TextClassifier;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -227,7 +226,7 @@ public class MainActivity extends FragmentActivity
         enableReminders.setOnClickListener(this::onClickEnableRemindersToggle);
 
         // Set the TextClassifier *THEN* enable the CLEAR_TEXT (X) endIcon.
-        workaroundTextClassifier(alarmPeriod);
+        RecipeEditorDialogFragment.workaroundTextClassifier(alarmPeriod);
         TextInputLayout alarmPeriodLayout = findViewById(R.id.alarmPeriodLayout);
         alarmPeriodLayout.setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT);
         alarmPeriodLayout.setStartIconOnClickListener(this::onClickRecipeMenuButton);
@@ -257,36 +256,6 @@ public class MainActivity extends FragmentActivity
         }
 
         logTheConfiguration(getResources().getConfiguration());
-    }
-
-    /**
-     * API 27: Work around an Android bug where double-clicking the EditText field would cause these
-     * log errors:
-     *
-     *   TextClassifierImpl: Error suggesting selection for text. No changes to selection suggested.
-     *     java.io.FileNotFoundException: No file for null locale
-     *         at android.view.textclassifier.TextClassifierImpl.getSmartSelection(TextClassifierImpl.java:208)
-     *         ...
-     *   TextClassifierImpl: Error getting assist info.
-     *     java.io.FileNotFoundException: No file for null locale
-     *         at android.view.textclassifier.TextClassifierImpl.getSmartSelection(TextClassifierImpl.java:208)
-     *         ...
-     *
-     * API > 27: Work around an Android bug that calls the TextClassifier on the main thread
-     * (UI thread) [e.g. when the user double-taps the EditText field, or long-presses it, or
-     * dismisses the soft keyboard when there's a text selection], causing this log warning even
-     * though no app code is on the call stack:
-     *
-     *   W/androidtc: TextClassifier called on main thread.
-     *
-     * To avoid the delay and potential ANR, just bypass the irrelevant TextClassifier. (This
-     * problem might not occur on API 28 - 29, but it's safer to do this uniformly.)
-     */
-    @SuppressWarnings("SpellCheckingInspection")
-    private static void workaroundTextClassifier(EditText editText) {
-        if (Build.VERSION.SDK_INT >= 27) {
-            editText.setTextClassifier(TextClassifier.NO_OP);
-        }
     }
 
     private void logTheConfiguration(@NonNull Configuration config) {

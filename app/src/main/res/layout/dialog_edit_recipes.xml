@@ -16,7 +16,7 @@
         android:enabled="true"
         android:gravity="start|top"
         android:hint="@string/edit_list_hint"
-        android:inputType="textMultiLine"
+        android:inputType="textMultiLine|textNoSuggestions"
         android:minLines="2"
         android:maxLines="14"
         android:maxLength="2000"

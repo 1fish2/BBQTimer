@@ -3,9 +3,11 @@ package com.onefishtwo.bbqtimer;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.textclassifier.TextClassifier;
 import android.widget.EditText;
 
 import com.onefishtwo.bbqtimer.state.ApplicationState;
@@ -29,8 +31,10 @@ public class RecipeEditorDialogFragment extends DialogFragment {
     /**
      * The FragmentActivity that instantiates a RecipeEditorDialogFragment must implement this
      * Listener interface so it can get the edited results. */
+    @SuppressWarnings("unused")
     public interface RecipeEditorDialogFragmentListener {
         void onEditorDialogPositiveClick(DialogInterface dialog, String text);
+        @SuppressWarnings("EmptyMethod")
         void onEditorDialogNegativeClick(DialogInterface dialog);
         // Override onDismiss() to notice all dismissal cases? hideKeyboard() doesn't work there.
         // Maybe it gets called too late for that.
@@ -52,6 +56,36 @@ public class RecipeEditorDialogFragment extends DialogFragment {
         bundle.putString(KEY_TEXT_CONTENTS, text);
         dialog.setArguments(bundle);
         return dialog;
+    }
+
+    /**
+     * API 27: Work around an Android bug where double-clicking an EditText field would cause these
+     * log errors:
+     *
+     *   TextClassifierImpl: Error suggesting selection for text. No changes to selection suggested.
+     *     java.io.FileNotFoundException: No file for null locale
+     *         at android.view.textclassifier.TextClassifierImpl.getSmartSelection(TextClassifierImpl.java:208)
+     *         ...
+     *   TextClassifierImpl: Error getting assist info.
+     *     java.io.FileNotFoundException: No file for null locale
+     *         at android.view.textclassifier.TextClassifierImpl.getSmartSelection(TextClassifierImpl.java:208)
+     *         ...
+     *
+     * API > 27: Work around an Android bug that calls the TextClassifier on the main thread
+     * (UI thread) [e.g. when the user double-taps the EditText field, or long-presses it, or
+     * dismisses the soft keyboard when there's a text selection], causing this log warning even
+     * though no app code is on the call stack:
+     *
+     *   W/androidtc: TextClassifier called on main thread.
+     *
+     * To avoid the delay and potential ANR, just bypass the irrelevant TextClassifier. (This
+     * problem might not occur on API 28 - 29, but it's safer to do this uniformly.)
+     */
+    @SuppressWarnings("SpellCheckingInspection")
+    public static void workaroundTextClassifier(EditText editText) {
+        if (Build.VERSION.SDK_INT >= 27) {
+            editText.setTextClassifier(TextClassifier.NO_OP);
+        }
     }
 
     @NonNull
@@ -106,6 +140,7 @@ public class RecipeEditorDialogFragment extends DialogFragment {
                 .setView(content);
 
         textField = content.findViewById(R.id.recipes_text_field);
+        workaroundTextClassifier(textField);
         textField.setOnFocusChangeListener(this::onEditTextFocusChange);
 
         // Workaround: The XML scrolling attributes don't work very well.
