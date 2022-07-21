@@ -569,7 +569,7 @@ public class MainActivity extends FragmentActivity
 
         alarmPeriod.setText(token);
 
-        // If the text field doesn't have focus, accept the new input now.
+        // Submit the input whether or not the text field has focus.
         processAlarmPeriodInput();
         return true;
     }
@@ -650,13 +650,16 @@ public class MainActivity extends FragmentActivity
         String input = text == null ? "" : text.toString();
         int newSeconds = TimeCounter.parseHhMmSs(input);
 
+        // Save the state change.
         if (newSeconds > 0 && newSeconds != state.getSecondsPerReminder()) {
             state.setSecondsPerReminder(newSeconds); // clips the value
             state.save(this);
             updateUI(); // update countdownDisplay, notifications, and widgets
-        } else {
-            displayAlarmPeriod();
         }
+
+        // Normalize the interval time text.
+        // [updateUI() does this only if the configuration changed.]
+        displayAlarmPeriod();
 
         defocusTextField(alarmPeriod);
     }
@@ -715,7 +718,7 @@ public class MainActivity extends FragmentActivity
                 : R.color.paused_timer_colors;
     }
 
-    /** Updates the elapsed time, alarm interval time, and the alarm count-down time displays. */
+    /** Updates the count-up (elapsed) time and alarm count-down time displays. */
     @UiThread
     private void displayTime() {
         Spanned formatted         = timer.formatHhMmSsFraction();
