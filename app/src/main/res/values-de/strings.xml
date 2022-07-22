@@ -24,7 +24,7 @@
     <string name="pause_at_0_long">Anhalten bei 00:00</string>
     <string name="pause_at_0_short">Anhalten 0:00</string>
     <string name="reminder_switch">Periodisches Alarmintervall:</string>
-    <string name="recipes">7 Fisch, bis 63°C\n7 Burgers, bis 74°C\n:30\n1\n1:30\n2\n3\n4\n5\n6\n7\n8\n9\n10\n1:30:00</string>
+    <string name="recipes">6 Fisch, bis 63°C\n7 Burgers, bis 74°C\n:30\n1\n1:30\n2\n3\n4\n5\n6\n7\n8\n9\n10\n1:30:00</string>
     <string name="reset">Zurücksetzen</string>
     <string name="save_edits">Speichern</string>
     <string name="start">Start</string>
