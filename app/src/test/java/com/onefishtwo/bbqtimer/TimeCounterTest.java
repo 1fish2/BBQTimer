@@ -32,11 +32,11 @@ import androidx.annotation.Nullable;
 import static android.text.format.DateUtils.HOUR_IN_MILLIS;
 import static android.text.format.DateUtils.MINUTE_IN_MILLIS;
 import static android.text.format.DateUtils.SECOND_IN_MILLIS;
+import static com.onefishtwo.bbqtimer.TimeCounter.lengthOfLeadingIntervalTime;
+import static com.onefishtwo.bbqtimer.TimeCounter.parseHhMmSs;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
-
-import static com.onefishtwo.bbqtimer.TimeCounter.parseHhMmSs;
 
 public class TimeCounterTest {
     static class MockSpanned implements Spanned {
@@ -200,5 +200,18 @@ public class TimeCounterTest {
         assertEquals("2:34:56", fc(2, 34, 56));
         assertEquals("5:04:00", fc(5, 4, 0));
         assertEquals("15:00:00", fc(15, 0, 0));
+    }
+
+    @Test
+    public void testLengthOfLeadingIntervalTime() {
+        assertEquals(1, lengthOfLeadingIntervalTime("7"));
+        assertEquals(4, lengthOfLeadingIntervalTime("  27"));
+        assertEquals(3, lengthOfLeadingIntervalTime("127, notes go here"));
+        assertEquals(5, lengthOfLeadingIntervalTime(" 3:15 "));
+        assertEquals(8, lengthOfLeadingIntervalTime("\t 1:3:15 "));
+        assertEquals(13, lengthOfLeadingIntervalTime(" 001:22:33:44 - notes"));
+        assertEquals(0, lengthOfLeadingIntervalTime("x15"));
+        assertEquals(3, lengthOfLeadingIntervalTime("\r\n7\r\n"));
+        assertEquals(1, lengthOfLeadingIntervalTime("7.5"));
     }
 }
