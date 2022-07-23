@@ -24,6 +24,7 @@ import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.util.Log;
 
+import com.onefishtwo.bbqtimer.LocaleUtils;
 import com.onefishtwo.bbqtimer.R;
 import com.onefishtwo.bbqtimer.TimeCounter;
 
@@ -123,12 +124,12 @@ public class ApplicationState {
         return needToSave;
     }
 
-    /** Returns the default recipes text. */
-    // TODO: If LocaleData.getMeasurementSystem(ULocale locale) == LocaleData.MeasurementSystem.US
-    //  use °F else °C.
+    /** Returns the default recipes text using °F or °C per the current locale. */
     public static String getDefaultRecipes(@NonNull Context context) {
         try {
-            return context.getString(R.string.recipes);
+            return context.getString(R.string.recipes,
+                    LocaleUtils.formatTemperatureFromFahrenheit(145),
+                    LocaleUtils.formatTemperatureFromFahrenheit(165));
         } catch (Resources.NotFoundException e) {
             return FALLBACK_RECIPES;
         }
