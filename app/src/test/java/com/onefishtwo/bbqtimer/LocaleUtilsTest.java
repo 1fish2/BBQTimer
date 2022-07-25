@@ -2,8 +2,8 @@ package com.onefishtwo.bbqtimer;
 
 import android.os.Build;
 
-import junit.framework.TestCase;
-
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Locale;
@@ -11,15 +11,18 @@ import java.util.Locale;
 import static com.onefishtwo.bbqtimer.LocaleUtils.formatTemperatureFromFahrenheit;
 import static com.onefishtwo.bbqtimer.LocaleUtils.getFormatDefault;
 import static com.onefishtwo.bbqtimer.LocaleUtils.useFahrenheit;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
-public class LocaleUtilsTest extends TestCase {
+public class LocaleUtilsTest {
     private static final Locale BAHAMAS = new Locale("en", "BS");
     private static final Locale SPAIN = new Locale("es", "ES");
 
     private Locale initialLocale, initialFormatLocale;
 
-    @Override
-    protected void setUp() {
+    @Before
+    public void setUp() {
         initialLocale = Locale.getDefault();
 
         if (Build.VERSION.SDK_INT >= 24) {
@@ -27,8 +30,8 @@ public class LocaleUtilsTest extends TestCase {
         }
     }
 
-    @Override
-    protected void tearDown() {
+    @After
+    public void tearDown() {
         Locale.setDefault(initialLocale);
 
         if (Build.VERSION.SDK_INT >= 24) {

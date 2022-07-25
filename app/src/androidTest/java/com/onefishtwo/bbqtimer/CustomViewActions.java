@@ -77,7 +77,7 @@ class CustomViewActions {
             @NonNull
             @Override
             public BaseMatcher<View> getConstraints() {
-                return new BaseMatcher<View>() {
+                return new BaseMatcher<>() {
                     @Override
                     public boolean matches(Object item) {
                         return isA(Checkable.class).matches(item);

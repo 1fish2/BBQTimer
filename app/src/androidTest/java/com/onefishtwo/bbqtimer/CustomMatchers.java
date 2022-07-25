@@ -48,7 +48,7 @@ class CustomMatchers {
     static Matcher<View> childAtPosition(
             @NonNull final Matcher<View> parentMatcher, final int position) {
 
-        return new TypeSafeMatcher<View>() {
+        return new TypeSafeMatcher<>() {
             @Override
             public void describeTo(@NonNull Description description) {
                 description.appendText("Child at position " + position + " in parent ");
@@ -71,7 +71,7 @@ class CustomMatchers {
     @SuppressWarnings("SpellCheckingInspection")
     @NonNull
     static Matcher<View> withCompoundDrawable(@DrawableRes final int resourceId) {
-        return new BoundedMatcher<View, TextView>(TextView.class) {
+        return new BoundedMatcher<>(TextView.class) {
             @Override
             public void describeTo(@NonNull Description description) {
                 description.appendText("has compound drawable resource " + resourceId);
