@@ -36,8 +36,8 @@ public class RecipeEditorDialogFragment extends DialogFragment {
         void onEditorDialogPositiveClick(DialogInterface dialog, String text);
         @SuppressWarnings("EmptyMethod")
         void onEditorDialogNegativeClick(DialogInterface dialog);
-        // Override onDismiss() to notice all dismissal cases? hideKeyboard() doesn't work there.
-        // Maybe it gets called too late for that.
+        // Override onDismiss() to notice all dismissal cases? onDismiss() calling hideKeyboard()
+        // doesn't work. Maybe it gets called too late.
     }
 
     private RecipeEditorDialogFragmentListener listener;
@@ -164,24 +164,26 @@ public class RecipeEditorDialogFragment extends DialogFragment {
     }
 
     /**
-     * DialogInterface.OnClickListener for the "Save" button: Hides the soft keyboard and returns
-     * the edited text to the Activity. Returns the default text if the edited text is empty.
+     * <li>Hides the soft keyboard.
+     * <li>Passes the given recipes (or if blank, the default recipes) to the listener.
      */
-    private void saveEdits(DialogInterface dialog, int which) {
-        String result = textField.getText().toString();
-
-        if (result.trim().length() == 0) {
-            result = ApplicationState.getDefaultRecipes(textField.getContext());
-        }
-
+    private void saveText(DialogInterface dialog, String recipes) {
         hideKeyboard(textField);
-        listener.onEditorDialogPositiveClick(dialog, result);
+
+        if (recipes.trim().length() == 0) {
+            recipes = ApplicationState.getDefaultRecipes(textField.getContext());
+        }
+        listener.onEditorDialogPositiveClick(dialog, recipes);
+    }
+
+    /** DialogInterface.OnClickListener for the "Save" button. */
+    private void saveEdits(DialogInterface dialog, int which) {
+        saveText(dialog, textField.getText().toString());
     }
 
     /** DialogInterface.OnClickListener for the "Reset" button. */
     private void resetEdits(DialogInterface dialog, int which) {
-        textField.setText("");
-        saveEdits(dialog, which);
+        saveText(dialog, "");
     }
 
     /** DialogInterface.OnClickListener for the "Cancel" button. */
