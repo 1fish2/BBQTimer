@@ -31,6 +31,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.ViewInteraction;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
@@ -44,7 +45,10 @@ import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static androidx.test.espresso.action.ViewActions.doubleClick;
 import static androidx.test.espresso.action.ViewActions.longClick;
 import static androidx.test.espresso.action.ViewActions.pressImeActionButton;
+import static androidx.test.espresso.action.ViewActions.replaceText;
+import static androidx.test.espresso.action.ViewActions.scrollTo;
 import static androidx.test.espresso.action.ViewActions.typeTextIntoFocusedView;
+import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.doesNotHaveFocus;
 import static androidx.test.espresso.matcher.ViewMatchers.hasFocus;
@@ -56,12 +60,15 @@ import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
 import static androidx.test.espresso.matcher.ViewMatchers.isNotChecked;
 import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static com.onefishtwo.bbqtimer.CustomMatchers.withCompoundDrawable;
 import static com.onefishtwo.bbqtimer.CustomViewActions.waitMsec;
 import static com.onefishtwo.bbqtimer.TimeIntervalMatcher.inTimeInterval;
 import static com.onefishtwo.bbqtimer.TimeIntervalMatcher.inWholeTimeInterval;
+import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.anyOf;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 
@@ -393,8 +400,121 @@ public class InAppUITest {
         alarmPeriodTextField.check(matches(doesNotHaveFocus()));
         enableRemindersToggle.check(matches(isNotChecked()));
 
-        // Leave reminders enabled to aid manual testing.
+        // To aid manual testing, leave reminders enabled and a convenient alarm period set.
         enableRemindersToggle.perform(click());
         enableRemindersToggle.check(matches(isChecked()));
+        alarmPeriodTextField.perform(
+                click(), longClick(), typeTextIntoFocusedView("2\n"));
+        alarmPeriodTextField.check(matches(withText("2")));
+    }
+
+    /** Tests the popup-menu startIcon in the alarmPeriodLayout TextInputLayout. */
+    @Test
+    public void popupMenuTest() {
+        ViewInteraction popupMenuButton = onView(
+                allOf(withContentDescription(R.string.intervals_menu), isDisplayed()));
+        alarmPeriodTextField.check(matches(not(hasFocus())));
+        alarmPeriodTextField.check(matches(withText("5")));
+
+        // Open the popup menu. This makes the Activity Views inaccessible or...
+        popupMenuButton.perform(click());
+
+        ViewInteraction cmdEdit = checkMenuCommand(R.string.edit_this_list);
+        ViewInteraction cmd__30 = checkMenuCommand(":30");
+        ViewInteraction cmd_1 = checkMenuCommand("1");
+        ViewInteraction cmd_1_30 = checkMenuCommand("1:30");
+        ViewInteraction cmd_5 = checkMenuCommand("5");
+
+        // Pick the first few intervals from the menu.
+        // NOTE: Commands scrolled off the bottom require scrolling to access.
+        cmd__30.perform(click());
+        alarmPeriodTextField.check(matches(withText("0:30")));
+
+        popupMenuButton.perform(click());
+        cmd_1.perform(click());
+        alarmPeriodTextField.check(matches(withText("1")));
+
+        popupMenuButton.perform(click());
+        cmd_1_30.perform(click());
+        alarmPeriodTextField.check(matches(withText("1:30")));
+
+        // Open the recipe editor dialog, edit the text, then Cancel.
+        popupMenuButton.perform(click());
+        cmdEdit.perform(click());
+        ViewInteraction dialogTitle = checkTextView(R.string.edit_list_title);
+        dialogTitle.check(matches(withId(androidx.appcompat.R.id.alertTitle)));
+        dialogTitle.check(matches(isDisplayed()));
+
+        ViewInteraction saveButton = onView(
+                allOf(withId(android.R.id.button1), withText(R.string.save_edits)));
+        ViewInteraction cancelButton = onView(
+                allOf(withId(android.R.id.button2), withText(R.string.cancel_edits)));
+        ViewInteraction resetEditorButton = onView(
+                allOf(withId(android.R.id.button3), withText(R.string.reset)));
+        saveButton.check(matches(isDisplayed()));
+        cancelButton.check(matches(isDisplayed()));
+        resetEditorButton.check(matches(isDisplayed()));
+
+        ViewInteraction editText = onView(withId(R.id.recipes_text_field));
+        editText.check(matches(isDisplayed()));
+        editText.check(matches(withText(containsString("\n:30\n"))));
+
+        editText.perform(longClick(), replaceText("77777 ***TO CANCEL***\n"));
+        cancelButton.perform(scrollTo(), click());
+
+        // Open the recipe editor dialog, edit the text, then Save.
+        popupMenuButton.perform(click());
+        cmdEdit.perform(click());
+        dialogTitle.check(matches(isDisplayed()));
+        editText.check(matches(withText(containsString("\n:30\n"))));
+
+        String replacement = "88888 ***TO SAVE***\n";
+        editText.perform(longClick(), replaceText(replacement));
+        saveButton.perform(scrollTo(), click());
+
+        // Open the recipe editor dialog, check the saved text, edit it, then Reset.
+        popupMenuButton.perform(click());
+        cmd__30.check(doesNotExist());
+
+        cmdEdit.perform(click());
+        dialogTitle.check(matches(isDisplayed()));
+        editText.check(matches(withText(replacement)));
+
+        editText.perform(longClick(), waitMsec(500),
+                replaceText("99999 ***TO RESET***\n"),
+                waitMsec(500)); // delay for a visual check
+        resetEditorButton.perform(scrollTo(), click());
+
+        // Check that the menu's contents were reset.
+        popupMenuButton.perform(click());
+        cmd__30.check(matches(isDisplayed()));
+        cmd_1.check(matches(isDisplayed()));
+        cmd_1_30.check(matches(isDisplayed()));
+
+        cmd_1.perform(waitMsec(500), click()); // delay for a visual check
+    }
+
+    private ViewInteraction checkTextView(@StringRes int resId) {
+        ViewInteraction view = onView(withText(resId));
+        view.check(matches(isDisplayed()));
+        return view;
+    }
+
+    private ViewInteraction checkMenuCommand(@StringRes int resId) {
+        ViewInteraction view = onView(
+                allOf(withId(android.R.id.title),
+                        withText(resId),
+                        withParent(withParent(withId(android.R.id.content)))));
+        view.check(matches(isDisplayed()));
+        return view;
+    }
+
+    private ViewInteraction checkMenuCommand(String label) {
+        ViewInteraction view = onView(
+                allOf(withId(android.R.id.title),
+                        withText(label),
+                        withParent(withParent(withId(android.R.id.content)))));
+        view.check(matches(isDisplayed()));
+        return view;
     }
 }

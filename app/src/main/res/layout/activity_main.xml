@@ -138,6 +138,7 @@
         android:hint="@string/interval_hint"
         app:hintTextAppearance="@style/HintTextAppearance"
         app:startIconDrawable="@drawable/ic_baseline_arrow_drop_up_48"
+        app:startIconContentDescription="@string/intervals_menu"
         app:layout_constraintTop_toBottomOf="@id/fold"
         app:layout_constraintBottom_toBottomOf="@+id/enableReminders"
         app:layout_constraintVertical_bias="0.5"

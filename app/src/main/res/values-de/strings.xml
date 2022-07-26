@@ -11,6 +11,7 @@
     <string name="edit_list_title">Alarmintervalle</string>
     <string name="edit_this_list">Bearbeiten Sie diese Intervalle…</string>
     <string name="interval_hint">M, M:S, H:M:S</string>
+    <string name="intervals_menu">Intervallmenü</string>
     <string name="need_alarm_access">BBQ Timer benötigt „Spezieller App-Zugriff“ „Wecker und Erinnerungen“, um Alarme einzustellen</string>
     <string name="notification_alarm_channel_name">Alarm</string>
     <string name="notification_alarm_channel_description">Wichtigkeit muss für Alarme hoch oder höher sein; Mittel oder höher für den Sperrbildschirm</string>

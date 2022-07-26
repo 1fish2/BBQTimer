@@ -150,6 +150,9 @@
          The placeholder %2$s is for burgers temperature-done in either °C or °F. -->
     <string name="recipes">6 thin fish, cook to %1$s\n7 burgers, cook to %2$s\n:30\n1\n1:30\n2\n3\n4\n5\n6\n7\n8\n9\n10\n1:30:00</string>
 
+    <!-- Content description for the icon button that opens the menu of alarm intervals. -->
+    <string name="intervals_menu">Intervals menu</string>
+
     <!-- Menu command to edit the pop-up list of "recipes" of alarm intervals with optional notes. -->
     <string name="edit_this_list">Edit these intervals…</string>
 

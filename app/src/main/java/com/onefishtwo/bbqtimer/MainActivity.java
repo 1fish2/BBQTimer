@@ -230,7 +230,6 @@ public class MainActivity extends AppCompatActivity
         TextInputLayout alarmPeriodLayout = findViewById(R.id.alarmPeriodLayout);
         alarmPeriodLayout.setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT);
         alarmPeriodLayout.setStartIconOnClickListener(this::onClickRecipeMenuButton);
-        // TODO: setStartIconContentDescription(), setStartIconOnLongClickListener()?
 
         // AutoSizeText works with android:maxLines="1" but not with android:singleLine="true".
         TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(countUpDisplay, 16,
