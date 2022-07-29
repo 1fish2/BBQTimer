@@ -60,7 +60,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
 import static androidx.test.espresso.matcher.ViewMatchers.isNotChecked;
 import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static com.onefishtwo.bbqtimer.CustomMatchers.withCompoundDrawable;
 import static com.onefishtwo.bbqtimer.CustomViewActions.waitMsec;
@@ -70,6 +69,7 @@ import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.anyOf;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertEquals;
 
 /** Within-app Espresso UI tests. */
@@ -420,13 +420,13 @@ public class InAppUITest {
         popupMenuButton.perform(click());
 
         ViewInteraction cmdEdit = checkMenuCommand(R.string.edit_this_list);
+        ViewInteraction cmd_6 = checkMenuCommandPrefix("6 ");
+        ViewInteraction cmd_7 = checkMenuCommandPrefix("7 ");
         ViewInteraction cmd__30 = checkMenuCommand(":30");
         ViewInteraction cmd_1 = checkMenuCommand("1");
-        ViewInteraction cmd_1_30 = checkMenuCommand("1:30");
-        ViewInteraction cmd_5 = checkMenuCommand("5");
+        // NOTE: Commands scrolled off the bottom require scrolling to access.
 
         // Pick the first few intervals from the menu.
-        // NOTE: Commands scrolled off the bottom require scrolling to access.
         cmd__30.perform(click());
         alarmPeriodTextField.check(matches(withText("0:30")));
 
@@ -435,8 +435,12 @@ public class InAppUITest {
         alarmPeriodTextField.check(matches(withText("1")));
 
         popupMenuButton.perform(click());
-        cmd_1_30.perform(click());
-        alarmPeriodTextField.check(matches(withText("1:30")));
+        cmd_6.perform(click());
+        alarmPeriodTextField.check(matches(withText("6")));
+
+        popupMenuButton.perform(click());
+        cmd_7.perform(click());
+        alarmPeriodTextField.check(matches(withText("7")));
 
         // Open the recipe editor dialog, edit the text, then Cancel.
         popupMenuButton.perform(click());
@@ -489,7 +493,8 @@ public class InAppUITest {
         popupMenuButton.perform(click());
         cmd__30.check(matches(isDisplayed()));
         cmd_1.check(matches(isDisplayed()));
-        cmd_1_30.check(matches(isDisplayed()));
+        cmd_6.check(matches(isDisplayed()));
+        cmd_7.check(matches(isDisplayed()));
 
         cmd_1.perform(waitMsec(500), click()); // delay for a visual check
     }
@@ -503,8 +508,7 @@ public class InAppUITest {
     private ViewInteraction checkMenuCommand(@StringRes int resId) {
         ViewInteraction view = onView(
                 allOf(withId(android.R.id.title),
-                        withText(resId),
-                        withParent(withParent(withId(android.R.id.content)))));
+                        withText(resId)));
         view.check(matches(isDisplayed()));
         return view;
     }
@@ -512,8 +516,15 @@ public class InAppUITest {
     private ViewInteraction checkMenuCommand(String label) {
         ViewInteraction view = onView(
                 allOf(withId(android.R.id.title),
-                        withText(label),
-                        withParent(withParent(withId(android.R.id.content)))));
+                        withText(label)));
+        view.check(matches(isDisplayed()));
+        return view;
+    }
+
+    private ViewInteraction checkMenuCommandPrefix(String labelPrefix) {
+        ViewInteraction view = onView(
+                allOf(withId(android.R.id.title),
+                        withText(startsWith(labelPrefix))));
         view.check(matches(isDisplayed()));
         return view;
     }
