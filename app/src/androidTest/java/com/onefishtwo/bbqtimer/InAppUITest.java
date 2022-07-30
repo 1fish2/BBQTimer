@@ -329,14 +329,16 @@ public class InAppUITest {
         // FRAGILE: Changing the EditText to a Material EditText with a Clear (X) button made this
         // test fragile, where longClick() or doubleClick() alone fails to select the text.
         // doubleClick() is understandable since the first click shows the (X) and slides the text
-        // leftwards.
+        // leftwards. longClick() seems to work on phones but not on Nexus 7.
+        // Workaround: Put in multiple digits before doing longClick().
         alarmPeriodTextField.check(matches(not(hasFocus())));
         alarmPeriodTextField.perform(click());
         alarmPeriodTextField.check(matches(hasFocus()));
+        alarmPeriodTextField.perform(replaceText("111"));
         alarmPeriodTextField.perform(longClick());
         alarmPeriodTextField.check(matches(hasFocus()));
         alarmPeriodTextField.perform(typeTextIntoFocusedView("1:2:35\n"));
-        alarmPeriodTextField.check(matches(withText("1:02:35")));
+        alarmPeriodTextField.check(matches(withText("1:02:35"))); // expanded from "1:2:35"
         alarmPeriodTextField.check(matches(doesNotHaveFocus()));
 
         // FRAGILE: Adding the click() avoids on SDK 22 "SecurityException: Injecting to another
@@ -403,8 +405,10 @@ public class InAppUITest {
         // To aid manual testing, leave reminders enabled and a convenient alarm period set.
         enableRemindersToggle.perform(click());
         enableRemindersToggle.check(matches(isChecked()));
-        alarmPeriodTextField.perform(
-                click(), longClick(), typeTextIntoFocusedView("2\n"));
+        alarmPeriodTextField.perform(click());
+        alarmPeriodTextField.perform(replaceText("111"));
+        alarmPeriodTextField.perform(longClick());
+        alarmPeriodTextField.perform(typeTextIntoFocusedView("2\n"));
         alarmPeriodTextField.check(matches(withText("2")));
     }
 
