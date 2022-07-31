@@ -383,7 +383,8 @@ public class TimeCounter {
     /**
      * Formats a millisecond duration in the compact format that parseHhMmSs supports, that is,
      * h:mm:ss or m:ss or m, e.g. "7" rather than "07:00".
-     *
+     * Format 60 minutes as "60" instead of "1:00:00".
+     * <p/>
      * Derived from {@link DateUtils#formatElapsedTime(long)}.
      */
     public static String formatHhMmSsCompact(long elapsedMilliseconds) {

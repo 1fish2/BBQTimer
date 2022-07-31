@@ -23,6 +23,8 @@ package com.onefishtwo.bbqtimer;
 
 
 import android.content.Context;
+import android.os.Build;
+import android.util.Log;
 
 import org.junit.After;
 import org.junit.Before;
@@ -33,6 +35,7 @@ import org.junit.runner.RunWith;
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 import androidx.test.core.app.ApplicationProvider;
+import androidx.test.espresso.Espresso;
 import androidx.test.espresso.ViewInteraction;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -74,10 +77,11 @@ import static org.junit.Assert.assertEquals;
 
 /** Within-app Espresso UI tests. */
 // TODO: Test the app's home screen widget.
-// TODO: Add a multi-app test that checks the app's notifications.
+// TODO: Add a multi-app UIAutomation test of the app's notifications.
 @LargeTest
 @RunWith(AndroidJUnit4.class)
 public class InAppUITest {
+    private static final String TAG = "InAppUITest";
     private static final TimeIntervalMatcher TIME_ZERO = inTimeInterval(0, 0); // supports locales
 
     private ViewInteraction playPauseButton; // play/pause, formerly known as start/stop
@@ -339,6 +343,7 @@ public class InAppUITest {
         alarmPeriodTextField.check(matches(hasFocus()));
         alarmPeriodTextField.perform(typeTextIntoFocusedView("1:2:35\n"));
         alarmPeriodTextField.check(matches(withText("1:02:35"))); // expanded from "1:2:35"
+        delayForDefocusTextFieldWorkaround();
         alarmPeriodTextField.check(matches(doesNotHaveFocus()));
 
         // FRAGILE: Adding the click() avoids on SDK 22 "SecurityException: Injecting to another
@@ -379,6 +384,7 @@ public class InAppUITest {
         ViewInteraction clearTextImageButton = onView(anyOf(
                 withContentDescription("Clear text"),     // en
                 withContentDescription("Text löschen"))); // de
+        delayForDefocusTextFieldWorkaround();
         clearTextImageButton.check(matches(not(isDisplayed())));
         alarmPeriodTextField.check(matches(withText("5")));
 
@@ -391,6 +397,7 @@ public class InAppUITest {
 
         // Type into the empty text field.
         alarmPeriodTextField.perform(typeTextIntoFocusedView("1:3\n"));
+        delayForDefocusTextFieldWorkaround();
         alarmPeriodTextField.check(matches(withText("1:03")));
         alarmPeriodTextField.check(matches(doesNotHaveFocus()));
 
@@ -403,6 +410,11 @@ public class InAppUITest {
         enableRemindersToggle.check(matches(isNotChecked()));
 
         // To aid manual testing, leave reminders enabled and a convenient alarm period set.
+        // These steps ALSO discovered that on HVGA slider 320x480 running at least API 22-23, the
+        // adjustPan feature (pans to keep the text field visible when the soft keyboard opens) only
+        // worked once after the Activity opens or rotates. The fix for that was to fix the text
+        // field auto-focussing by making a LinearLayout focusable instead of having onResume()
+        // call defocusTextField(alarmPeriod).
         enableRemindersToggle.perform(click());
         enableRemindersToggle.check(matches(isChecked()));
         alarmPeriodTextField.perform(click());
@@ -412,7 +424,14 @@ public class InAppUITest {
         alarmPeriodTextField.check(matches(withText("2")));
     }
 
-    /** Tests the popup-menu startIcon in the alarmPeriodLayout TextInputLayout. */
+    /** Delay to accommodate the defocusTextField() workaround. */
+    private void delayForDefocusTextFieldWorkaround() {
+        if (Build.VERSION.SDK_INT <= 27) {
+            alarmPeriodTextField.perform(waitMsec(60));
+        }
+    }
+
+    /** Tests the popup-menu startIcon and the recipe editor dialog. */
     @Test
     public void popupMenuTest() {
         ViewInteraction popupMenuButton = onView(
@@ -446,8 +465,20 @@ public class InAppUITest {
         cmd_7.perform(click());
         alarmPeriodTextField.check(matches(withText("7")));
 
+        popupMenuButton.perform(click());
+        alarmPeriodTextField.check(doesNotExist()); // not in the current view hierarchy
+        Espresso.pressBack(); // dismiss the popup menu
+        alarmPeriodTextField.check(matches(isDisplayed()));
+
         // Open the recipe editor dialog, edit the text, then Cancel.
         popupMenuButton.perform(click());
+        if (Build.VERSION.SDK_INT == 23) {
+            Log.w(TAG, "===== Workaround: Punting this test since clicking to open a dialog" +
+                    " gets stuck, not returning to the test method on Android M API 23");
+            Espresso.pressBack(); // dismiss the popup menu
+            background.perform(waitMsec(1000)); // for visual verification
+            return;
+        }
         cmdEdit.perform(click());
         ViewInteraction dialogTitle = checkTextView(R.string.edit_list_title);
         dialogTitle.check(matches(withId(androidx.appcompat.R.id.alertTitle)));

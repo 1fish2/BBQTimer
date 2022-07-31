@@ -313,10 +313,6 @@ public class MainActivity extends AppCompatActivity
     protected void onResume() {
         super.onResume();
 
-        // Workaround: On Android SDK ≤ 27, the automatic focus in the text field is distracting and
-        // annoying on Activity start, app switch, or screen rotation, esp. with the (X) endIcon.
-        defocusTextField(alarmPeriod);
-
         informIfNotificationAlarmsMuted();
     }
 
@@ -510,6 +506,7 @@ public class MainActivity extends AppCompatActivity
         if (item != null) {
             CharSequence title = item.getTitle();
             SpannableString ss = new SpannableString(title);
+
             ss.setSpan(new StyleSpan(Typeface.BOLD), 0, ss.length(), 0);
             item.setTitle(ss);
         }
@@ -549,6 +546,7 @@ public class MainActivity extends AppCompatActivity
     public void onEditorDialogNegativeClick(DialogInterface dialog) {
     }
 
+    @SuppressWarnings("unused")
     @UiThread
     public void onDismissRecipeMenu(PopupMenu menu) {
         popupMenu = null;
@@ -597,15 +595,23 @@ public class MainActivity extends AppCompatActivity
 
     /**
      * Remove focus from the text field.
-     * NOTE: The alarmPeriod has an OnFocusChangeListener. Defocussing it, if it had focus, will
-     * (re)set its contents to the current state and close its soft keyboard.
      * <p/>
-     * Workaround: Force it on older Android versions which grab and hold focus where newer Android
-     * versions wouldn't. https://stackoverflow.com/a/11044709/1682419
+     * NOTE: The alarmPeriod text field has an OnFocusChangeListener. On defocus, the listener will
+     * (re)set the field's contents to the current state and close its soft keyboard.
      * <p/>
-     * TODO: This workaround seems to break the ability to TAB or arrow into and out of the field.
-     *  Maybe fix that by re-enabling focus on a relevant key event. Or maybe it's just an edge case
-     *  for a dwindling number of Androids.
+     * Workaround: Older Android versions grab and hold focus or immediately refocus. So force the
+     * text field to defocus by temporarily making it not-focusable.
+     * https://stackoverflow.com/a/11044709/1682419
+     * <p/>
+     * Re-enable focusability after another short delay rather than via `setOnTouchListener()` [in
+     * the stackoverflow post] so TAB & arrow keys can still enter/exit the text field.
+     * <p/>
+     * Setting a caret in the text field, then using the popup menu to set & confirm new contents
+     * might make Android log warnings such as:
+     *    `W/IInputConnectionWrapper: requestCursorAnchorInfo on inactive InputConnection`
+     * Delaying setFocusable(false) by 50ms would reduce those. Is it a net win?
+     * <p/>
+     * NOTE: The UI test method delayForDefocusTextFieldWorkaround() must wait for this delay.
      */
     @UiThread
     @SuppressLint("ClickableViewAccessibility")
@@ -613,11 +619,10 @@ public class MainActivity extends AppCompatActivity
         if (Build.VERSION.SDK_INT <= 27) {
             textField.setFocusable(false);
 
-            textField.setOnTouchListener((v, event) -> {
-                v.setFocusable(true);
-                v.setFocusableInTouchMode(true);
-                return false; // don't consume the event; continue with normal processing
-            });
+            textField.postDelayed(() -> {
+                textField.setFocusable(true);
+                textField.setFocusableInTouchMode(true);
+            }, 50);
         } else {
             textField.clearFocus();
         }
@@ -697,6 +702,7 @@ public class MainActivity extends AppCompatActivity
     //  or digits), is there a way to keep it from focussing displayView? Maybe it's OK since there
     //  was a keyboard action, thus leaving "touch mode." Does this vary by Android version?
     @UiThread
+    @SuppressWarnings("unused")
     public boolean onEditAction(TextView view, int actionId, KeyEvent event) {
         if (view == alarmPeriod) {
             processAlarmPeriodInput();
