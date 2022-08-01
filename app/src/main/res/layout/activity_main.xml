@@ -54,11 +54,24 @@
         app:layout_constraintTop_toTopOf="@id/buttonBar"
         app:layout_constraintHorizontal_bias="1" />
 
-    <!-- Workaround: The focusable*=true attributes make this view focusable so alarmPeriod won't
-         automatically grab focus when the Activity starts or resumes on API ≤ 27.
-         This is better than calling defocusTextField(alarmPeriod) in onResume() since the latter
-         breaks the second and later uses of the adjustPan feature (pan the window contents to fit
-         the text field with soft keyboard), at least on API 22-23. -->
+    <!-- Workaround: The focusable*=true attributes make this empty view focusable enough that
+         alarmPeriod won't automatically get focus when the Activity starts or resumes on API ≤ 27.
+
+         The empty view is in the keyboard navigation sequence for API ≤ 27, but unobtrusively at
+         the start of the sequence.
+
+         This is better than calling defocusTextField(alarmPeriod) in onResume() since it doesn't
+         break the second and later uses of the adjustPan feature (pan the window contents to fit
+         the text field and the soft keyboard), at least on API 22-23. -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@color/grayer"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        app:layout_constraintEnd_toStartOf="@+id/countUpDisplay"
+        app:layout_constraintTop_toTopOf="parent"/>
+
     <LinearLayout
         android:id="@+id/buttonBar"
         android:layout_width="wrap_content"
@@ -66,8 +79,6 @@
         android:background="@color/grayer"
         android:gravity="center_vertical|right"
         android:orientation="horizontal"
-        android:focusable="true"
-        android:focusableInTouchMode="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/countUpDisplay">
 
@@ -161,7 +172,7 @@
             android:gravity="right"
             android:maxLines="1"
             android:lines="1"
-            android:paddingLeft="@dimen/small_button_padding"
+            android:paddingLeft="0dp"
             android:inputType="time"
             android:maxLength="9"
             android:text="@string/widget_preview_countdown"
