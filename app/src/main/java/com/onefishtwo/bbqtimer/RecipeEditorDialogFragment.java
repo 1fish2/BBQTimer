@@ -33,7 +33,9 @@ public class RecipeEditorDialogFragment extends DialogFragment {
      * Listener interface so it can get the edited results. */
     @SuppressWarnings("unused")
     public interface RecipeEditorDialogFragmentListener {
+        /** The user changed (edited or reset) the recipes. */
         void onEditorDialogPositiveClick(DialogInterface dialog, String text);
+        /** The user cancelled the dialog; no change to the recipes. */
         @SuppressWarnings("EmptyMethod")
         void onEditorDialogNegativeClick(DialogInterface dialog);
         // Override onDismiss() to notice all dismissal cases? onDismiss() calling hideKeyboard()

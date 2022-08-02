@@ -62,6 +62,7 @@ import com.onefishtwo.bbqtimer.state.ApplicationState;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.ref.WeakReference;
+import java.util.Vector;
 
 import androidx.annotation.ColorRes;
 import androidx.annotation.IntDef;
@@ -177,6 +178,7 @@ public class MainActivity extends AppCompatActivity
     private final UpdateHandler updateHandler = new UpdateHandler(this);
     private ApplicationState state;
     private TimeCounter timer;
+    private Vector<SpannableString> styledRecipes;
     private PopupMenu popupMenu;
 
     private ConstraintLayout mainContainer;
@@ -197,6 +199,7 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         viewConfiguration = -1;
         notifier = new Notifier(this);
+        styledRecipes = new Vector<>(20);
         popupMenu = null;
 
         // View Binding has potential but it makes project inspections create a lot of spurious
@@ -275,6 +278,30 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+    /**
+     * For the pop-up menu, convert state.getRecipes() into SpannableStrings in styledRecipes.
+     * This method is idempotent.
+     * <p/>
+     * INPUTS: state.getRecipes().<p/>
+     * OUTPUTS: the styledRecipes Vector.
+     */
+    void styleTheRecipes() {
+        String[] lines = state.getRecipes().split("\n");
+
+        styledRecipes.clear();
+        styledRecipes.ensureCapacity(lines.length);
+
+        for (String r : lines) { // Italicize the notes that follow each recipe's leading token.
+            String recipe = r.trim();
+            int recipeLength = recipe.length();
+            int tokenLength = TimeCounter.lengthOfLeadingIntervalTime(recipe);
+            SpannableString ss = new SpannableString(recipe);
+
+            ss.setSpan(new StyleSpan(Typeface.ITALIC), tokenLength, recipeLength, 0);
+            styledRecipes.add(ss);
+        }
+    }
+
     /** The Activity is now visible. */
     @MainThread
     @Override
@@ -285,6 +312,7 @@ public class MainActivity extends AppCompatActivity
         // Load persistent state.
         state = ApplicationState.sharedInstance(this);
         timer = state.getTimeCounter();
+        styleTheRecipes();
         state.setMainActivityIsVisible(true);
 
         // Apply the app shortcut action, if any, once.
@@ -502,7 +530,7 @@ public class MainActivity extends AppCompatActivity
         popupMenu.setOnMenuItemClickListener(this::onRecipeMenuItemClick);
         popupMenu.setOnDismissListener(this::onDismissRecipeMenu);
 
-        MenuItem item = menu.findItem(R.id.edit_recipes);
+        MenuItem item = menu.findItem(R.id.edit_recipes); // depends on the current locale
         if (item != null) {
             CharSequence title = item.getTitle();
             SpannableString ss = new SpannableString(title);
@@ -511,15 +539,8 @@ public class MainActivity extends AppCompatActivity
             item.setTitle(ss);
         }
 
-        String[] lines = state.getRecipes().split("\n");
-        for (String r : lines) { // Italicize the notes that follow each recipe's leading token.
-            String recipe = r.trim();
-            int recipeLength = recipe.length();
-            int tokenLength = TimeCounter.lengthOfLeadingIntervalTime(recipe);
-            SpannableString ss = new SpannableString(recipe);
-
-            ss.setSpan(new StyleSpan(Typeface.ITALIC), tokenLength, recipeLength, 0);
-            menu.add(ss);
+        for (SpannableString recipe : styledRecipes) {
+            menu.add(recipe);
         }
 
         popupMenu.show();
@@ -528,7 +549,7 @@ public class MainActivity extends AppCompatActivity
     /** Opens the recipe list editor dialog. */
     @UiThread
     void showRecipeEditor() {
-        String recipeLines = String.join("\n", state.getRecipes());
+        String recipeLines = state.getRecipes();
         RecipeEditorDialogFragment dialog = RecipeEditorDialogFragment.newInstance(recipeLines);
 
         dialog.show(getSupportFragmentManager(), RecipeEditorDialogFragment.TAG);
@@ -539,6 +560,7 @@ public class MainActivity extends AppCompatActivity
     public void onEditorDialogPositiveClick(DialogInterface dialog, String text) {
         state.setRecipes(text);
         state.save(this);
+        styleTheRecipes();
     }
 
     @Override
