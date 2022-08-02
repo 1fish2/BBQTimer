@@ -10,7 +10,7 @@ android {
         applicationId "com.onefishtwo.bbqtimer"
         versionCode 22
         versionName '3.1'
-        minSdk 21
+        minSdk 22
         targetSdk 30
         resConfigs 'en', 'de'
 
