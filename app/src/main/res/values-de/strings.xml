@@ -9,7 +9,7 @@
     <string name="dismiss_tip">Wischen um zu stoppen</string>
     <string name="edit_list_hint">Minuten\nMinuten:Sekunden oder\nStunden:Minuten:Sekunden\nmit optionalen Anmerkungen</string>
     <string name="edit_list_title">Alarmintervalle</string>
-    <string name="edit_this_list">Bearbeiten Sie diese Intervalle…</string>
+    <string name="edit_this_list">Diese Intervalle bearbeiten…</string>
     <string name="interval_hint">M, M:S, H:M:S</string>
     <string name="intervals_menu">Intervallmenü</string>
     <string name="need_alarm_access">BBQ Timer benötigt „Spezieller App-Zugriff“ „Wecker und Erinnerungen“, um Alarme einzustellen</string>
