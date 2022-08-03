@@ -1,6 +1,9 @@
 * <b>Kombinierter Intervalltimer/Stoppuhr</b> = periodische Alarme + verstrichene Zeit.
-    * Erinnert Sie regelmäßig daran, die Speisen zu wenden, während die Gesamtgarzeit verfolgt wird.
-* Schnellzugriff über <b>Sperrbildschirmbenachrichtigung</b> und <b>Startbildschirm-Widget</b>.
+    * Erinnert Sie regelmäßig daran, die Speisen zu wenden und verfolgt die gesamte Garzeit.
+* Schneller Zugriff über <b>Sperrbildschirmbenachrichtigung</b>,
+  <b>Pulldown-Benachrichtigung</b> und <b>Startbildschirm-Widget</b>.
+* Bearbeitbares <b>Popup-Menü der Intervallzeiten</b>. Greifen Sie schnell auf
+  Ihre bevorzugten Timer zu, jeweils mit optionalen Notizen.
 * <b>Änderbare Alarme</b> während es läuft.
 * Keine Werbung.
 
@@ -31,6 +34,8 @@ Geben Sie die Intervallzeit ein: <i>Minuten</i>, <i>Minuten:Sekunden</i> oder <i
 * Während der BBQ-Timer <i>läuft</i> oder <i>pausiert</i> ist, erscheint er <b>auf dem Sperrbildschirm</b> und <b>in der Pulldown-Benachrichtigung</b> Sie können es an diesen Stellen sehen und steuern.
     * Um es auf den Sperrbildschirm zu setzen, versetzen Sie es in den Modus <b>Pause</b> oder <b>Wiedergabe</b>, indem Sie auf Schaltflächen in der App oder im Startbildschirm-Widget tippen.
     * Sie können lange auf das Startbildschirmsymbol der App drücken und dann auf die Verknüpfung „Anhalten bei 00:00“ (auf Android 7.1+) tippen, um sie auf dem Sperrbildschirm anzuhalten und bereit zu machen.
+* Tippen Sie im Textfeld „Alarmintervall“ auf ▲, um das Popup-Menü für die Intervallzeit aufzurufen.
+    * Tippen Sie im Menü auf „Diese Intervalle bearbeiten…“, um das Menü anzupassen.
 * Die App, das Startbildschirm-Widget und die Pulldown-Benachrichtigung zeigen die Countdown-Intervallzeit sowie die verstrichene Gesamtzeit (erfordert Android 7+).
 * Sie können den „Alarm“-Ton von BBQ Timer in Einstellungen – Benachrichtigungen ändern. Wählen Sie nicht „Keine“, wenn Sie die Intervallalarme hören möchten. Um den Kuhglockenklang der App wiederherzustellen, deinstallieren Sie die App und installieren Sie sie erneut.
 

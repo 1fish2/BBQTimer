@@ -38,6 +38,8 @@
         android:minHeight="@dimen/countdown_text_size"
         android:layout_marginEnd="@dimen/button_padding"
         android:focusable="true"
+        android:nextFocusForward="@id/pauseResumeButton"
+        android:nextFocusRight="@id/pauseResumeButton"
         android:gravity="right|center_vertical"
         android:maxLines="1"
         android:paddingLeft="@dimen/countdown_padding"
@@ -51,6 +53,24 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/buttonBar"
         app:layout_constraintHorizontal_bias="1" />
+
+    <!-- Workaround: The focusable*=true attributes make this empty view focusable enough that
+         alarmPeriod won't automatically get focus when the Activity starts or resumes on API ≤ 27.
+
+         The empty view is in the keyboard navigation sequence for API ≤ 27, but unobtrusively at
+         the start of the sequence.
+
+         This is better than calling defocusTextField(alarmPeriod) in onResume() since it doesn't
+         break the second and later uses of the adjustPan feature (pan the window contents to fit
+         the text field and the soft keyboard), at least on API 22-23. -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@color/grayer"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        app:layout_constraintEnd_toStartOf="@+id/countUpDisplay"
+        app:layout_constraintTop_toTopOf="parent"/>
 
     <LinearLayout
         android:id="@+id/buttonBar"
@@ -104,7 +124,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:barrierDirection="bottom"
-        app:constraint_referenced_ids="countdownDisplay,buttonBar"/>
+        app:constraint_referenced_ids="countdownDisplay,buttonBar" />
 
     <CheckBox
         android:id="@+id/enableReminders"
@@ -134,9 +154,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/fold_margin"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+        style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense"
         android:hint="@string/interval_hint"
         app:hintTextAppearance="@style/HintTextAppearance"
+        app:startIconDrawable="@drawable/ic_baseline_arrow_drop_up_48"
+        app:startIconContentDescription="@string/intervals_menu"
         app:layout_constraintTop_toBottomOf="@id/fold"
         app:layout_constraintBottom_toBottomOf="@+id/enableReminders"
         app:layout_constraintVertical_bias="0.5"
@@ -150,13 +172,14 @@
             android:gravity="right"
             android:maxLines="1"
             android:lines="1"
-            android:paddingLeft="@dimen/small_button_padding"
+            android:paddingLeft="0dp"
             android:inputType="time"
             android:maxLength="9"
             android:text="@string/widget_preview_countdown"
             android:textSize="@dimen/controls_text_size"
             android:textColor="?android:attr/textColorPrimary"
             android:importantForAutofill="no" />
+
     </com.google.android.material.textfield.TextInputLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

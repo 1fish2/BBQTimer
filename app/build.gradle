@@ -9,8 +9,8 @@ android {
     defaultConfig {
         applicationId "com.onefishtwo.bbqtimer"
         versionCode 22
-        versionName '3.1'
-        minSdk 21
+        versionName '4.0'
+        minSdk 22
         targetSdk 30
         resConfigs 'en', 'de'
 
@@ -43,8 +43,8 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_1_9
+        targetCompatibility JavaVersion.VERSION_1_9
     }
 
     testOptions {

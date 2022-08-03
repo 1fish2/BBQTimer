@@ -21,8 +21,11 @@ package com.onefishtwo.bbqtimer.state;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.util.Log;
 
+import com.onefishtwo.bbqtimer.LocaleUtils;
+import com.onefishtwo.bbqtimer.R;
 import com.onefishtwo.bbqtimer.TimeCounter;
 
 import androidx.annotation.NonNull;
@@ -41,6 +44,9 @@ public class ApplicationState {
     public static final int MINIMUM_ALARM_SECONDS = 5;
     public static final int MAXIMUM_ALARM_SECONDS = 100 * 3600 - 1; // 99:59:59
 
+    /** Locale-independent, resource-independent fallback for the recipe list. */
+    public static final String FALLBACK_RECIPES = ":30\n1\n1:30\n2\n3\n4\n5\n6\n7\n8\n9\n10";
+
     /** PERSISTENT STATE filename. */
     private static final String APPLICATION_PREF_FILE = "BBQ_Timer_Prefs";
 
@@ -48,6 +54,7 @@ public class ApplicationState {
     private static final String PREF_MAIN_ACTIVITY_IS_VISIBLE = "App_mainActivityIsVisible";
     private static final String PREF_ENABLE_REMINDERS = "App_enableReminders";
     private static final String PREF_SECONDS_PER_REMINDER = "App_secondsPerReminder";
+    private static final String PREF_RECIPES = "App_recipes";
 
     private static ApplicationState sharedInstance;
 
@@ -55,6 +62,7 @@ public class ApplicationState {
     private boolean mainActivityIsVisible; // between onStart() .. onStop()
     private boolean enableReminders;
     private int secondsPerReminder;
+    private String recipes = FALLBACK_RECIPES;
 
     /**
      * Returns the shared instance, using context to load the persistent state if needed and to save
@@ -110,7 +118,21 @@ public class ApplicationState {
         int secs              = prefs.getInt(PREF_SECONDS_PER_REMINDER, 5 * 60);
         secondsPerReminder    = boundIntervalTimeSeconds(secs);
 
+        String defaultRecipes = getDefaultRecipes(context);
+        recipes = prefs.getString(PREF_RECIPES, defaultRecipes);
+
         return needToSave;
+    }
+
+    /** Returns the default recipes text using °F or °C per the current locale. */
+    public static String getDefaultRecipes(@NonNull Context context) {
+        try {
+            return context.getString(R.string.recipes,
+                    LocaleUtils.formatTemperatureFromFahrenheit(145),
+                    LocaleUtils.formatTemperatureFromFahrenheit(165));
+        } catch (Resources.NotFoundException e) {
+            return FALLBACK_RECIPES;
+        }
     }
 
     /** Saves persistent state using context. */
@@ -123,6 +145,7 @@ public class ApplicationState {
         prefsEditor.putBoolean(PREF_MAIN_ACTIVITY_IS_VISIBLE, mainActivityIsVisible);
         prefsEditor.putBoolean(PREF_ENABLE_REMINDERS, enableReminders);
         prefsEditor.putInt(PREF_SECONDS_PER_REMINDER, secondsPerReminder);
+        prefsEditor.putString(PREF_RECIPES, recipes);
         prefsEditor.apply();
     }
 
@@ -207,5 +230,16 @@ public class ApplicationState {
     @NonNull
     public String formatIntervalTimeHhMmSsCompact() {
         return TimeCounter.formatHhMmSsCompact(getMillisecondsPerReminder());
+    }
+
+    /** Gets the recipe text. */
+    @NonNull
+    public String getRecipes() {
+        return recipes;
+    }
+
+    /** Sets the recipe text. */
+    public void setRecipes(@NonNull String text) {
+        recipes = text;
     }
 }

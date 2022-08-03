@@ -31,6 +31,7 @@ import java.text.FieldPosition;
 import java.text.NumberFormat;
 import java.util.Formatter;
 import java.util.Locale;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import androidx.annotation.NonNull;
@@ -52,6 +53,13 @@ public class TimeCounter {
      * a physical keyboard, restricting typed or pasted characters to [0-9:apm] (maybe more).
      */
     static final Pattern HMS_SEPARATOR = Pattern.compile(":");
+
+    /**
+     * Pattern to extract the interval time at the start of a "recipe" line.
+     * Includes leading spaces so the match length indicates where the following text (notes) begin,
+     * so they can get italicized.
+     */
+    static final Pattern INTERVAL_TIME_IN_RECIPE = Pattern.compile("\\s*[\\d:]+");
 
     /**
      * Injectable mocks of DateUtils.formatElapsedTime() and Html.fromHtml() SINCE THE UNIT TEST
@@ -375,7 +383,8 @@ public class TimeCounter {
     /**
      * Formats a millisecond duration in the compact format that parseHhMmSs supports, that is,
      * h:mm:ss or m:ss or m, e.g. "7" rather than "07:00".
-     *
+     * Format 60 minutes as "60" instead of "1:00:00".
+     * <p/>
      * Derived from {@link DateUtils#formatElapsedTime(long)}.
      */
     public static String formatHhMmSsCompact(long elapsedMilliseconds) {
@@ -422,8 +431,8 @@ public class TimeCounter {
     }
 
     /**
-     * Parses a time duration in the form: hh:mm:ss, mm:ss, mm. Each field has zero or more digits,
-     * but commonly two digits. dd[:dd[:dd]]. This is forgiving but it returns -1 if the input isn't
+     * Parses a time duration in the form: h:m:s|m:s|m. Each field has zero or more digits,
+     * but commonly two digits, dd[:dd[:dd]]. This is forgiving but it returns -1 if the input isn't
      * in a recognized format. All spaces get squeezed out. The field separator is ":".
      * <p/>
      * Returns the parsed number of seconds, or -1 if the input is not in the right format.
@@ -457,6 +466,18 @@ public class TimeCounter {
         }
 
         return result;
+    }
+
+    /**
+     * Parses out the leading interval-time token from the recipe string and returns its length.
+     * The token includes any leading spaces so the match length indicates where the following text
+     * (the notes) begin, so they can get italicized.
+     */
+    public static int lengthOfLeadingIntervalTime(String recipe) {
+        Matcher matcher = INTERVAL_TIME_IN_RECIPE.matcher(recipe);
+        boolean matched = matcher.lookingAt();
+
+        return matched ? matcher.end() : 0;
     }
 
     @NonNull

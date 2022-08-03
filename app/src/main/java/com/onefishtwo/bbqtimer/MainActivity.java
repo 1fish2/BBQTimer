@@ -21,12 +21,15 @@ package com.onefishtwo.bbqtimer;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
+import android.graphics.Typeface;
 import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -35,17 +38,20 @@ import android.os.Looper;
 import android.os.Message;
 import android.provider.Settings;
 import android.text.Editable;
+import android.text.SpannableString;
 import android.text.Spanned;
+import android.text.style.StyleSpan;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.view.textclassifier.TextClassifier;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import com.google.android.material.snackbar.BaseTransientBottomBar;
@@ -56,6 +62,7 @@ import com.onefishtwo.bbqtimer.state.ApplicationState;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.ref.WeakReference;
+import java.util.Vector;
 
 import androidx.annotation.ColorRes;
 import androidx.annotation.IntDef;
@@ -74,8 +81,9 @@ import androidx.core.widget.TextViewCompat;
 /**
  * The BBQ Timer's main activity.
  */
-public class MainActivity extends AppCompatActivity {
-    private final String TAG = "Main";
+public class MainActivity extends AppCompatActivity
+        implements RecipeEditorDialogFragment.RecipeEditorDialogFragmentListener {
+    private static final String TAG = "Main";
 
     static final int FLAG_IMMUTABLE =
             Build.VERSION.SDK_INT >= 23 ? PendingIntent.FLAG_IMMUTABLE : 0;
@@ -170,6 +178,8 @@ public class MainActivity extends AppCompatActivity {
     private final UpdateHandler updateHandler = new UpdateHandler(this);
     private ApplicationState state;
     private TimeCounter timer;
+    private Vector<SpannableString> styledRecipes;
+    private PopupMenu popupMenu;
 
     private ConstraintLayout mainContainer;
     private Button resetButton;
@@ -189,6 +199,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         viewConfiguration = -1;
         notifier = new Notifier(this);
+        styledRecipes = new Vector<>(20);
+        popupMenu = null;
 
         // View Binding has potential but it makes project inspections create a lot of spurious
         // warnings about unused resource IDs, methods, and method arguments.
@@ -212,15 +224,15 @@ public class MainActivity extends AppCompatActivity {
         countdownDisplay.setOnClickListener(this::onClickPauseResume);
         alarmPeriod.setOnEditorActionListener(this::onEditAction);
         alarmPeriod.setOnFocusChangeListener2(this::onEditTextFocusChange);
-        //alarmPeriod.setSelectAllOnFocus(true); // TODO: Use this instead of the (X) clear button?
         stopButton.setOnClickListener(this::onClickStop);
         countUpDisplay.setOnClickListener(this::onClickTimerText);
         enableReminders.setOnClickListener(this::onClickEnableRemindersToggle);
 
         // Set the TextClassifier *THEN* enable the CLEAR_TEXT (X) endIcon.
-        workaroundTextClassifier(alarmPeriod);
+        RecipeEditorDialogFragment.workaroundTextClassifier(alarmPeriod);
         TextInputLayout alarmPeriodLayout = findViewById(R.id.alarmPeriodLayout);
         alarmPeriodLayout.setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT);
+        alarmPeriodLayout.setStartIconOnClickListener(this::onClickRecipeMenuButton);
 
         // AutoSizeText works with android:maxLines="1" but not with android:singleLine="true".
         TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(countUpDisplay, 16,
@@ -248,36 +260,6 @@ public class MainActivity extends AppCompatActivity {
         logTheConfiguration(getResources().getConfiguration());
     }
 
-    /**
-     * API 27: Work around an Android bug where double-clicking the EditText field would cause these
-     * log errors:
-     *
-     *   TextClassifierImpl: Error suggesting selection for text. No changes to selection suggested.
-     *     java.io.FileNotFoundException: No file for null locale
-     *         at android.view.textclassifier.TextClassifierImpl.getSmartSelection(TextClassifierImpl.java:208)
-     *         ...
-     *   TextClassifierImpl: Error getting assist info.
-     *     java.io.FileNotFoundException: No file for null locale
-     *         at android.view.textclassifier.TextClassifierImpl.getSmartSelection(TextClassifierImpl.java:208)
-     *         ...
-     *
-     * API > 27: Work around an Android bug that calls the TextClassifier on the main thread
-     * (UI thread) [e.g. when the user double-taps the EditText field, or long-presses it, or
-     * dismisses the soft keyboard when there's a text selection], causing this log warning even
-     * though no app code is on the call stack:
-     *
-     *   W/androidtc: TextClassifier called on main thread.
-     *
-     * To avoid the delay and potential ANR, just bypass the irrelevant TextClassifier. (This
-     * problem might not occur on API 28 - 29, but it's safer to do this uniformly.)
-     */
-    @SuppressWarnings("SpellCheckingInspection")
-    private static void workaroundTextClassifier(EditText editText) {
-        if (Build.VERSION.SDK_INT >= 27) {
-            editText.setTextClassifier(TextClassifier.NO_OP);
-        }
-    }
-
     private void logTheConfiguration(@NonNull Configuration config) {
         Log.i(TAG,
             String.format("Config densityDpi: %d, size DPI: %dx%d, orientation: %d",
@@ -296,6 +278,30 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
+    /**
+     * For the pop-up menu, convert state.getRecipes() into SpannableStrings in styledRecipes.
+     * This method is idempotent.
+     * <p/>
+     * INPUTS: state.getRecipes().<p/>
+     * OUTPUTS: the styledRecipes Vector.
+     */
+    void styleTheRecipes() {
+        String[] lines = state.getRecipes().split("\n");
+
+        styledRecipes.clear();
+        styledRecipes.ensureCapacity(lines.length);
+
+        for (String r : lines) { // Italicize the notes that follow each recipe's leading token.
+            String recipe = r.trim();
+            int recipeLength = recipe.length();
+            int tokenLength = TimeCounter.lengthOfLeadingIntervalTime(recipe);
+            SpannableString ss = new SpannableString(recipe);
+
+            ss.setSpan(new StyleSpan(Typeface.ITALIC), tokenLength, recipeLength, 0);
+            styledRecipes.add(ss);
+        }
+    }
+
     /** The Activity is now visible. */
     @MainThread
     @Override
@@ -306,6 +312,7 @@ public class MainActivity extends AppCompatActivity {
         // Load persistent state.
         state = ApplicationState.sharedInstance(this);
         timer = state.getTimeCounter();
+        styleTheRecipes();
         state.setMainActivityIsVisible(true);
 
         // Apply the app shortcut action, if any, once.
@@ -334,10 +341,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        // Workaround: On Android SDK ≤ 27, the automatic focus in the text field is distracting and
-        // annoying on Activity start, app switch, or screen rotation, esp. with the (X) endIcon.
-        defocusTextField(alarmPeriod);
-
         informIfNotificationAlarmsMuted();
     }
 
@@ -352,6 +355,12 @@ public class MainActivity extends AppCompatActivity {
         state.save(this);
 
         AlarmReceiver.updateNotifications(this); // after setMainActivityIsVisible()
+
+        if (popupMenu != null) {
+            popupMenu.dismiss(); // avoid android.view.WindowLeaked PopupWindow$PopupViewContainer
+            // TODO: It still throws WindowLeaked PopupWindow$PopupDecorView on API 32.
+            popupMenu = null;
+        }
 
         super.onStop();
     }
@@ -511,32 +520,120 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /** The user clicked the button to open the "recipes" menu of alarm periods. */
+    @UiThread
+    public void onClickRecipeMenuButton(View v) {
+        popupMenu = new PopupMenu(this, v);
+        Menu menu = popupMenu.getMenu();
+
+        popupMenu.getMenuInflater().inflate(R.menu.recipe_menu, menu);
+        popupMenu.setOnMenuItemClickListener(this::onRecipeMenuItemClick);
+        popupMenu.setOnDismissListener(this::onDismissRecipeMenu);
+
+        MenuItem item = menu.findItem(R.id.edit_recipes); // depends on the current locale
+        if (item != null) {
+            CharSequence title = item.getTitle();
+            SpannableString ss = new SpannableString(title);
+
+            ss.setSpan(new StyleSpan(Typeface.BOLD), 0, ss.length(), 0);
+            item.setTitle(ss);
+        }
+
+        for (SpannableString recipe : styledRecipes) {
+            menu.add(recipe);
+        }
+
+        popupMenu.show();
+    }
+
+    /** Opens the recipe list editor dialog. */
+    @UiThread
+    void showRecipeEditor() {
+        String recipeLines = state.getRecipes();
+        RecipeEditorDialogFragment dialog = RecipeEditorDialogFragment.newInstance(recipeLines);
+
+        dialog.show(getSupportFragmentManager(), RecipeEditorDialogFragment.TAG);
+    }
+
+    @Override
+    @UiThread
+    public void onEditorDialogPositiveClick(DialogInterface dialog, String text) {
+        state.setRecipes(text);
+        state.save(this);
+        styleTheRecipes();
+    }
+
+    @Override
+    @UiThread
+    public void onEditorDialogNegativeClick(DialogInterface dialog) {
+    }
+
+    @SuppressWarnings("unused")
+    @UiThread
+    public void onDismissRecipeMenu(PopupMenu menu) {
+        popupMenu = null;
+    }
+
+    @SuppressWarnings("SameReturnValue")
+    @UiThread
+    public boolean onRecipeMenuItemClick(MenuItem item) {
+        if (item.getItemId() == R.id.edit_recipes) {
+            showRecipeEditor();
+            return true;
+        }
+
+        String itemTitle = item.getTitle().toString();
+        int tokenLength = TimeCounter.lengthOfLeadingIntervalTime(itemTitle);
+        String token = itemTitle.substring(0, tokenLength);
+
+        alarmPeriod.setText(token);
+
+        // Submit the input whether or not the text field has focus.
+        processAlarmPeriodInput();
+        return true;
+    }
+
     /** Hides the soft keyboard, if we're lucky. */
     // https://stackoverflow.com/a/17789187/1682419
-    public void hideKeyboard(@Nullable View v) {
-        InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+    public static void hideKeyboard(@NonNull Activity activity, @Nullable View v) {
+        InputMethodManager imm = (InputMethodManager) activity.getSystemService(INPUT_METHOD_SERVICE);
 
         if (v != null) {
             imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
         }
 
-        View focussed = getCurrentFocus();
+        View focussed = activity.getCurrentFocus();
+        // TODO: Another fallback: if (focussed == null) focussed = new View(activity);
         if (focussed != null) {
             imm.hideSoftInputFromWindow(focussed.getWindowToken(), 0);
         }
     }
 
+    /** Hides the soft keyboard, if we're lucky. */
+    // https://stackoverflow.com/a/17789187/1682419
+    public void hideKeyboard(@Nullable View v) {
+        hideKeyboard(this, v);
+    }
+
     /**
      * Remove focus from the text field.
-     * NOTE: The alarmPeriod has an OnFocusChangeListener. Defocussing it, if it had focus, will
-     * (re)set its contents to the current state and close its soft keyboard.
      * <p/>
-     * Workaround: Force it on older Android versions which grab and hold focus where newer Android
-     * versions wouldn't. https://stackoverflow.com/a/11044709/1682419
+     * NOTE: The alarmPeriod text field has an OnFocusChangeListener. On defocus, the listener will
+     * (re)set the field's contents to the current state and close its soft keyboard.
      * <p/>
-     * TODO: This workaround seems to break the ability to TAB or arrow into and out of the field.
-     *  Maybe fix that by re-enabling focus on a relevant key event. Or maybe it's just an edge case
-     *  for a dwindling number of Androids.
+     * Workaround: Older Android versions grab and hold focus or immediately refocus. So force the
+     * text field to defocus by temporarily making it not-focusable.
+     * https://stackoverflow.com/a/11044709/1682419
+     * <p/>
+     * Re-enable focusability after another short delay rather than via `setOnTouchListener()` [in
+     * the stackoverflow post] so TAB & arrow keys can still enter/exit the text field.
+     * <p/>
+     * Setting a caret in the text field, then using the popup menu to set & confirm new contents
+     * might make Android log warnings such as:
+     *    `W/IInputConnectionWrapper: requestCursorAnchorInfo on inactive InputConnection`
+     * Delaying setFocusable(false) by 50ms would reduce those. Is it a net win?
+     * <p/>
+     * NOTE: The UI test method delayForDefocusTextFieldWorkaround() must wait for this delay.
      */
     @UiThread
     @SuppressLint("ClickableViewAccessibility")
@@ -544,11 +641,10 @@ public class MainActivity extends AppCompatActivity {
         if (Build.VERSION.SDK_INT <= 27) {
             textField.setFocusable(false);
 
-            textField.setOnTouchListener((v, event) -> {
-                v.setFocusable(true);
-                v.setFocusableInTouchMode(true);
-                return false; // don't consume the event; continue with normal processing
-            });
+            textField.postDelayed(() -> {
+                textField.setFocusable(true);
+                textField.setFocusableInTouchMode(true);
+            }, 50);
         } else {
             textField.clearFocus();
         }
@@ -580,11 +676,16 @@ public class MainActivity extends AppCompatActivity {
         String input = text == null ? "" : text.toString();
         int newSeconds = TimeCounter.parseHhMmSs(input);
 
+        // Save the state change.
         if (newSeconds > 0 && newSeconds != state.getSecondsPerReminder()) {
             state.setSecondsPerReminder(newSeconds); // clips the value
             state.save(this);
             updateUI(); // update countdownDisplay, notifications, and widgets
         }
+
+        // Normalize the interval time text.
+        // [updateUI() does this only if the configuration changed.]
+        displayAlarmPeriod();
 
         defocusTextField(alarmPeriod);
     }
@@ -623,6 +724,7 @@ public class MainActivity extends AppCompatActivity {
     //  or digits), is there a way to keep it from focussing displayView? Maybe it's OK since there
     //  was a keyboard action, thus leaving "touch mode." Does this vary by Android version?
     @UiThread
+    @SuppressWarnings("unused")
     public boolean onEditAction(TextView view, int actionId, KeyEvent event) {
         if (view == alarmPeriod) {
             processAlarmPeriodInput();
@@ -643,7 +745,7 @@ public class MainActivity extends AppCompatActivity {
                 : R.color.paused_timer_colors;
     }
 
-    /** Updates the elapsed time, alarm interval time, and the alarm count-down time displays. */
+    /** Updates the count-up (elapsed) time and alarm count-down time displays. */
     @UiThread
     private void displayTime() {
         Spanned formatted         = timer.formatHhMmSsFraction();

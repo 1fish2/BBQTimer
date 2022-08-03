@@ -1,6 +1,10 @@
 • <b>Combined interval timer/stopwatch</b> = periodic alarms + elapsed time.
-  Reminds you periodically to turn the food while it tracks the total cooking time.
-• Quick access via <b>lock screen notification</b> and <b>home screen widget</b>.
+  Reminds you periodically to turn the food and tracks the total
+  cooking time.
+• Quick access via <b>lock screen notification</b>, <b>pull-down notification</b>,
+  and <b>home screen widget</b>.
+• Editable <b>pop-up menu of interval times</b>. Quickly access your favorite
+  timers, each with optional notes.
 • <b>Changeable alarms</b> while it’s running.
 • No ads.
 
@@ -28,6 +32,8 @@ Short forms:
 • While BBQ Timer is <i>running</i> or <i>paused</i>, it appears <b>on the lock screen</b> and <b>in the pull-down notification</b> so you can see and control it in those places.
   • To put it on the lock screen, put it in <b>Pause</b> or <b>Play</b> mode by tapping buttons in the app or the home screen widget.
   • You can long-press the app’s home screen icon, then tap the “Pause at 00:00” shortcut (on Android 7.1+) to make it Paused and ready on the lock screen.
+• Tap ▲ in the alarm interval text field for the pop-up menu of interval times.
+  • Tap “Edit these intervals…” in the menu to customize the menu.
 • The app, home screen widget, and pull-down notification show the countdown interval time as well as the total elapsed time (requires Android 7+).
 • You can change BBQ Timer’s “Alarm” sound in Settings - Notifications. Don’t pick “None” if you want to hear the interval alarms. To restore the app’s cowbell sound, uninstall and reinstall the app.
 
