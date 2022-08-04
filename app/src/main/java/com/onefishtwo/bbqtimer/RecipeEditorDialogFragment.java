@@ -34,7 +34,7 @@ public class RecipeEditorDialogFragment extends DialogFragment {
     @SuppressWarnings("unused")
     public interface RecipeEditorDialogFragmentListener {
         /** The user changed (edited or reset) the recipes. */
-        void onEditorDialogPositiveClick(DialogInterface dialog, String text);
+        void onEditorDialogPositiveClick(DialogInterface dialog, @NonNull String text);
         /** The user cancelled the dialog; no change to the recipes. */
         @SuppressWarnings("EmptyMethod")
         void onEditorDialogNegativeClick(DialogInterface dialog);
@@ -169,7 +169,7 @@ public class RecipeEditorDialogFragment extends DialogFragment {
      * <li>Hides the soft keyboard.
      * <li>Passes the given recipes (or if blank, the default recipes) to the listener.
      */
-    private void saveText(DialogInterface dialog, String recipes) {
+    private void saveText(@NonNull DialogInterface dialog, @NonNull String recipes) {
         hideKeyboard(textField);
 
         if (recipes.trim().length() == 0) {
@@ -179,17 +179,17 @@ public class RecipeEditorDialogFragment extends DialogFragment {
     }
 
     /** DialogInterface.OnClickListener for the "Save" button. */
-    private void saveEdits(DialogInterface dialog, int which) {
+    private void saveEdits(@NonNull DialogInterface dialog, int which) {
         saveText(dialog, textField.getText().toString());
     }
 
     /** DialogInterface.OnClickListener for the "Reset" button. */
-    private void resetEdits(DialogInterface dialog, int which) {
+    private void resetEdits(@NonNull DialogInterface dialog, int which) {
         saveText(dialog, "");
     }
 
     /** DialogInterface.OnClickListener for the "Cancel" button. */
-    private void cancelEdits(DialogInterface dialog, int which) {
+    private void cancelEdits(@NonNull DialogInterface dialog, int which) {
         hideKeyboard(textField);
         listener.onEditorDialogNegativeClick(dialog);
         dialog.cancel();

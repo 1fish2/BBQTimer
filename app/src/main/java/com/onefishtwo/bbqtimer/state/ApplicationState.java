@@ -119,17 +119,18 @@ public class ApplicationState {
         secondsPerReminder    = boundIntervalTimeSeconds(secs);
 
         String defaultRecipes = getDefaultRecipes(context);
-        recipes = prefs.getString(PREF_RECIPES, defaultRecipes);
+        recipes               = prefs.getString(PREF_RECIPES, defaultRecipes);
 
         return needToSave;
     }
 
     /** Returns the default recipes text using °F or °C per the current locale. */
+    @NonNull
     public static String getDefaultRecipes(@NonNull Context context) {
         try {
             return context.getString(R.string.recipes,
-                    LocaleUtils.formatTemperatureFromFahrenheit(145),
-                    LocaleUtils.formatTemperatureFromFahrenheit(165));
+                    LocaleUtils.formatTemperatureFromFahrenheit(145),  // done temp for fish
+                    LocaleUtils.formatTemperatureFromFahrenheit(165)); // done temp for burgers
         } catch (Resources.NotFoundException e) {
             return FALLBACK_RECIPES;
         }

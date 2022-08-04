@@ -200,7 +200,7 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         viewConfiguration = -1;
         notifier = new Notifier(this);
-        lastRecipes = null;
+        lastRecipes = "";
         styledRecipes = new Vector<>(20);
         popupMenu = null;
 
@@ -282,7 +282,7 @@ public class MainActivity extends AppCompatActivity
 
     /**
      * For the pop-up menu, convert state.getRecipes() into SpannableStrings in styledRecipes.
-     * This is idempotent and it checks the input to tell if there's new work to do.
+     * This is idempotent and fast if the input hasn't changed.
      * <p/>
      * INPUTS: state.getRecipes().<p/>
      * OUTPUTS: the styledRecipes Vector.
@@ -290,9 +290,8 @@ public class MainActivity extends AppCompatActivity
     void styleTheRecipes() {
         String recipes = state.getRecipes();
 
-        //noinspection StringEquality
-        if (recipes == lastRecipes) {
-            return; // the same input String => no changes to process
+        if (recipes.equals(lastRecipes)) {
+            return;
         }
         lastRecipes = recipes;
 
@@ -568,9 +567,11 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     @UiThread
-    public void onEditorDialogPositiveClick(DialogInterface dialog, String text) {
-        state.setRecipes(text);
-        state.save(this);
+    public void onEditorDialogPositiveClick(DialogInterface dialog, @NonNull String text) {
+        if (!text.equals(state.getRecipes())) { // optimize the no-change case
+            state.setRecipes(text);
+            state.save(this);
+        }
     }
 
     @Override

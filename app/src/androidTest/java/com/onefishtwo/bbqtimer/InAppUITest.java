@@ -509,11 +509,13 @@ public class InAppUITest {
 
         String replacement = "88888 ***TO SAVE***\n";
         editText.perform(longClick(), replaceText(replacement));
+        editText.check(matches(not(withText(containsString("\n:30\n")))));
         saveButton.perform(scrollTo(), click());
 
         // Open the recipe editor dialog, check the saved text, edit it, then Reset.
         popupMenuButton.perform(click());
         cmd__30.check(doesNotExist());
+        checkMenuCommand(replacement.trim());
 
         cmdEdit.perform(click());
         dialogTitle.check(matches(isDisplayed()));
