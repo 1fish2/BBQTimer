@@ -59,7 +59,7 @@ public class TimeCounter {
      * Includes leading spaces so the match length indicates where the following text (notes) begin,
      * so they can get italicized.
      */
-    static final Pattern INTERVAL_TIME_IN_RECIPE = Pattern.compile("\\s*[\\d:]+");
+    static final Pattern INTERVAL_TIME_IN_RECIPE = Pattern.compile("\\s*(?:\\d*:){0,2}\\d*");
 
     /**
      * Injectable mocks of DateUtils.formatElapsedTime() and Html.fromHtml() SINCE THE UNIT TEST

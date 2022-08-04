@@ -209,9 +209,14 @@ public class TimeCounterTest {
         assertEquals(3, lengthOfLeadingIntervalTime("127, notes go here"));
         assertEquals(5, lengthOfLeadingIntervalTime(" 3:15 "));
         assertEquals(8, lengthOfLeadingIntervalTime("\t 1:3:15 "));
-        assertEquals(13, lengthOfLeadingIntervalTime(" 001:22:33:44 - notes"));
-        assertEquals(0, lengthOfLeadingIntervalTime("x15"));
-        assertEquals(3, lengthOfLeadingIntervalTime("\r\n7\r\n"));
-        assertEquals(1, lengthOfLeadingIntervalTime("7.5"));
+        assertEquals(10, lengthOfLeadingIntervalTime(" 001:22:33:44 - notes"));
+        assertEquals( 7, lengthOfLeadingIntervalTime(" :22:33:44 - notes"));
+        assertEquals( 7, lengthOfLeadingIntervalTime(" 1::333:44.5!"));
+        assertEquals( 7, lengthOfLeadingIntervalTime(" ::4567:44.5!"));
+        assertEquals( 7, lengthOfLeadingIntervalTime(" 9999:::44.5!"));
+        assertEquals( 3, lengthOfLeadingIntervalTime(" :::33:4444"));
+        assertEquals( 0, lengthOfLeadingIntervalTime("x15"));
+        assertEquals( 3, lengthOfLeadingIntervalTime("\r\n7\r\n"));
+        assertEquals( 1, lengthOfLeadingIntervalTime("7.5"));
     }
 }
