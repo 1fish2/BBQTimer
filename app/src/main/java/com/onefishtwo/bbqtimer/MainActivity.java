@@ -178,7 +178,8 @@ public class MainActivity extends AppCompatActivity
     private final UpdateHandler updateHandler = new UpdateHandler(this);
     private ApplicationState state;
     private TimeCounter timer;
-    private Vector<SpannableString> styledRecipes;
+    private String lastRecipes; // the last input to styleTheRecipes()
+    private Vector<SpannableString> styledRecipes; // the output from styleTheRecipes()
     private PopupMenu popupMenu;
 
     private ConstraintLayout mainContainer;
@@ -199,6 +200,7 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         viewConfiguration = -1;
         notifier = new Notifier(this);
+        lastRecipes = null;
         styledRecipes = new Vector<>(20);
         popupMenu = null;
 
@@ -280,13 +282,21 @@ public class MainActivity extends AppCompatActivity
 
     /**
      * For the pop-up menu, convert state.getRecipes() into SpannableStrings in styledRecipes.
-     * This method is idempotent.
+     * This is idempotent and it checks the input to tell if there's new work to do.
      * <p/>
      * INPUTS: state.getRecipes().<p/>
      * OUTPUTS: the styledRecipes Vector.
      */
     void styleTheRecipes() {
-        String[] lines = state.getRecipes().split("\n");
+        String recipes = state.getRecipes();
+
+        //noinspection StringEquality
+        if (recipes == lastRecipes) {
+            return; // the same input String => no changes to process
+        }
+        lastRecipes = recipes;
+
+        String[] lines = recipes.split("\n");
 
         styledRecipes.clear();
         styledRecipes.ensureCapacity(lines.length);
@@ -312,7 +322,6 @@ public class MainActivity extends AppCompatActivity
         // Load persistent state.
         state = ApplicationState.sharedInstance(this);
         timer = state.getTimeCounter();
-        styleTheRecipes();
         state.setMainActivityIsVisible(true);
 
         // Apply the app shortcut action, if any, once.
@@ -539,6 +548,8 @@ public class MainActivity extends AppCompatActivity
             item.setTitle(ss);
         }
 
+        styleTheRecipes();
+
         for (SpannableString recipe : styledRecipes) {
             menu.add(recipe);
         }
@@ -560,7 +571,6 @@ public class MainActivity extends AppCompatActivity
     public void onEditorDialogPositiveClick(DialogInterface dialog, String text) {
         state.setRecipes(text);
         state.save(this);
-        styleTheRecipes();
     }
 
     @Override
