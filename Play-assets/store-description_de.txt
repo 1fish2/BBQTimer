@@ -35,6 +35,7 @@ Kurz Formen:
 • Tippen Sie im Textfeld „Alarmintervall“ auf ▲, um das Popup-Menü für die Intervallzeit aufzurufen.
   • Tippen Sie im Menü auf „Diese Intervalle bearbeiten…“, um das Menü anzupassen.
 • Die App, das Startbildschirm-Widget und die Pulldown-Benachrichtigung zeigen die Countdown-Intervallzeit sowie die verstrichene Gesamtzeit (erfordert Android 7+).
+• In der App passen die Lautstärketasten des Telefons die Alarmlautstärke an.
 • Sie können den „Alarm“-Ton von BBQ Timer in Einstellungen – Benachrichtigungen ändern. Wählen Sie nicht „Keine“, wenn Sie die Intervallalarme hören möchten. Um den Kuhglockenklang der App wiederherzustellen, deinstallieren Sie die App und installieren Sie sie erneut.
 
 <b>Hinweis: Diese Systemeinstellungen sind erforderlich, um BBQTimer-Alarme zu hören und zu sehen:</b>

@@ -49,6 +49,7 @@ version, screen size, problem symptom, Android "bugreport" file).
 * Tap ▲ in the alarm interval text field to open the pop-up menu of interval times.
   * Tap “Edit these intervals…” in the menu to customize the menu.
 * The app, home screen widget, and pull-down notification show the countdown interval time as well as the total elapsed time (requires Android 7+).
+* In the app, the phone’s volume keys adjust the Alarm volume.
 * You can change BBQ Timer’s “Alarm” sound in Settings - Notifications. Don’t pick “None” if you want to hear the interval alarms. To restore the app’s cowbell sound, uninstall and reinstall the app.
 
 ### System Settings needed to hear and see BBQTimer notification alarms
