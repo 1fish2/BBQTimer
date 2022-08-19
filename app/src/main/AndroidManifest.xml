@@ -28,6 +28,8 @@
         tools:targetApi="s"
         tools:ignore="GoogleAppIndexingWarning">
 
+        <!-- <profileable android:shell="true"/> -->
+
         <activity
             android:name=".MainActivity"
             android:configChanges="keyboard|keyboardHidden|screenSize|mcc|mnc"
