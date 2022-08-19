@@ -6,9 +6,10 @@
     <color name="to_stop_text">#ef6c00</color>
     <color name="notification_light_color">#d50000</color>
 
-    <color name="secondaryColor" tools:ignore="UnusedResources">#388e3c</color>
+    <color name="secondaryColor">#388e3c</color>
     <color name="to_go_text">#6abf69</color>
     <color name="secondaryDarkColor" tools:ignore="UnusedResources">#00600f</color>
+    <color name="day_night_green">@color/secondaryColor</color>
     <color name="m_notification_background">#9F8F7F</color>
 
     <color name="notification_text">#080808</color>

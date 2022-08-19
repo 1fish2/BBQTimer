@@ -27,6 +27,7 @@
 
     <style name="FireyActionBar.Text" parent="TextAppearance.AppCompat.Widget.ActionBar.Title">
         <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/notification_text</item>
     </style>
 
     <style name="HintTextAppearance" parent="TextAppearance.Material3.LabelSmall">

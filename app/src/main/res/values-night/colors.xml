@@ -2,4 +2,5 @@
 <resources>
     <color name="orange_red_text">#e53935</color>
     <color name="deep_orange_text">#f4511e</color>
+    <color name="day_night_green">@color/to_go_text</color>
 </resources>

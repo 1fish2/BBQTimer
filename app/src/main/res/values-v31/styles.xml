@@ -12,8 +12,9 @@
         <item name="actionBarStyle">@style/FireyActionBar</item>
         <item name="actionBarSize">40dp</item>
 
-        <!-- primary branding color: action bar, checked check boxes, and touch feedback tint -->
-        <item name="colorPrimary">@color/to_go_text</item>
+        <!-- primary branding color: action bar, checked check boxes, touch feedback tint,
+             dialog actions -->
+        <item name="colorPrimary">@color/day_night_green</item>
 
         <!-- dark variant of colorPrimary: the status bar and nav bar -->
         <item name="colorPrimaryDark">@color/dark_orange_red</item>
