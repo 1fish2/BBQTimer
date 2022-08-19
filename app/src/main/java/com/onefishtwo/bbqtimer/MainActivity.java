@@ -235,6 +235,10 @@ public class MainActivity extends AppCompatActivity
         TextInputLayout alarmPeriodLayout = findViewById(R.id.alarmPeriodLayout);
         alarmPeriodLayout.setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT);
         alarmPeriodLayout.setStartIconOnClickListener(this::onClickRecipeMenuButton);
+        alarmPeriodLayout.setStartIconOnLongClickListener(v -> {
+            showRecipeEditor();
+            return true;
+        });
 
         // AutoSizeText works with android:maxLines="1" but not with android:singleLine="true".
         TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(countUpDisplay, 16,
@@ -604,7 +608,7 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    /** Hides the soft keyboard, if we're lucky. */
+    /** Hides the soft keyboard -- best efforts. */
     // https://stackoverflow.com/a/17789187/1682419
     public static void hideKeyboard(@NonNull Activity activity, @Nullable View v) {
         InputMethodManager imm = (InputMethodManager) activity.getSystemService(INPUT_METHOD_SERVICE);
@@ -629,8 +633,8 @@ public class MainActivity extends AppCompatActivity
     /**
      * Remove focus from the text field.
      * <p/>
-     * NOTE: The alarmPeriod text field has an OnFocusChangeListener. On defocus, the listener will
-     * (re)set the field's contents to the current state and close its soft keyboard.
+     * NOTE: The alarmPeriod text field has an OnFocusChangeListener. Defocus will trigger the
+     * listener to (re)set the field's contents from the current state and close the soft keyboard.
      * <p/>
      * Workaround: Older Android versions grab and hold focus or immediately refocus. So force the
      * text field to defocus by temporarily making it not-focusable.
