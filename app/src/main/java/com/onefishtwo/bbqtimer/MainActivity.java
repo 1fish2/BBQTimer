@@ -566,6 +566,9 @@ public class MainActivity extends AppCompatActivity
         String recipeLines = state.getRecipes();
         RecipeEditorDialogFragment dialog = RecipeEditorDialogFragment.newInstance(recipeLines);
 
+        alarmPeriod.setSelection(0); // workaround unedited EditText w/a selection somehow getting
+            // focus & selection when the dialog closes
+        defocusTextField(alarmPeriod); // remove the caret
         dialog.show(getSupportFragmentManager(), RecipeEditorDialogFragment.TAG);
     }
 
