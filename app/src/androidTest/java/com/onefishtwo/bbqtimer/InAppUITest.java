@@ -41,7 +41,9 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 import androidx.test.platform.app.InstrumentationRegistry;
+import androidx.test.rule.GrantPermissionRule;
 
+import static android.Manifest.permission.POST_NOTIFICATIONS;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
@@ -97,6 +99,11 @@ public class InAppUITest {
     @Rule
     public final ActivityScenarioRule<MainActivity> activityScenarioRule =
             new ActivityScenarioRule<>(MainActivity.class);
+
+    @Rule
+    public final GrantPermissionRule permissionRule =
+            Build.VERSION.SDK_INT >= 33 ? GrantPermissionRule.grant(POST_NOTIFICATIONS)
+            : null;
 
     @Before
     public void setUp() {
@@ -376,6 +383,9 @@ public class InAppUITest {
         checkPausedAt(time6);
 
         // TODO: Test moving focus with TAB and arrow keys.
+
+        stopButton.perform(click());
+        checkStopped();
     }
 
     /** Tests the CLEAR_TEXT endIcon in the alarmPeriodLayout TextInputLayout. */

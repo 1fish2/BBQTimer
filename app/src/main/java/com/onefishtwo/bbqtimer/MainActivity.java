@@ -394,6 +394,8 @@ public class MainActivity extends AppCompatActivity
         // NOTE: If notifications are disabled, so are Toasts.
         if (!notificationManager.areNotificationsEnabled()) {
             Snackbar snackbar = makeSnackbar(R.string.notifications_disabled);
+
+            Log.w(TAG, "App notifications are disabled");
             setSnackbarAction(snackbar, R.string.notifications_enable,
                     view -> openNotificationSettingsForApp());
             snackbar.show();
@@ -412,9 +414,11 @@ public class MainActivity extends AppCompatActivity
             // Check for muted alarms.
             if (volume <= 0) {
                 Snackbar snackbar = makeSnackbar(R.string.alarm_muted);
+
+                Log.w(TAG, "App notification sounds are muted");
                 setSnackbarAction(snackbar, R.string.alarm_unmute,
-                        view -> am.adjustStreamVolume(AudioManager.STREAM_ALARM, AudioManager.ADJUST_RAISE,
-                                0));
+                        view -> am.adjustStreamVolume(AudioManager.STREAM_ALARM,
+                                    AudioManager.ADJUST_RAISE, 0));
                 snackbar.show();
                 return;
             }
@@ -423,6 +427,8 @@ public class MainActivity extends AppCompatActivity
         // Check for misconfigured Alarm notification channel.
         if (!notifier.isAlarmChannelOK()) {
             Snackbar snackbar = makeSnackbar(R.string.notifications_misconfigured);
+
+            Log.w(TAG, "The app notification channel is misconfigured");
             if (android.os.Build.VERSION.SDK_INT >= 26) { // Where this Settings Intent works.
                 setSnackbarAction(snackbar, R.string.notifications_configure,
                         view -> openNotificationChannelSettings(
