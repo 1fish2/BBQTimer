@@ -6,6 +6,7 @@
 
         <item name="actionBarStyle">@style/FireyActionBar</item>
         <item name="actionBarSize">40dp</item>
+        <item name="snackbarTextViewStyle">@style/snackbarText</item>
 
         <!-- primary branding color: action bar, checked check boxes, and touch feedback tint -->
         <item name="colorPrimary">@color/to_go_text</item>
@@ -32,6 +33,11 @@
 
     <style name="HintTextAppearance" parent="TextAppearance.Material3.LabelSmall">
         <item name="android:textSize">@dimen/hint_text_size</item>
+    </style>
+
+    <!-- SnackBar styles -->
+    <style name="snackbarText" parent="@style/Widget.MaterialComponents.Snackbar.TextView">
+        <item name="android:maxLines">5</item>
     </style>
 
 </resources>

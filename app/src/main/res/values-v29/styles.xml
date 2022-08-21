@@ -9,6 +9,7 @@
 
         <item name="actionBarStyle">@style/FireyActionBar</item>
         <item name="actionBarSize">40dp</item>
+        <item name="snackbarTextViewStyle">@style/snackbarText</item>
 
         <!-- primary branding color: action bar, checked check boxes, touch feedback tint,
              dialog actions -->

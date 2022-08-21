@@ -100,6 +100,9 @@ public class InAppUITest {
     public final ActivityScenarioRule<MainActivity> activityScenarioRule =
             new ActivityScenarioRule<>(MainActivity.class);
 
+    // Since `testInstrumentationRunnerArguments clearPackageData: 'true'` reset the app's state,
+    // grant POST_NOTIFICATIONS permission before the test starts so it won't wait for the user to
+    // grant permissions.
     @Rule
     public final GrantPermissionRule permissionRule =
             Build.VERSION.SDK_INT >= 33 ? GrantPermissionRule.grant(POST_NOTIFICATIONS)
