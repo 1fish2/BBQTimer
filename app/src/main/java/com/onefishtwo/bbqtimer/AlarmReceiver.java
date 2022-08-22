@@ -189,6 +189,8 @@ public class AlarmReceiver extends BroadcastReceiver {
             alarmMgr.setAlarmClock(info, pendingIntent);
         } catch (SecurityException e) { // targetSdk 32+ needs SCHEDULE_EXACT_ALARM/USE_EXACT_ALARM
             Log.e(TAG, e.getMessage());
+            // NOTE: Use a Toast so this shows up even for a home screen widget. It doesn't show up
+            // when using a notification's Play button.
             Toast.makeText(context, R.string.need_alarm_access, Toast.LENGTH_LONG).show();
         }
     }
