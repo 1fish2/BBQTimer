@@ -89,9 +89,6 @@ public class MainActivity extends AppCompatActivity
         implements RecipeEditorDialogFragment.RecipeEditorDialogFragmentListener {
     private static final String TAG = "Main";
 
-    static final int FLAG_IMMUTABLE =
-            Build.VERSION.SDK_INT >= 23 ? PendingIntent.FLAG_IMMUTABLE : 0;
-
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({SHORTCUT_NONE, SHORTCUT_PAUSE, SHORTCUT_START})
     public @interface ShortcutChoice {}
@@ -123,7 +120,7 @@ public class MainActivity extends AppCompatActivity
                 .addParentStack(MainActivity.class)
                 .addNextIntent(activityIntent);
         return stackBuilder.getPendingIntent(0,
-                PendingIntent.FLAG_UPDATE_CURRENT + FLAG_IMMUTABLE);
+                PendingIntent.FLAG_UPDATE_CURRENT + PendingIntent.FLAG_IMMUTABLE);
     }
 
     /**
@@ -199,10 +196,11 @@ public class MainActivity extends AppCompatActivity
             registerForActivityResult(new ActivityResultContracts.RequestPermission(),
                     isGranted -> {
                         if (isGranted) {
-                            Log.w(TAG, "Notification permission was granted");
+                            Log.w(TAG, "Permission to Notify was granted");
                             AlarmReceiver.updateNotifications(this);
                         } else {
-                            Log.w(TAG, "Notification permission was denied");
+                            // The user tapped "Don't allow" or dismissed the dialog.
+                            Log.w(TAG, "Permission to Notify was denied");
                         }
                     });
 
@@ -416,15 +414,15 @@ public class MainActivity extends AppCompatActivity
     private void requestNotificationsPermission() {
         @StringRes int resId;
 
-        if (Build.VERSION.SDK_INT >= 33 && shouldShowRequestPermissionRationale(POST_NOTIFICATIONS)) {
-            resId = R.string.notifications_permission_needed;
-            Log.w(TAG, "App needs Notifications permission... (rationale)"); // TODO: Too annoyingly often?
-        } else if (Build.VERSION.SDK_INT >= 33) {
-            openOsNotificationsPermissionRequest(); // TODO: Too quiet when the OS doesn't open a dialog?
-            return;
-        } else {
+        if (Build.VERSION.SDK_INT < 33) {
             resId = R.string.notifications_disabled;
             Log.w(TAG, "App Notifications are disabled");
+        } else if (shouldShowRequestPermissionRationale(POST_NOTIFICATIONS)) {
+            resId = R.string.notifications_permission_needed;
+            Log.w(TAG, "App needs Notifications permission"); // TODO: Too often?
+        } else {
+            openOsNotificationsPermissionRequest(); // TODO: Too quiet when the OS doesn't open a dialog?
+            return;
         }
 
         Snackbar snackbar = makeSnackbar(resId);

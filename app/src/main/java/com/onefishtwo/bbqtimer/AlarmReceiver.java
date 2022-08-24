@@ -65,9 +65,6 @@ public class AlarmReceiver extends BroadcastReceiver {
     /** Tolerance value for an early alarm. */
     private static final long ALARM_TOLERANCE_MS = 10L;
 
-    private static final int FLAG_IMMUTABLE =
-            android.os.Build.VERSION.SDK_INT >= 23 ? PendingIntent.FLAG_IMMUTABLE : 0;
-
     /**
      * Constructs a PendingIntent for the AlarmManager to invoke AlarmReceiver.
      *
@@ -90,7 +87,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         // it's hard to tell since MY_PACKAGE_REPLACED is unreliable, at least in the emulator. In
         // any case it breaks alarmMgr.cancel(), see http://stackoverflow.com/questions/26434490/
         return PendingIntent.getBroadcast(context, 0, intent,
-                PendingIntent.FLAG_UPDATE_CURRENT + FLAG_IMMUTABLE);
+                PendingIntent.FLAG_UPDATE_CURRENT + PendingIntent.FLAG_IMMUTABLE);
     }
 
     /** Constructs a PendingIntent for AlarmManager.AlarmClockInfo() to show/edit the timer. */
@@ -100,7 +97,7 @@ public class AlarmReceiver extends BroadcastReceiver {
                 .setAction(Intent.ACTION_EDIT); // distinguish from Launcher & Notifier intents
 
         return PendingIntent.getActivity(context, 0, activityIntent,
-                PendingIntent.FLAG_ONE_SHOT + FLAG_IMMUTABLE);
+                PendingIntent.FLAG_ONE_SHOT + PendingIntent.FLAG_IMMUTABLE);
     }
 
     /** Get a string description of an Intent, including extras, for debugging. */

@@ -70,9 +70,6 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
     static final String ACTION_STOP       = "com.onefishtwo.bbqtimer.ACTION_STOP";
     static final String ACTION_CYCLE      = "com.onefishtwo.bbqtimer.ACTION_CYCLE";
 
-    private static final int FLAG_IMMUTABLE =
-            android.os.Build.VERSION.SDK_INT >= 23 ? PendingIntent.FLAG_IMMUTABLE : 0;
-
     @NonNull
     static ComponentName getComponentName(Context context) {
         return new ComponentName(context, TimerAppWidgetProvider.class);
@@ -315,7 +312,7 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
     static PendingIntent makeActionIntent(Context context, String action) {
         Intent intent = new Intent(context, TimerAppWidgetProvider.class);
         intent.setAction(action).addFlags(Intent.FLAG_RECEIVER_FOREGROUND);
-        return PendingIntent.getBroadcast(context, 0, intent, FLAG_IMMUTABLE);
+        return PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_IMMUTABLE);
     }
 
     /**
