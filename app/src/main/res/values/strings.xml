@@ -29,6 +29,9 @@
       hear or see the app's alarms. -->
     <string name="notifications_disabled">Notifications are disabled</string>
 
+    <!-- Inform the user why the app needs notifications enabled. -->
+    <string name="notifications_permission_needed">BBQ Timer needs pull down Notifications for alarm sounds and lock screen controls</string>
+
     <!-- The "enable" action (hence all upper-case) for the notifications_disabled Snackbar. -->
     <string name="notifications_enable">ENABLE</string>
 

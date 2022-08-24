@@ -64,6 +64,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.ref.WeakReference;
 import java.util.Vector;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.ColorRes;
 import androidx.annotation.IntDef;
 import androidx.annotation.MainThread;
@@ -77,6 +79,8 @@ import androidx.core.app.NotificationManagerCompat;
 import androidx.core.app.TaskStackBuilder;
 import androidx.core.content.ContextCompat;
 import androidx.core.widget.TextViewCompat;
+
+import static android.Manifest.permission.POST_NOTIFICATIONS;
 
 /**
  * The BBQ Timer's main activity.
@@ -189,6 +193,18 @@ public class MainActivity extends AppCompatActivity
     private TextView countUpDisplay, countdownDisplay;
     private EditText2 alarmPeriod;
     private CheckBox enableReminders;
+
+    // This callback handles the user's response to the system permissions dialog.
+    private final ActivityResultLauncher<String> requestPermissionLauncher =
+            registerForActivityResult(new ActivityResultContracts.RequestPermission(),
+                    isGranted -> {
+                        if (isGranted) {
+                            Log.w(TAG, "Notification permission was granted");
+                            AlarmReceiver.updateNotifications(this);
+                        } else {
+                            Log.w(TAG, "Notification permission was denied");
+                        }
+                    });
 
     TimeCounter getTimer() {
         return timer;
@@ -353,7 +369,10 @@ public class MainActivity extends AppCompatActivity
     protected void onResume() {
         super.onResume();
 
-        informIfNotificationAlarmsMuted();
+        // Requesting the Allow/Deny dialog on API 33 can loop getting !isGranted and re-resuming.
+        if (Build.VERSION.SDK_INT < 33) {
+            informIfNotificationAlarmsMuted();
+        }
     }
 
     /** The Activity is no longer visible. */
@@ -377,6 +396,43 @@ public class MainActivity extends AppCompatActivity
         super.onStop();
     }
 
+    @UiThread
+    private void openOsNotificationsPermissionRequest() {
+        if (Build.VERSION.SDK_INT < 33) {
+            openNotificationSettingsForApp();
+        } else {
+            requestPermissionLauncher.launch(POST_NOTIFICATIONS);
+        }
+    }
+
+    /**
+     * Request permission to post pull-down notifications to the user. If the OS recommends
+     * displaying rationale, then show it in a Snackbar with a button that open the OS allow/deny
+     * dialog, otherwise go straight there.
+     *<p/>
+     * NOTE: If notifications are disabled, so are Toasts.
+     */
+    @UiThread
+    private void requestNotificationsPermission() {
+        @StringRes int resId;
+
+        if (Build.VERSION.SDK_INT >= 33 && shouldShowRequestPermissionRationale(POST_NOTIFICATIONS)) {
+            resId = R.string.notifications_permission_needed;
+            Log.w(TAG, "App needs Notifications permission... (rationale)"); // TODO: Too annoyingly often?
+        } else if (Build.VERSION.SDK_INT >= 33) {
+            openOsNotificationsPermissionRequest(); // TODO: Too quiet when the OS doesn't open a dialog?
+            return;
+        } else {
+            resId = R.string.notifications_disabled;
+            Log.w(TAG, "App Notifications are disabled");
+        }
+
+        Snackbar snackbar = makeSnackbar(resId);
+
+        setSnackbarAction(snackbar, R.string.notifications_enable, view -> openOsNotificationsPermissionRequest());
+        snackbar.show();
+    }
+
     /**
      * Informs the user if the app's notifications are disabled (offering to open Settings to ENABLE
      * them) or else if reminders are enabled but the alarm channel is muted (offering to UNMUTE).
@@ -393,12 +449,9 @@ public class MainActivity extends AppCompatActivity
         // Check for disabled notifications.
         // NOTE: If notifications are disabled, so are Toasts.
         if (!notificationManager.areNotificationsEnabled()) {
-            Snackbar snackbar = makeSnackbar(R.string.notifications_disabled);
+            requestNotificationsPermission();
 
-            Log.w(TAG, "App notifications are disabled");
-            setSnackbarAction(snackbar, R.string.notifications_enable,
-                    view -> openNotificationSettingsForApp());
-            snackbar.show();
+            // TODO: Skip creating notifications on Android 33+? Does it matter?
             return;
         }
 
@@ -415,7 +468,7 @@ public class MainActivity extends AppCompatActivity
             if (volume <= 0) {
                 Snackbar snackbar = makeSnackbar(R.string.alarm_muted);
 
-                Log.w(TAG, "App notification sounds are muted");
+                Log.w(TAG, "App Notifications sounds are muted");
                 setSnackbarAction(snackbar, R.string.alarm_unmute,
                         view -> am.adjustStreamVolume(AudioManager.STREAM_ALARM,
                                     AudioManager.ADJUST_RAISE, 0));
@@ -428,8 +481,8 @@ public class MainActivity extends AppCompatActivity
         if (!notifier.isAlarmChannelOK()) {
             Snackbar snackbar = makeSnackbar(R.string.notifications_misconfigured);
 
-            Log.w(TAG, "The app notification channel is misconfigured");
-            if (android.os.Build.VERSION.SDK_INT >= 26) { // Where this Settings Intent works.
+            Log.w(TAG, "The app's Notifications channel is misconfigured");
+            if (Build.VERSION.SDK_INT >= 26) { // Where this Settings Intent works.
                 setSnackbarAction(snackbar, R.string.notifications_configure,
                         view -> openNotificationChannelSettings(
                                 Notifier.ALARM_NOTIFICATION_CHANNEL_ID));
@@ -484,17 +537,13 @@ public class MainActivity extends AppCompatActivity
     @UiThread
     @SuppressWarnings("UnusedParameters")
     public void onClickReset(View v) {
-        boolean wasStopped = timer.isStopped();
-
         defocusTextField(alarmPeriod);
 
         timer.reset();
         updateHandler.beginScheduledUpdate();
         updateUI();
 
-        if (wasStopped) {
-            informIfNotificationAlarmsMuted();
-        }
+        informIfNotificationAlarmsMuted();
     }
 
     /** The user tapped the Stop button. */
@@ -834,7 +883,7 @@ public class MainActivity extends AppCompatActivity
         // Links to this app's notification settings
         Intent intent = new Intent();
 
-        if (android.os.Build.VERSION.SDK_INT >= 26) {
+        if (Build.VERSION.SDK_INT >= 26) {
             intent.setAction(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
             intent.putExtra(Settings.EXTRA_APP_PACKAGE, getPackageName());
         } else {
