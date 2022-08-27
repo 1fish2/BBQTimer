@@ -105,16 +105,13 @@ public class AlarmReceiver extends BroadcastReceiver {
     @SuppressWarnings("unused")
     public static String debugDumpIntent(@NonNull Intent intent) {
         StringBuilder sb = new StringBuilder(intent.toString());
-
         Bundle extras = intent.getExtras();
-        if (extras != null) {
-            sb.append(" extras: {");
 
-            for (String key : extras.keySet()) {
-                sb.append(key).append(':').append(extras.get(key)).append(", ");
-            }
-            sb.append('}');
+        if (extras != null) {
+            extras.keySet(); // <-- reify the Bundle so .toString() will elaborate
+            sb.append(" extras: ").append(extras);
         }
+
         return sb.toString();
     }
 

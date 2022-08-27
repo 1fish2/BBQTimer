@@ -182,6 +182,7 @@ public class MainActivity extends AppCompatActivity
     private String lastRecipes; // the last input to styleTheRecipes()
     private Vector<SpannableString> styledRecipes; // the output from styleTheRecipes()
     private PopupMenu popupMenu;
+    private int notificationRequestCount;
 
     private ConstraintLayout mainContainer;
     private Button resetButton;
@@ -199,7 +200,7 @@ public class MainActivity extends AppCompatActivity
                             Log.w(TAG, "Permission to Notify was granted");
                             AlarmReceiver.updateNotifications(this);
                         } else {
-                            // The user tapped "Don't allow" or dismissed the dialog.
+                            // The user tapped "Don't allow" *OR* dismissed the dialog.
                             Log.w(TAG, "Permission to Notify was denied");
                         }
                     });
@@ -217,6 +218,7 @@ public class MainActivity extends AppCompatActivity
         lastRecipes = "";
         styledRecipes = new Vector<>(20);
         popupMenu = null;
+        notificationRequestCount = 0;
 
         // View Binding has potential but it makes project inspections create a lot of spurious
         // warnings about unused resource IDs, methods, and method arguments.
@@ -367,10 +369,10 @@ public class MainActivity extends AppCompatActivity
     protected void onResume() {
         super.onResume();
 
-        // Requesting the Allow/Deny dialog on API 33 can loop getting !isGranted and re-resuming.
-        if (Build.VERSION.SDK_INT < 33) {
-            informIfNotificationAlarmsMuted();
-        }
+        // Warn if the Alarm is now muted. Don't check Notifications permission because (1) the
+        // API 33 Allow/Deny dialog can loop returning !isGranted and re-resuming, and (2) Android's
+        // new UI model is to wait for a user action before checking its needed permissions.
+        informIfAlarmsMuted();
     }
 
     /** The Activity is no longer visible. */
@@ -394,67 +396,92 @@ public class MainActivity extends AppCompatActivity
         super.onStop();
     }
 
+    /** Opens the OS UI to request user permission to post pull-down notifications. */
     @UiThread
     private void openOsNotificationsPermissionRequest() {
         if (Build.VERSION.SDK_INT < 33) {
             openNotificationSettingsForApp();
         } else {
+            // NOTE: After two user denials, this OS dialog will auto-deny further requests.
             requestPermissionLauncher.launch(POST_NOTIFICATIONS);
         }
     }
 
     /**
-     * Request permission to post pull-down notifications to the user. If the OS recommends
-     * displaying rationale, then show it in a Snackbar with a button that open the OS allow/deny
-     * dialog, otherwise go straight there.
+     * Requests permission to post pull-down notifications to the user. Either show rationale of why
+     * notifications are needed and offer to help, or show a short message and offer to help, or
+     * open the OS UI straightaway, of give up and stop pestering.
+     *<p/>
+     * NOTE: Even w/o permission the app creates notifications, in which case they're hidden but
+     * maybe still needed for a Foreground Service.
      *<p/>
      * NOTE: If notifications are disabled, so are Toasts.
      */
     @UiThread
     private void requestNotificationsPermission() {
+        String logMessage;
         @StringRes int resId;
 
-        if (Build.VERSION.SDK_INT < 33) {
-            resId = R.string.notifications_disabled;
-            Log.w(TAG, "App Notifications are disabled");
-        } else if (shouldShowRequestPermissionRationale(POST_NOTIFICATIONS)) {
-            resId = R.string.notifications_permission_needed;
-            Log.w(TAG, "App needs Notifications permission"); // TODO: Too often?
+        if (Build.VERSION.SDK_INT < 33
+                || shouldShowRequestPermissionRationale(POST_NOTIFICATIONS)) {
+            if (notificationRequestCount < 3) {
+                logMessage = "explain why needed and offer to enable";
+                resId = R.string.notifications_permission_needed;
+            } else if (notificationRequestCount < 6) {
+                logMessage = "offer to enable";
+                resId = R.string.notifications_disabled;
+            } else {
+                Log.w(TAG, "Notifications are disabled; keep quiet");
+                return;
+            }
         } else {
-            openOsNotificationsPermissionRequest(); // TODO: Too quiet when the OS doesn't open a dialog?
+            Log.w(TAG, "Ask permission to Notify");
+            openOsNotificationsPermissionRequest();
             return;
         }
 
         Snackbar snackbar = makeSnackbar(resId);
 
-        setSnackbarAction(snackbar, R.string.notifications_enable, view -> openOsNotificationsPermissionRequest());
+        Log.w(TAG, "Notifications are disabled; " + logMessage);
+        setSnackbarAction(snackbar, R.string.notifications_enable,
+                view -> openOsNotificationsPermissionRequest());
         snackbar.show();
+        ++notificationRequestCount;
     }
 
     /**
-     * Informs the user if the app's notifications are disabled (offering to open Settings to ENABLE
-     * them) or else if reminders are enabled but the alarm channel is muted (offering to UNMUTE).
-     * <p/>
-     * TODO: How to detect if the app's notifications are visible but silenced? Silencing kills the
-     * audio and heads-up notification shades.
-     * <p/>
-     * NOTE: The notification channel misconfigured test only works on API 26+.
+     * Informs the user if the app needs Notifications permission or if the Alarm channel is muted
+     * or misconfigured, and offers to help. (Without Notifications permission, checking the channel
+     * would probably be confusing and unhelpful.) The app uses Notifications for pull-down
+     * controls, lock screen controls, and periodic alarms.
      */
     @UiThread
-    private void informIfNotificationAlarmsMuted() {
+    private void informIfAlarmsDeniedOrMuted() {
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
 
-        // Check for disabled notifications.
-        // NOTE: If notifications are disabled, so are Toasts.
-        if (!notificationManager.areNotificationsEnabled()) {
+        if (notificationManager.areNotificationsEnabled()) {
+            notificationRequestCount = 0;
+
+            informIfAlarmsMuted();
+        } else {
             requestNotificationsPermission();
-
-            // TODO: Skip creating notifications on Android 33+? Does it matter?
-            return;
         }
+    }
 
-        // Warn about inaudible alarms only when reminders are enabled, not when running silently.
-        if (!state.isEnableReminders()) {
+    /**
+     * Informs the user if the Alarm notification channel is muted or misconfigured and offers to
+     * help, BUT does nothing if the app needs Notifications permission (in which case the channel
+     * configuration doesn't matter and probably can't be fixed) or if periodic reminder alarms are
+     * turned off.
+     * <p/>
+     * TODO: How to detect if the app's notifications are visible but "silenced"? Silencing kills
+     * the audio and heads-up notification shades.
+     */
+    @UiThread
+    private void informIfAlarmsMuted() {
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+
+        if (!notificationManager.areNotificationsEnabled() || !state.isEnableReminders()) {
             return;
         }
 
@@ -475,7 +502,7 @@ public class MainActivity extends AppCompatActivity
             }
         }
 
-        // Check for misconfigured Alarm notification channel.
+        // Check for misconfigured Alarm notification channel. This works only on API 26+.
         if (!notifier.isAlarmChannelOK()) {
             Snackbar snackbar = makeSnackbar(R.string.notifications_misconfigured);
 
@@ -527,7 +554,7 @@ public class MainActivity extends AppCompatActivity
         updateUI();
 
         if (timer.isRunning()) {
-            informIfNotificationAlarmsMuted();
+            informIfAlarmsDeniedOrMuted();
         }
     }
 
@@ -541,7 +568,7 @@ public class MainActivity extends AppCompatActivity
         updateHandler.beginScheduledUpdate();
         updateUI();
 
-        informIfNotificationAlarmsMuted();
+        informIfAlarmsDeniedOrMuted();
     }
 
     /** The user tapped the Stop button. */
@@ -566,7 +593,7 @@ public class MainActivity extends AppCompatActivity
         updateUI();
 
         if (timer.isRunning()) {
-            informIfNotificationAlarmsMuted();
+            informIfAlarmsDeniedOrMuted();
         }
     }
 
@@ -581,7 +608,7 @@ public class MainActivity extends AppCompatActivity
         updateUI();
 
         if (state.isEnableReminders()) {
-            informIfNotificationAlarmsMuted();
+            informIfAlarmsDeniedOrMuted();
         }
     }
 
