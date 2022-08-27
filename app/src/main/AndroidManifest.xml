@@ -28,6 +28,7 @@
         android:theme="@style/AppTheme"
         android:enableOnBackInvokedCallback="true"
         android:supportsRtl="false"
+        android:localeConfig="@xml/locales_config"
         tools:targetApi="s"
         tools:ignore="GoogleAppIndexingWarning">
 
