@@ -20,7 +20,7 @@
     <string name="notifications_enable">AKTIVIEREN</string>
     <string name="notifications_misconfigured">Der Alarmkanal muss eingeschaltet und darf nicht lautlos sein, um Alarme zu hören</string>
     <string name="notifications_configure">KONFIGURIEREN</string>
-    <string name="notifications_permission_needed">BBQ Timer benötigt Pulldown-Benachrichtigungen für Alarmtöne, Sperrbildschirm Steuerungen und Pulldown-Steuerungen</string>
+    <string name="notifications_permission_needed">BBQ Timer benötigt Benachrichtigungen für Alarmtöne, Sperrbildschirm Steuerungen und Pulldown-Steuerungen</string>
     <string name="no_reminders_tip">Keine regelmäßigen Alarme</string>
     <string name="pause">Anhalten</string>
     <string name="pause_at_0_long">Anhalten bei 00:00</string>

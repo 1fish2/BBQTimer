@@ -37,7 +37,7 @@
 
     <!-- SnackBar styles -->
     <style name="snackbarText" parent="@style/Widget.MaterialComponents.Snackbar.TextView">
-        <item name="android:maxLines">5</item>
+        <item name="android:maxLines">6</item>
     </style>
 
 </resources>
