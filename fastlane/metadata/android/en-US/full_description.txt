@@ -39,13 +39,14 @@ Type in the interval time: <i>minutes</i>, <i>minutes:seconds</i>, or <i>hours:m
     * Long-press ▲ to customize the menu.
 * The app, home screen widget, and pull-down notification show the countdown interval time as well as the total elapsed time (requires Android 7+).
 * In the app, the phone’s volume keys adjust the Alarm volume.
-* You can change BBQ Timer’s “Alarm” sound in Settings - Notifications. Don’t pick “None” if you want to hear the interval alarms. To restore the app’s cowbell sound, uninstall and reinstall the app.
+* You can change BBQ Timer’s “Alarm” sound in Settings / Notifications. Don’t pick “None” if you want to hear the interval alarms. To restore the app’s cowbell sound, uninstall and reinstall the app.
 
 
-<br><b>Note: These System Settings are required to hear and see BBQTimer alarms:</b>
+<br><b>Note: These System Settings are required to hear and see BBQ Timer alarms:</b>
 
 * “Alarm volume” at an audible level.
-* Lock screen - Show all or non-private notifications.
-* BBQTimer “Show notifications”, <i>not</i> Silent. (You may also choose to “Override Do Not Disturb“.)
-* BBQTimer “Alarm” notification category - “Show notifications”, <i>not</i> “Silent”, “Make sound and pop on screen”, sound choice <i>not</i> “None”, Importance “High” or higher to hear and see on the lock screen and in the notification area.
-* Apps - Special app access - Alarms &amp; reminders - Allowed.
+* Lock screen / Show all or non-private notifications.
+* Apps / BBQ Timer “Show notifications”, <i>not</i> Silent. (You may also choose to “Override Do Not Disturb“.)
+* Apps / BBQ Timer “Alarm” notification category / “Show notifications”, <i>not</i> “Silent”, “Make sound and pop on screen”, sound choice <i>not</i> “None”, Importance “High” or higher to hear and see on the lock screen and in the notification area.
+* Apps / Special app access / Alarms & reminders / Allowed.
+* Notifications / App settings / BBQ Timer / On.

@@ -37,14 +37,15 @@ Kurz Formen:
   • Drücken Sie lange auf ▲, um das Menü anzupassen.
 • Die App, das Startbildschirm-Widget und die Pulldown-Benachrichtigung zeigen die Countdown-Intervallzeit sowie die verstrichene Gesamtzeit (erfordert Android 7+).
 • In der App passen die Lautstärketasten des Telefons die Alarmlautstärke an.
-• Sie können den „Alarm“-Ton von BBQ Timer in Einstellungen – Benachrichtigungen ändern. Wählen Sie nicht „Keine“, wenn Sie die Intervallalarme hören möchten. Um den Kuhglockenklang der App wiederherzustellen, deinstallieren Sie die App und installieren Sie sie erneut.
+• Sie können den „Alarm“-Ton von BBQ Timer in Einstellungen / Benachrichtigungen ändern. Wählen Sie nicht „Keine“, wenn Sie die Intervallalarme hören möchten. Um den Kuhglockenklang der App wiederherzustellen, deinstallieren Sie die App und installieren Sie sie erneut.
 
 <b>Hinweis: Diese Systemeinstellungen sind erforderlich, um BBQTimer-Alarme zu hören und zu sehen:</b>
 • „Alarmlautstärke“ auf hörbarem Niveau.
-• Sperrbildschirm – Alle oder nicht private Benachrichtigungen anzeigen.
+• Sperrbildschirm / Alle oder nicht private Benachrichtigungen anzeigen.
 • BBQTimer „Benachrichtigungen anzeigen“, <i>nicht</i> lautlos. (Sie können auch „Nicht stören“ außer Kraft setzen.)
-• BBQTimer-Benachrichtigungskategorie „Alarm“ – „Benachrichtigungen anzeigen“, <i>nicht</i> „Stumm“, „Ton erzeugen und auf dem Bildschirm anzeigen“, Tonauswahl <i>nicht</i> „Keine“, Wichtigkeit „ Hoch“ oder höher auf dem Sperrbildschirm und im Benachrichtigungsbereich zu hören und zu sehen.
-• Einstellungen / Apps / Spezieller App-Zugriff / Wecker und Erinnerungen / Erlauben
+• BBQTimer-Benachrichtigungskategorie „Alarm“ / „Benachrichtigungen anzeigen“, <i>nicht</i> „Stumm“, „Ton erzeugen und auf dem Bildschirm anzeigen“, Tonauswahl <i>nicht</i> „Keine“, Wichtigkeit „ Hoch“ oder höher auf dem Sperrbildschirm und im Benachrichtigungsbereich zu hören und zu sehen.
+• Apps / Spezieller App-Zugriff / Wecker und Erinnerungen / Erlauben.
+• Benachrichtigungen / App-Einstellungen / BBQ-Timer / Ein.
 
 
 Quellcode: https://github.com/1fish2/BBQTimer

@@ -53,12 +53,13 @@ version, screen size, problem symptom, Android "bugreport" file).
 * In the app, the phone’s volume keys adjust the Alarm volume.
 * You can change BBQ Timer’s “Alarm” sound in Settings - Notifications. Don’t pick “None” if you want to hear the interval alarms. To restore the app’s cowbell sound, uninstall and reinstall the app.
 
-### System Settings needed to hear and see BBQTimer notification alarms
+### System Settings needed to hear and see BBQ Timer notification alarms
 * “Alarm volume” at an audible level.
 * Lock screen - Show all or non-private notifications.
-* BBQTimer “Show notifications”, *not* Silent. (You may also choose to “Override Do Not Disturb“.)
-* BBQTimer “Alarm” notification category - “Show notifications”, *not* “Silent”, “Make sound and pop on screen”, sound choice *not* “None”, Importance “High” or higher to hear and see on the lock screen and in the notification area.
 * Settings / Apps / Special app access / Alarms & reminders / Allowed.
+* Apps / BBQ Timer “Show notifications”, *not* Silent. (You may also choose to “Override Do Not Disturb“.)
+* Apps / BBQ Timer “Alarm” notification category - “Show notifications”, *not* “Silent”, “Make sound and pop on screen”, sound choice *not* “None”, Importance “High” or higher to hear and see on the lock screen and in the notification area.
+* Notifications / App settings / BBQ Timer / On.
 
 
 ## License
