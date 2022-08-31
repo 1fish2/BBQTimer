@@ -10,7 +10,7 @@ social media, or user-generated content. It's an interval timer.
 
 **Analytics:** None.
 
-**App Permissions:** This app requires only basic Android app permissions to _set exact alarms_ and to _vibrate_ the device when an alarm rings. You can adjust the alarm sounds and vibrations in the Android Settings app's Notifications section.
+**App Permissions:** This app requires only basic Android app permissions to _set exact alarms_, to _notify the user_ for pull-down controls and alarms, and to _vibrate_ the device when an alarm rings. You can adjust the alarm sounds and vibrations in the Android Settings app's Notifications section.
 
 **Content Ratings:** The contents in this app are suitable for all ages. The app is not specifically designed to appeal to children.
 
