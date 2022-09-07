@@ -1,10 +1,7 @@
 • <b>Kombinierter Intervalltimer/Stoppuhr</b> = periodische Alarme + verstrichene Zeit.
-  Erinnert Sie regelmäßig daran, die Speisen zu wenden und verfolgt
-  die gesamte Garzeit.
-• Schneller Zugriff über <b>Sperrbildschirmbenachrichtigung</b>,
-  <b>Pulldown-Benachrichtigung</b> und <b>Startbildschirm-Widget</b>.
-• Bearbeitbares <b>Popup-Menü der Intervallzeiten</b>. Greifen Sie schnell auf
-  Ihre bevorzugten Timer zu, jeweils mit optionalen Notizen.
+  Erinnert Sie regelmäßig daran, die Speisen zu wenden und verfolgt die gesamte Garzeit.
+• Schneller Zugriff über <b>Sperrbildschirmbenachrichtigung</b>, <b>Pulldown-Benachrichtigung</b> und <b>Startbildschirm-Widget</b>.
+• Bearbeitbares <b>Popup-Menü der Intervallzeiten</b>. Greifen Sie schnell auf Ihre bevorzugten Timer zu, jeweils mit optionalen Notizen.
 • <b>Änderbare Alarme</b> während es läuft.
 • Keine Werbung.
 

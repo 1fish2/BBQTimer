@@ -1,10 +1,7 @@
 • <b>Combined interval timer/stopwatch</b> = periodic alarms + elapsed time.
-  Reminds you periodically to turn the food and tracks the total
-  cooking time.
-• Quick access via <b>lock screen notification</b>, <b>pull-down notification</b>,
-  and <b>home screen widget</b>.
-• Editable <b>pop-up menu of interval times</b>. Quickly access your favorite
-  timers, each with optional notes.
+  Reminds you periodically to turn the food and tracks the total cooking time.
+• Quick access via <b>lock screen notification</b>, <b>pull-down notification</b>, and <b>home screen widget</b>.
+• Editable <b>menu of interval times</b>. Quickly access your favorite timers, each with optional notes.
 • <b>Changeable alarms</b> while it’s running.
 • No ads.
 
