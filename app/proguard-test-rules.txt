@@ -63,4 +63,3 @@
 -dontwarn org.junit.**
 -keep class junit.** { *; }
 -dontwarn junit.**
--dontwarn com.squareup.javawriter.JavaWriter

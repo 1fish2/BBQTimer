@@ -4,9 +4,8 @@
       with a computer won't delete the app's home screen widgets.
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          xmlns:tools="http://schemas.android.com/tools"
-          package="com.onefishtwo.bbqtimer"
-          android:installLocation="internalOnly" >
+    xmlns:tools="http://schemas.android.com/tools"
+    android:installLocation="internalOnly">
 
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" android:maxSdkVersion="32" />
@@ -30,7 +29,7 @@
         android:supportsRtl="false"
         android:localeConfig="@xml/locales_config"
         tools:targetApi="s"
-        tools:ignore="GoogleAppIndexingWarning">
+        tools:ignore="GoogleAppIndexingWarning,UnusedAttribute">
 
         <!-- <profileable android:shell="true"/> -->
 

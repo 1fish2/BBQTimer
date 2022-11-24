@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AndroidTestResultsUserPreferences">
+    <option name="androidTestResultsTableState">
+      <map>
+        <entry key="964983513">
+          <value>
+            <AndroidTestResultsTableState>
+              <option name="preferredColumnWidths">
+                <map>
+                  <entry key="23_6.0_M_3.2_HVGA_slider_mdpi_320x480" value="120" />
+                  <entry key="24_7.0_B_3.2-inch_HVGA_slider_320x480" value="120" />
+                  <entry key="24_7.0_N_Nexus_4_xhdpi_768x1280" value="120" />
+                  <entry key="25_7.1.1_N.1_Nexus_5_xxhdpi_1080x1920" value="120" />
+                  <entry key="26_8.0_O_Pixel_2_xxhdpi_1080x1920" value="120" />
+                  <entry key="27_8.1_O.1_Pixel_3_xxhdpi_1080x2160" value="120" />
+                  <entry key="28_9.0_P_Pixel_2_cutout_xxhdpi_1080x1920" value="120" />
+                  <entry key="29_10.0_Q_Nexus_5_xxhdpi_1080x1920" value="120" />
+                  <entry key="29_10.0_Q_Pixel_4XL_xxhdpi_1440x3040" value="120" />
+                  <entry key="30_11.0_R_Nexus_S_hdpi_480x800" value="120" />
+                  <entry key="30_11.0_R_Pixel_5_xxhdpi_1080x2340" value="120" />
+                  <entry key="31_12.0_S_Nexus_7_xhdpi_1200x1920" value="120" />
+                  <entry key="31_12.0_S_Nexus_S_hdpi_480x800" value="120" />
+                  <entry key="31_12.0_S_WQVGA_mdpi_240x432" value="120" />
+                  <entry key="31_12.0_S_Z-Fold_Fold-in_with_outer_display_xhdpi_1768x2208" value="120" />
+                  <entry key="32_12L_Sv2_Pixel_3_xxhdpi_1080x2160" value="120" />
+                  <entry key="32_12L_Sv2_Pixel_C_xhdpi_2560x1800" value="120" />
+                  <entry key="32_12L_Sv2_Z-Flip_fold-in_xxhdpi_1080x2636" value="120" />
+                  <entry key="33_13.0_T_Pixel_5_xxhdpi_1080x2340" value="120" />
+                  <entry key="33_13.0_T_Resizable" value="120" />
+                  <entry key="Duration" value="90" />
+                  <entry key="Status" value="80" />
+                  <entry key="Tests" value="360" />
+                </map>
+              </option>
+            </AndroidTestResultsTableState>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>

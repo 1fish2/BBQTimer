@@ -64,8 +64,7 @@
             android:ellipsize="end"
             android:hyphenationFrequency="full"
             android:textAppearance="@style/TextAppearance.AppCompat.Small"
-            android:textColor="@color/notification_text"
-            tools:targetApi="m" />
+            android:textColor="@color/notification_text" />
     </LinearLayout>
 
     <LinearLayout
@@ -118,7 +117,6 @@
             android:hyphenationFrequency="full"
             android:maxLines="1"
             android:textAppearance="@style/TextAppearance.AppCompat.Small"
-            android:textColor="@color/notification_text"
-            tools:targetApi="m" />
+            android:textColor="@color/notification_text" />
     </LinearLayout>
 </LinearLayout>

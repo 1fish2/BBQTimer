@@ -90,8 +90,7 @@
             android:contentDescription="@string/start_pause"
             android:drawableLeft="@drawable/ic_play"
             android:drawableTint="@color/button_tint_color"
-            android:focusable="true"
-            tools:targetApi="m" />
+            android:focusable="true" />
 
         <Button
             android:id="@+id/resetButton"
@@ -103,8 +102,7 @@
             android:contentDescription="@string/reset"
             android:drawableLeft="@drawable/ic_replay"
             android:drawableTint="@color/button_tint_color"
-            android:focusable="true"
-            tools:targetApi="m" />
+            android:focusable="true" />
 
         <Button
             android:id="@+id/stopButton"
@@ -115,8 +113,7 @@
             android:drawableLeft="@drawable/ic_stop"
             android:drawableTint="@color/button_tint_color"
             android:focusable="true"
-            android:nextFocusForward="@id/enableReminders"
-            tools:targetApi="m" />
+            android:nextFocusForward="@id/enableReminders" />
     </LinearLayout>
 
     <androidx.constraintlayout.widget.Barrier

@@ -179,16 +179,19 @@ public class RecipeEditorDialogFragment extends DialogFragment {
     }
 
     /** DialogInterface.OnClickListener for the "Save" button. */
+    @SuppressWarnings("unused")
     private void saveEdits(@NonNull DialogInterface dialog, int which) {
         saveText(dialog, textField.getText().toString());
     }
 
     /** DialogInterface.OnClickListener for the "Reset" button. */
+    @SuppressWarnings("unused")
     private void resetEdits(@NonNull DialogInterface dialog, int which) {
         saveText(dialog, "");
     }
 
     /** DialogInterface.OnClickListener for the "Cancel" button. */
+    @SuppressWarnings("unused")
     private void cancelEdits(@NonNull DialogInterface dialog, int which) {
         hideKeyboard(textField);
         listener.onEditorDialogNegativeClick(dialog);
