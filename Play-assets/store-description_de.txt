@@ -1,11 +1,10 @@
-• <b>Kombinierter Intervalltimer/Stoppuhr</b> = periodische Alarme + verstrichene Zeit.
-  Erinnert Sie regelmäßig daran, das Essen zu wenden und verfolgt die gesamte Garzeit.
+• <b>Kombinierter Intervalltimer/Stoppuhr</b> = periodische Alarme + verstrichene Zeit. Erinnert regelmäßig daran, das Essen zu wenden und verfolgt die gesamte Garzeit.
 • Schneller Zugriff über <b>Sperrbildschirmbenachrichtigung</b>, <b>Pulldown-Benachrichtigung</b> und <b>Startbildschirm-Widget</b>.
 • Bearbeitbares <b>Menü der Intervallzeiten</b>. Greifen Sie schnell auf Ihre bevorzugten Timer mit Notizen zu.
 • <b>Änderbare Alarme</b> während es läuft.
 • Keine Werbung.
 
-Geben Sie die Intervallzeit ein: <i>Minuten</i>, <i>Minuten:Sekunden</i> oder <i>Stunden:Minuten:Sekunden</i>.
+Eingabe der Intervallzeit: <i>Minuten</i>, <i>Minuten:Sekunden</i> oder <i>Stunden:Minuten:Sekunden</i>.
 
 Beispiel Intervalle:
  <i>10</i> = 10 Minuten
@@ -21,7 +20,7 @@ Kurz Formen:
 <b>Tipps</b>
 • Auf das Kontrollkästchen tippen, um die regelmäßigen Erinnerungsalarme ein-/auszuschalten.
 • Auf die Zeitanzeige tippen, um zwischen <i>gestoppt</i> → <i>läuft</i> → <i>pausiert</i> → <i>gestoppt</i> zu wechseln.
-• Fügen Sie das BBQ-Timer-Widget zum Startbildschirm hinzu.
+• Das BBQ-Timer-Widget zum Startbildschirm hinzufügen.
   • Auf die verstrichene Zeit des Widgets tippen, um es zu starten/pausieren/stoppen.
   • Auf den Hintergrund des Widgets tippen oder seine Countdown-Zeit, um die App zu öffnen.
   • Ändern Sie die Größe des Widgets (drücken Sie lange darauf und ziehen Sie dann an den Ziehpunkten zur Größenänderung), um mehr oder weniger Informationen anzuzeigen.
