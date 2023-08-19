@@ -680,7 +680,8 @@ public class MainActivity extends AppCompatActivity
             return true;
         }
 
-        String itemTitle = item.getTitle().toString();
+        CharSequence titleChars = item.getTitle();
+        String itemTitle = titleChars == null ? "" : titleChars.toString();
         int tokenLength = TimeCounter.lengthOfLeadingIntervalTime(itemTitle);
         String token = itemTitle.substring(0, tokenLength);
 
@@ -721,7 +722,7 @@ public class MainActivity extends AppCompatActivity
      * <p/>
      * Workaround: Older Android versions grab and hold focus or immediately refocus. So force the
      * text field to defocus by temporarily making it not-focusable.
-     * https://stackoverflow.com/a/11044709/1682419
+     * <a href="https://stackoverflow.com/a/11044709/1682419">Stack Overflow</a>
      * <p/>
      * Re-enable focusability after another short delay rather than via `setOnTouchListener()` [in
      * the stackoverflow post] so TAB & arrow keys can still enter/exit the text field.
@@ -755,7 +756,7 @@ public class MainActivity extends AppCompatActivity
      * Also for reducing those log warnings, it might help to hideKeyboard() before setText(), but
      * that means passing a ResultReceiver to hideSoftInputFromWindow() to do the setText() after it
      * finishes animating away.
-     * https://stackoverflow.com/a/29470242/1682419
+     * <a href="https://stackoverflow.com/a/29470242/1682419">Stack Overflow</a>
      */
     @UiThread
     private void displayAlarmPeriod() {

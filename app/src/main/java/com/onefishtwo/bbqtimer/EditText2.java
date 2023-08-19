@@ -31,7 +31,7 @@ import androidx.annotation.Nullable;
 /**
  * Workaround: A subclass of Material Design TextInputEditText with a working OnFocusChangeListener,
  * "listener2".
- *
+ * <p>
  * See {@link #setOnFocusChangeListener2}.
  */
 public class EditText2 extends TextInputEditText {

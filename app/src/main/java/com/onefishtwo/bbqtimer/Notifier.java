@@ -34,6 +34,7 @@ import android.os.Build;
 import android.os.SystemClock;
 import android.text.Spanned;
 import android.text.SpannedString;
+import android.util.Log;
 import android.view.View;
 import android.widget.RemoteViews;
 
@@ -55,13 +56,14 @@ import androidx.media.app.NotificationCompat.MediaStyle;
  * Manages the app's Android Notifications.
  */
 public class Notifier {
+    private static final String TAG = "Notifier";
     private static final int NOTIFICATION_ID = 7;
 
     /**
      * Construct a custom notification for this API level and higher. The custom notification really
      * helps on Android 12 where MediaStyle's collapsed notification hides the Chronometer and the
      * lock screen interferes with expanding the notification.
-     *
+     * <p>
      * API 24 is required for a count-down Chronometer and for
      * NotificationCompat.DecoratedMediaCustomViewStyle to do more than MediaStyle.
      */
@@ -82,7 +84,7 @@ public class Notifier {
 
     // --- R.id.countUpViewFlipper and R.id.countdownViewFlipper child indexes.
     private static final int RUNNING_FLIPPER_CHILD = 0;
-    private static final int PAUSED_FLIPPER_CHILD  = 1;
+    private static final int PAUSED_FLIPPER_CHILD = 1;
 
     private static boolean builtNotificationChannels = false;
 
@@ -116,6 +118,7 @@ public class Notifier {
         return this;
     }
 
+    /** @noinspection SameParameterValue*/
     private Uri getSoundUri(@RawRes int soundId) {
         return Uri.parse("android.resource://" + context.getPackageName() + "/" + soundId);
     }
@@ -227,7 +230,11 @@ public class Notifier {
 
         if (!timer.isStopped() || soundAlarm) {
             Notification notification = buildNotification(state);
-            notificationManagerCompat.notify(NOTIFICATION_ID, notification);
+            try {
+                notificationManagerCompat.notify(NOTIFICATION_ID, notification);
+            } catch (SecurityException e) { // ≈API 33+: The app should've requested permission already.
+                Log.e(TAG, "Need POST_NOTIFICATIONS permission", e);
+            }
         } else {
             cancelAll();
         }
@@ -331,6 +338,7 @@ public class Notifier {
      *                       Chronometer and its message are GONE if there are no periodic alarms.
      * @param countDownMessage the message to show next to the count-down (timer) Chronometer.
      * @return RemoteViews
+     * @noinspection SameParameterValue
      */
     @NonNull
     @TargetApi(24)

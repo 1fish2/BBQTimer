@@ -181,8 +181,8 @@ public class AlarmReceiver extends BroadcastReceiver {
 
         try {
             alarmMgr.setAlarmClock(info, pendingIntent);
-        } catch (SecurityException e) { // targetSdk 32+ needs SCHEDULE_EXACT_ALARM/USE_EXACT_ALARM
-            Log.e(TAG, e.getMessage());
+        } catch (SecurityException e) { // ≈API 32+: needs SCHEDULE_EXACT_ALARM (or USE_EXACT_ALARM?)
+            Log.e(TAG, "Need SCHEDULE_EXACT_ALARM permission", e);
             // NOTE: Use a Toast so this shows up even for a home screen widget. It doesn't show up
             // when using a notification's Play button.
             Toast.makeText(context, R.string.need_alarm_access, Toast.LENGTH_LONG).show();

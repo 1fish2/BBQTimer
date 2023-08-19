@@ -59,7 +59,7 @@ public class ResumeReceiver extends BroadcastReceiver {
     public void onReceive(@NonNull Context context, @NonNull Intent intent) {
         String action = intent.getAction();
 
-        Log.i(TAG, action);
+        Log.i(TAG, "Broadcast intent: " + action);
 
         if (Intent.ACTION_MY_PACKAGE_REPLACED.equals(action)) {
             AlarmReceiver.updateNotifications(context);

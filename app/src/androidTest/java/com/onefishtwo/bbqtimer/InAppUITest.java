@@ -549,12 +549,14 @@ public class InAppUITest {
         cmd_1.perform(waitMsec(500), click()); // delay for a visual check
     }
 
+    /** @noinspection SameParameterValue*/
     private ViewInteraction checkTextView(@StringRes int resId) {
         ViewInteraction view = onView(withText(resId));
         view.check(matches(isDisplayed()));
         return view;
     }
 
+    /** @noinspection SameParameterValue*/
     private ViewInteraction checkMenuCommand(@StringRes int resId) {
         ViewInteraction view = onView(
                 allOf(withId(android.R.id.title),

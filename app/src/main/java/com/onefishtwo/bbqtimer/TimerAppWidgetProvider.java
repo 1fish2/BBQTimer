@@ -337,7 +337,7 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
         ApplicationState state = ApplicationState.sharedInstance(context);
         TimeCounter timer      = state.getTimeCounter();
 
-        Log.v(TAG, action);
+        Log.v(TAG, "Intent: " + action);
 
         if (ACTION_RUN_PAUSE.equals(action)) { // The user tapped a Run/Pause button.
             timer.togglePauseRun();

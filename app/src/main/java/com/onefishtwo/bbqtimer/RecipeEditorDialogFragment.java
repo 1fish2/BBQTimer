@@ -17,6 +17,8 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
+import static com.google.android.material.R.style.ThemeOverlay_Material3_TextInputEditText_OutlinedBox;
+
 /**
  * A Dialog to edit the recipe list.
  * </p>
@@ -63,7 +65,7 @@ public class RecipeEditorDialogFragment extends DialogFragment {
     /**
      * API 27: Work around an Android bug where double-clicking an EditText field would cause these
      * log errors:
-     *
+     * <p>
      *   TextClassifierImpl: Error suggesting selection for text. No changes to selection suggested.
      *     java.io.FileNotFoundException: No file for null locale
      *         at android.view.textclassifier.TextClassifierImpl.getSmartSelection(TextClassifierImpl.java:208)
@@ -72,14 +74,14 @@ public class RecipeEditorDialogFragment extends DialogFragment {
      *     java.io.FileNotFoundException: No file for null locale
      *         at android.view.textclassifier.TextClassifierImpl.getSmartSelection(TextClassifierImpl.java:208)
      *         ...
-     *
+     * <p>
      * API > 27: Work around an Android bug that calls the TextClassifier on the main thread
      * (UI thread) [e.g. when the user double-taps the EditText field, or long-presses it, or
      * dismisses the soft keyboard when there's a text selection], causing this log warning even
      * though no app code is on the call stack:
-     *
+     * <p>
      *   W/androidtc: TextClassifier called on main thread.
-     *
+     * <p>
      * To avoid the delay and potential ANR, just bypass the irrelevant TextClassifier. (This
      * problem might not occur on API 28 - 29, but it's safer to do this uniformly.)
      */
@@ -136,7 +138,7 @@ public class RecipeEditorDialogFragment extends DialogFragment {
         // Using MaterialAlertDialogBuilder doesn't seem to accomplish that, but maybe it's a
         // question of the right theme.
         AlertDialog.Builder builder = new AlertDialog.Builder(requireActivity(),
-                R.style.ThemeOverlay_Material3_TextInputEditText_OutlinedBox);
+                ThemeOverlay_Material3_TextInputEditText_OutlinedBox);
         LayoutInflater inflater = requireActivity().getLayoutInflater();
         View content = inflater.inflate(R.layout.dialog_edit_recipes, null);
         // "To ensure consistent styling, the custom view should be inflated or constructed using

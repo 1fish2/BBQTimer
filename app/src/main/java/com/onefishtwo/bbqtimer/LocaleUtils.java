@@ -6,7 +6,9 @@ import java.util.Locale;
 import java.util.Set;
 
 public class LocaleUtils {
-    /** https://worldpopulationreview.com/country-rankings/countries-that-use-fahrenheit */
+    /**
+     * <a href="https://worldpopulationreview.com/country-rankings/countries-that-use-fahrenheit">
+     *     Countries that use fahrenheit</a> */
     private static final Set<String> FAHRENHEIT_COUNTRIES = Set.of(
             "US", // US
             "BS", // Bahamas
