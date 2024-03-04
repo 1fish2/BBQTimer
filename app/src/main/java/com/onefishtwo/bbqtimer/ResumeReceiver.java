@@ -51,6 +51,16 @@ import androidx.annotation.NonNull;
  * Controls</a> and <a href="https://code.google.com/p/android/issues/detail?id=18225">Issue
  * 18225</a>.
  */
+// TODO: Due to Android OS bug https://code.google.com/p/android/issues/detail?id=2880 , after
+// the clock gets set backwards, the OS won't send ACTION_DATE_CHANGED until the clock catches
+// up to what was going to be the next day.
+//
+// Cf http://stackoverflow.com/questions/21758246/android-action-date-changed-broadcast which
+// suggests a workaround by implementing a similar alarm.
+//
+// Also see https://developer.android.com/about/versions/oreo/background.html#broadcasts on how
+// manifest registration for ACTION_DATE_CHANGED implicit broadcasts doesn't work on Android 8+
+// but this app needed them only on Android 4.4-.
 public class ResumeReceiver extends BroadcastReceiver {
     private static final String TAG = "ResumeReceiver";
 
@@ -63,7 +73,7 @@ public class ResumeReceiver extends BroadcastReceiver {
 
         if (Intent.ACTION_MY_PACKAGE_REPLACED.equals(action)) {
             AlarmReceiver.updateNotifications(context);
-        } else if (Intent.ACTION_TIME_CHANGED.equals(action) // android.intent.action.TIME_SET
+        } else if (Intent.ACTION_TIME_CHANGED.equals(action) // "android.intent.action.TIME_SET"
                 || Intent.ACTION_TIMEZONE_CHANGED.equals(action)) {
             AlarmReceiver.handleClockAdjustment(context);
         } else if (Intent.ACTION_LOCALE_CHANGED.equals(action)) {

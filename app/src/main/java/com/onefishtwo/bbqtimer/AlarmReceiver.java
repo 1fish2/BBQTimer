@@ -78,7 +78,7 @@ public class AlarmReceiver extends BroadcastReceiver {
             long elapsedRealtimeTarget) {
         Intent intent = new Intent(context, AlarmReceiver.class);
 
-        // See http://stackoverflow.com/questions/32492770
+        // See https://stackoverflow.com/questions/32492770
         intent.addFlags(Intent.FLAG_RECEIVER_FOREGROUND);
         intent.putExtra(EXTRA_ELAPSED_REALTIME_TARGET, elapsedRealtimeTarget);
 
@@ -87,7 +87,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         // it's hard to tell since MY_PACKAGE_REPLACED is unreliable, at least in the emulator. In
         // any case it breaks alarmMgr.cancel(), see http://stackoverflow.com/questions/26434490/
         return PendingIntent.getBroadcast(context, 0, intent,
-                PendingIntent.FLAG_UPDATE_CURRENT + PendingIntent.FLAG_IMMUTABLE);
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
     }
 
     /** Constructs a PendingIntent for AlarmManager.AlarmClockInfo() to show/edit the timer. */
@@ -116,10 +116,6 @@ public class AlarmReceiver extends BroadcastReceiver {
     }
 
     /** Returns the SystemClock.elapsedRealtime() for the next reminder notification. */
-    //
-    // TODO: If the user changes the period without resetting the timer, compute future reminders
-    // relative to the previous reminder rather than 0:00? E.g. after a 7 minute reminder you change
-    // it to 4 minutes, then it would next alert at 0:11:00 rather than 0:08:00.
     private static long nextReminderTime(@NonNull ApplicationState state) {
         TimeCounter timer = state.getTimeCounter();
         long periodMs     = state.getMillisecondsPerReminder();
@@ -128,16 +124,14 @@ public class AlarmReceiver extends BroadcastReceiver {
         long untilNextReminder = periodMs - (timed % periodMs);
 
         // Don't (re)schedule within a small window. That'd double-alarm if the notification
-        // arrives on the early side of the given window due to a clock adjustment.
-        // (Maybe don't even schedule within the alarm sound's duration.)
+        // arrives on the early side of the given window due to a clock adjustment or AlarmManager
+        // window. (Maybe don't even schedule within the alarm sound's duration.)
         //
         // NOTE: This could play a double-alarm if the Intent arrives ALARM_TOLERANCE_MS early (due
         // to the clock getting set backwards) then this code runs within the same msec. That's
         // unlikely, less bad than dropping an alarm, and attempts to avoid it caused worse problems
         // with a second alarm ~5 seconds after the regular alarm if Android was busy in another
         // app. onReceive() takes 9-60 seconds to open a notifier, not 5 secs, so that's not it.
-        //
-        // TODO: Should this use a higher tolerance?
         if (untilNextReminder < ALARM_TOLERANCE_MS) {
             untilNextReminder += periodMs;
         }
@@ -170,7 +164,9 @@ public class AlarmReceiver extends BroadcastReceiver {
      * @param nextReminder the SystemClock.elapsedRealtime() for the next reminder notification
      * @param pendingIntent the PendingIntent to wake this receiver in nextReminder msec
      */
-    @RequiresPermission("android.permission.SCHEDULE_EXACT_ALARM")
+    @RequiresPermission(anyOf = {
+            android.Manifest.permission.SCHEDULE_EXACT_ALARM,
+            android.Manifest.permission.SET_ALARM})
     private static void setAlarmClockV21(Context context, @NonNull AlarmManager alarmMgr,
             @NonNull ApplicationState state, long nextReminder, PendingIntent pendingIntent) {
         PendingIntent activityPI = makeActivityPendingIntent(context);
@@ -181,7 +177,12 @@ public class AlarmReceiver extends BroadcastReceiver {
 
         try {
             alarmMgr.setAlarmClock(info, pendingIntent);
-        } catch (SecurityException e) { // ≈API 32+: needs SCHEDULE_EXACT_ALARM (or USE_EXACT_ALARM?)
+        } catch (SecurityException e) {
+            // API 31 - 32: setAlarmClock() needs revocable SCHEDULE_EXACT_ALARM. In this
+            // case, could ask the user to grant the SCHEDULE_EXACT_ALARM permission via a dialog
+            // then invoke an intent that includes the ACTION_REQUEST_SCHEDULE_EXACT_ALARM intent
+            // action.
+            // API 33+: non-revocable USE_EXACT_ALARM for calendar and alarm clock apps.
             Log.e(TAG, "Need SCHEDULE_EXACT_ALARM permission", e);
             // NOTE: Use a Toast so this shows up even for a home screen widget. It doesn't show up
             // when using a notification's Play button.

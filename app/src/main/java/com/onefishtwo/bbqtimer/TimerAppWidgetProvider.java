@@ -316,19 +316,8 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
     }
 
     /**
-     * Receives an Intent, including those from the app widget buttons, notification actions,
-     * and system clock changes.
+     * Receives an Intent from an AppWidget View or a Notification action.
      */
-    // TODO: Due to Android OS bug https://code.google.com/p/android/issues/detail?id=2880 , after
-    // the clock gets set backwards, the OS won't send ACTION_DATE_CHANGED until the clock catches
-    // up to what was going to be the next day.
-    //
-    // Cf http://stackoverflow.com/questions/21758246/android-action-date-changed-broadcast which
-    // suggests a workaround by implementing a similar alarm.
-    //
-    // Also see https://developer.android.com/about/versions/oreo/background.html#broadcasts on how
-    // manifest registration for ACTION_DATE_CHANGED implicit broadcasts doesn't work on Android O+
-    // but this class only needs them on K-.
     @Override
     public void onReceive(@NonNull Context context, @NonNull Intent intent) {
         super.onReceive(context, intent);
@@ -339,32 +328,32 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
 
         Log.v(TAG, "Intent: " + action);
 
-        if (ACTION_RUN_PAUSE.equals(action)) { // The user tapped a Run/Pause button.
+        if (ACTION_RUN_PAUSE.equals(action)) { // Run/Pause button
             timer.togglePauseRun();
             saveStateAndUpdateUI(context, state);
-        } else if (ACTION_RUN.equals(action)) { // The user tapped a Run (aka Play) button.
+        } else if (ACTION_RUN.equals(action)) { // Run (Play) button
             timer.start();
             saveStateAndUpdateUI(context, state);
-        } else if (ACTION_PAUSE.equals(action)) { // The user tapped a Pause button.
+        } else if (ACTION_PAUSE.equals(action)) { // Pause button
             timer.pause();
             saveStateAndUpdateUI(context, state);
-        } else if (ACTION_RESET.equals(action)) { // The user tapped a Reset button.
+        } else if (ACTION_RESET.equals(action)) { // Reset button
             timer.reset();
             saveStateAndUpdateUI(context, state);
-        } else if (ACTION_STOP.equals(action)) { // tapped a Stop button or swiped the notification.
+        } else if (ACTION_STOP.equals(action)) { // Stop button or swiped the notification
             timer.stop();
             saveStateAndUpdateUI(context, state);
-        } else if (ACTION_CYCLE.equals(action)) { // The user tapped the time text.
+        } else if (ACTION_CYCLE.equals(action)) { // tapped the time text
             timer.cycle();
             saveStateAndUpdateUI(context, state);
         }
     }
 
-    /** Saves app state then updates the Widgets and Notifications. */
+    /** Saves app state then updates the Notifications and Widgets. */
     private void saveStateAndUpdateUI(@NonNull Context context, @NonNull ApplicationState state) {
         state.save(context);
 
-        updateAllWidgets(context, state);
         AlarmReceiver.updateNotifications(context);
+        updateAllWidgets(context, state);
     }
 }
