@@ -22,27 +22,6 @@
 package com.onefishtwo.bbqtimer;
 
 
-import android.content.Context;
-import android.os.Build;
-import android.util.Log;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.StringRes;
-import androidx.test.core.app.ApplicationProvider;
-import androidx.test.espresso.Espresso;
-import androidx.test.espresso.ViewInteraction;
-import androidx.test.ext.junit.rules.ActivityScenarioRule;
-import androidx.test.ext.junit.runners.AndroidJUnit4;
-import androidx.test.filters.LargeTest;
-import androidx.test.platform.app.InstrumentationRegistry;
-import androidx.test.rule.GrantPermissionRule;
-
 import static android.Manifest.permission.POST_NOTIFICATIONS;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
@@ -76,6 +55,27 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertEquals;
+
+import android.content.Context;
+import android.os.Build;
+import android.util.Log;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
+import androidx.test.core.app.ApplicationProvider;
+import androidx.test.espresso.Espresso;
+import androidx.test.espresso.ViewInteraction;
+import androidx.test.ext.junit.rules.ActivityScenarioRule;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.filters.LargeTest;
+import androidx.test.platform.app.InstrumentationRegistry;
+import androidx.test.rule.GrantPermissionRule;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 /** Within-app Espresso UI tests. */
 // TODO: Test the app's home screen widget.
@@ -394,6 +394,7 @@ public class InAppUITest {
     /** Tests the CLEAR_TEXT endIcon in the alarmPeriodLayout TextInputLayout. */
     @Test
     public void endIconTest() {
+        //noinspection SpellCheckingInspection
         ViewInteraction clearTextImageButton = onView(anyOf(
                 withContentDescription("Clear text"),     // en
                 withContentDescription("Text löschen"))); // de

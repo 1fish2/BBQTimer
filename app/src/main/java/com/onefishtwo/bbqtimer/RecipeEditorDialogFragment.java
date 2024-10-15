@@ -54,7 +54,7 @@ public class RecipeEditorDialogFragment extends DialogFragment {
 
         // The text is stored in the Arguments Bundle so it's available on re-create.
         // TODO: Save contents in onPause() or onDestroy()?
-        if (text.trim().length() == 0) {
+        if (text.trim().isEmpty()) {
             text = FALLBACK_CONTENTS;
         }
         bundle.putString(KEY_TEXT_CONTENTS, text);
@@ -174,7 +174,7 @@ public class RecipeEditorDialogFragment extends DialogFragment {
     private void saveText(@NonNull DialogInterface dialog, @NonNull String recipes) {
         hideKeyboard(textField);
 
-        if (recipes.trim().length() == 0) {
+        if (recipes.trim().isEmpty()) {
             recipes = ApplicationState.getDefaultRecipes(textField.getContext());
         }
         listener.onEditorDialogPositiveClick(dialog, recipes);

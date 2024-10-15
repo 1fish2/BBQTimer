@@ -28,13 +28,16 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.onefishtwo.bbqtimer.state.ApplicationState;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresPermission;
 
+import com.onefishtwo.bbqtimer.state.ApplicationState;
+
 /**
  * Uses AlarmManager to perform periodic reminder notifications.
+ *<p/>
+ * ASSUMES: The app has USE_EXACT_ALARM permission (defined in API 33) and
+ * SCHEDULE_EXACT_ALARM in API ≤ 32.
  */
 public class AlarmReceiver extends BroadcastReceiver {
     private static final String TAG = "AlarmReceiver";

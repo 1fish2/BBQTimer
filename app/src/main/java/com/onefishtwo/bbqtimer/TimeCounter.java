@@ -26,6 +26,9 @@ import android.text.Html;
 import android.text.Spanned;
 import android.text.format.DateUtils;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
+
 import java.math.RoundingMode;
 import java.text.FieldPosition;
 import java.text.NumberFormat;
@@ -33,9 +36,6 @@ import java.util.Formatter;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.VisibleForTesting;
 
 /**
  * A stopwatch time counter (data model).
@@ -419,7 +419,7 @@ public class TimeCounter {
      * Returns -1 if it's not an unsigned integer, but "" is OK.
      */
     private static int parseField(String field) {
-        if (field.length() == 0) {
+        if (field.isEmpty()) {
             return 0;
         }
 
@@ -447,7 +447,7 @@ public class TimeCounter {
         }
 
         // split() returns [""] for empty (trimmed) input.
-        if (fields.length == 1 && fields[0].length() == 0) {
+        if (fields.length == 1 && fields[0].isEmpty()) {
             return -1;
         }
 

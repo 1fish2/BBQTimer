@@ -24,7 +24,9 @@ Short forms:
 * `0:09` = `:9` = 9 seconds
 * `2:00:00` = `2:0:0` = `2::` = `120` = 2 hours
 
-<img alt="paused screenshot" height="540" src="Play-assets/Pixel 3 screenshots/screenshot paused.png"> <img alt="lock-screen screenshot" height="540" src="Play-assets/Pixel 3 screenshots/screenshot lock screen.png">
+<!--suppress CheckImageSize -->
+<img alt="paused screenshot" height="540" src="Play-assets/Pixel 3 screenshots/screenshot paused.png">
+<img alt="lock-screen screenshot" height="540" src="Play-assets/Pixel 3 screenshots/screenshot lock screen.png">
 
 
 ## Android Requirements

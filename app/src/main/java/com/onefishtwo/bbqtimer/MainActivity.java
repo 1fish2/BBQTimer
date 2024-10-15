@@ -19,6 +19,8 @@
 
 package com.onefishtwo.bbqtimer;
 
+import static android.Manifest.permission.POST_NOTIFICATIONS;
+
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -54,16 +56,6 @@ import android.widget.EditText;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
-import com.google.android.material.snackbar.BaseTransientBottomBar;
-import com.google.android.material.snackbar.Snackbar;
-import com.google.android.material.textfield.TextInputLayout;
-import com.onefishtwo.bbqtimer.state.ApplicationState;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.ref.WeakReference;
-import java.util.Vector;
-
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.ColorRes;
@@ -80,7 +72,15 @@ import androidx.core.app.TaskStackBuilder;
 import androidx.core.content.ContextCompat;
 import androidx.core.widget.TextViewCompat;
 
-import static android.Manifest.permission.POST_NOTIFICATIONS;
+import com.google.android.material.snackbar.BaseTransientBottomBar;
+import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.textfield.TextInputLayout;
+import com.onefishtwo.bbqtimer.state.ApplicationState;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.ref.WeakReference;
+import java.util.Vector;
 
 /**
  * The BBQ Timer's main activity.
@@ -125,8 +125,8 @@ public class MainActivity extends AppCompatActivity
 
     /**
      * A Handler for periodic display updates.
-     *
-     * <p/>Queued Messages refer to the Handler which refers to the Activity. Since
+     * <p>
+     * Queued Messages refer to the Handler which refers to the Activity. Since
      * Activity#onStop() calls #endScheduledUpdates(), there's no memory leak but using a
      * WeakReference protects that from future changes and appeases Lint.
      */
