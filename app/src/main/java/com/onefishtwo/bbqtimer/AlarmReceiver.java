@@ -61,7 +61,8 @@ public class AlarmReceiver extends BroadcastReceiver {
      * setAlarmClock() uses a wall clock RTC target. If the clock gets adjusted forwards past that
      * target, the OS will trigger the alarm early (the goal time "passed") and <em>then</em> send
      * an ACTION_TIME_CHANGED intent.
-     * Workaround: If an alarm triggers early, reschedule it instead of sounding an alarm.
+     * <p/>
+     * Workaround: If an alarm triggers early, reschedule it instead of notifying the user.
      */
     private static final String EXTRA_ELAPSED_REALTIME_TARGET =
             "com.onefishtwo.bbqtimer.ElapsedRealtimeTarget";
@@ -131,10 +132,10 @@ public class AlarmReceiver extends BroadcastReceiver {
         // window. (Maybe don't even schedule within the alarm sound's duration.)
         //
         // NOTE: This could play a double-alarm if the Intent arrives ALARM_TOLERANCE_MS early (due
-        // to the clock getting set backwards) then this code runs within the same msec. That's
+        // to the clock getting adjusted backwards) then this code runs within the same msec. That's
         // unlikely, less bad than dropping an alarm, and attempts to avoid it caused worse problems
         // with a second alarm ~5 seconds after the regular alarm if Android was busy in another
-        // app. onReceive() takes 9-60 seconds to open a notifier, not 5 secs, so that's not it.
+        // app. onReceive() takes 9-60 ms [?] to open a notifier, not 5 secs, so that's not it.
         if (untilNextReminder < ALARM_TOLERANCE_MS) {
             untilNextReminder += periodMs;
         }
@@ -252,14 +253,20 @@ public class AlarmReceiver extends BroadcastReceiver {
     private boolean isAlarmEarly(@NonNull Intent intent, @NonNull TimeCounter timer) {
         long now    = timer.elapsedRealtimeClock();
         long target = intent.getLongExtra(EXTRA_ELAPSED_REALTIME_TARGET, now);
-        // Log.d(TAG, "Alarm " + (now - target) + "ms late");
+        long howLate = now - target;
 
-        return now < target - ALARM_TOLERANCE_MS;
+        if (howLate < -ALARM_TOLERANCE_MS) {
+            Log.w(TAG, "ALARM EARLY " + (-howLate) + " msec " + intent);
+            return true;
+        } else if (howLate > ALARM_TOLERANCE_MS) {
+            Log.w(TAG, "ALARM LATE " + howLate + " msec " + intent);
+        }
+        return false;
     }
 
     /**
-     * Handles an AlarmManager Intent: Shows/plays a reminder alarm and vibration via the Notifier.
-     * Detects and quiets early alarms.
+     * Handles an AlarmManager Intent: Shows/plays a reminder alarm and vibration via the Notifier
+     * and schedules the next repeating alarm. Detects and quiets early alarms.
      */
     @Override
     public final void onReceive(@NonNull Context context, @NonNull Intent intent) {
@@ -267,9 +274,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         TimeCounter timer      = state.getTimeCounter();
 
         if (timer.isRunning()) {
-            if (isAlarmEarly(intent, timer)) {
-                Log.i(TAG, "Early alarm " + intent);
-            } else {
+            if (!isAlarmEarly(intent, timer)) {
                 Log.d(TAG, intent.toString()); // intent.getAction() == null
                 Notifier notifier = new Notifier(context).setAlarm(true);
                 notifier.openOrCancel(state);
