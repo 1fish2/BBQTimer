@@ -15,6 +15,14 @@
       </SelectionState>
       <SelectionState runConfigName="all Android tests">
         <option name="selectionMode" value="DROPDOWN" />
+        <DropdownSelection timestamp="2024-10-16T22:14:02.135203Z">
+          <Target type="DEFAULT_BOOT">
+            <handle>
+              <DeviceId pluginId="LocalEmulator" identifier="path=/Users/jerry/.android/avd/35_V_Pixel_9_Pro_XL_1344x2992_xxhdpi.avd" />
+            </handle>
+          </Target>
+        </DropdownSelection>
+        <DialogSelection />
       </SelectionState>
       <SelectionState runConfigName="playPauseStopUITest()">
         <option name="selectionMode" value="DROPDOWN" />
