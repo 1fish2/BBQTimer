@@ -190,6 +190,9 @@ public class AlarmReceiver extends BroadcastReceiver {
             Log.e(TAG, "Need SCHEDULE_EXACT_ALARM permission", e);
             // NOTE: Use a Toast so this shows up even for a home screen widget. It doesn't show up
             // when using a notification's Play button.
+            // TODO: Ask the user for permission? Degrade to setExactAndAllowWhileIdle() or an
+            // inexact alarm? Is that useful enough?
+            // https://developer.android.com/about/versions/14/changes/schedule-exact-alarms#migration
             Toast.makeText(context, R.string.need_alarm_access, Toast.LENGTH_LONG).show();
         }
     }
@@ -212,8 +215,8 @@ public class AlarmReceiver extends BroadcastReceiver {
 
     /**
      * Updates the app's Android Notifications area/drawer and scheduled periodic reminder
-     * Notification alarms for the visible/invisible activity state, the running/paused timer state,
-     * and the reminders-enabled state.
+     * Notification alarms for the running/paused timer state and the reminders-enabled state.
+     * (It no longer depends on the visible/invisible activity state.)
      */
     public static void updateNotifications(@NonNull Context context) {
         ApplicationState state        = ApplicationState.sharedInstance(context);
