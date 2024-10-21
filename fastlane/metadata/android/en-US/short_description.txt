@@ -1,1 +1,1 @@
-A combined interval timer/stopwatch that works on the lock screen
+A combo interval timer / stopwatch / periodic alarm; works on the lock screen

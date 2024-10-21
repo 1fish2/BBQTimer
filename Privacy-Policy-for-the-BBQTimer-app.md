@@ -30,4 +30,4 @@ social media, or user-generated content. It's an interval timer.
 
 **Social Media:** None.
 
-**Target Audience:** This app is suitable for everyone at every age who can operate a touch-screen, but it's not specially designed to appeal to children. It's an interval timer/stopwatch.
+**Target Audience:** This app is suitable for everyone at every age who can operate a touch-screen, but it's not specially designed to appeal to children. It's an interval timer, stopwatch, and periodic alarm.
