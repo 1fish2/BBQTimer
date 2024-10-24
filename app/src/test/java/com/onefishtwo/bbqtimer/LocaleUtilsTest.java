@@ -1,6 +1,11 @@
 package com.onefishtwo.bbqtimer;
 
-import android.os.Build;
+import static com.onefishtwo.bbqtimer.LocaleUtils.formatTemperatureFromFahrenheit;
+import static com.onefishtwo.bbqtimer.LocaleUtils.getDefaultFormatLocale;
+import static com.onefishtwo.bbqtimer.LocaleUtils.useFahrenheit;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.After;
 import org.junit.Before;
@@ -8,13 +13,7 @@ import org.junit.Test;
 
 import java.util.Locale;
 
-import static com.onefishtwo.bbqtimer.LocaleUtils.formatTemperatureFromFahrenheit;
-import static com.onefishtwo.bbqtimer.LocaleUtils.getFormatDefault;
-import static com.onefishtwo.bbqtimer.LocaleUtils.useFahrenheit;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
+// In a unit test, Build.VERSION.SDK_INT == 0.
 public class LocaleUtilsTest {
     private static final Locale BAHAMAS = new Locale("en", "BS");
     private static final Locale SPAIN = new Locale("es", "ES");
@@ -24,37 +23,21 @@ public class LocaleUtilsTest {
     @Before
     public void setUp() {
         initialLocale = Locale.getDefault();
-
-        if (Build.VERSION.SDK_INT >= 24) {
-            initialFormatLocale = Locale.getDefault(Locale.Category.FORMAT);
-        }
+        initialFormatLocale = Locale.getDefault(Locale.Category.FORMAT);
     }
 
     @After
     public void tearDown() {
         Locale.setDefault(initialLocale);
-
-        if (Build.VERSION.SDK_INT >= 24) {
-            Locale.setDefault(Locale.Category.FORMAT, initialFormatLocale);
-        }
+        Locale.setDefault(Locale.Category.FORMAT, initialFormatLocale);
     }
 
     @Test
-    public void testGetFormatDefault() {
-        assertEquals(Locale.US, getFormatDefault());
+    public void testGetDefaultFormatLocale() {
+        assertEquals(Locale.US, getDefaultFormatLocale());
 
         Locale.setDefault(Locale.GERMANY);
-        assertEquals(Locale.GERMANY, getFormatDefault());
-
-        if (Build.VERSION.SDK_INT >= 24) {
-            Locale.setDefault(Locale.UK);
-
-            Locale.setDefault(Locale.Category.FORMAT, Locale.GERMANY);
-            assertEquals(Locale.GERMANY, getFormatDefault());
-
-            Locale.setDefault(Locale.Category.FORMAT, Locale.US);
-            assertEquals(Locale.US, getFormatDefault());
-        }
+        assertEquals(Locale.GERMANY, getDefaultFormatLocale());
     }
 
     @Test
@@ -69,12 +52,6 @@ public class LocaleUtilsTest {
 
         Locale.setDefault(Locale.UK);
         assertFalse(useFahrenheit());
-
-        if (Build.VERSION.SDK_INT >= 24) {
-            Locale.setDefault(BAHAMAS);
-            Locale.setDefault(Locale.Category.FORMAT, Locale.UK);
-            assertFalse(useFahrenheit());
-        }
     }
 
     @Test
@@ -89,9 +66,7 @@ public class LocaleUtilsTest {
         assertEquals("101°F", formatTemperatureFromFahrenheit(100.5));
 
         Locale.setDefault(Locale.GERMANY);
-        if (Build.VERSION.SDK_INT >= 24) {
-            Locale.setDefault(Locale.Category.FORMAT, Locale.GERMANY);
-        }
+        Locale.setDefault(Locale.Category.FORMAT, Locale.GERMANY);
 
         assertEquals("0°C", formatTemperatureFromFahrenheit(32.0));
         assertEquals("100°C", formatTemperatureFromFahrenheit(212.0));

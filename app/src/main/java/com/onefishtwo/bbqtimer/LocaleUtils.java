@@ -2,25 +2,15 @@ package com.onefishtwo.bbqtimer;
 
 import android.os.Build;
 
+import androidx.annotation.NonNull;
+import androidx.core.text.util.LocalePreferences;
+
 import java.util.Locale;
-import java.util.Set;
 
 public class LocaleUtils {
-    /**
-     * <a href="https://worldpopulationreview.com/country-rankings/countries-that-use-fahrenheit">
-     *     Countries that use fahrenheit</a> */
-    private static final Set<String> FAHRENHEIT_COUNTRIES = Set.of(
-            "US", // US
-            "BS", // Bahamas
-            "KY", // Cayman Islands
-            "LR", // Liberia
-            "PW", // Palau
-            "FM", // Federated States of Micronesia
-            "MH"  // Marshall Islands
-    );
 
-    /** Returns the default Locale for formatting dates, numbers, and/or currencies. */
-    public static Locale getFormatDefault() {
+    /** Returns the default Locale intended for formatting dates, numbers, and/or currencies. */
+    public static Locale getDefaultFormatLocale() {
         if (Build.VERSION.SDK_INT >= 24) {
             return Locale.getDefault(Locale.Category.FORMAT);
         } else {
@@ -28,21 +18,32 @@ public class LocaleUtils {
         }
     }
 
-    /** Indicates whether the locale should format temperatures in Fahrenheit °F rather than °C. */
-    public static boolean useFahrenheit(Locale locale) {
-        String country = locale.getCountry();
-        return FAHRENHEIT_COUNTRIES.contains(country);
+    /** Indicates whether the given locale should format temperatures in Fahrenheit °F rather
+     * than Celsius °C.
+     * </p>
+     * To clarify LocalePreferences.getTemperatureUnit(Locale locale, boolean resolved):
+     * <p style="margin-left: 30px">
+     *   Returns any user regional preference temperature unit (from the Locale's extension value)
+     *   on Android 14+, else optionally "resolves" a fallback from the Locale, else returns "".
+     *   On API 33+ the fallback comes from a NumberFormatter; on older APIs it's inferred from the
+     *   Locale's country code -- only {"BS", "BZ", "KY", "PR", "PW", "US"} use Fahrenheit.
+     * </p>
+     */
+    public static boolean useFahrenheit(@NonNull Locale locale) {
+        String temperatureUnit = LocalePreferences.getTemperatureUnit(locale);
+        return LocalePreferences.TemperatureUnit.FAHRENHEIT.equals(temperatureUnit);
     }
 
     /** Indicates whether to format temperatures in Fahrenheit °F rather than °C. */
     public static boolean useFahrenheit() {
-        Locale locale = getFormatDefault();
+        Locale locale = getDefaultFormatLocale();
         return useFahrenheit(locale);
     }
 
     /** Format a temperature in Fahrenheit °F or Celsius °C, rounded to an integer. */
+    @NonNull
     public static String formatTemperatureFromFahrenheit(double fahrenheit) {
-        Locale locale = getFormatDefault();
+        Locale locale = getDefaultFormatLocale();
 
         if (useFahrenheit(locale)) {
             return String.format(locale, "%.0f°F", fahrenheit);

@@ -31,7 +31,7 @@ Short forms:
 
 ## Android Requirements
 
-**BBQ Timer** is for phones and tablets running Android 5.0+ (Lollipop and later).
+**BBQ Timer** is for phones and tablets running Android 6.0+ (Marshmallow and later).
 
 If it encounters problems on your Android device, email me the details (device model, Android
 version, screen size, problem symptom, Android "bugreport" file).
@@ -49,8 +49,8 @@ version, screen size, problem symptom, Android "bugreport" file).
   * To put it on the lock screen, put it in **Pause** or **Play** mode by tapping buttons in the app or the home screen widget.
   * You can long-press the app’s home screen icon, then tap the “Pause at 00:00” shortcut (on Android 7.1+) to make it Paused and ready on the lock screen.
 * Tap ▲ in the alarm interval text field to open the pop-up menu of interval times.
-  * Tap “Edit these intervals…” in the menu to customize the menu.
-  * Long-press ▲ to customize the menu.
+  * Tap “Edit these intervals…” in the menu (or Long-press ▲) to customize the menu. Each line should start with a time interval in HH:MM:SS or MM:SS or MM, followed by a space and optional notes. E.g. “6 thin fish, cook to 145°F” is a 6 minute timer interval to flip or check the fish, with a reminder that fish is typically considered done at 145°F.
+  * When editing, tap the “Reset” command to reconstruct a fresh menu of alarm intervals using the current system Language preference and (on Android 14+) the current Regional preference for Temperature units.
 * The app, home screen widget, and pull-down notification show the countdown interval time as well as the total elapsed time (requires Android 7+).
 * In the app, the phone’s volume keys adjust the Alarm volume.
 * You can change BBQ Timer’s “Alarm” sound in Settings - Notifications. Don’t pick “None” if you want to hear the interval alarms. To restore the app’s cowbell sound, uninstall and reinstall the app.

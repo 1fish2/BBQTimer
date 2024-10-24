@@ -9,6 +9,38 @@
               <option name="preferredColumnWidths">
                 <map>
                   <entry key="23_6.0_M_3.2_HVGA_slider_mdpi_320x480" value="120" />
+                  <entry key="30_11.0_R_Nexus_S_hdpi_480x800" value="120" />
+                  <entry key="31_12.0_S_Nexus_S_hdpi_480x800" value="120" />
+                  <entry key="31_12.0_S_Z-Fold_Fold-in_with_outer_display_xhdpi_1768x2208" value="120" />
+                  <entry key="34_14.0_U_Pixel_6_1080x2400_420dpi" value="120" />
+                  <entry key="Duration" value="90" />
+                  <entry key="Tests" value="360" />
+                </map>
+              </option>
+            </AndroidTestResultsTableState>
+          </value>
+        </entry>
+        <entry key="-348277230">
+          <value>
+            <AndroidTestResultsTableState>
+              <option name="preferredColumnWidths">
+                <map>
+                  <entry key="23_6.0_M_3.2_HVGA_slider_mdpi_320x480" value="120" />
+                  <entry key="24_7.0_N_Nexus_4_xhdpi_768x1280" value="120" />
+                  <entry key="35_15.0_V_Pixel_9_Pro_XL_1344x2992_xxhdpi" value="120" />
+                  <entry key="Duration" value="90" />
+                  <entry key="Tests" value="360" />
+                </map>
+              </option>
+            </AndroidTestResultsTableState>
+          </value>
+        </entry>
+        <entry key="103576636">
+          <value>
+            <AndroidTestResultsTableState>
+              <option name="preferredColumnWidths">
+                <map>
+                  <entry key="35_15.0_V_Resizable_420dpi" value="120" />
                   <entry key="Duration" value="90" />
                   <entry key="Tests" value="360" />
                 </map>
@@ -22,7 +54,9 @@
               <option name="preferredColumnWidths">
                 <map>
                   <entry key="23_6.0_M_3.2_HVGA_slider_mdpi_320x480" value="120" />
+                  <entry key="23_6.0_M_Nexus_7_1200x1920_xhdpi" value="120" />
                   <entry key="24_7.0_B_3.2-inch_HVGA_slider_320x480" value="120" />
+                  <entry key="24_7.0_N_3.2-inch_HVGA_slider_320x480" value="120" />
                   <entry key="24_7.0_N_Nexus_4_xhdpi_768x1280" value="120" />
                   <entry key="25_7.1.1_N.1_Nexus_5_xxhdpi_1080x1920" value="120" />
                   <entry key="26_8.0_O_Pixel_2_xxhdpi_1080x1920" value="120" />
@@ -41,8 +75,11 @@
                   <entry key="32_12L_Sv2_Z-Flip_fold-in_xxhdpi_1080x2636" value="120" />
                   <entry key="33_13.0_T_Pixel_5_xxhdpi_1080x2340" value="120" />
                   <entry key="33_13.0_T_Resizable" value="120" />
+                  <entry key="34_14.0_U_Pixel_6_1080x2400_420dpi" value="120" />
                   <entry key="34_U_Pixel_6_1080x2400_420dpi" value="120" />
+                  <entry key="35_15.0_V_Pixel_9_Pro_XL_1344x2992_xxhdpi" value="120" />
                   <entry key="35_15.0_V_Pixel_Fold_2208x1840_420dpi" value="120" />
+                  <entry key="35_15.0_V_Resizable_420dpi" value="120" />
                   <entry key="35_V_Pixel_9_Pro_XL_1344x2992_xxhdpi" value="120" />
                   <entry key="Duration" value="90" />
                   <entry key="Google Pixel 6" value="120" />
@@ -59,8 +96,11 @@
             <AndroidTestResultsTableState>
               <option name="preferredColumnWidths">
                 <map>
+                  <entry key="32_12L_Sv2_Pixel_C_xhdpi_2560x1800" value="120" />
+                  <entry key="34_14.0_U_Pixel_6_1080x2400_420dpi" value="120" />
                   <entry key="34_U_Pixel_6_1080x2400_420dpi" value="120" />
                   <entry key="Duration" value="90" />
+                  <entry key="Google Pixel 6" value="120" />
                   <entry key="Tests" value="360" />
                 </map>
               </option>
