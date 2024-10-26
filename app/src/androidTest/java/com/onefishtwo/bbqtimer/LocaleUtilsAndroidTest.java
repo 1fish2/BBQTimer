@@ -99,7 +99,8 @@ public class LocaleUtilsAndroidTest {
         Locale.setDefault(Locale.UK);
         assertFalse(useFahrenheit());
 
-        if (Build.VERSION.SDK_INT >= 24) {
+        if (Build.VERSION.SDK_INT >= 24) //noinspection SpellCheckingInspection
+        {
             Locale.setDefault(BAHAMAS);
             assertTrue(useFahrenheit());
 

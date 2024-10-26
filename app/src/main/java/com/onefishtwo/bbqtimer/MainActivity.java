@@ -213,6 +213,16 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+//        android.os.StrictMode.setThreadPolicy(new android.os.StrictMode.ThreadPolicy.Builder()
+//                .detectAll()
+//                .penaltyLog()
+//                .build());
+//        android.os.StrictMode.setVmPolicy(new android.os.StrictMode.VmPolicy.Builder()
+//                .detectAll()
+//                .penaltyLog()
+//                .build());
+
         viewConfiguration = -1;
         notifier = new Notifier(this);
         lastRecipes = "";
@@ -387,11 +397,7 @@ public class MainActivity extends AppCompatActivity
 
         AlarmReceiver.updateNotifications(this); // after setMainActivityIsVisible()
 
-        if (popupMenu != null) {
-            popupMenu.dismiss(); // avoid android.view.WindowLeaked PopupWindow$PopupViewContainer
-            // TODO: It still throws WindowLeaked PopupWindow$PopupDecorView on API 32.
-            popupMenu = null;
-        }
+        dismissPopupMenu();
 
         super.onStop();
     }
@@ -666,9 +672,28 @@ public class MainActivity extends AppCompatActivity
     public void onEditorDialogNegativeClick(DialogInterface dialog) {
     }
 
+    /** Dismiss any popup menu.
+     * </p>
+     * ISSUE: Rotating the screen with a popup menu open throws
+     * "android.view.WindowLeaked leaked window android.widget.PopupWindow$PopupDecorView".
+     * It doesn't seem fixable short of reimplementing PopupMenu or handling screen rotations
+     * manually. But it doesn't seem to matter other than logging an error.
+     */
+    @UiThread
+    private void dismissPopupMenu() {
+        if (popupMenu != null) {
+            popupMenu.dismiss();
+            popupMenu = null;
+        }
+    }
+
     @SuppressWarnings("unused")
     @UiThread
     public void onDismissRecipeMenu(PopupMenu menu) {
+        if (menu != null) {
+            menu.setOnMenuItemClickListener(null);
+            menu.setOnDismissListener(null);
+        }
         popupMenu = null;
     }
 
