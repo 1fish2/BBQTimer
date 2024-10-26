@@ -24,11 +24,11 @@ import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+
 import com.onefishtwo.bbqtimer.LocaleUtils;
 import com.onefishtwo.bbqtimer.R;
 import com.onefishtwo.bbqtimer.TimeCounter;
-
-import androidx.annotation.NonNull;
 
 /**
  * Saves the application's state persistently in SharedPreferences and caches it in a static
@@ -50,8 +50,8 @@ public class ApplicationState {
     /** PERSISTENT STATE filename. */
     private static final String APPLICATION_PREF_FILE = "BBQ_Timer_Prefs";
 
-    /** PERSISTENT STATE identifiers. */
-    private static final String PREF_MAIN_ACTIVITY_IS_VISIBLE = "App_mainActivityIsVisible";
+    /** PERSISTENT STATE IDs. */
+    // psf String PREF_MAIN_ACTIVITY_IS_VISIBLE = "App_mainActivityIsVisible"; // Deleted ID
     private static final String PREF_ENABLE_REMINDERS = "App_enableReminders";
     private static final String PREF_SECONDS_PER_REMINDER = "App_secondsPerReminder";
     private static final String PREF_RECIPES = "App_recipes";
@@ -59,7 +59,6 @@ public class ApplicationState {
     private static ApplicationState sharedInstance;
 
     private final TimeCounter timeCounter = new TimeCounter();
-    private boolean mainActivityIsVisible; // between onStart() .. onStop()
     private boolean enableReminders;
     private int secondsPerReminder;
     private String recipes = FALLBACK_RECIPES;
@@ -113,7 +112,6 @@ public class ApplicationState {
                 context.getSharedPreferences(APPLICATION_PREF_FILE, Context.MODE_PRIVATE);
 
         boolean needToSave    = timeCounter.load(prefs);
-        mainActivityIsVisible = prefs.getBoolean(PREF_MAIN_ACTIVITY_IS_VISIBLE, false);
         enableReminders       = prefs.getBoolean(PREF_ENABLE_REMINDERS, true);
         int secs              = prefs.getInt(PREF_SECONDS_PER_REMINDER, 5 * 60);
         secondsPerReminder    = boundIntervalTimeSeconds(secs);
@@ -143,7 +141,6 @@ public class ApplicationState {
         SharedPreferences.Editor prefsEditor = prefs.edit();
 
         timeCounter.save(prefsEditor);
-        prefsEditor.putBoolean(PREF_MAIN_ACTIVITY_IS_VISIBLE, mainActivityIsVisible);
         prefsEditor.putBoolean(PREF_ENABLE_REMINDERS, enableReminders);
         prefsEditor.putInt(PREF_SECONDS_PER_REMINDER, secondsPerReminder);
         prefsEditor.putString(PREF_RECIPES, recipes);
@@ -159,22 +156,6 @@ public class ApplicationState {
     @NonNull
     public TimeCounter getTimeCounter() {
         return timeCounter;
-    }
-
-    /**
-     * Returns a boolean indicating whether MainActivity is visible [it's between
-     * onStart() .. onStop()].
-     */
-    @SuppressWarnings("unused")
-    public boolean isMainActivityVisible() {
-        return mainActivityIsVisible;
-    }
-
-    /**
-     * Sets a boolean to remember whether MainActivity is visible. Call {@link #save} to save it.
-     */
-    public void setMainActivityIsVisible(boolean _mainActivityIsVisible) {
-        this.mainActivityIsVisible = _mainActivityIsVisible;
     }
 
     /** Returns a boolean indicating whether periodic reminders are enabled. */

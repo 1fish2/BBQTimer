@@ -351,7 +351,6 @@ public class MainActivity extends AppCompatActivity
         // Load persistent state.
         state = ApplicationState.sharedInstance(this);
         timer = state.getTimeCounter();
-        state.setMainActivityIsVisible(true);
 
         // Apply the app shortcut action, if any, once.
         switch (shortcutAction) {
@@ -365,9 +364,10 @@ public class MainActivity extends AppCompatActivity
             case SHORTCUT_NONE:
                 break;
         }
+        if (shortcutAction != SHORTCUT_NONE) {
+            state.save(this);
+        }
         shortcutAction = SHORTCUT_NONE;
-
-        state.save(this);
 
         updateUI();
 
@@ -390,12 +390,6 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onStop() {
         updateHandler.endScheduledUpdates();
-
-        // Update persistent state.
-        state.setMainActivityIsVisible(false);
-        state.save(this);
-
-        AlarmReceiver.updateNotifications(this); // after setMainActivityIsVisible()
 
         dismissPopupMenu();
 
