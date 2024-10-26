@@ -24,6 +24,7 @@
         android:description="@string/app_description"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:name=".BBQTimerApplication"
         android:theme="@style/AppTheme"
         android:enableOnBackInvokedCallback="true"
         android:supportsRtl="false"

@@ -38,6 +38,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.os.StrictMode;
 import android.provider.Settings;
 import android.text.Editable;
 import android.text.SpannableString;
@@ -214,14 +215,12 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-//        android.os.StrictMode.setThreadPolicy(new android.os.StrictMode.ThreadPolicy.Builder()
-//                .detectAll()
-//                .penaltyLog()
-//                .build());
-//        android.os.StrictMode.setVmPolicy(new android.os.StrictMode.VmPolicy.Builder()
-//                .detectAll()
-//                .penaltyLog()
-//                .build());
+        if (BBQTimerApplication.STRICT_MODE) {
+            StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
+                    .detectAll()
+                    .penaltyLog()
+                    .build());
+        }
 
         viewConfiguration = -1;
         notifier = new Notifier(this);
