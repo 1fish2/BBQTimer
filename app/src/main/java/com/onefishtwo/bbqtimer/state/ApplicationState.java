@@ -87,11 +87,7 @@ public class ApplicationState {
         return sharedInstance;
     }
 
-    /**
-     * Package-scoped constructor for tests to access or override while the rest of the app is
-     * limited to {@link #sharedInstance}.
-     */
-    ApplicationState() {
+    private ApplicationState() {
     }
 
     /** Clips the given interval time in seconds to sane bounds. */

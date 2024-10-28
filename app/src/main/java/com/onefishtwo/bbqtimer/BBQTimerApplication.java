@@ -23,8 +23,9 @@ public class BBQTimerApplication extends Application {
 
         super.onCreate();
 
-        // Load the state now, not in the UI thread, to avoid delaying the UI thread.
-        // TODO: Load it asynchronously, e.g. in an AsyncTask, with access synchronization.
+        // Load the state now, not in the UI thread, to avoid delaying the UI thread, and under
+        // cover of the splash screen animation.
+        // TODO: Load it asynchronously with access synchronization.
         ApplicationState.sharedInstance(this);
     }
 }
