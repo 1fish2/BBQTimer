@@ -41,7 +41,7 @@ import java.util.regex.Pattern;
  * A stopwatch time counter (data model).
  * <p/>
  * The run states are {Running, Paused, Stopped}, where Paused is like Stopped plus an ongoing
- * Notification so it can be viewed and resumed on the Android Lollipop lock screen.
+ * Notification so it can be viewed and resumed on the Android lock screen.
  */
 @SuppressWarnings("SynchronizationOnStaticField")
 public class TimeCounter {
@@ -159,9 +159,9 @@ public class TimeCounter {
      * Loads and normalizes the state from a preferences object.
      *
      * @return true if the caller should {@link #save} the normalized state to ensure consistent
-     * results. That happens when the loaded state is "running" or "paused" with a future startTime,
-     * which means the device must've rebooted. load() can only detect that within startTime after
-     * reboot, so it's important to save the normalized state in that "reset" case.
+     * results. This occurs when the loaded state is "running" or "paused" with a future startTime,
+     * which means the device must've rebooted. load() can detect this only within startTime after
+     * reboot, so it's best to save the normalized state soon.
      */
     public boolean load(@NonNull SharedPreferences prefs) {
         isRunning = prefs.getBoolean(PREF_IS_RUNNING, false);

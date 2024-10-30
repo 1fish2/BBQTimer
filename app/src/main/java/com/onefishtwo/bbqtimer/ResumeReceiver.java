@@ -26,19 +26,12 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.onefishtwo.bbqtimer.state.ApplicationState;
+
 /**
- * A BroadcastReceiver to resume/adjust the running timer and notification after an app upgrade,
- * clock adjustment, timezone adjustment, or locale change.
- *<p/>
- * TODO: Maybe stop the timer in a ACTION_BOOT_COMPLETED BroadcastReceiver. That requires another
- * permission and would only help a narrow case: If the device reboots when the timer was running or
- * paused, the app won't have an active notification or alarm. If the app has any widgets, they'll
- * get updated shortly after boot (at least sometimes before ACTION_BOOT_COMPLETED), detect that the
- * timer's start time is in the future, and reset the timer. This also happens after unlock at least
- * sometimes on 5.0 even without widgets. Otherwise starting the Activity will either stop the timer
- * (if its start time is in the future) or else restore the alarm and later the notification. The
- * last case looks broken since the timer doesn't restore until the user opens the Activity, and if
- * the timer is running, its duration will be smaller than it was when the device powered down.
+ * A BroadcastReceiver to resume/adjust/stop the running timer and notification after an app
+ * upgrade, clock adjustment, timezone adjustment, locale change, or ACTION_BOOT_COMPLETED (either
+ * system reboot then login, or user interaction with the app after Force Stop on Android 15+).
  *<p/>
  * NOTE: With Android 7.0 (API 24) and 8.0 (API 26) Broadcast Intent limitations, apps can register
  * for a subset of the original implicit broadcast actions, including:
@@ -72,14 +65,38 @@ public class ResumeReceiver extends BroadcastReceiver {
         Log.i(TAG, "Broadcast intent: " + action);
 
         if (Intent.ACTION_MY_PACKAGE_REPLACED.equals(action)) {
+            ApplicationState state = ApplicationState.sharedInstance(context);
+
             AlarmReceiver.updateNotifications(context);
+            TimerAppWidgetProvider.updateAllWidgets(context, state);
+
         } else if (Intent.ACTION_TIME_CHANGED.equals(action) // "android.intent.action.TIME_SET"
                 || Intent.ACTION_TIMEZONE_CHANGED.equals(action)) {
             AlarmReceiver.handleClockAdjustment(context);
+
         } else if (Intent.ACTION_LOCALE_CHANGED.equals(action)) {
             Notifier notifier = new Notifier(context);
+
             notifier.onLocaleChange();
             AlarmReceiver.updateNotifications(context);
+
+        } else if (Intent.ACTION_BOOT_COMPLETED.equals(action)) {
+            // BOOT_COMPLETED: Reboot then login or Android 15+ Force Stop then user interaction.
+            // NOTE: Usually after reboot, ApplicationState.sharedInstance() already stopped the
+            // timer due to a future startTime, and in that case Notifications will be clear and
+            // APPWIDGET_UPDATE Intents will reset the widgets.
+            // This code stops the timer after the remaining reboot case and resets everything after
+            // the Force Stop case.
+            ApplicationState state = ApplicationState.sharedInstance(context);
+            TimeCounter timer = state.getTimeCounter();
+
+            if (!timer.isStopped()) {
+                timer.stop();
+                state.save(context);
+                Log.i(TAG, "*** Stopped and saved the timer after BOOT_COMPLETED");
+                AlarmReceiver.updateNotifications(context);
+                TimerAppWidgetProvider.updateAllWidgets(context, state);
+            }
         }
     }
 }

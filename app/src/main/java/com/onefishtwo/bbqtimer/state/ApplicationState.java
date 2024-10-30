@@ -78,7 +78,7 @@ public class ApplicationState {
 
             if (needToSave) {
                 state.save(context);
-                Log.i(TAG, "*** Reset and saved the timer ***");
+                Log.i(TAG, "*** Stopped and saved the timer");
             }
 
             sharedInstance = state;
@@ -96,12 +96,12 @@ public class ApplicationState {
     }
 
     /**
-     * Loads and normalizes persistent state using context. Overridable for tests.
+     * Loads and normalizes persistent state using context.
      * Normalization matters if the device rebooted while the timer was running or if the app was
      * replaced with a version that doesn't support the current choice of secondsPerReminder.
      *
      * @return true if the caller should {@link #save} the normalized state to ensure consistent
-     * results after {@link TimeCounter#load(SharedPreferences)} had to reset the timer.
+     * results when {@link TimeCounter#load(SharedPreferences)} had to reset the timer.
      */
     boolean load(@NonNull Context context) {
         SharedPreferences prefs =

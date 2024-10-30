@@ -34,13 +34,13 @@ import android.util.SizeF;
 import android.view.View;
 import android.widget.RemoteViews;
 
-import com.onefishtwo.bbqtimer.state.ApplicationState;
-
-import java.util.Map;
-
 import androidx.annotation.DrawableRes;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
+
+import com.onefishtwo.bbqtimer.state.ApplicationState;
+
+import java.util.Map;
 
 /**
  * The BBQ Timer app widget for the home and lock screens.
@@ -90,7 +90,8 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
     }
 
     /**
-     * Updates a widget instance's layout to its size range and contents to the Timer state & time.
+     * Updates a widget instance's layout to its size range, contents to the Timer state & time, and
+     * sets its PendingIntents.
      * <p/>
      * Workaround: A paused Chronometer doesn't show a stable value. Multiple widgets might show
      * different values, switching light/dark theme might change it, etc. So construct its time
@@ -316,7 +317,8 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
     }
 
     /**
-     * Receives an Intent from an AppWidget View or a Notification action.
+     * Receives an Intent from an AppWidget or a Notification. Dispatches via super.onReceive() to
+     * onUpdate(), onDeleted(), onEnabled(), or onDisabled(); and handles app-specific actions.
      */
     @Override
     public void onReceive(@NonNull Context context, @NonNull Intent intent) {
