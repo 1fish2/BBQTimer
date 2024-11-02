@@ -114,7 +114,7 @@ public class MainActivity extends AppCompatActivity
      */
     @Nullable
     static PendingIntent makePendingIntent(@NonNull Context context) {
-        Intent activityIntent = new Intent(context, MainActivity.class)
+        Intent activityIntent = new Intent(Intent.ACTION_MAIN, null, context, MainActivity.class)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(context)
@@ -286,6 +286,9 @@ public class MainActivity extends AppCompatActivity
                 shortcutAction = SHORTCUT_START;
                 callingIntent.setAction(Intent.ACTION_MAIN);
             }
+            // ACTION_MAIN from a Widget or Notification
+            // ACTION_EDIT from AlarmManager.AlarmClockInfo()
+            // whatever with category.LAUNCHER
         }
 
         logTheConfiguration(getResources().getConfiguration());
@@ -953,9 +956,8 @@ public class MainActivity extends AppCompatActivity
     @TargetApi(26)
     private void openNotificationChannelSettings(
             @SuppressWarnings("SameParameterValue") String channelId) {
-        Intent intent = new Intent();
+        Intent intent = new Intent(Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS);
 
-        intent.setAction(Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS);
         intent.putExtra(Settings.EXTRA_APP_PACKAGE, getPackageName());
         intent.putExtra(Settings.EXTRA_CHANNEL_ID, channelId);
 
