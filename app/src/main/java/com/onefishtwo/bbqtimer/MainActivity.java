@@ -298,7 +298,8 @@ public class MainActivity extends AppCompatActivity
     private void logTheConfiguration(@NonNull Configuration config) {
         Log.i(TAG,
             String.format("Config densityDpi: %d, size DPI: %dx%d, orientation: %d",
-                    config.densityDpi, config.screenWidthDp, config.screenHeightDp,
+                    config.densityDpi,
+                    config.screenWidthDp, config.screenHeightDp, // Android 15+ includes system bars
                     config.orientation));
     }
 
