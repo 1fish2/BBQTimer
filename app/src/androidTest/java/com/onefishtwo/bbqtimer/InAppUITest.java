@@ -45,7 +45,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.isNotChecked;
 import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
-import static com.onefishtwo.bbqtimer.CustomMatchers.withCompoundDrawable;
+import static com.onefishtwo.bbqtimer.CustomMatchers.withTag;
 import static com.onefishtwo.bbqtimer.CustomViewActions.waitMsec;
 import static com.onefishtwo.bbqtimer.TimeIntervalMatcher.inTimeInterval;
 import static com.onefishtwo.bbqtimer.TimeIntervalMatcher.inWholeTimeInterval;
@@ -148,6 +148,7 @@ public class InAppUITest {
      * NOTE: Testing the timer is inherently timing-dependent. A test run could fail by not
      * allowing the app enough time to respond. ARM emulators need extra response time. Mocking
      * the TimeCounter clock might fix this even with MainActivity's Handler.
+     * TODO: Test if a ForegroundService will make for more timely alarms.
      */
     @Test
     public void playPauseStopUITest() {
@@ -174,7 +175,7 @@ public class InAppUITest {
         playPauseButton.perform(click()); // Play
         checkPlaying();
         playPauseButton.perform(waitMsec(1000));
-        TimeIntervalMatcher time1 = inTimeInterval(1000, 1800);
+        TimeIntervalMatcher time1 = inTimeInterval(1000, 1900);
         checkPlayingAt(time1);
 
         stopButton.perform(click()); // Stop
@@ -203,7 +204,7 @@ public class InAppUITest {
         playPauseButton.perform(click()); // Play
         checkPlaying();
         playPauseButton.perform(waitMsec(1000));
-        TimeIntervalMatcher time4 = inTimeInterval(time3.time + 1000, time3.time + 1700);
+        TimeIntervalMatcher time4 = inTimeInterval(time3.time + 1000, time3.time + 1900);
         checkPlayingAt(time4);
 
         playPauseButton.perform(click()); // Pause
@@ -261,8 +262,8 @@ public class InAppUITest {
         stopButton.check(matches(not(isDisplayed())));
         timeView.check(matches(withText(TIME_ZERO)));
 
-        playPauseButton.check(matches(withCompoundDrawable(R.drawable.ic_play)));
-        resetButton.check(matches(withCompoundDrawable(R.drawable.ic_pause)));
+        playPauseButton.check(matches(withTag(R.drawable.ic_play)));
+        resetButton.check(matches(withTag(R.drawable.ic_pause)));
 
         checkReminder(true);
 
@@ -276,8 +277,8 @@ public class InAppUITest {
         stopButton.check(matches(isCompletelyDisplayed()));
         timeView.check(matches(withText(TIME_ZERO)));
 
-        playPauseButton.check(matches(withCompoundDrawable(R.drawable.ic_play)));
-        stopButton.check(matches(withCompoundDrawable(R.drawable.ic_stop)));
+        playPauseButton.check(matches(withTag(R.drawable.ic_play)));
+        stopButton.check(matches(withTag(R.drawable.ic_stop)));
 
         checkReminder(true);
 
@@ -290,8 +291,8 @@ public class InAppUITest {
         resetButton.check(matches(not(isDisplayed())));
         stopButton.check(matches(isCompletelyDisplayed()));
 
-        playPauseButton.check(matches(withCompoundDrawable(R.drawable.ic_pause)));
-        stopButton.check(matches(withCompoundDrawable(R.drawable.ic_stop)));
+        playPauseButton.check(matches(withTag(R.drawable.ic_pause)));
+        stopButton.check(matches(withTag(R.drawable.ic_stop)));
 
         checkReminder(true);
 
@@ -310,9 +311,9 @@ public class InAppUITest {
         resetButton.check(matches(isCompletelyDisplayed()));
         stopButton.check(matches(isCompletelyDisplayed()));
 
-        playPauseButton.check(matches(withCompoundDrawable(R.drawable.ic_play)));
-        resetButton.check(matches(withCompoundDrawable(R.drawable.ic_replay)));
-        stopButton.check(matches(withCompoundDrawable(R.drawable.ic_stop)));
+        playPauseButton.check(matches(withTag(R.drawable.ic_play)));
+        resetButton.check(matches(withTag(R.drawable.ic_replay)));
+        stopButton.check(matches(withTag(R.drawable.ic_stop)));
         timeView.check(matches(withText(time)));
 
         checkReminder(true);

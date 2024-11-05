@@ -60,6 +60,7 @@ import android.widget.TextView;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.ColorRes;
+import androidx.annotation.DrawableRes;
 import androidx.annotation.IntDef;
 import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
@@ -897,16 +898,21 @@ public class MainActivity extends AppCompatActivity
         if (viewConfiguration != newConfiguration) { // optimize out the nearly-always no-op case
             viewConfiguration = newConfiguration;
 
-            resetButton.setCompoundDrawablesWithIntrinsicBounds(
-                    isStopped ? R.drawable.ic_pause : R.drawable.ic_replay, 0, 0, 0);
+            setDrawableRes(resetButton, isStopped ? R.drawable.ic_pause : R.drawable.ic_replay);
             resetButton.setVisibility(isRunning || isPausedAt0 ? View.INVISIBLE : View.VISIBLE);
-            pauseResumeButton.setCompoundDrawablesWithIntrinsicBounds(
-                    isRunning ? R.drawable.ic_pause : R.drawable.ic_play, 0, 0, 0);
+            setDrawableRes(pauseResumeButton, isRunning ? R.drawable.ic_pause : R.drawable.ic_play);
+            setDrawableRes(stopButton, R.drawable.ic_stop);
             stopButton.setVisibility(isStopped ? View.INVISIBLE : View.VISIBLE);
             countdownDisplay.setVisibility(areRemindersEnabled ? View.VISIBLE : View.INVISIBLE);
             enableReminders.setChecked(areRemindersEnabled);
             displayAlarmPeriod();
         }
+    }
+
+    /** Set the left drawable of a Button (or any TextView). Tag it with the resId for testing. */
+    private static void setDrawableRes(@NonNull TextView view, @DrawableRes int resId) {
+        view.setCompoundDrawablesWithIntrinsicBounds(resId, 0, 0, 0);
+        view.setTag(resId);
     }
 
     /** Updates the whole UI for the current state: Activity, Notifications, alarms, and widgets. */

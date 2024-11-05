@@ -21,25 +21,17 @@
 
 package com.onefishtwo.bbqtimer;
 
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
-import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.test.espresso.ViewInteraction;
+import androidx.test.espresso.matcher.BoundedMatcher;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
-
-import androidx.annotation.DrawableRes;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
-import androidx.test.espresso.ViewInteraction;
-import androidx.test.espresso.matcher.BoundedMatcher;
 
 class CustomMatchers {
     /** Matches a child View at the given position in a parent View. From Espresso Test Recorder. */
@@ -65,26 +57,20 @@ class CustomMatchers {
     }
 
     /**
-     * Matches a View that has the given compound drawable resource. Cribbed and tweaked from
-     * <a href="https://gist.github.com/frankiesardo/7490059">@frankiesardo</a>.
+     * Matches a View that has the given tag, as saved by MainActivity#setDrawableRes when setting
+     * its icon resource ID.
      */
-    @SuppressWarnings("SpellCheckingInspection")
     @NonNull
-    static Matcher<View> withCompoundDrawable(@DrawableRes final int resourceId) {
-        return new BoundedMatcher<>(TextView.class) {
+    static Matcher<View> withTag(@NonNull final Object tag) {
+        return new BoundedMatcher<>(View.class) {
             @Override
             public void describeTo(@NonNull Description description) {
-                description.appendText("has compound drawable resource " + resourceId);
+                description.appendText("has tag (drawable icon resource ID) " + tag);
             }
 
             @Override
-            public boolean matchesSafely(@NonNull TextView textView) {
-                for (Drawable drawable : textView.getCompoundDrawables()) {
-                    if (sameBitmap(textView.getContext(), drawable, resourceId)) {
-                        return true;
-                    }
-                }
-                return false;
+            public boolean matchesSafely(@NonNull View view) {
+                return tag.equals(view.getTag());
             }
         };
     }
@@ -100,25 +86,6 @@ class CustomMatchers {
     static ViewInteraction ignoringFailures(@NonNull ViewInteraction interaction) {
         return interaction.withFailureHandler((error, viewMatcher) -> {
         });
-    }
-
-    static boolean sameBitmap(@NonNull Context context,
-            @Nullable Drawable drawable, @DrawableRes int resourceId) {
-        Drawable otherDrawable = ContextCompat.getDrawable(context, resourceId);
-
-        if (drawable == null || otherDrawable == null) {
-            return false;
-        }
-
-        drawable = drawable.getCurrent();
-        otherDrawable = otherDrawable.getCurrent();
-
-        if (drawable instanceof BitmapDrawable && otherDrawable instanceof BitmapDrawable) {
-            Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
-            Bitmap otherBitmap = ((BitmapDrawable) otherDrawable).getBitmap();
-            return bitmap != null && bitmap.sameAs(otherBitmap);
-        }
-        return false;
     }
 
 }
