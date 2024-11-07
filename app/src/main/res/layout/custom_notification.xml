@@ -92,8 +92,7 @@
                 android:maxLines="1"
                 android:textAppearance="@style/TextAppearance.AppCompat.Small"
                 android:textColor="@color/notification_text"
-                android:typeface="sans"
-                tools:targetApi="n" />
+                android:typeface="sans" />
 
             <TextView
                 android:id="@+id/pausedCountdown"

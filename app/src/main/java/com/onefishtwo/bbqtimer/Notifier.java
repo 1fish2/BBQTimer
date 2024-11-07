@@ -25,8 +25,6 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.net.Uri;
@@ -38,8 +36,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.RemoteViews;
 
-import com.onefishtwo.bbqtimer.state.ApplicationState;
-
+import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.IdRes;
 import androidx.annotation.LayoutRes;
@@ -52,6 +49,8 @@ import androidx.core.content.ContextCompat;
 import androidx.media.app.NotificationCompat.DecoratedMediaCustomViewStyle;
 import androidx.media.app.NotificationCompat.MediaStyle;
 
+import com.onefishtwo.bbqtimer.state.ApplicationState;
+
 /**
  * Manages the app's Android Notifications.
  */
@@ -59,15 +58,6 @@ public class Notifier {
     private static final String TAG = "Notifier";
     private static final int NOTIFICATION_ID = 7;
 
-    /**
-     * Construct a custom notification for this API level and higher. The custom notification really
-     * helps on Android 12 where MediaStyle's collapsed notification hides the Chronometer and the
-     * lock screen interferes with expanding the notification.
-     * <p>
-     * API 24 is required for a count-down Chronometer and for
-     * NotificationCompat.DecoratedMediaCustomViewStyle to do more than MediaStyle.
-     */
-    private static final int CUSTOM_NOTIFICATION_API_LEVEL = 24;
     private static final SpannedString EMPTY_SPAN = new SpannedString("");
 
     // Vibration pattern: ms off, on, off, ...
@@ -95,7 +85,6 @@ public class Notifier {
     @NonNull
     private final NotificationManagerCompat notificationManagerCompat;
     private final int notificationLightColor;
-    private Bitmap largeIcon; // only for API < 24
 
     private boolean soundAlarm = false; // whether the next notification should sound an alarm
     private int numActions; // the number of action buttons added to the notification being built
@@ -152,12 +141,7 @@ public class Notifier {
             return;
         }
 
-        MediaStyle style;
-        if (Build.VERSION.SDK_INT >= CUSTOM_NOTIFICATION_API_LEVEL) {
-            style = new DecoratedMediaCustomViewStyle();
-        } else {
-            style = new MediaStyle();
-        }
+        MediaStyle style = new DecoratedMediaCustomViewStyle();
 
         style.setShowActionsInCompactView(ACTION_INDICES[num]);
         builder.setStyle(style);
@@ -172,16 +156,13 @@ public class Notifier {
         //   The color setting carries over from a notification to its replacement so there's no
         //   way to get consistently different background colors for the two cases.
         //   http://stackoverflow.com/q/38415467/1682419
+        // [minSdk obviates the above adaptations.]
         // API 24 N - API 27 O1: colors the small icon, action button, and app title color. Garish.
         // API 28 P - API 30 R: colors the small icon and action button. Garish.
-        // API 31 S: See below.
+        // API 31 S+: colors the small icon's circular background.
         // setColorized(false) didn't change any of these results.
-        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.M) {
-            int workaroundColor = context.getColor(R.color.m_notification_background);
-            builder.setColor(workaroundColor);
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            // Android 12, S, API 31: setColor() colors the small icon's circular background.
-            int iconBackgroundColor = context.getColor(R.color.dark_orange_red);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            @ColorInt int iconBackgroundColor = context.getColor(R.color.dark_orange_red);
             builder.setColor(iconBackgroundColor);
         }
     }
@@ -341,7 +322,6 @@ public class Notifier {
      * @noinspection SameParameterValue
      */
     @NonNull
-    @TargetApi(24)
     private RemoteViews makeRemoteViews(
             @LayoutRes int layoutId, @NonNull ApplicationState state, @NonNull String countUpMessage,
             @NonNull String countDownMessage) {
@@ -406,26 +386,9 @@ public class Notifier {
             builder.setSmallIcon(R.drawable.notification_icon)
                     .setContentTitle(context.getString(R.string.app_name));
 
-            // Android API < 24 stretches the small icon into a fuzzy large icon, so add a large
-            // icon. On API 24+, adopt the UI guideline, thus making the notification fit more in
-            // the compact form, which could help when the lock screen is set to
-            // "Show sensitive content only when unlocked".
-            if (Build.VERSION.SDK_INT < 24) {
-                if (largeIcon == null) {
-                    largeIcon = BitmapFactory.decodeResource(context.getResources(),
-                            R.drawable.ic_large_notification);
-                }
-                builder.setLargeIcon(largeIcon);
-            }
-
-            if (Build.VERSION.SDK_INT < CUSTOM_NOTIFICATION_API_LEVEL && isRunning) {
-                builder.setWhen(System.currentTimeMillis() - timer.getElapsedTime())
-                        .setUsesChronometer(true);
-            } else {
-                // Hide the "when" field, which isn't useful while Paused, so it doesn't take space
-                // in the compact view along with 3 action buttons (Reset, Start, Stop).
-                builder.setShowWhen(false);
-            }
+            // The "when" field is redundant with the content text and would take space from the
+            // action buttons (Reset, Start, Stop) in compact view.
+            builder.setShowWhen(false);
 
             String alarmEvery = describePeriodicAlarms(state);
 
@@ -441,15 +404,13 @@ public class Notifier {
                 }
             }
 
-            if (Build.VERSION.SDK_INT >= CUSTOM_NOTIFICATION_API_LEVEL) {
-                String countUpMessage = timerRunState(timer, false); // Running/Paused/Stopped
-                RemoteViews notificationView = makeRemoteViews(
-                        R.layout.custom_notification, state, countUpMessage, alarmEvery);
+            String countUpMessage = timerRunState(timer, false); // Running/Paused/Stopped
+            RemoteViews notificationView = makeRemoteViews(
+                    R.layout.custom_notification, state, countUpMessage, alarmEvery);
 
-                builder.setCustomContentView(notificationView);
-                builder.setCustomHeadsUpContentView(notificationView);
-                builder.setCustomBigContentView(notificationView);
-            }
+            builder.setCustomContentView(notificationView);
+            builder.setCustomHeadsUpContentView(notificationView);
+            builder.setCustomBigContentView(notificationView);
             numActions = 0;
 
             {

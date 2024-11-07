@@ -8,9 +8,9 @@ android {
 
     defaultConfig {
         applicationId "com.onefishtwo.bbqtimer"
-        versionCode 24
-        versionName '4.1'
-        minSdk 23
+        versionCode 25
+        versionName '4.2'
+        minSdk 24
         targetSdk 34
         resourceConfigurations += ['en', 'de']
 

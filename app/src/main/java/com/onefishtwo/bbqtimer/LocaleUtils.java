@@ -1,7 +1,5 @@
 package com.onefishtwo.bbqtimer;
 
-import android.os.Build;
-
 import androidx.annotation.NonNull;
 import androidx.core.text.util.LocalePreferences;
 
@@ -11,11 +9,7 @@ public class LocaleUtils {
 
     /** Returns the default Locale intended for formatting dates, numbers, and/or currencies. */
     public static Locale getDefaultFormatLocale() {
-        if (Build.VERSION.SDK_INT >= 24) {
-            return Locale.getDefault(Locale.Category.FORMAT);
-        } else {
-            return Locale.getDefault();
-        }
+        return Locale.getDefault(Locale.Category.FORMAT);
     }
 
     /** Indicates whether the given locale should format temperatures in Fahrenheit °F rather

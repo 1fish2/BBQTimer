@@ -156,9 +156,8 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
                 child == PAUSED_CHRONOMETER_CHILD ? R.drawable.ic_action_play
                 : R.drawable.ic_action_pause;
 
-        // Enable the countdown time view if periodic alarms are enabled and countdown Chronometers
-        // are supported.
-        if (Build.VERSION.SDK_INT >= 24 && state.isEnableReminders()) {
+        // Enable the countdown time view if periodic alarms are enabled.
+        if (state.isEnableReminders()) {
             visibleCountdown = true;
             views.setViewVisibility(R.id.countdownFlipper, View.VISIBLE);
             views.setDisplayedChild(R.id.countdownFlipper, child);
