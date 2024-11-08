@@ -414,7 +414,7 @@ public class MainActivity extends AppCompatActivity
     /**
      * Requests permission to post pull-down notifications to the user. Either show rationale of why
      * notifications are needed and offer to help, or show a short message and offer to help, or
-     * open the OS UI straightaway, of give up and stop pestering.
+     * open the OS UI straightaway, or give up and stop pestering.
      *<p/>
      * NOTE: Even w/o permission the app creates notifications, in which case they're hidden but
      * maybe still needed for a Foreground Service.
