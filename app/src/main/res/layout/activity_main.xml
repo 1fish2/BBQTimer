@@ -8,7 +8,7 @@
     android:paddingHorizontal="@dimen/activity_horizontal_margin"
     android:paddingVertical="@dimen/activity_vertical_margin"
     android:focusable="false"
-    tools:context="com.onefishtwo.bbqtimer.MainActivity">
+    tools:context="com.onefishtwo.bbqtimer.MainActivity"> <!-- mainWindowInsetsListener() sets margins -->
 
     <TextView
         android:id="@+id/countUpDisplay"

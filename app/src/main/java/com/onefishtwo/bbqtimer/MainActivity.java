@@ -50,6 +50,7 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -57,6 +58,7 @@ import android.widget.EditText;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
+import androidx.activity.EdgeToEdge;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.ColorRes;
@@ -72,6 +74,9 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.app.TaskStackBuilder;
 import androidx.core.content.ContextCompat;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.core.widget.TextViewCompat;
 
 import com.google.android.material.snackbar.BaseTransientBottomBar;
@@ -214,6 +219,7 @@ public class MainActivity extends AppCompatActivity
     @MainThread
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState);
 
         if (BBQTimerApplication.STRICT_MODE) {
@@ -256,6 +262,8 @@ public class MainActivity extends AppCompatActivity
         countUpDisplay.setOnClickListener(this::onClickTimerText);
         enableReminders.setOnClickListener(this::onClickEnableRemindersToggle);
 
+        ViewCompat.setOnApplyWindowInsetsListener(mainContainer, this::mainWindowInsetsListener);
+
         // Set the TextClassifier *THEN* enable the CLEAR_TEXT (X) endIcon.
         RecipeEditorDialogFragment.workaroundTextClassifier(alarmPeriod);
         TextInputLayout alarmPeriodLayout = findViewById(R.id.alarmPeriodLayout);
@@ -293,6 +301,28 @@ public class MainActivity extends AppCompatActivity
         }
 
         logTheConfiguration(getResources().getConfiguration());
+    }
+
+    /**
+     * Set the window insets policy for edge-to-edge display, as done in
+     * developer.android.com/develop/ui/views/layout/edge-to-edge#system-bars-insets
+     * </p>
+     * systemBars() includes statusBars, captionBar, and navigationBars, but not ime.
+     * TODO: Include systemGestures()? displayCutout()?
+     * </p>
+     * "When view is attached to a parent ViewGroup, getLayoutParams() must not return null."
+     * </p>
+     * @noinspection SameReturnValue
+     */
+    private WindowInsetsCompat mainWindowInsetsListener(
+            @NonNull View view, @NonNull WindowInsetsCompat windowInsets) {
+        @NonNull Insets insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars());
+        ViewGroup.MarginLayoutParams mlp = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
+
+        mlp.setMargins(insets.left, insets.top, insets.right, insets.bottom);
+        view.setLayoutParams(mlp);
+
+        return WindowInsetsCompat.CONSUMED; // don't pass windowInsets to descendant Views
     }
 
     private void logTheConfiguration(@NonNull Configuration config) {
