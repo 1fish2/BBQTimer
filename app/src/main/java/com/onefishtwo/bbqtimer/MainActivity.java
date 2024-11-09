@@ -46,6 +46,7 @@ import android.text.Spanned;
 import android.text.style.StyleSpan;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -662,7 +663,7 @@ public class MainActivity extends AppCompatActivity
     /** The user clicked the button to open the "recipes" menu of alarm periods. */
     @UiThread
     public void onClickRecipeMenuButton(View v) {
-        popupMenu = new PopupMenu(this, v);
+        popupMenu = new PopupMenu(this, v, Gravity.CENTER, 0, R.style.PopupMenu);
         Menu menu = popupMenu.getMenu();
 
         popupMenu.getMenuInflater().inflate(R.menu.recipe_menu, menu);

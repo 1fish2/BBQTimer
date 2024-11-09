@@ -40,4 +40,9 @@
         <item name="android:maxLines">6</item>
     </style>
 
+    <!-- PopupMenu styles -->
+    <style name="PopupMenu" parent="@style/Widget.Material3.PopupMenu">
+    </style>
+
+
 </resources>
