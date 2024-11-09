@@ -310,19 +310,21 @@ public class MainActivity extends AppCompatActivity
      * systemBars() includes statusBars, captionBar, and navigationBars, but not ime.
      * TODO: Include systemGestures()? displayCutout()?
      * </p>
-     * "When view is attached to a parent ViewGroup, getLayoutParams() must not return null."
-     * </p>
      * @noinspection SameReturnValue
      */
     private WindowInsetsCompat mainWindowInsetsListener(
             @NonNull View view, @NonNull WindowInsetsCompat windowInsets) {
         @NonNull Insets insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars());
-        ViewGroup.MarginLayoutParams mlp = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
+        ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
 
-        mlp.setMargins(insets.left, insets.top, insets.right, insets.bottom);
-        view.setLayoutParams(mlp);
+        if (layoutParams != null) {
+            ViewGroup.MarginLayoutParams mlp = (ViewGroup.MarginLayoutParams) layoutParams;
 
-        return WindowInsetsCompat.CONSUMED; // don't pass windowInsets to descendant Views
+            mlp.setMargins(insets.left, insets.top, insets.right, insets.bottom);
+            view.setLayoutParams(mlp);
+        }
+
+        return WindowInsetsCompat.CONSUMED; // don't pass windowInsets to nested Views
     }
 
     private void logTheConfiguration(@NonNull Configuration config) {
