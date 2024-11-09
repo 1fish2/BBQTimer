@@ -59,6 +59,7 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
+import androidx.activity.SystemBarStyle;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.ColorRes;
@@ -95,6 +96,9 @@ import java.util.Vector;
 public class MainActivity extends AppCompatActivity
         implements RecipeEditorDialogFragment.RecipeEditorDialogFragmentListener {
     private static final String TAG = "Main";
+
+    /** Enable edge-to-edge display? On Android < 29, it only wrecks the status bar contrast. */
+    private static final boolean EDGE_TO_EDGE = Build.VERSION.SDK_INT >= 29;
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({SHORTCUT_NONE, SHORTCUT_PAUSE, SHORTCUT_START})
@@ -219,7 +223,10 @@ public class MainActivity extends AppCompatActivity
     @MainThread
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        EdgeToEdge.enable(this);
+        if (EDGE_TO_EDGE) {
+            EdgeToEdge.enable(this,
+                    SystemBarStyle.dark(getColor(R.color.dark_orange_red)));
+        }
         super.onCreate(savedInstanceState);
 
         if (BBQTimerApplication.STRICT_MODE) {
@@ -262,7 +269,9 @@ public class MainActivity extends AppCompatActivity
         countUpDisplay.setOnClickListener(this::onClickTimerText);
         enableReminders.setOnClickListener(this::onClickEnableRemindersToggle);
 
-        ViewCompat.setOnApplyWindowInsetsListener(mainContainer, this::mainWindowInsetsListener);
+        if (EDGE_TO_EDGE) {
+            ViewCompat.setOnApplyWindowInsetsListener(mainContainer, this::mainWindowInsetsListener);
+        }
 
         // Set the TextClassifier *THEN* enable the CLEAR_TEXT (X) endIcon.
         RecipeEditorDialogFragment.workaroundTextClassifier(alarmPeriod);
