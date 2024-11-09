@@ -224,8 +224,13 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         if (EDGE_TO_EDGE) {
-            EdgeToEdge.enable(this,
-                    SystemBarStyle.dark(getColor(R.color.dark_orange_red)));
+            // on API 35, dark(dark_orange_red) in Light theme comes out white on almost-white.
+            if (Build.VERSION.SDK_INT >= 35) {
+                EdgeToEdge.enable(this);
+            } else {
+                EdgeToEdge.enable(this,
+                        SystemBarStyle.dark(getColor(R.color.dark_orange_red)));
+            }
         }
         super.onCreate(savedInstanceState);
 
