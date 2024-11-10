@@ -599,7 +599,7 @@ public class MainActivity extends AppCompatActivity
 
         timer.toggleRunPause();
         updateHandler.beginScheduledUpdate();
-        updateUI();
+        saveStateAndUpdateUI();
 
         if (timer.isRunning()) {
             informIfAlarmsDeniedOrMuted();
@@ -614,7 +614,7 @@ public class MainActivity extends AppCompatActivity
 
         timer.reset();
         updateHandler.beginScheduledUpdate();
-        updateUI();
+        saveStateAndUpdateUI();
 
         informIfAlarmsDeniedOrMuted();
     }
@@ -627,7 +627,7 @@ public class MainActivity extends AppCompatActivity
 
         timer.stop();
         updateHandler.endScheduledUpdates();
-        updateUI();
+        saveStateAndUpdateUI();
     }
 
     /** The user tapped the time text: Cycle Stopped | Reset -> Running -> Paused -> Stopped. */
@@ -638,7 +638,7 @@ public class MainActivity extends AppCompatActivity
 
         timer.cycle();
         updateHandler.beginScheduledUpdate();
-        updateUI();
+        saveStateAndUpdateUI();
 
         if (timer.isRunning()) {
             informIfAlarmsDeniedOrMuted();
@@ -652,8 +652,7 @@ public class MainActivity extends AppCompatActivity
         defocusTextField(alarmPeriod);
 
         state.setEnableReminders(enableReminders.isChecked());
-        state.save(this);
-        updateUI();
+        saveStateAndUpdateUI();
 
         if (state.isEnableReminders()) {
             informIfAlarmsDeniedOrMuted();
@@ -845,8 +844,7 @@ public class MainActivity extends AppCompatActivity
         // Save the state change.
         if (newSeconds > 0 && newSeconds != state.getSecondsPerReminder()) {
             state.setSecondsPerReminder(newSeconds); // clips the value
-            state.save(this);
-            updateUI(); // update countdownDisplay, notifications, and widgets
+            saveStateAndUpdateUI(); // update countdownDisplay, notifications, and widgets
         }
 
         // Normalize the interval time text.
@@ -954,7 +952,7 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    /** Set the left drawable of a Button (or any TextView). Tag it with the resId for testing. */
+    /** Set the left drawable of a Button (or any TextView); tag it with the resId for testing. */
     private static void setDrawableRes(@NonNull TextView view, @DrawableRes int resId) {
         view.setCompoundDrawablesWithIntrinsicBounds(resId, 0, 0, 0);
         view.setTag(resId);
@@ -968,6 +966,18 @@ public class MainActivity extends AppCompatActivity
         AlarmReceiver.updateNotifications(this);
 
         TimerAppWidgetProvider.updateAllWidgets(this, state);
+    }
+
+    /**
+     * Saves app state then updates the UI.
+     * </p>
+     * TODO: Do all the load()/save() work in a background thread. Meanwhile, update the display
+     * first since save() might take a couple hundred ms.
+     */
+    @UiThread
+    private void saveStateAndUpdateUI() {
+        state.save(this);
+        updateUI();
     }
 
     /**
