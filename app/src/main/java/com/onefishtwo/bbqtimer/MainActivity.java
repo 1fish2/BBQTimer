@@ -319,14 +319,14 @@ public class MainActivity extends AppCompatActivity
      * Set the window insets policy for edge-to-edge display, as done in
      * developer.android.com/develop/ui/views/layout/edge-to-edge#system-bars-insets
      * </p>
-     * systemBars() includes statusBars, captionBar, and navigationBars, but not ime.
-     * TODO: Include systemGestures()? displayCutout()?
-     * </p>
      * @noinspection SameReturnValue
      */
     private WindowInsetsCompat mainWindowInsetsListener(
             @NonNull View view, @NonNull WindowInsetsCompat windowInsets) {
-        @NonNull Insets insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars());
+        @NonNull Insets insets = windowInsets.getInsets(
+                WindowInsetsCompat.Type.systemBars() // status, caption, & nav bars
+                        | WindowInsetsCompat.Type.displayCutout()
+                        | WindowInsetsCompat.Type.ime());
         ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
 
         if (layoutParams != null) {
@@ -960,7 +960,7 @@ public class MainActivity extends AppCompatActivity
         view.setTag(resId);
     }
 
-    /** Updates the whole UI for the current state: Activity, Notifications, alarms, and widgets. */
+    /** Updates the whole UI for the current state: Notifications, alarms, and widgets. */
     @UiThread
     private void updateUI() {
         updateViews();
