@@ -1,6 +1,7 @@
 package com.onefishtwo.bbqtimer;
 
 import android.app.Application;
+import android.os.Build;
 import android.os.StrictMode;
 
 import com.onefishtwo.bbqtimer.state.ApplicationState;
@@ -15,8 +16,13 @@ public class BBQTimerApplication extends Application {
                     .detectAll() // Instead?: .detectLeakedClosableObjects()
                     .penaltyLog()
                     .build());
-            StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
-                    .detectAll()
+
+            StrictMode.ThreadPolicy.Builder builder = new StrictMode.ThreadPolicy.Builder()
+                    .detectAll();
+            if (Build.VERSION.SDK_INT >= 34) {
+                builder.permitExplicitGc();
+            }
+            StrictMode.setThreadPolicy(builder
                     .penaltyLog()
                     .build());
         }
