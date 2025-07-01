@@ -288,11 +288,13 @@ public class Notifier {
             return;
         }
 
+        // TODO: Skip if getNotificationChannel(ALARM_NOTIFICATION_CHANNEL_ID) != null?
+
         createNotificationChannelV26();
         builtNotificationChannels = true;
     }
 
-    /** Update state (e.g. notification channel text) for a UI Locale change. */
+    /** Update the notification channel (not the notification) for a UI Locale change. */
     void onLocaleChange() {
         if (Build.VERSION.SDK_INT >= 26) {
             NotificationChannel channel = notificationManager.getNotificationChannel(
