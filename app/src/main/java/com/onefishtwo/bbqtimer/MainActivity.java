@@ -22,7 +22,6 @@ package com.onefishtwo.bbqtimer;
 import static android.Manifest.permission.POST_NOTIFICATIONS;
 
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.ActivityNotFoundException;
@@ -67,6 +66,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.annotation.StringRes;
 import androidx.annotation.UiThread;
 import androidx.appcompat.app.AppCompatActivity;
@@ -1006,7 +1006,7 @@ public class MainActivity extends AppCompatActivity
      *<p/>
      * NOTE: Call this only if the user asked to do it.
      */
-    @TargetApi(26)
+    @RequiresApi(26)
     private void openNotificationChannelSettings(
             @SuppressWarnings("SameParameterValue") String channelId) {
         Intent intent = new Intent(Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS);

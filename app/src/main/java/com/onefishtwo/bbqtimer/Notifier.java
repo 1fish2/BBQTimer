@@ -19,7 +19,6 @@
 
 package com.onefishtwo.bbqtimer;
 
-import android.annotation.TargetApi;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -42,6 +41,7 @@ import androidx.annotation.IdRes;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.RawRes;
+import androidx.annotation.RequiresApi;
 import androidx.annotation.StringRes;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
@@ -247,7 +247,7 @@ public class Notifier {
      * Creates a notification channel that matches the parameters #buildNotification() uses. The
      * "Alarm" channel sounds an alarm at heads-up High importance.
      */
-    @TargetApi(26)
+    @RequiresApi(26)
     private void createNotificationChannelV26() {
         String name = context.getString(R.string.notification_alarm_channel_name);
         String description = context.getString(R.string.notification_alarm_channel_description);
