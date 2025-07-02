@@ -6,12 +6,13 @@ import android.os.StrictMode;
 
 import com.onefishtwo.bbqtimer.state.ApplicationState;
 
+import com.onefishtwo.bbqtimer.BuildConfig;
+
 public class BBQTimerApplication extends Application {
-    public static final boolean STRICT_MODE = false;
 
     @Override
     public void onCreate() {
-        if (STRICT_MODE) {
+        if (BuildConfig.ENABLE_STRICT_MODE) {
             StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
                     .detectAll() // Instead?: .detectLeakedClosableObjects()
                     .penaltyLog()
