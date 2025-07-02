@@ -148,7 +148,6 @@ public class InAppUITest {
      * NOTE: Testing the timer is inherently timing-dependent. A test run could fail by not
      * allowing the app enough time to respond. ARM emulators need extra response time. Mocking
      * the TimeCounter clock might fix this even with MainActivity's Handler.
-     * TODO: Test if a ForegroundService will make for more timely alarms.
      */
     @Test
     public void playPauseStopUITest() {

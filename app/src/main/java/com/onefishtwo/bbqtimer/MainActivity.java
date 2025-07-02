@@ -453,7 +453,7 @@ public class MainActivity extends AppCompatActivity
      * open the OS UI straightaway, or give up and stop pestering.
      *<p/>
      * NOTE: Even w/o permission the app creates notifications, in which case they're hidden but
-     * maybe still needed for a Foreground Service.
+     * might still needed if the app gets a Foreground Service.
      *<p/>
      * NOTE: If notifications are disabled, so are Toasts.
      */

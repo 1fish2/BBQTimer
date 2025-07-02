@@ -38,6 +38,10 @@ import com.onefishtwo.bbqtimer.state.ApplicationState;
  *<p/>
  * ASSUMES: The app has USE_EXACT_ALARM permission (defined in API 33) and
  * SCHEDULE_EXACT_ALARM in API ≤ 32.
+ *<p/>
+ * TODO: The app could run a ForegroundService with the AlarmManager alarm to preserve its process
+ *   (except in extreme conditions) and thus keep the ApplicationState instance in memory for fast
+ *   response to the alarm.
  */
 public class AlarmReceiver extends BroadcastReceiver {
     private static final String TAG = "AlarmReceiver";
@@ -180,6 +184,9 @@ public class AlarmReceiver extends BroadcastReceiver {
                 new AlarmManager.AlarmClockInfo(reminderWallTime, activityPI);
 
         try {
+            // This alarm type is supposed to be exact even in doze mode, and it displays a
+            // user-visible alarm clock icon in the notification bar, with further alarm info in the
+            // system notification widgets.
             alarmMgr.setAlarmClock(info, pendingIntent);
         } catch (SecurityException e) {
             // API 31 - 32: setAlarmClock() needs revocable SCHEDULE_EXACT_ALARM. In this
