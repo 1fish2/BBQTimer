@@ -70,13 +70,13 @@ import androidx.annotation.RequiresApi;
 import androidx.annotation.StringRes;
 import androidx.annotation.UiThread;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.app.TaskStackBuilder;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.core.widget.NestedScrollView;
 import androidx.core.widget.TextViewCompat;
 
 import com.google.android.material.snackbar.BaseTransientBottomBar;
@@ -198,7 +198,7 @@ public class MainActivity extends AppCompatActivity
     private PopupMenu popupMenu;
     private int notificationRequestCount;
 
-    private ConstraintLayout mainContainer;
+    private NestedScrollView mainContainer;
     private Button resetButton;
     private Button pauseResumeButton;
     private Button stopButton;
