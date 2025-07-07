@@ -17,6 +17,7 @@
     <dimen name="widget_margin">8dp</dimen>
     <dimen name="widget_tap_margin">6dp</dimen>
     <dimen name="fold_margin">16dp</dimen>
+    <dimen name="recipe_horizontal_margin">4dp</dimen>
 
     <!-- Display TextView layout height (overridden for specific screen configs). -->
     <dimen name="display_text_view_height">70dp</dimen>

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
     <color name="orange_red_text">#d32f2f</color>
     <color name="deep_orange_text">#e64a19</color>
     <color name="dark_orange_red">#9a0007</color>
@@ -8,7 +8,7 @@
 
     <color name="secondaryColor">#388e3c</color>
     <color name="to_go_text">#6abf69</color>
-    <color name="secondaryDarkColor" tools:ignore="UnusedResources">#00600f</color>
+<!--    <color name="secondaryDarkColor">#00600f</color> -->
     <color name="day_night_green">@color/secondaryColor</color>
 
     <color name="notification_text">#080808</color>
