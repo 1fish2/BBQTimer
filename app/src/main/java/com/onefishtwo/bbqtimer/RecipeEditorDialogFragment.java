@@ -1,23 +1,24 @@
 package com.onefishtwo.bbqtimer;
 
+import static com.google.android.material.R.style.ThemeOverlay_Material3_TextInputEditText_OutlinedBox;
+
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.textclassifier.TextClassifier;
 import android.widget.EditText;
-
-import com.onefishtwo.bbqtimer.state.ApplicationState;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
-import static com.google.android.material.R.style.ThemeOverlay_Material3_TextInputEditText_OutlinedBox;
+import com.onefishtwo.bbqtimer.state.ApplicationState;
 
 /**
  * A Dialog to edit the recipe list.
@@ -52,7 +53,7 @@ public class RecipeEditorDialogFragment extends DialogFragment {
         RecipeEditorDialogFragment dialog = new RecipeEditorDialogFragment();
         Bundle bundle = new Bundle();
 
-        // The text is stored in the Arguments Bundle so it's available on re-create.
+        // Store the text in the Arguments Bundle so it's available on re-Create.
         // TODO: Save contents in onPause() or onDestroy()?
         if (text.trim().isEmpty()) {
             text = FALLBACK_CONTENTS;
@@ -144,8 +145,7 @@ public class RecipeEditorDialogFragment extends DialogFragment {
         // "To ensure consistent styling, the custom view should be inflated or constructed using
         // the alert dialog's themed context obtained via getContext()."
 
-        builder.setTitle(R.string.edit_list_title)
-                .setView(content);
+        builder.setView(content);
 
         textField = content.findViewById(R.id.recipes_text_field);
         workaroundTextClassifier(textField);
@@ -164,7 +164,16 @@ public class RecipeEditorDialogFragment extends DialogFragment {
                     .setNegativeButton(R.string.cancel_edits, this::cancelEdits);
         }
 
-        return builder.create();
+        AlertDialog dialog = builder.create();
+
+        View toInset = dialog.findViewById(android.R.id.content);
+        if (toInset == null) {
+            toInset = content; // inset the inflated view but not the dialog title or buttons
+            Log.w(TAG, "Insets fallback from R.id.content to R.layout.dialog_edit_recipes");
+        }
+        MainActivity.setEdgeToEdgeWindowInsetsListener(toInset);
+
+        return dialog;
     }
 
     /**

@@ -9,6 +9,7 @@
               <option name="preferredColumnWidths">
                 <map>
                   <entry key="35_15.0_V_Pixel_9_Pro_XL_1344x2992_xxhdpi_-_3-button_nav" value="120" />
+                  <entry key="35_15.0_V_resizable_phone_420dpi_gesture_handle_bar" value="120" />
                   <entry key="Duration" value="90" />
                   <entry key="Tests" value="360" />
                 </map>

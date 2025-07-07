@@ -264,9 +264,7 @@ public class MainActivity extends AppCompatActivity
         countUpDisplay.setOnClickListener(this::onClickTimerText);
         enableReminders.setOnClickListener(this::onClickEnableRemindersToggle);
 
-        if (EDGE_TO_EDGE) {
-            ViewCompat.setOnApplyWindowInsetsListener(mainContainer, this::mainWindowInsetsListener);
-        }
+        setEdgeToEdgeWindowInsetsListener(mainContainer);
 
         // Set the TextClassifier *THEN* enable the CLEAR_TEXT (X) endIcon.
         RecipeEditorDialogFragment.workaroundTextClassifier(alarmPeriod);
@@ -308,12 +306,25 @@ public class MainActivity extends AppCompatActivity
     }
 
     /**
+     * Sets a WindowInsetsListener on the root View when in edge-to-edge mode to adjust its margins
+     * to accommodate system bars, display cutouts, and the IME.
+     *
+     * @param rootView The layout's root {@link View}.
+     */
+    static void setEdgeToEdgeWindowInsetsListener(@NonNull View rootView) {
+        if (EDGE_TO_EDGE) {
+            ViewCompat.setOnApplyWindowInsetsListener(rootView,
+                    MainActivity::mainWindowInsetsListener);
+        }
+    }
+
+    /**
      * Set the window insets policy for edge-to-edge display, as done in
      * developer.android.com/develop/ui/views/layout/edge-to-edge#system-bars-insets
      * </p>
      * @noinspection SameReturnValue
      */
-    private WindowInsetsCompat mainWindowInsetsListener(
+    static @NonNull WindowInsetsCompat mainWindowInsetsListener(
             @NonNull View view, @NonNull WindowInsetsCompat windowInsets) {
         @NonNull Insets insets = windowInsets.getInsets(
                 WindowInsetsCompat.Type.systemBars() // status, caption, & nav bars

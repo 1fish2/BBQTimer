@@ -24,6 +24,7 @@ package com.onefishtwo.bbqtimer;
 
 import static android.Manifest.permission.POST_NOTIFICATIONS;
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.clearText;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static androidx.test.espresso.action.ViewActions.doubleClick;
@@ -348,11 +349,20 @@ public class InAppUITest {
         alarmPeriodTextField.check(matches(not(hasFocus())));
         alarmPeriodTextField.perform(click());
         alarmPeriodTextField.check(matches(hasFocus()));
-        alarmPeriodTextField.perform(replaceText("111"));
+        alarmPeriodTextField.perform(replaceText("01:62:5")); // 2:02:05 when accepted
+
+        // WORKAROUND: Close the soft keyboard in case it's covering/subsuming the text field in
+        // landscape mode. This test used to long-click then type over the text in the text field
+        // but when the soft keyboard subsumes the text field, it loses the selection.
+        // TODO: How to do it when the soft keyboard in landscape mode covers the text field?
+        alarmPeriodTextField.perform(closeSoftKeyboard());
+        alarmPeriodTextField.check(matches(withText("01:62:5")));
+
         alarmPeriodTextField.perform(longClick());
         alarmPeriodTextField.check(matches(hasFocus()));
-        alarmPeriodTextField.perform(typeTextIntoFocusedView("1:2:35\n"));
-        alarmPeriodTextField.check(matches(withText("1:02:35"))); // expanded from "1:2:35"
+        alarmPeriodTextField.perform(pressImeActionButton());
+        alarmPeriodTextField.check(matches(withText("2:02:05")));
+
         delayForDefocusTextFieldWorkaround();
         alarmPeriodTextField.check(matches(doesNotHaveFocus()));
 
@@ -362,6 +372,7 @@ public class InAppUITest {
         // happen when running all the InAppUITest tests together.
         alarmPeriodTextField.perform(click(), waitMsec(100), doubleClick());
         alarmPeriodTextField.check(matches(hasFocus()));
+        alarmPeriodTextField.perform(clearText()); // WORKAROUND landscape mode soft keyboard
         alarmPeriodTextField.perform(typeTextIntoFocusedView(":5"));
 
         // FRAGILE: background.perform(click()) might accept text input, or click on a different
@@ -405,6 +416,10 @@ public class InAppUITest {
         alarmPeriodTextField.perform(click());
         clearTextImageButton.check(matches(isDisplayed()));
 
+        // WORKAROUND: Close the soft keyboard in case it's covering/subsuming the text field in
+        // landscape mode and thus covering the clear-text endIcon "(x)". This weakens the test.
+        alarmPeriodTextField.perform(closeSoftKeyboard());
+
         // Click the CLEAR_TEXT endIcon.
         clearTextImageButton.perform(click());
         alarmPeriodTextField.check(matches(withText("")));
@@ -418,6 +433,7 @@ public class InAppUITest {
         // Start typing into the text field, then click another widget to cancel the edit.
         enableRemindersToggle.check(matches(isChecked()));
         alarmPeriodTextField.perform(click(), typeTextIntoFocusedView("88"));
+        alarmPeriodTextField.perform(closeSoftKeyboard()); // WORKAROUND
         enableRemindersToggle.perform(click());
         alarmPeriodTextField.check(matches(withText("1:03")));
         alarmPeriodTextField.check(matches(doesNotHaveFocus()));
@@ -433,8 +449,13 @@ public class InAppUITest {
         enableRemindersToggle.check(matches(isChecked()));
         alarmPeriodTextField.perform(click());
         alarmPeriodTextField.perform(replaceText("111"));
+        alarmPeriodTextField.perform(closeSoftKeyboard()); // WORKAROUND
         alarmPeriodTextField.perform(longClick());
-        alarmPeriodTextField.perform(typeTextIntoFocusedView("2\n"));
+        alarmPeriodTextField.perform(closeSoftKeyboard()); // WORKAROUND
+        // TODO: Is there a way to select-all when the soft keyboard is subsuming the text field,
+        //  then do `typeTextIntoFocusedView("2\n")`?
+        alarmPeriodTextField.perform(replaceText("2"));
+        alarmPeriodTextField.perform(pressImeActionButton());
         alarmPeriodTextField.check(matches(withText("2")));
     }
 
@@ -495,8 +516,7 @@ public class InAppUITest {
         }
         cmdEdit.perform(click());
         ViewInteraction dialogTitle = checkTextView(R.string.edit_list_title);
-        dialogTitle.check(matches(withId(androidx.appcompat.R.id.alertTitle)));
-        dialogTitle.check(matches(isDisplayed()));
+        dialogTitle.check(matches(withId(R.id.recipes_title)));
 
         ViewInteraction saveButton = onView(
                 allOf(withId(android.R.id.button1), withText(R.string.save_edits)));
@@ -550,7 +570,14 @@ public class InAppUITest {
         cmd_1.perform(waitMsec(500), click()); // delay for a visual check
     }
 
-    /** @noinspection SameParameterValue*/
+    /**
+     * Returns a matcher that matches any kind of TextView that's displaying the string from the
+     * given resource id, after checking that it is displayed.
+     *
+     * @param resId The resource id of the string to match.
+     *
+     * @noinspection SameParameterValue
+     */
     private ViewInteraction checkTextView(@StringRes int resId) {
         ViewInteraction view = onView(withText(resId));
         view.check(matches(isDisplayed()));
