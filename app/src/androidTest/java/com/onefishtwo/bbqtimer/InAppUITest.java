@@ -536,8 +536,7 @@ public class InAppUITest {
         cancelButton.perform(scrollTo(), click());
 
         // Open the recipe editor dialog, edit the text, then Save.
-        popupMenuButton.perform(click());
-        cmdEdit.perform(click());
+        popupMenuButton.perform(longClick()); // shortcut to the recipe editor [cmdEdit]
         dialogTitle.check(matches(isDisplayed()));
         editText.check(matches(withText(containsString("\n:30\n"))));
 
