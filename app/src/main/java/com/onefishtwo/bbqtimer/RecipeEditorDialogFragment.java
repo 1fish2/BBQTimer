@@ -1,7 +1,5 @@
 package com.onefishtwo.bbqtimer;
 
-import static com.google.android.material.R.style.ThemeOverlay_Material3_TextInputEditText_OutlinedBox;
-
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -134,10 +132,9 @@ public class RecipeEditorDialogFragment extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
-        // This theme shows the dialog full-width and scrolling in a way that the soft keyboard
-        // nicely resizes it, keeping the Reset/Cancel/Save buttons visible and accessible.
-        // Using MaterialAlertDialogBuilder doesn't seem to accomplish that, but maybe it's a
-        // question of the right theme.
+        // This theme shows a floating dialog. Another theme can show it the size of the Activity
+        // which goes edge-to-edge on API 35+. Either way, it needs edge-to-edge insets to respond
+        // well to the soft keyboard.
         AlertDialog.Builder builder = new AlertDialog.Builder(requireActivity());
         LayoutInflater inflater = requireActivity().getLayoutInflater();
         View content = inflater.inflate(R.layout.dialog_edit_recipes, null);

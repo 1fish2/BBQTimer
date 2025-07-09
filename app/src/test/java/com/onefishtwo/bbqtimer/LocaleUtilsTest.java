@@ -15,8 +15,10 @@ import java.util.Locale;
 
 // In a unit test, Build.VERSION.SDK_INT == 0.
 public class LocaleUtilsTest {
-    @SuppressWarnings("deprecation") // Inspect warns with; Gradle warns without
+    /** @noinspection RedundantSuppression*/
+    @SuppressWarnings("deprecation") // for Gradle
     private static final Locale BAHAMAS = new Locale("en", "BS");
+    /** @noinspection RedundantSuppression*/
     @SuppressWarnings("deprecation")
     private static final Locale SPAIN = new Locale("es", "ES");
 
