@@ -44,7 +44,9 @@ import java.util.Locale;
 public class LocaleUtilsAndroidTest {
     private static final String TAG = "LocaleUtilsAndroidTest";
 
+    @SuppressWarnings("deprecation") // Inspect warns with; Gradle warns without
     private static final Locale BAHAMAS = new Locale("en", "BS");
+    @SuppressWarnings("deprecation")
     private static final Locale SPAIN = new Locale("es", "ES");
 
     private Locale initialLocale, initialFormatLocale;

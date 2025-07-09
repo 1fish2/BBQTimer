@@ -3,15 +3,15 @@ plugins {
 }
 
 android {
-    compileSdk 36
+    compileSdk = 36
     buildToolsVersion = '36.0.0'
 
     defaultConfig {
         applicationId "com.onefishtwo.bbqtimer"
         versionCode 25
         versionName '4.2'
-        minSdk 24
-        targetSdk 35
+        minSdk = 24
+        targetSdk = 35
         resourceConfigurations += ['en', 'de']
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -34,21 +34,11 @@ android {
             // Enable StrictMode for debug builds
             buildConfigField "boolean", "ENABLE_STRICT_MODE", "true"
         }
-        debugProguard {
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-test-rules.txt'
-            testProguardFile 'proguard-test-rules.txt'
-            minifyEnabled true
-            shrinkResources true
-            signingConfig signingConfigs.debug
-            debuggable true
-            // Enable StrictMode for debug builds
-            buildConfigField "boolean", "ENABLE_STRICT_MODE", "true"
-        }
         release {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.txt'
             minifyEnabled true
-            shrinkResources true
-            signingConfig signingConfigs.debug
+            shrinkResources = true
+            signingConfig = signingConfigs.debug
             // Disable StrictMode for release builds
             buildConfigField "boolean", "ENABLE_STRICT_MODE", "false"
         }
@@ -60,9 +50,9 @@ android {
     }
 
     testOptions {
-        execution 'ANDROIDX_TEST_ORCHESTRATOR'
+        execution = 'ANDROIDX_TEST_ORCHESTRATOR'
     }
-    namespace 'com.onefishtwo.bbqtimer'
+    namespace = 'com.onefishtwo.bbqtimer'
 }
 
 allprojects {
