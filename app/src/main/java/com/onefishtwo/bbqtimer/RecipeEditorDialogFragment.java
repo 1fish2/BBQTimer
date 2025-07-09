@@ -138,8 +138,7 @@ public class RecipeEditorDialogFragment extends DialogFragment {
         // nicely resizes it, keeping the Reset/Cancel/Save buttons visible and accessible.
         // Using MaterialAlertDialogBuilder doesn't seem to accomplish that, but maybe it's a
         // question of the right theme.
-        AlertDialog.Builder builder = new AlertDialog.Builder(requireActivity(),
-                ThemeOverlay_Material3_TextInputEditText_OutlinedBox);
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireActivity());
         LayoutInflater inflater = requireActivity().getLayoutInflater();
         View content = inflater.inflate(R.layout.dialog_edit_recipes, null);
         // "To ensure consistent styling, the custom view should be inflated or constructed using
