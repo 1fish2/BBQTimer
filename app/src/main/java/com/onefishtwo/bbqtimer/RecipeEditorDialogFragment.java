@@ -144,21 +144,22 @@ public class RecipeEditorDialogFragment extends DialogFragment {
         builder.setView(content);
 
         textField = content.findViewById(R.id.recipes_text_field);
-        workaroundTextClassifier(textField);
-        textField.setOnFocusChangeListener(this::onEditTextFocusChange);
-
-        // Workaround: The XML scrolling attributes don't work very well.
-        textField.setHorizontallyScrolling(true);
-        textField.setHorizontalScrollBarEnabled(true);
-        textField.setScrollbarFadingEnabled(false);
 
         if (textField != null) {
-            textField.setText(getInitContents());
+            workaroundTextClassifier(textField);
+            textField.setOnFocusChangeListener(this::onEditTextFocusChange);
 
-            builder.setPositiveButton(R.string.save_edits, this::saveEdits)
-                    .setNeutralButton(R.string.reset, this::resetEdits)
-                    .setNegativeButton(R.string.cancel_edits, this::cancelEdits);
+            // Workaround: The XML scrolling attributes don't work very well.
+            textField.setHorizontallyScrolling(true);
+            textField.setHorizontalScrollBarEnabled(true);
+            textField.setScrollbarFadingEnabled(false);
+
+            textField.setText(getInitContents());
         }
+
+        builder.setPositiveButton(R.string.save_edits, this::saveEdits)
+                .setNeutralButton(R.string.reset, this::resetEdits)
+                .setNegativeButton(R.string.cancel_edits, this::cancelEdits);
 
         AlertDialog dialog = builder.create();
 
