@@ -63,8 +63,10 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
+import androidx.fragment.app.FragmentManager;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.Espresso;
+import androidx.test.espresso.ViewAction;
 import androidx.test.espresso.ViewInteraction;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -96,6 +98,9 @@ public class InAppUITest {
     private ViewInteraction countdownDisplay;
     private ViewInteraction background;
 
+    private FragmentManager fm; // [DEBUG]
+
+    /** Launch MainActivity before each test and close it after the test completes. */
     @NonNull
     @Rule
     public final ActivityScenarioRule<MainActivity> activityScenarioRule =
@@ -121,6 +126,13 @@ public class InAppUITest {
         alarmPeriodTextField = onView(withId(R.id.alarmPeriod));
         countdownDisplay = onView(withId(R.id.countdownDisplay));
         background = onView(withId(R.id.main_container));
+
+        activityScenarioRule.getScenario().onActivity(activity -> fm = activity.getSupportFragmentManager()); // [DEBUG]
+    }
+
+    private void logFragmentStatus(String position) { // [DEBUG]
+        boolean open = fm.findFragmentByTag(RecipeEditorDialogFragment.TAG) != null;
+        Log.d(TAG, "*** At " + position + ", the fragment is " + (open ? "open" : "closed"));
     }
 
     @After
@@ -133,6 +145,11 @@ public class InAppUITest {
         alarmPeriodTextField = null;
         countdownDisplay = null;
         background = null;
+    }
+
+    @NonNull
+    private static ViewAction recipeDismissClick() {
+        return new DismissClickViewAction(RecipeEditorDialogFragment.TAG);
     }
 
 // MainActivity's FSM:
@@ -508,6 +525,7 @@ public class InAppUITest {
         alarmPeriodTextField.check(matches(isDisplayed()));
 
         // Open the recipe editor dialog, edit the text, then Cancel.
+        logFragmentStatus("MainActivity");
         popupMenuButton.perform(click());
         if (Build.VERSION.SDK_INT == 23) {
             Log.w(TAG, "===== Workaround: Punting this test since clicking to open a dialog" +
@@ -516,9 +534,12 @@ public class InAppUITest {
             background.perform(waitMsec(1000)); // for visual verification
             return;
         }
+        logFragmentStatus("menu open");
         cmdEdit.perform(click());
+        logFragmentStatus("dialog open");
         ViewInteraction dialogTitle = checkTextView(R.string.edit_list_title);
         dialogTitle.check(matches(withId(R.id.recipes_title)));
+        logFragmentStatus("dialog title checked");
 
         ViewInteraction saveButton = onView(
                 allOf(withId(android.R.id.button1), withText(R.string.save_edits)));
@@ -531,21 +552,34 @@ public class InAppUITest {
         resetEditorButton.check(matches(isDisplayed()));
 
         ViewInteraction editText = onView(withId(R.id.recipes_text_field));
+        logFragmentStatus("dialog editText checked");
         editText.check(matches(isDisplayed()));
         editText.check(matches(withText(containsString("\n:30\n"))));
 
+        logFragmentStatus("*** popupMenuTest A1");
         editText.perform(longClick(), replaceText("77777 ***TO CANCEL***\n"));
-        cancelButton.perform(scrollTo(), click());
+        logFragmentStatus("*** about to Cancel the dialog");
+        cancelButton.perform(scrollTo(), recipeDismissClick());
+        logFragmentStatus("dialog should be closed or closing");
+
+        popupMenuButton.perform(click());
+        logFragmentStatus("menu open, dialog closed");
+        Espresso.pressBack(); // dismiss the popup menu
+        logFragmentStatus("menu closed too");
 
         // Open the recipe editor dialog, edit the text, then Save.
         popupMenuButton.perform(longClick()); // shortcut to the recipe editor [cmdEdit]
+        logFragmentStatus("*** long-clicked the recipe editor triangle");
         dialogTitle.check(matches(isDisplayed()));
         editText.check(matches(withText(containsString("\n:30\n"))));
 
+        logFragmentStatus("*** popupMenuTest B1");
         String replacement = "88888 ***TO SAVE***\n";
         editText.perform(longClick(), replaceText(replacement));
         editText.check(matches(not(withText(containsString("\n:30\n")))));
-        saveButton.perform(scrollTo(), click());
+        logFragmentStatus("*** about to Save the dialog");
+        saveButton.perform(scrollTo(), recipeDismissClick());
+        logFragmentStatus("*** Saved the dialog");
 
         // Open the recipe editor dialog, check the saved text, edit it, then Reset.
         popupMenuButton.perform(click());
@@ -556,10 +590,13 @@ public class InAppUITest {
         dialogTitle.check(matches(isDisplayed()));
         editText.check(matches(withText(replacement)));
 
+        logFragmentStatus("*** popupMenuTest C1");
         editText.perform(longClick(), waitMsec(500),
                 replaceText("99999 ***TO RESET***\n"),
                 waitMsec(500)); // delay for a visual check
-        resetEditorButton.perform(scrollTo(), click());
+        logFragmentStatus("*** about to Reset the dialog");
+        resetEditorButton.perform(scrollTo(), recipeDismissClick());
+        logFragmentStatus("*** Reset the dialog");
 
         // Check that the menu's contents were reset.
         popupMenuButton.perform(click());
@@ -588,24 +625,21 @@ public class InAppUITest {
     /** @noinspection SameParameterValue*/
     private ViewInteraction checkMenuCommand(@StringRes int resId) {
         ViewInteraction view = onView(
-                allOf(withId(android.R.id.title),
-                        withText(resId)));
+                allOf(withId(android.R.id.title), withText(resId)));
         view.check(matches(isDisplayed()));
         return view;
     }
 
     private ViewInteraction checkMenuCommand(String label) {
         ViewInteraction view = onView(
-                allOf(withId(android.R.id.title),
-                        withText(label)));
+                allOf(withId(android.R.id.title), withText(label)));
         view.check(matches(isDisplayed()));
         return view;
     }
 
     private ViewInteraction checkMenuCommandPrefix(String labelPrefix) {
         ViewInteraction view = onView(
-                allOf(withId(android.R.id.title),
-                        withText(startsWith(labelPrefix))));
+                allOf(withId(android.R.id.title), withText(startsWith(labelPrefix))));
         view.check(matches(isDisplayed()));
         return view;
     }

@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- Base application theme. -->
+    <!-- Base application theme.
+         API 28 has a non-functional "Device Theme" setting, and earlier versions have no such
+         setting, so stick with the dark BBQ theme there.-->
     <style name="AppTheme" parent="Theme.Material3.Dark">
 
         <item name="actionBarStyle">@style/FireyActionBar</item>
@@ -16,6 +18,17 @@
 
         <!-- bright complement to colorPrimary: activated controls like text fields -->
         <item name="colorAccent">@color/to_go_text</item>
+    </style>
+
+    <!-- AlertDialog adjustments -->
+    <style name="AppThemeOverlay.Material3.MaterialAlertDialog"
+        parent="@style/ThemeOverlay.Material3.MaterialAlertDialog">
+        <item name="shapeAppearanceOverlay">@style/AppShapeAppearanceOverlay.AlertDialog</item>
+    </style>
+
+    <style name="AppShapeAppearanceOverlay.AlertDialog" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">4dp</item>
     </style>
 
     <!-- ActionBar styles -->
@@ -36,7 +49,7 @@
     </style>
 
     <!-- SnackBar styles -->
-    <style name="snackbarText" parent="@style/Widget.MaterialComponents.Snackbar.TextView">
+    <style name="snackbarText" parent="@style/Widget.Material3.Snackbar.TextView">
         <item name="android:maxLines">6</item>
     </style>
 

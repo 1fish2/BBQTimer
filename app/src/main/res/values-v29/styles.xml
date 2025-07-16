@@ -2,7 +2,7 @@
 <resources>
 
     <!-- Base application theme.
-         Support the Day/Night setting in Android v29+. Android v28 has a non-functional
+         Support the Day/Night setting in API 29+. API 28 has a non-functional
          "Device Theme" setting, and earlier versions have no such setting, so stick with the dark
          BBQ theme there. -->
     <style name="AppTheme" parent="Theme.Material3.DayNight">

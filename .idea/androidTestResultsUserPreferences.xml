@@ -22,8 +22,14 @@
             <AndroidTestResultsTableState>
               <option name="preferredColumnWidths">
                 <map>
+                  <entry key="24_7.0_N_3.2-inch_HVGA_slider_320x480" value="120" />
+                  <entry key="31_12.0_S_WQVGA_mdpi_240x432" value="120" />
+                  <entry key="32_12L_Sv2_Pixel_3_xxhdpi_1080x2160" value="120" />
+                  <entry key="34_14.0_U_Pixel_6_1080x2400_420dpi_hole-punch" value="120" />
+                  <entry key="34_14.0_U_Pixel_Fold_2208x1840" value="120" />
                   <entry key="35_15.0_V_Pixel_9_Pro_XL_1344x2992_xxhdpi_-_3-button_nav" value="120" />
                   <entry key="35_15.0_V_resizable_phone_420dpi_gesture_handle_bar" value="120" />
+                  <entry key="36_16.0_B_Pixel_Fold_2208x1840" value="120" />
                   <entry key="Duration" value="90" />
                   <entry key="Google Pixel 6" value="120" />
                   <entry key="Tests" value="360" />
@@ -72,9 +78,11 @@
             <AndroidTestResultsTableState>
               <option name="preferredColumnWidths">
                 <map>
+                  <entry key="24_7.0_N_3.2-inch_HVGA_slider_320x480" value="120" />
                   <entry key="34_14.0_U_Pixel_Fold_2208x1840" value="120" />
                   <entry key="35_15.0_V_Pixel_9_Pro_XL_1344x2992_xxhdpi_-_3-button_nav" value="120" />
                   <entry key="35_15.0_V_Resizable_420dpi" value="120" />
+                  <entry key="36_16.0_B_Pixel_Fold_2208x1840" value="120" />
                   <entry key="Duration" value="90" />
                   <entry key="Tests" value="360" />
                 </map>
@@ -112,6 +120,7 @@
                   <entry key="33_13.0_T_Resizable" value="120" />
                   <entry key="34_14.0_U_Pixel_6_1080x2400_420dpi" value="120" />
                   <entry key="34_14.0_U_Pixel_6_1080x2400_420dpi_hole-punch" value="120" />
+                  <entry key="34_14.0_U_Pixel_Fold_2208x1840" value="120" />
                   <entry key="34_U_Pixel_6_1080x2400_420dpi" value="120" />
                   <entry key="35_15.0_V_Pixel_9_Pro_XL_1344x2992_xxhdpi" value="120" />
                   <entry key="35_15.0_V_Pixel_9_Pro_XL_1344x2992_xxhdpi_-_3-button_nav" value="120" />

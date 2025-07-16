@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.textclassifier.TextClassifier;
@@ -13,9 +12,9 @@ import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.onefishtwo.bbqtimer.state.ApplicationState;
 
 /**
@@ -135,7 +134,8 @@ public class RecipeEditorDialogFragment extends DialogFragment {
         // This theme shows a floating dialog. Another theme can show it the size of the Activity
         // which goes edge-to-edge on API 35+. Either way, it needs edge-to-edge insets to respond
         // well to the soft keyboard.
-        AlertDialog.Builder builder = new AlertDialog.Builder(requireActivity());
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(requireActivity(),
+                R.style.AppThemeOverlay_Material3_MaterialAlertDialog);
         LayoutInflater inflater = requireActivity().getLayoutInflater();
         View content = inflater.inflate(R.layout.dialog_edit_recipes, null);
         // "To ensure consistent styling, the custom view should be inflated or constructed using
@@ -161,16 +161,7 @@ public class RecipeEditorDialogFragment extends DialogFragment {
                 .setNeutralButton(R.string.reset, this::resetEdits)
                 .setNegativeButton(R.string.cancel_edits, this::cancelEdits);
 
-        AlertDialog dialog = builder.create();
-
-        View toInset = dialog.findViewById(android.R.id.content);
-        if (toInset == null) {
-            toInset = content; // inset the inflated view but not the dialog title or buttons
-            Log.w(TAG, "Insets fallback from R.id.content to R.layout.dialog_edit_recipes");
-        }
-        MainActivity.setEdgeToEdgeWindowInsetsListener(toInset);
-
-        return dialog;
+        return builder.create();
     }
 
     /**
