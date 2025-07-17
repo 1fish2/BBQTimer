@@ -23,6 +23,7 @@ package com.onefishtwo.bbqtimer;
 
 
 import static android.Manifest.permission.POST_NOTIFICATIONS;
+import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.clearText;
 import static androidx.test.espresso.action.ViewActions.click;
@@ -53,9 +54,12 @@ import static com.onefishtwo.bbqtimer.TimeIntervalMatcher.inWholeTimeInterval;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.anyOf;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.startsWith;
+import static org.hamcrest.object.HasToString.hasToString;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import android.content.Context;
 import android.os.Build;
@@ -65,7 +69,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 import androidx.fragment.app.FragmentManager;
 import androidx.test.core.app.ApplicationProvider;
+import androidx.test.espresso.DataInteraction;
 import androidx.test.espresso.Espresso;
+import androidx.test.espresso.PerformException;
 import androidx.test.espresso.ViewAction;
 import androidx.test.espresso.ViewInteraction;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
@@ -372,24 +378,29 @@ public class InAppUITest {
 
         // WORKAROUND: Close the soft keyboard in case it's covering/subsuming the text field in
         // landscape mode. This test used to long-click then type over the text in the text field
-        // but when the soft keyboard subsumes the text field, it loses the selection.
-        // TODO: How to do it when the soft keyboard in landscape mode covers the text field?
+        // but when the soft keyboard subsumes the text field, that loses the selection.
         alarmPeriodTextField.perform(closeSoftKeyboard());
         alarmPeriodTextField.check(matches(withText("01:62:5")));
 
         alarmPeriodTextField.perform(longClick());
         alarmPeriodTextField.check(matches(hasFocus()));
-        alarmPeriodTextField.perform(pressImeActionButton());
+        alarmPeriodTextField.perform(pressImeActionButton(), closeSoftKeyboard());
         alarmPeriodTextField.check(matches(withText("2:02:05")));
 
         delayForDefocusTextFieldWorkaround();
         alarmPeriodTextField.check(matches(doesNotHaveFocus()));
 
-        // FRAGILE: Adding the click() avoids on SDK 22 "SecurityException: Injecting to another
-        // application requires INJECT_EVENTS permission" from innerInjectMotionEvent().
-        // Adding the waitMsec() works around this code failing to select the text, which would
-        // happen when running all the InAppUITest tests together.
-        alarmPeriodTextField.perform(click(), waitMsec(100), doubleClick());
+        // FRAGILE: Workaround: click or doubleClick can fail with "SecurityException: Injecting to
+        // another application requires INJECT_EVENTS permission" from innerInjectMotionEvent().
+        // Maybe the landscape mode soft keyboard or its animation interferes. Workarounds are also
+        // flakey. Log it and move on.
+        try {
+            alarmPeriodTextField.perform(doubleClick());
+        } catch (PerformException e) {
+            Log.e(TAG, "*** alarmPeriodTextField doubleClick failed (soft keyboard?): "
+                    + e.getMessage());
+            alarmPeriodTextField.perform(closeSoftKeyboard());
+        }
         alarmPeriodTextField.check(matches(hasFocus()));
         alarmPeriodTextField.perform(clearText()); // WORKAROUND landscape mode soft keyboard
         alarmPeriodTextField.perform(typeTextIntoFocusedView(":5"));
@@ -410,15 +421,17 @@ public class InAppUITest {
         alarmPeriodTextField.check(matches(doesNotHaveFocus()));
         playPauseButton.perform(waitMsec(100)); // work around Espresso test flakiness
 
-        playPauseButton.perform(click(), waitMsec(6_000), click()); // Play for 6 secs then Pause
-        // *** TODO: Test that it alarmed once **
+        // FRAGILE: The pop-up notification could interfere with the second click. Is there a
+        // workaround? In Landscape mode, Pause by clicking the timeView widget?
+        // This is the main point of this test case so don't bury the failure.
+        playPauseButton.perform(click(), waitMsec(6_000), click()); // Play 6 secs then Pause
         TimeIntervalMatcher time6 = inTimeInterval(6_000, 7_000);
         checkPausedAt(time6);
 
-        // TODO: Test moving focus with TAB and arrow keys.
-
         stopButton.perform(click());
         checkStopped();
+
+        // *** TODO: Check that it alarmed once. **
     }
 
     /** Tests the CLEAR_TEXT endIcon in the alarmPeriodLayout TextInputLayout. */
@@ -496,12 +509,11 @@ public class InAppUITest {
         // Open the popup menu. This makes the Activity Views inaccessible or...
         popupMenuButton.perform(click());
 
-        ViewInteraction cmdEdit = checkMenuCommand(R.string.edit_this_list);
-        ViewInteraction cmd_6 = checkMenuCommandPrefix("6 ");
-        ViewInteraction cmd_7 = checkMenuCommandPrefix("7 ");
-        ViewInteraction cmd__30 = checkMenuCommand(":30");
-        ViewInteraction cmd_1 = checkMenuCommand("1");
-        // NOTE: Commands scrolled off the bottom require scrolling to access.
+        DataInteraction cmdEdit = checkMenuCommand(R.string.edit_this_list);
+        DataInteraction cmd_6 = checkMenuCommandPrefix("6 ");
+        DataInteraction cmd_7 = checkMenuCommandPrefix("7 ");
+        DataInteraction cmd__30 = checkMenuCommand(":30");
+        DataInteraction cmd_1 = checkMenuCommand("1");
 
         // Pick the first few intervals from the menu.
         cmd__30.perform(click());
@@ -583,7 +595,14 @@ public class InAppUITest {
 
         // Open the recipe editor dialog, check the saved text, edit it, then Reset.
         popupMenuButton.perform(click());
-        cmd__30.check(doesNotExist());
+
+        try {
+            cmd__30.check(matches(isDisplayed()));
+            fail("Expected ':30' to NOT be in the popup menu");
+        } catch (PerformException e) {
+            // Expected
+        }
+
         checkMenuCommand(replacement.trim());
 
         cmdEdit.perform(click());
@@ -622,25 +641,35 @@ public class InAppUITest {
         return view;
     }
 
-    /** @noinspection SameParameterValue*/
-    private ViewInteraction checkMenuCommand(@StringRes int resId) {
-        ViewInteraction view = onView(
-                allOf(withId(android.R.id.title), withText(resId)));
-        view.check(matches(isDisplayed()));
-        return view;
+    /**
+     * Finds a data item displaying the given string. .click() will scroll it into view if needed.
+     * @noinspection SameParameterValue
+     */
+    private DataInteraction checkMenuCommand(@StringRes int resId) {
+        // WORKAROUND: onData(withText(resId)) doesn't work, so get the string and use that.
+        Context appContext = ApplicationProvider.getApplicationContext();
+        String text = appContext.getString(resId);
+        return checkMenuCommand(text);
     }
 
-    private ViewInteraction checkMenuCommand(String label) {
-        ViewInteraction view = onView(
-                allOf(withId(android.R.id.title), withText(label)));
-        view.check(matches(isDisplayed()));
-        return view;
+    /**
+     * Finds a data item displaying the given string. .click() will scroll it into view if needed.
+     */
+    private DataInteraction checkMenuCommand(String label) {
+        // Find the menu item, scrolling it into view if needed.
+        DataInteraction di = onData(hasToString(equalTo(label)));
+        di.check(matches(isDisplayed()));
+        return di;
     }
 
-    private ViewInteraction checkMenuCommandPrefix(String labelPrefix) {
-        ViewInteraction view = onView(
-                allOf(withId(android.R.id.title), withText(startsWith(labelPrefix))));
-        view.check(matches(isDisplayed()));
-        return view;
+    /**
+     * Finds a data item that starts with the given string. .click() will scroll it into view if
+     * needed.
+     */
+    private DataInteraction checkMenuCommandPrefix(String labelPrefix) {
+        // Find the menu item, scrolling it into view if needed.
+        DataInteraction di = onData(hasToString(startsWith(labelPrefix)));
+        di.check(matches(isDisplayed()));
+        return di;
     }
 }
