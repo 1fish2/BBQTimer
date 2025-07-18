@@ -421,11 +421,16 @@ public class InAppUITest {
         alarmPeriodTextField.check(matches(doesNotHaveFocus()));
         playPauseButton.perform(waitMsec(100)); // work around Espresso test flakiness
 
-        // FRAGILE: The pop-up notification could interfere with the second click. Is there a
-        // workaround? In Landscape mode, Pause by clicking the timeView widget?
-        // This is the main point of this test case so don't bury the failure.
-        playPauseButton.perform(click(), waitMsec(6_000), click()); // Play 6 secs then Pause
-        TimeIntervalMatcher time6 = inTimeInterval(6_000, 7_000);
+        // FRAGILE: The pop-up notification can interfere with click-to-Pause in Landscape mode.
+        // Workaround: Pause by clicking on the left edge of countdownDisplay.
+        // If this still fails, don't bury the failure since this is the key part of this test.
+        playPauseButton.perform(click(), waitMsec(6_000)); // Play 6 secs ...
+        try {
+            playPauseButton.perform(ViewActions.clickAtCenterLeft()); // then Pause
+        } catch (Exception e) {
+            countdownDisplay.perform(ViewActions.clickAtCenterLeft()); // then Pause
+        }
+        TimeIntervalMatcher time6 = inTimeInterval(6_000, 8_000);
         checkPausedAt(time6);
 
         stopButton.perform(click());
