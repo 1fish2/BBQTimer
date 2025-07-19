@@ -398,7 +398,7 @@ public class InAppUITest {
         try {
             alarmPeriodTextField.perform(doubleClick());
         } catch (PerformException e) {
-            Log.e(TAG, "*** alarmPeriodTextField doubleClick failed (soft keyboard?): "
+            Log.w(TAG, "*** alarmPeriodTextField doubleClick failed (soft keyboard?): "
                     + e.getMessage());
             alarmPeriodTextField.perform(closeSoftKeyboard());
         }
@@ -448,7 +448,10 @@ public class InAppUITest {
                 withContentDescription("Clear text"),     // en
                 withContentDescription("Text löschen"))); // de
         delayForDefocusTextFieldWorkaround();
+
+        // Check that the endIcon isn't displayed and the alarmPeriod EditText didn't auto-focus.
         clearTextImageButton.check(matches(not(isDisplayed())));
+        alarmPeriodTextField.check(matches(not(hasFocus())));
         alarmPeriodTextField.check(matches(withText("5")));
 
         alarmPeriodTextField.perform(click());

@@ -430,6 +430,15 @@ public class MainActivity extends AppCompatActivity
     protected void onResume() {
         super.onResume();
 
+        // WORKAROUND: On API ≤ 27, the alarmPeriod EditText auto-focuses when the Activity starts
+        // in landscape mode or is rotated to landscape. That's annoying.
+        // (A previous workaround set android:focusable="true",  android:focusableInTouchMode="true"
+        // on an empty or outer layout view, but the empty one no longer works in API 25-27 and the
+        // outer one no longer works in API 25 and 27.)
+        if (Build.VERSION.SDK_INT <= 27) {
+            defocusTextField(alarmPeriod);
+        }
+
         // Warn if the Alarm is now muted. Don't check Notifications permission because (1) the
         // API 33 Allow/Deny dialog can loop returning !isGranted and re-resuming, and (2) Android's
         // new UI model is to wait for a user action before checking its needed permissions.

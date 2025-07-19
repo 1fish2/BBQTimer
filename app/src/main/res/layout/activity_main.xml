@@ -9,7 +9,8 @@
     android:paddingVertical="@dimen/activity_vertical_margin"
     android:focusable="false"
     android:fillViewport="true"
-    tools:context="com.onefishtwo.bbqtimer.MainActivity"> <!-- mainWindowInsetsListener() sets margins -->
+    tools:context="com.onefishtwo.bbqtimer.MainActivity">
+    <!-- ^^^ mainWindowInsetsListener() sets margins -->
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -58,24 +59,6 @@
         app:layout_constraintEnd_toStartOf="@id/buttonBar"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/buttonBar" />
-
-    <!-- Workaround: The focusable*=true attributes make this empty view focusable enough that
-         alarmPeriod won't automatically get focus when the Activity starts or resumes on API ≤ 27.
-
-         The empty view is in the keyboard navigation sequence for API ≤ 27, but unobtrusively at
-         the start of the sequence.
-
-         This is better than calling defocusTextField(alarmPeriod) in onResume() since it doesn't
-         break the second and later uses of the adjustPan feature (pan the window contents to fit
-         the text field and the soft keyboard), at least on API 22-23. -->
-    <LinearLayout
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:background="@color/grayer"
-        android:focusable="true"
-        android:focusableInTouchMode="true"
-        app:layout_constraintEnd_toStartOf="@+id/countUpDisplay"
-        app:layout_constraintTop_toTopOf="parent"/>
 
     <LinearLayout
         android:id="@+id/buttonBar"
