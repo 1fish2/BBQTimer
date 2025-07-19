@@ -133,12 +133,13 @@ public class InAppUITest {
         countdownDisplay = onView(withId(R.id.countdownDisplay));
         background = onView(withId(R.id.main_container));
 
-        activityScenarioRule.getScenario().onActivity(activity -> fm = activity.getSupportFragmentManager()); // [DEBUG]
+        activityScenarioRule.getScenario().onActivity(
+                activity -> fm = activity.getSupportFragmentManager());
     }
 
-    private void logFragmentStatus(String position) { // [DEBUG]
+    private void logFragmentStatus(String step) {
         boolean open = fm.findFragmentByTag(RecipeEditorDialogFragment.TAG) != null;
-        Log.d(TAG, "*** At " + position + ", the fragment is " + (open ? "open" : "closed"));
+        Log.d(TAG, "*** At " + step + ", the dialog fragment is " + (open ? "open" : "closed"));
     }
 
     @After
@@ -542,7 +543,6 @@ public class InAppUITest {
         alarmPeriodTextField.check(matches(isDisplayed()));
 
         // Open the recipe editor dialog, edit the text, then Cancel.
-        logFragmentStatus("MainActivity");
         popupMenuButton.perform(click());
         if (Build.VERSION.SDK_INT == 23) {
             Log.w(TAG, "===== Workaround: Punting this test since clicking to open a dialog" +
@@ -551,12 +551,9 @@ public class InAppUITest {
             background.perform(waitMsec(1000)); // for visual verification
             return;
         }
-        logFragmentStatus("menu open");
         cmdEdit.perform(click());
-        logFragmentStatus("dialog open");
         ViewInteraction dialogTitle = checkTextView(R.string.edit_list_title);
         dialogTitle.check(matches(withId(R.id.recipes_title)));
-        logFragmentStatus("dialog title checked");
 
         ViewInteraction saveButton = onView(
                 allOf(withId(android.R.id.button1), withText(R.string.save_edits)));
@@ -569,34 +566,26 @@ public class InAppUITest {
         resetEditorButton.check(matches(isDisplayed()));
 
         ViewInteraction editText = onView(withId(R.id.recipes_text_field));
-        logFragmentStatus("dialog editText checked");
         editText.check(matches(isDisplayed()));
         editText.check(matches(withText(containsString("\n:30\n"))));
 
-        logFragmentStatus("*** popupMenuTest A1");
         editText.perform(longClick(), replaceText("77777 ***TO CANCEL***\n"));
-        logFragmentStatus("*** about to Cancel the dialog");
         cancelButton.perform(scrollTo(), recipeDismissClick());
-        logFragmentStatus("dialog should be closed or closing");
+        logFragmentStatus("dialog should be closing");
 
         popupMenuButton.perform(click());
-        logFragmentStatus("menu open, dialog closed");
         Espresso.pressBack(); // dismiss the popup menu
-        logFragmentStatus("menu closed too");
 
         // Open the recipe editor dialog, edit the text, then Save.
         popupMenuButton.perform(longClick()); // shortcut to the recipe editor [cmdEdit]
-        logFragmentStatus("*** long-clicked the recipe editor triangle");
         dialogTitle.check(matches(isDisplayed()));
         editText.check(matches(withText(containsString("\n:30\n"))));
 
-        logFragmentStatus("*** popupMenuTest B1");
         String replacement = "88888 ***TO SAVE***\n";
         editText.perform(longClick(), replaceText(replacement));
         editText.check(matches(not(withText(containsString("\n:30\n")))));
-        logFragmentStatus("*** about to Save the dialog");
         saveButton.perform(scrollTo(), recipeDismissClick());
-        logFragmentStatus("*** Saved the dialog");
+        logFragmentStatus("dialog should be saving");
 
         // Open the recipe editor dialog, check the saved text, edit it, then Reset.
         popupMenuButton.perform(click());
@@ -614,13 +603,11 @@ public class InAppUITest {
         dialogTitle.check(matches(isDisplayed()));
         editText.check(matches(withText(replacement)));
 
-        logFragmentStatus("*** popupMenuTest C1");
         editText.perform(longClick(), waitMsec(500),
                 replaceText("99999 ***TO RESET***\n"),
                 waitMsec(500)); // delay for a visual check
-        logFragmentStatus("*** about to Reset the dialog");
         resetEditorButton.perform(scrollTo(), recipeDismissClick());
-        logFragmentStatus("*** Reset the dialog");
+        logFragmentStatus("dialog should be resetting");
 
         // Check that the menu's contents were reset.
         popupMenuButton.perform(click());

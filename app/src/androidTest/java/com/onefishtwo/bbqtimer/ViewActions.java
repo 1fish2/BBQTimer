@@ -54,6 +54,7 @@ public class ViewActions {
      * Returns a ViewAction that clicks at the visible center of a View.
      *
      * @return a ViewAction that performs the click.
+     * @noinspection unused
      */
     public static ViewAction clickAtVisibleCenter() {
         return new GeneralClickAction(
