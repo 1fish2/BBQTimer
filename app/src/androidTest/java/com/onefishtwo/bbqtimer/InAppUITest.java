@@ -427,9 +427,9 @@ public class InAppUITest {
         // If this still fails, don't bury the failure since this is the key part of this test.
         playPauseButton.perform(click(), waitMsec(6_000)); // Play 6 secs ...
         try {
-            playPauseButton.perform(ViewActions.clickAtCenterLeft()); // then Pause
+            playPauseButton.perform(CustomViewActions.clickAtCenterLeft()); // then Pause
         } catch (Exception e) {
-            countdownDisplay.perform(ViewActions.clickAtCenterLeft()); // then Pause
+            countdownDisplay.perform(CustomViewActions.clickAtCenterLeft()); // then Pause
         }
         TimeIntervalMatcher time6 = inTimeInterval(6_000, 8_000);
         checkPausedAt(time6);

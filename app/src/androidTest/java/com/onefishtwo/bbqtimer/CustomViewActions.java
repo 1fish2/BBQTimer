@@ -21,20 +21,26 @@
 
 package com.onefishtwo.bbqtimer;
 
+import static androidx.test.espresso.action.ViewActions.click;
+import static org.hamcrest.Matchers.any;
+import static org.hamcrest.Matchers.isA;
+
+import android.view.InputDevice;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Checkable;
-
-import org.hamcrest.BaseMatcher;
-import org.hamcrest.Description;
-import org.hamcrest.Matcher;
 
 import androidx.annotation.NonNull;
 import androidx.test.espresso.UiController;
 import androidx.test.espresso.ViewAction;
+import androidx.test.espresso.action.GeneralClickAction;
+import androidx.test.espresso.action.GeneralLocation;
+import androidx.test.espresso.action.Press;
+import androidx.test.espresso.action.Tap;
 
-import static androidx.test.espresso.action.ViewActions.click;
-import static org.hamcrest.Matchers.any;
-import static org.hamcrest.Matchers.isA;
+import org.hamcrest.BaseMatcher;
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
 
 class CustomViewActions {
 
@@ -48,7 +54,7 @@ class CustomViewActions {
      * say Espresso polls an IdlingResource about every 5 seconds, so the timing precision is low.
      */
     @NonNull
-    static ViewAction waitMsec(final long msec) {
+    public static ViewAction waitMsec(final long msec) {
         return new ViewAction() {
             @NonNull
             @Override
@@ -72,7 +78,7 @@ class CustomViewActions {
     /** Clicks a checkbox if needed to put it into the desired state. */
     @SuppressWarnings({"SameParameterValue", "unused"})
     @NonNull
-    static ViewAction setChecked(final boolean checked) {
+    public static ViewAction setChecked(final boolean checked) {
         return new ViewAction() {
             @NonNull
             @Override
@@ -106,5 +112,19 @@ class CustomViewActions {
                 }
             }
         };
+    }
+
+    /**
+     * Returns a ViewAction that clicks at the center-left of a View.
+     *
+     * @return a ViewAction that performs the click.
+     */
+    public static ViewAction clickAtCenterLeft() {
+        return new GeneralClickAction(
+                Tap.SINGLE,
+                GeneralLocation.CENTER_LEFT, // (There's also GeneralLocation.VISIBLE_CENTER, etc.)
+                Press.PINPOINT,
+                InputDevice.SOURCE_UNKNOWN,
+                MotionEvent.BUTTON_PRIMARY);
     }
 }

@@ -39,8 +39,10 @@ import org.hamcrest.Matcher;
  * before performing more actions.
  */
 public class DismissClickViewAction implements ViewAction {
+    private final static boolean WORKAROUND = true;
     private final String dialogTag;
-    private final ViewAction click = ViewActions.click();
+    private final ViewAction click = WORKAROUND ? new LowLevelClick() : ViewActions.click();
+
 
     /**
      * Construct a ViewAction to click on a dialog button that's intended to close it ("Save",
@@ -62,8 +64,7 @@ public class DismissClickViewAction implements ViewAction {
 
     @Override
     public void perform(UiController uiController, View view) {
-        // Get the FragmentManager from the view's context.
-        FragmentActivity activity = unwrap(view.getContext());
+        FragmentActivity activity = getFragmentActivity(view.getContext());
         FragmentManager fm = activity.getSupportFragmentManager();
 
         // Perform the click.
@@ -74,7 +75,8 @@ public class DismissClickViewAction implements ViewAction {
         DialogIdlingResource.registerNewIdlingResource(fm, dialogTag);
     }
 
-    private static FragmentActivity unwrap(Context context) {
+    /** Gets the FragmentManager from the view's context. */
+    private static FragmentActivity getFragmentActivity(Context context) {
         while (!(context instanceof Activity) && context instanceof ContextWrapper) {
             context = ((ContextWrapper) context).getBaseContext();
         }
