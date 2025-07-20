@@ -76,6 +76,13 @@ public class Notifier {
     private static final int RUNNING_FLIPPER_CHILD = 0;
     private static final int PAUSED_FLIPPER_CHILD = 1;
 
+    /** A listener for UI notifications posted, for testing. */
+    public interface NotificationListener {
+        void onNotificationPosted();
+    }
+
+    private static NotificationListener notificationListener = null;
+
     private static boolean builtNotificationChannels = false;
 
     @NonNull
@@ -88,6 +95,11 @@ public class Notifier {
 
     private boolean soundAlarm = false; // whether the next notification should sound an alarm
     private int numActions; // the number of action buttons added to the notification being built
+
+    /** Sets a listener for when the Notifier posts UI notifications, for testing. */
+    public static void setNotificationListener(NotificationListener listener) {
+        notificationListener = listener;
+    }
 
     public Notifier(@NonNull Context _context) {
         this.context = _context;
@@ -213,6 +225,9 @@ public class Notifier {
             Notification notification = buildNotification(state);
             try {
                 notificationManagerCompat.notify(NOTIFICATION_ID, notification);
+                if (notificationListener != null) {
+                    notificationListener.onNotificationPosted();
+                }
             } catch (SecurityException e) { // ≈API 33+: The app should've requested permission already.
                 Log.e(TAG, "Need POST_NOTIFICATIONS permission", e);
             }

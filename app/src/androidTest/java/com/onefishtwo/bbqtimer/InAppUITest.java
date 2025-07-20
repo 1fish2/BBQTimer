@@ -86,12 +86,14 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 /** Within-app Espresso UI tests. */
 // TODO: Test the app's home screen widget.
 // TODO: Add a multi-app UIAutomation test of the app's notifications.
 @LargeTest
 @RunWith(AndroidJUnit4.class)
-public class InAppUITest {
+public class InAppUITest implements Notifier.NotificationListener {
     private static final String TAG = "InAppUITest";
     private static final TimeIntervalMatcher TIME_ZERO = inTimeInterval(0, 0); // supports locales
 
@@ -104,7 +106,8 @@ public class InAppUITest {
     private ViewInteraction countdownDisplay;
     private ViewInteraction background;
 
-    private FragmentManager fm; // [DEBUG]
+    private FragmentManager fm; // for logging the dialog fragment status
+    private final AtomicInteger notificationCount = new AtomicInteger(0);
 
     /** Launch MainActivity before each test and close it after the test completes. */
     @NonNull
@@ -122,6 +125,11 @@ public class InAppUITest {
             Build.VERSION.SDK_INT >= 33 ? GrantPermissionRule.grant(POST_NOTIFICATIONS)
             : null;
 
+    @Override
+    public void onNotificationPosted() {
+        notificationCount.incrementAndGet();
+    }
+
     @Before
     public void setUp() {
         playPauseButton = onView(withId(R.id.pauseResumeButton));
@@ -135,6 +143,9 @@ public class InAppUITest {
 
         activityScenarioRule.getScenario().onActivity(
                 activity -> fm = activity.getSupportFragmentManager());
+
+        notificationCount.set(0);
+        Notifier.setNotificationListener(this);
     }
 
     private void logFragmentStatus(String step) {
@@ -144,6 +155,7 @@ public class InAppUITest {
 
     @After
     public void tearDown() {
+        Notifier.setNotificationListener(null);
         playPauseButton = null;
         resetButton = null;
         stopButton = null;
@@ -423,21 +435,26 @@ public class InAppUITest {
         playPauseButton.perform(waitMsec(100)); // work around Espresso test flakiness
 
         // FRAGILE: The pop-up notification can interfere with click-to-Pause in Landscape mode.
-        // Workaround: Pause by clicking on the left edge of countdownDisplay.
-        // If this still fails, don't bury the failure since this is the key part of this test.
-        playPauseButton.perform(click(), waitMsec(6_000)); // Play 6 secs ...
+        // Workaround: Second try to Pause by clicking the left edge of countdownDisplay.
+        // If it still fails, don't bury the failure since this is the key part of this test.
+        assertEquals(0, notificationCount.get());
+        playPauseButton.perform(click()); // Play...
+        assertEquals(1, notificationCount.get());
+        playPauseButton.perform(waitMsec(6_000)); // ...for 6 secs...
+        assertEquals(2, notificationCount.get()); // 5 second timed notification
         try {
-            playPauseButton.perform(CustomViewActions.clickAtCenterLeft()); // then Pause
+            playPauseButton.perform(CustomViewActions.clickAtCenterLeft()); // ...then Pause
         } catch (Exception e) {
-            countdownDisplay.perform(CustomViewActions.clickAtCenterLeft()); // then Pause
+            countdownDisplay.perform(CustomViewActions.clickAtCenterLeft()); // ...then Pause
         }
+        assertEquals(3, notificationCount.get());
         TimeIntervalMatcher time6 = inTimeInterval(6_000, 8_000);
         checkPausedAt(time6);
 
         stopButton.perform(click());
         checkStopped();
 
-        // *** TODO: Check that it alarmed once. **
+        assertEquals(3, notificationCount.get());
     }
 
     /** Tests the CLEAR_TEXT endIcon in the alarmPeriodLayout TextInputLayout. */
