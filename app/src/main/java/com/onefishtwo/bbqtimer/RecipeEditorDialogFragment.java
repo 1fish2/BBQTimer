@@ -131,9 +131,9 @@ public class RecipeEditorDialogFragment extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
-        // This theme shows a floating dialog. Another theme can show it the size of the Activity
-        // which goes edge-to-edge on API 35+. Either way, it needs edge-to-edge insets to respond
-        // well to the soft keyboard.
+        // This theme shows a floating dialog. (Another theme can cover the Activity, which goes
+        // edge-to-edge on API 35+ and *might* require applying edge-to-edge insets here to respond
+        // well to the soft keyboard.)
         MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(requireActivity(),
                 R.style.AppThemeOverlay_Material3_MaterialAlertDialog);
         LayoutInflater inflater = requireActivity().getLayoutInflater();
