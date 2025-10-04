@@ -28,7 +28,6 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.clearText;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
-import static androidx.test.espresso.action.ViewActions.doubleClick;
 import static androidx.test.espresso.action.ViewActions.longClick;
 import static androidx.test.espresso.action.ViewActions.pressImeActionButton;
 import static androidx.test.espresso.action.ViewActions.replaceText;
@@ -84,6 +83,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
 import java.util.concurrent.atomic.AtomicInteger;
@@ -124,6 +124,9 @@ public class InAppUITest implements Notifier.NotificationListener {
     public final GrantPermissionRule permissionRule =
             Build.VERSION.SDK_INT >= 33 ? GrantPermissionRule.grant(POST_NOTIFICATIONS)
             : null;
+
+    @Rule
+    public final TestRule disableAnimationsRule = new DisableAnimationsRule();
 
     @Override
     public void onNotificationPosted() {
@@ -407,10 +410,12 @@ public class InAppUITest implements Notifier.NotificationListener {
         // another application requires INJECT_EVENTS permission" from innerInjectMotionEvent().
         // Maybe the landscape mode soft keyboard or its animation interferes. Workarounds are also
         // flakey. Log it and move on.
+        // doubleClick can fail to focus the text field. Maybe the soft keyboard or stylus tools got
+        // in the way of the second click. Give up on testing doubleClick.
         try {
-            alarmPeriodTextField.perform(doubleClick());
+            alarmPeriodTextField.perform(click());
         } catch (PerformException e) {
-            Log.w(TAG, "*** alarmPeriodTextField doubleClick failed (soft keyboard?): "
+            Log.w(TAG, "*** alarmPeriodTextField click failed (soft keyboard?): "
                     + e.getMessage());
             alarmPeriodTextField.perform(closeSoftKeyboard());
         }
@@ -451,6 +456,7 @@ public class InAppUITest implements Notifier.NotificationListener {
         TimeIntervalMatcher time6 = inTimeInterval(6_000, 8_000);
         checkPausedAt(time6);
 
+        playPauseButton.perform(waitMsec(400)); // WORKAROUND even w/o animations; add IdlingResource?
         stopButton.perform(click());
         checkStopped();
 
