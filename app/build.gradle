@@ -3,8 +3,8 @@ plugins {
 }
 
 android {
-    compileSdk = 36
-    buildToolsVersion = '36.0.0'
+    compileSdkVersion 'android-36.1'
+    buildToolsVersion = '36.1.0'
 
     defaultConfig {
         applicationId "com.onefishtwo.bbqtimer"
