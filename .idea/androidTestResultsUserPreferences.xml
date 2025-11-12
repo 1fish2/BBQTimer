@@ -120,6 +120,7 @@
                   <entry key="24_7.0_N_3.2-inch_HVGA_slider_320x480" value="120" />
                   <entry key="24_7.0_N_3.2-inch_HVGA_slider_320x480_160dpi" value="120" />
                   <entry key="24_7.0_N_Nexus_4_xhdpi_768x1280" value="120" />
+                  <entry key="24_7.0_N_Nexus_4_xhdpi_768x1280_320dpi" value="120" />
                   <entry key="25_7.1.1_N.1_Nexus_5_xxhdpi_1080x1920" value="120" />
                   <entry key="26_8.0_O_Pixel_2_xxhdpi_1080x1920" value="120" />
                   <entry key="27_8.1_O.1_Pixel_3_xxhdpi_1080x2160" value="120" />
@@ -154,6 +155,7 @@
                   <entry key="35_V_Pixel_9_Pro_XL_1344x2992_xxhdpi" value="120" />
                   <entry key="36.1_16.0_B_16KB_Flip5_cover_screen_720x748" value="120" />
                   <entry key="36.1_16.0_B_16KB_Pixel_Fold_2208x1840" value="120" />
+                  <entry key="36.1_16.1_B_16K_Pixel_9_1080x2424" value="120" />
                   <entry key="36_16.0_B_Pixel_Fold_2208x1840" value="120" />
                   <entry key="Duration" value="90" />
                   <entry key="Google Pixel 6" value="120" />
