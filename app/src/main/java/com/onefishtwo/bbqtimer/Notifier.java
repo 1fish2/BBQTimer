@@ -58,7 +58,7 @@ public class Notifier {
     private static final String TAG = "Notifier";
     private static final int NOTIFICATION_ID = 7;
 
-    private static final SpannedString EMPTY_SPAN = new SpannedString("");
+    private static final Spanned EMPTY_SPAN = new SpannedString("");
 
     // Vibration pattern: ms off, on, off, ...
     // Match the notification sound to the degree feasible.
@@ -340,8 +340,8 @@ public class Notifier {
      */
     @NonNull
     private RemoteViews makeRemoteViews(
-            @LayoutRes int layoutId, @NonNull ApplicationState state, @NonNull String countUpMessage,
-            @NonNull String countDownMessage) {
+            @LayoutRes int layoutId, @NonNull ApplicationState state, @NonNull CharSequence countUpMessage,
+            @NonNull CharSequence countDownMessage) {
         TimeCounter timer = state.getTimeCounter();
         long elapsedTime = timer.getElapsedTime();
         boolean isRunning = timer.isRunning();

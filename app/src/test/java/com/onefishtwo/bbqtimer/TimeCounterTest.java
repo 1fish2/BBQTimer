@@ -22,13 +22,6 @@
 
 package com.onefishtwo.bbqtimer;
 
-import android.text.Spanned;
-
-import org.junit.Test;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import static android.text.format.DateUtils.HOUR_IN_MILLIS;
 import static android.text.format.DateUtils.MINUTE_IN_MILLIS;
 import static android.text.format.DateUtils.SECOND_IN_MILLIS;
@@ -37,6 +30,13 @@ import static com.onefishtwo.bbqtimer.TimeCounter.parseHhMmSs;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
+
+import android.text.Spanned;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
+import org.junit.Test;
 
 public class TimeCounterTest {
     static class MockSpanned implements Spanned {
@@ -79,7 +79,7 @@ public class TimeCounterTest {
                 987 * HOUR_IN_MILLIS + 45 * MINUTE_IN_MILLIS + 23 * SECOND_IN_MILLIS + 600;
         String hhmmssText = "987:45:23";
         String htmlText = hhmmssText + "<small>.6</small>";
-        final MockSpanned mockSpanned = new MockSpanned();
+        final Spanned mockSpanned = new MockSpanned();
 
         @NonNull
         @Override

@@ -21,12 +21,13 @@
 
 package com.onefishtwo.bbqtimer;
 
+import androidx.annotation.NonNull;
+
 import org.hamcrest.CustomTypeSafeMatcher;
 import org.hamcrest.Description;
 
+import java.util.regex.MatchResult;
 import java.util.regex.Pattern;
-
-import androidx.annotation.NonNull;
 
 /**
  * A Matcher that matches a time string in the format "MM:SS.F" within the interval [min .. max]
@@ -92,7 +93,7 @@ public class TimeIntervalMatcher extends CustomTypeSafeMatcher<String> {
      *
      * @throws NumberFormatException if the group is "" or otherwise not an integer.
      */
-    private int val(@NonNull java.util.regex.Matcher matcher, int group) {
+    private int val(@NonNull MatchResult matcher, int group) {
         if (group > matcher.groupCount()) {
             return 0;
         }

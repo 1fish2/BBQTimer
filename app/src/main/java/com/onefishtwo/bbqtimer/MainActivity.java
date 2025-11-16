@@ -92,6 +92,7 @@ import java.util.Vector;
 /**
  * The BBQ Timer's main activity.
  */
+@SuppressWarnings("OverlyComplexClass")
 public class MainActivity extends AppCompatActivity
         implements RecipeEditorDialogFragment.RecipeEditorDialogFragmentListener {
     private static final String TAG = "Main";

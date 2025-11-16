@@ -467,7 +467,7 @@ public class TimeCounter {
      * The token includes any leading spaces so the match length indicates where the following text
      * (the notes) begin, so they can get italicized.
      */
-    public static int lengthOfLeadingIntervalTime(String recipe) {
+    public static int lengthOfLeadingIntervalTime(CharSequence recipe) {
         Matcher matcher = INTERVAL_TIME_IN_RECIPE.matcher(recipe);
         boolean matched = matcher.lookingAt();
 

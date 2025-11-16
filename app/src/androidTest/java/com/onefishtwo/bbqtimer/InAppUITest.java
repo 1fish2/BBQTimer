@@ -79,6 +79,7 @@ import androidx.test.filters.LargeTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.rule.GrantPermissionRule;
 
+import org.hamcrest.Matcher;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -341,13 +342,13 @@ public class InAppUITest implements Notifier.NotificationListener {
     }
 
     /** Checks that the UI is in the Playing state at a matching time value. */
-    private void checkPlayingAt(@NonNull TimeIntervalMatcher time) {
+    private void checkPlayingAt(@NonNull Matcher<String> time) {
         checkPlaying();
         timeView.check(matches(withText(time)));
     }
 
     /** Checks that the UI is in the Paused state at a matching time value. */
-    private void checkPausedAt(@NonNull TimeIntervalMatcher time) {
+    private void checkPausedAt(@NonNull Matcher<String> time) {
         playPauseButton.check(matches(isCompletelyDisplayed()));
         resetButton.check(matches(isCompletelyDisplayed()));
         stopButton.check(matches(isCompletelyDisplayed()));
