@@ -4,10 +4,10 @@
     <selectionStates>
       <SelectionState runConfigName="app">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2025-10-05T08:10:06.519613Z">
+        <DropdownSelection timestamp="2025-11-20T05:29:37.585916Z">
           <Target type="DEFAULT_BOOT">
             <handle>
-              <DeviceId pluginId="LocalEmulator" identifier="path=/Users/jerry/.android/avd/36_16.0_B_Flip5_cover_screen_720x748.avd" />
+              <DeviceId pluginId="LocalEmulator" identifier="path=/Users/jerry/.android/avd/36.1_16.1_Pixel_Tablet_2560x1600.avd" />
             </handle>
           </Target>
         </DropdownSelection>
@@ -15,10 +15,10 @@
       </SelectionState>
       <SelectionState runConfigName="all Android tests">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2025-07-19T04:13:04.236222Z">
+        <DropdownSelection timestamp="2025-11-20T05:21:41.411452Z">
           <Target type="DEFAULT_BOOT">
             <handle>
-              <DeviceId pluginId="LocalEmulator" identifier="path=/Users/jerry/.android/avd/28_P_Pixel_2.avd" />
+              <DeviceId pluginId="LocalEmulator" identifier="path=/Users/jerry/.android/avd/24G_7.0_N_Nexus_4.avd" />
             </handle>
           </Target>
         </DropdownSelection>
