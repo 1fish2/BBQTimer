@@ -35,13 +35,9 @@ import com.onefishtwo.bbqtimer.state.ApplicationState;
 
 /**
  * Uses AlarmManager to perform periodic reminder notifications.
- *<p/>
+ *<p>
  * ASSUMES: The app has USE_EXACT_ALARM permission (defined in API 33) and
  * SCHEDULE_EXACT_ALARM in API ≤ 32.
- *<p/>
- * TODO: The app could run a ForegroundService with the AlarmManager alarm to preserve its process
- *   (except in extreme conditions) and thus keep the ApplicationState instance in memory for fast
- *   response to the alarm.
  */
 public class AlarmReceiver extends BroadcastReceiver {
     private static final String TAG = "AlarmReceiver";
@@ -70,6 +66,7 @@ public class AlarmReceiver extends BroadcastReceiver {
      */
     private static final String EXTRA_ELAPSED_REALTIME_TARGET =
             "com.onefishtwo.bbqtimer.ElapsedRealtimeTarget";
+    static final String ACTION_ALARM = "com.onefishtwo.bbqtimer.ACTION_ALARM";
     /** Tolerance value for an early alarm. */
     private static final long ALARM_TOLERANCE_MS = 10L;
 
@@ -88,6 +85,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 
         // See https://stackoverflow.com/questions/32492770
         intent.addFlags(Intent.FLAG_RECEIVER_FOREGROUND);
+        intent.setAction(ACTION_ALARM);
         intent.putExtra(EXTRA_ELAPSED_REALTIME_TARGET, elapsedRealtimeTarget);
 
         // (ibid) "FLAG_CANCEL_CURRENT seems to be required to prevent a bug where the
@@ -280,6 +278,10 @@ public class AlarmReceiver extends BroadcastReceiver {
      */
     @Override
     public final void onReceive(@NonNull Context context, @NonNull Intent intent) {
+        if (!ACTION_ALARM.equals(intent.getAction())) {
+            return;
+        }
+
         ApplicationState state = ApplicationState.sharedInstance(context);
         TimeCounter timer      = state.getTimeCounter();
 

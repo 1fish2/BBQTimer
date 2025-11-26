@@ -82,10 +82,11 @@ public class ResumeReceiver extends BroadcastReceiver {
 
         } else if (Intent.ACTION_BOOT_COMPLETED.equals(action)) {
             // BOOT_COMPLETED: Reboot then login or Android 15+ Force Stop then user interaction.
-            // NOTE: Usually after reboot, ApplicationState.sharedInstance() already stopped the
+            // Force Stop cancels the app's PendingIntents and grays out its widgets.
+            // NOTE: Usually after Reboot, ApplicationState.sharedInstance() already stopped the
             // timer due to a future startTime, and in that case Notifications will be clear and
             // APPWIDGET_UPDATE Intents will reset the widgets.
-            // This code stops the timer after the remaining reboot case and resets everything after
+            // This code stops the timer after the remaining Reboot case and resets everything after
             // the Force Stop case.
             ApplicationState state = ApplicationState.sharedInstance(context);
             TimeCounter timer = state.getTimeCounter();

@@ -63,6 +63,7 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
             R.id.smallResetChronometerText,
     };
 
+    // Actions for internal, explicit Intents. They should not be listed in an intent-filter.
     static final String ACTION_RUN_PAUSE  = "com.onefishtwo.bbqtimer.ACTION_RUN_PAUSE";
     static final String ACTION_RUN        = "com.onefishtwo.bbqtimer.ACTION_RUN";
     static final String ACTION_PAUSE      = "com.onefishtwo.bbqtimer.ACTION_PAUSE";
