@@ -11,7 +11,7 @@ android {
         versionCode 25
         versionName '4.2'
         minSdk = 24
-        targetSdk = 35
+        targetSdk = 36
         resourceConfigurations += ['en', 'de']
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
