@@ -56,7 +56,7 @@ public class ApplicationState {
     private static final String PREF_SECONDS_PER_REMINDER = "App_secondsPerReminder";
     private static final String PREF_RECIPES = "App_recipes";
 
-    private static ApplicationState sharedInstance;
+    private static volatile ApplicationState sharedInstance;
 
     private final TimeCounter timeCounter = new TimeCounter();
     private boolean enableReminders;
@@ -73,15 +73,20 @@ public class ApplicationState {
     @NonNull
     public static ApplicationState sharedInstance(@NonNull Context context) {
         if (sharedInstance == null) {
-            ApplicationState state = new ApplicationState();
-            boolean needToSave     = state.load(context);
+            //noinspection SynchronizeOnThis
+            synchronized (ApplicationState.class) {
+                if (sharedInstance == null) {
+                    ApplicationState state = new ApplicationState();
+                    boolean needToSave = state.load(context);
 
-            if (needToSave) {
-                state.save(context);
-                Log.i(TAG, "*** Stopped and saved the timer");
+                    if (needToSave) {
+                        state.save(context);
+                        Log.i(TAG, "*** Stopped and saved the timer");
+                    }
+
+                    sharedInstance = state;
+                }
             }
-
-            sharedInstance = state;
         }
 
         return sharedInstance;

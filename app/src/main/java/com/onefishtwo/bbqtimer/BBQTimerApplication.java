@@ -6,8 +6,6 @@ import android.os.StrictMode;
 
 import com.onefishtwo.bbqtimer.state.ApplicationState;
 
-import com.onefishtwo.bbqtimer.BuildConfig;
-
 public class BBQTimerApplication extends Application {
 
     @Override
@@ -30,9 +28,10 @@ public class BBQTimerApplication extends Application {
 
         super.onCreate();
 
-        // Load the state now, not in the UI thread, to avoid delaying the UI thread, and under
-        // cover of the splash screen animation.
-        // TODO: Load it asynchronously with access synchronization.
-        ApplicationState.sharedInstance(this);
+        // Start loading the state now, not in the UI thread, to avoid delaying the UI thread, and
+        // under cover of the splash screen animation. The overlap probably doesn't help much.
+        new Thread(() -> ApplicationState.sharedInstance(this)).start();
+
+        // DynamicColors.applyToActivitiesIfAvailable(this);
     }
 }
