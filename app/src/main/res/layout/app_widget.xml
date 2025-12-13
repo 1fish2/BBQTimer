@@ -52,6 +52,7 @@
             android:textColor="@color/widget_countdown_text"
             android:textSize="@dimen/widget_countdown_text_size"
             android:typeface="sans"
+            android:fontFeatureSettings="tnum"
             tools:ignore="SpUsage" />
 
         <Chronometer
@@ -63,6 +64,7 @@
             android:textColor="@color/widget_countdown_text"
             android:textSize="@dimen/widget_countdown_text_size"
             android:typeface="sans"
+            android:fontFeatureSettings="tnum"
             tools:ignore="SpUsage" />
 
         <TextView
@@ -74,6 +76,7 @@
             android:textColor="@color/reset_timer_colors"
             android:textSize="@dimen/widget_countdown_text_size"
             android:typeface="sans"
+            android:fontFeatureSettings="tnum"
             tools:ignore="SpUsage" />
     </ViewFlipper>
 
@@ -97,6 +100,7 @@
             android:textColor="@color/paused_timer_colors"
             android:textSize="@dimen/widget_text_size"
             android:typeface="sans"
+            android:fontFeatureSettings="tnum"
             tools:ignore="SpUsage" />
 
         <Chronometer
@@ -108,6 +112,7 @@
             android:textColor="@color/running_timer_colors"
             android:textSize="@dimen/widget_text_size"
             android:typeface="sans"
+            android:fontFeatureSettings="tnum"
             tools:ignore="SpUsage" />
 
         <TextView
@@ -119,6 +124,7 @@
             android:textColor="@color/reset_timer_colors"
             android:textSize="@dimen/widget_text_size"
             android:typeface="sans"
+            android:fontFeatureSettings="tnum"
             tools:ignore="SpUsage" />
 
 
@@ -132,6 +138,7 @@
             android:textColor="@color/paused_timer_colors"
             android:textSize="@dimen/widget_shrunken_text_size"
             android:typeface="sans"
+            android:fontFeatureSettings="tnum"
             tools:ignore="SpUsage" />
 
         <Chronometer
@@ -143,6 +150,7 @@
             android:textColor="@color/running_timer_colors"
             android:textSize="@dimen/widget_shrunken_text_size"
             android:typeface="sans"
+            android:fontFeatureSettings="tnum"
             tools:ignore="SpUsage" />
 
         <TextView
@@ -154,6 +162,7 @@
             android:textColor="@color/reset_timer_colors"
             android:textSize="@dimen/widget_shrunken_text_size"
             android:typeface="sans"
+            android:fontFeatureSettings="tnum"
             tools:ignore="SpUsage" />
     </ViewFlipper>
 
