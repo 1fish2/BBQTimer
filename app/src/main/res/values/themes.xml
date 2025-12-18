@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Dark base application theme for API < 29.
+         API 28 has a non-functional "Device Theme" setting, and earlier versions have no such
+         setting. -->
+    <style name="Theme.App.Base" parent="Theme.Material3.Dark">
+
+        <item name="actionBarStyle">@style/FireyActionBar</item>
+        <item name="actionBarSize">40dp</item>
+        <item name="snackbarTextViewStyle">@style/snackbarText</item>
+        <item name="checkboxStyle">@style/Widget.App.CheckBox</item>
+        <item name="editTextStyle">@style/Widget.App.EditText</item>
+
+        <!-- Style all text buttons, including those in dialogs -->
+        <item name="materialButtonOutlinedStyle">@style/Widget.App.Button.OutlinedButton</item>
+        <item name="borderlessButtonStyle">@style/Widget.App.Button.TextButton</item>
+
+        <!-- On APIs < 29, set the Status Bar background color to match the Navigation Bar.
+             The default, colorPrimary (Pink), is ugly. -->
+        <item name="android:statusBarColor">?android:attr/navigationBarColor</item>
+
+        <!-- From Material Theme Builder. -->
+        <item name="colorPrimary">@color/md_theme_primary</item>
+        <item name="colorOnPrimary">@color/md_theme_onPrimary</item>
+        <item name="colorPrimaryContainer">@color/md_theme_primaryContainer</item>
+        <item name="colorOnPrimaryContainer">@color/md_theme_onPrimaryContainer</item>
+        <item name="colorSecondary">@color/md_theme_secondary</item>
+        <item name="colorOnSecondary">@color/md_theme_onSecondary</item>
+        <item name="colorSecondaryContainer">@color/md_theme_secondaryContainer</item>
+        <item name="colorOnSecondaryContainer">@color/md_theme_onSecondaryContainer</item>
+        <item name="colorTertiary">@color/md_theme_tertiary</item>
+        <item name="colorOnTertiary">@color/md_theme_onTertiary</item>
+        <item name="colorTertiaryContainer">@color/md_theme_tertiaryContainer</item>
+        <item name="colorOnTertiaryContainer">@color/md_theme_onTertiaryContainer</item>
+        <item name="colorError">@color/md_theme_error</item>
+        <item name="colorOnError">@color/md_theme_onError</item>
+        <item name="colorErrorContainer">@color/md_theme_errorContainer</item>
+        <item name="colorOnErrorContainer">@color/md_theme_onErrorContainer</item>
+        <item name="android:colorBackground">@color/md_theme_background</item>
+        <item name="colorOnBackground">@color/md_theme_onBackground</item>
+        <item name="colorSurface">@color/md_theme_surface</item>
+        <item name="colorOnSurface">@color/md_theme_onSurface</item>
+        <item name="colorSurfaceVariant">@color/md_theme_surfaceVariant</item>
+        <item name="colorOnSurfaceVariant">@color/md_theme_onSurfaceVariant</item>
+        <item name="colorOutline">@color/md_theme_outline</item>
+        <item name="colorOutlineVariant">@color/md_theme_outlineVariant</item>
+        <item name="colorSurfaceInverse">@color/md_theme_inverseSurface</item>
+        <item name="colorOnSurfaceInverse">@color/md_theme_inverseOnSurface</item>
+        <item name="colorPrimaryInverse">@color/md_theme_inversePrimary</item>
+        <item name="colorPrimaryFixed">@color/md_theme_primaryFixed</item>
+        <item name="colorOnPrimaryFixed">@color/md_theme_onPrimaryFixed</item>
+        <item name="colorPrimaryFixedDim">@color/md_theme_primaryFixedDim</item>
+        <item name="colorOnPrimaryFixedVariant">@color/md_theme_onPrimaryFixedVariant</item>
+        <item name="colorSecondaryFixed">@color/md_theme_secondaryFixed</item>
+        <item name="colorOnSecondaryFixed">@color/md_theme_onSecondaryFixed</item>
+        <item name="colorSecondaryFixedDim">@color/md_theme_secondaryFixedDim</item>
+        <item name="colorOnSecondaryFixedVariant">@color/md_theme_onSecondaryFixedVariant</item>
+        <item name="colorTertiaryFixed">@color/md_theme_tertiaryFixed</item>
+        <item name="colorOnTertiaryFixed">@color/md_theme_onTertiaryFixed</item>
+        <item name="colorTertiaryFixedDim">@color/md_theme_tertiaryFixedDim</item>
+        <item name="colorOnTertiaryFixedVariant">@color/md_theme_onTertiaryFixedVariant</item>
+        <item name="colorSurfaceDim">@color/md_theme_surfaceDim</item>
+        <item name="colorSurfaceBright">@color/md_theme_surfaceBright</item>
+        <item name="colorSurfaceContainerLowest">@color/md_theme_surfaceContainerLowest</item>
+        <item name="colorSurfaceContainerLow">@color/md_theme_surfaceContainerLow</item>
+        <item name="colorSurfaceContainer">@color/md_theme_surfaceContainer</item>
+        <item name="colorSurfaceContainerHigh">@color/md_theme_surfaceContainerHigh</item>
+        <item name="colorSurfaceContainerHighest">@color/md_theme_surfaceContainerHighest</item>
+    </style>
+
+    <style name="Theme.App" parent="Theme.App.Base" />
+
+    <!-- AlertDialog adjustments -->
+    <style name="AppThemeOverlay.Material3.MaterialAlertDialog"
+        parent="@style/ThemeOverlay.Material3.MaterialAlertDialog">
+        <item name="shapeAppearanceOverlay">@style/AppShapeAppearanceOverlay.AlertDialog</item>
+    </style>
+
+    <style name="AppShapeAppearanceOverlay.AlertDialog" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">8dp</item>
+    </style>
+
+    <!-- ActionBar styles -->
+    <style name="FireyActionBar" parent="Widget.AppCompat.ActionBar">
+        <!-- Android API < 28 shows the theme's colorPrimary rather than this background color in
+             the app switcher, but no need to work around that. -->
+        <item name="background">@color/orange_red_text</item>
+        <item name="titleTextStyle">@style/FireyActionBar.Text</item>
+    </style>
+
+    <style name="FireyActionBar.Text" parent="TextAppearance.AppCompat.Widget.ActionBar.Title">
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/notification_text</item>
+    </style>
+
+    <style name="HintTextAppearance" parent="TextAppearance.Material3.LabelSmall">
+        <item name="android:textSize">@dimen/hint_text_size</item>
+    </style>
+
+    <!-- SnackBar styles -->
+    <style name="snackbarText" parent="@style/Widget.Material3.Snackbar.TextView">
+        <item name="android:maxLines">6</item>
+    </style>
+
+    <!-- PopupMenu styles -->
+    <style name="PopupMenu" parent="@style/Widget.Material3.PopupMenu">
+    </style>
+
+    <!-- Checkbox style -->
+    <style name="Widget.App.CheckBox" parent="Widget.Material3.CompoundButton.CheckBox">
+        <item name="buttonTint">@color/checkbox_tint_color</item>
+    </style>
+
+    <!-- EditText style -->
+    <style name="Widget.App.EditText" parent="Widget.Material3.TextInputEditText.FilledBox">
+        <!-- This controls the color of the caret and selection handles -->
+        <item name="android:textColorHighlight">?attr/colorSecondary</item>
+        <item name="android:textCursorDrawable">@null</item> <!-- This allows colorControlActivated to take over -->
+        <item name="colorControlActivated">?attr/colorSecondary</item>
+    </style>
+
+    <!-- Text buttons -->
+    <style name="Widget.App.Button.OutlinedButton" parent="Widget.Material3.Button.OutlinedButton">
+        <item name="android:textColor">?attr/colorSecondary</item>
+        <item name="strokeColor">?attr/colorSecondary</item>
+    </style>
+    <style name="Widget.App.Button.TextButton" parent="Widget.Material3.Button.TextButton">
+        <item name="android:textColor">?attr/colorSecondary</item>
+    </style>
+</resources>

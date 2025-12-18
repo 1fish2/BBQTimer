@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- State when checked -->
+    <item android:color="?attr/colorSecondary" android:state_checked="true" />
+    <!-- State when unchecked (usually a neutral color) -->
+    <item android:color="?attr/colorOnSurfaceVariant" android:state_checked="false"/>
+</selector>

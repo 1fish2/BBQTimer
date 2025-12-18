@@ -98,11 +98,12 @@ public class MainActivity extends AppCompatActivity
     private static final String TAG = "Main";
 
     /**
-     * Enable edge-to-edge display? Required on API 35+ (with a temporary deferment option).
-     * On API < 29, it breaks the system bar contrast. On API < 35 the system bar is ugly above the
-     * title bar (fixable). The PopupMenu insets need investigation. No advantages for this app.
+     * Enable edge-to-edge display? Required on API 35+. It breaks system bar contrast on API < 29.
+     * This app doesn't show anything under the status bar in edge-to-edge but EdgeToEdge.enable()
+     * handles the status bar foreground & background colors.
+     * The PopupMenu insets need investigation.
      */
-    private static final boolean EDGE_TO_EDGE = Build.VERSION.SDK_INT >= 35;
+    private static final boolean EDGE_TO_EDGE = Build.VERSION.SDK_INT >= 29;
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({SHORTCUT_NONE, SHORTCUT_PAUSE, SHORTCUT_START})
@@ -589,7 +590,7 @@ public class MainActivity extends AppCompatActivity
      * </p>
      * NOTE: This used to set the action's text color but a custom background color gets overridden
      * now in day or night theme, so the custom text color became low-contrast. The two colors might
-     * be settable in AppTheme but why bother?
+     * be settable in Theme.App but why bother?
      */
     @UiThread
     private void setSnackbarAction(@NonNull Snackbar snackbar, @StringRes int resId,

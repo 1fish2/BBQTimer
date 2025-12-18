@@ -7,7 +7,6 @@
     android:layout_marginBottom="-2sp"
     android:layout_marginTop="-2sp"
     android:orientation="vertical"
-    android:theme="@style/AppTheme"
     tools:viewBindingIgnore="true"
     xmlns:tools="http://schemas.android.com/tools">
 
