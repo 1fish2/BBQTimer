@@ -54,7 +54,6 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
@@ -70,6 +69,7 @@ import androidx.annotation.RequiresApi;
 import androidx.annotation.StringRes;
 import androidx.annotation.UiThread;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.PopupMenu;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.app.TaskStackBuilder;
 import androidx.core.content.ContextCompat;
@@ -676,7 +676,10 @@ public class MainActivity extends AppCompatActivity
     /** The user clicked the button to open the "recipes" menu of alarm periods. */
     @UiThread
     public void onClickRecipeMenuButton(View v) {
-        popupMenu = new PopupMenu(this, v, Gravity.CENTER, 0, R.style.PopupMenu);
+        // Workaround: Gravity.END places the PopupMenu out of the right side system gesture and
+        // cutout areas. It still possible to extend into the left side system gesture area in
+        // portrait mode, but at least it won't be hidden by a cutout in landscape mode.
+        popupMenu = new PopupMenu(this, v, Gravity.END, 0, R.style.PopupMenu);
         Menu menu = popupMenu.getMenu();
 
         popupMenu.getMenuInflater().inflate(R.menu.recipe_menu, menu);
