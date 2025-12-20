@@ -13,7 +13,7 @@
     <string name="app_name">BBQ Timer</string>
 
     <!-- The application's description. This goes into the AndroidManifest. -->
-    <string name="app_description">A stopwatch that you can use on the lock-screen.</string>
+    <string name="app_description">A stopwatch and interval timer that you can use on the lock-screen.</string>
 
     <!-- Name for the Alarm notification channel. Recommended maximum 40 chars. -->
     <string name="notification_alarm_channel_name">Alarm</string>
@@ -149,9 +149,9 @@
     <string name="need_alarm_access">BBQ Timer needs “Special app access” “Alarms &amp; reminders” to set alarms</string>
 
     <!-- The initial "recipes" of alarm intervals with optional notes.
-         The placeholder %1$s is for fish temperature-done in either °C or °F.
+         The placeholder %1$s is for fish fillets temperature-done in either °C or °F.
          The placeholder %2$s is for burgers temperature-done in either °C or °F. -->
-    <string name="recipes">6 thin fish, cook to %1$s\n7 burgers, cook to %2$s\n:30\n1\n1:30\n2\n3\n4\n5\n6\n7\n8\n9\n10\n15\n1:30:00</string>
+    <string name="recipes">6 thin fish fillets, cook to %1$s\n7 burgers, cook to %2$s\n:30\n1\n1:30\n2\n3\n4\n5\n6\n7\n8\n9\n10\n15\n1:30:00</string>
 
     <!-- Content description for the icon button that opens the menu of alarm intervals. -->
     <string name="intervals_menu">Intervals menu</string>
