@@ -92,7 +92,7 @@
 
     <style name="FireyActionBar.Text" parent="TextAppearance.AppCompat.Widget.ActionBar.Title">
         <item name="android:textStyle">bold</item>
-        <item name="android:textColor">@color/notification_text</item>
+        <item name="android:textColor">@color/md_theme_onPrimaryContainer</item>
     </style>
 
     <style name="HintTextAppearance" parent="TextAppearance.Material3.LabelSmall">
@@ -114,10 +114,18 @@
     </style>
 
     <!-- EditText style -->
-    <style name="Widget.App.EditText" parent="Widget.Material3.TextInputEditText.FilledBox">
-        <!-- This controls the color of the caret and selection handles -->
-        <item name="android:textColorHighlight">?attr/colorSecondary</item>
-        <item name="android:textCursorDrawable">@null</item> <!-- This allows colorControlActivated to take over -->
+    <style name="Widget.App.EditText" parent="Widget.Material3.TextInputEditText.OutlinedBox.Dense">
+        <!-- Use the green accent color for the text caret and selection handles -->
+        <item name="android:theme">@style/ThemeOverlay.App.GreenAccent</item>
+        <item name="android:textColorHighlight">@color/selection_highlight_green</item>
+        <item name="android:textCursorDrawable">@null</item> <!-- This allows colorControlActivated/colorPrimary to take over -->
+    </style>
+
+    <!-- Theme Overlay to force Green (Secondary) accent colors -->
+    <style name="ThemeOverlay.App.GreenAccent" parent="">
+        <item name="colorPrimary">?attr/colorSecondary</item>
+        <item name="colorOnPrimary">?attr/colorOnSecondary</item>
+        <!-- Ensure colorControlActivated follows suit for API < 21 or defaults -->
         <item name="colorControlActivated">?attr/colorSecondary</item>
     </style>
 

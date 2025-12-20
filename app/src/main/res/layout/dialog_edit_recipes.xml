@@ -21,31 +21,36 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <EditText
-        android:id="@+id/recipes_text_field"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/recipes_text_field_layout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/recipe_horizontal_margin"
         android:layout_marginEnd="@dimen/recipe_horizontal_margin"
-        android:background="@drawable/edit_text_border"
-        android:enabled="true"
-        android:gravity="start|top"
+        android:layout_marginBottom="12dp"
         android:hint="@string/edit_list_hint"
-        android:importantForAutofill="no"
-        android:inputType="textMultiLine|textNoSuggestions"
-        android:maxLength="2000"
-        android:minLines="2"
-        android:paddingStart="8dp"
-        android:paddingTop="2dp"
-        android:paddingEnd="8dp"
-        android:paddingBottom="2dp"
-        android:scrollbarAlwaysDrawHorizontalTrack="true"
-        android:scrollbars="horizontal|vertical"
-        android:textColor="?android:attr/textColorPrimary"
         app:layout_constrainedHeight="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/recipes_title" />
+        app:layout_constraintTop_toBottomOf="@id/recipes_title">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/recipes_text_field"
+            style="@style/Widget.App.EditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:enabled="true"
+            android:gravity="start|top"
+            android:importantForAutofill="no"
+            android:inputType="textMultiLine|textNoSuggestions"
+            android:maxLength="2000"
+            android:minLines="2"
+            android:paddingStart="8dp"
+            android:paddingTop="8dp"
+            android:paddingEnd="8dp"
+            android:paddingBottom="2dp"
+            android:scrollbars="vertical" />
+    </com.google.android.material.textfield.TextInputLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
