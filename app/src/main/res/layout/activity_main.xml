@@ -141,6 +141,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/fold_margin"
+        android:minWidth="88dp"
+        android:maxWidth="488dp"
         style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense"
         android:hint="@string/interval_hint"
         app:hintTextAppearance="@style/HintTextAppearance"

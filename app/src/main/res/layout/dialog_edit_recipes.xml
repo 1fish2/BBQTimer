@@ -28,6 +28,8 @@
         android:layout_marginStart="@dimen/recipe_horizontal_margin"
         android:layout_marginEnd="@dimen/recipe_horizontal_margin"
         android:layout_marginBottom="12dp"
+        android:minWidth="88dp"
+        android:maxWidth="488dp"
         android:hint="@string/edit_list_hint"
         app:layout_constrainedHeight="true"
         app:layout_constraintBottom_toBottomOf="parent"
