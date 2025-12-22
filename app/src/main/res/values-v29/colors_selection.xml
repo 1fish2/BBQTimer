@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <!-- 30% alpha of md_theme_secondary #0B6B1D -->
-    <color name="selection_highlight_green">#4D0B6B1D</color>
-</resources>

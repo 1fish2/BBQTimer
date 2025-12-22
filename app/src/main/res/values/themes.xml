@@ -9,12 +9,6 @@
         <item name="actionBarStyle">@style/FireyActionBar</item>
         <item name="actionBarSize">40dp</item>
         <item name="snackbarTextViewStyle">@style/snackbarText</item>
-        <item name="checkboxStyle">@style/Widget.App.CheckBox</item>
-        <item name="editTextStyle">@style/Widget.App.EditText</item>
-
-        <!-- Style all text buttons, including those in dialogs -->
-        <item name="materialButtonOutlinedStyle">@style/Widget.App.Button.OutlinedButton</item>
-        <item name="borderlessButtonStyle">@style/Widget.App.Button.TextButton</item>
 
         <!-- On APIs < 29, set the Status Bar background color to match the Navigation Bar.
              The default, colorPrimary (Pink), is ugly. -->
@@ -108,33 +102,9 @@
     <style name="PopupMenu" parent="@style/Widget.Material3.PopupMenu">
     </style>
 
-    <!-- Checkbox style -->
-    <style name="Widget.App.CheckBox" parent="Widget.Material3.CompoundButton.CheckBox">
-        <item name="buttonTint">@color/checkbox_tint_color</item>
-    </style>
-
     <!-- EditText style -->
     <style name="Widget.App.EditText" parent="Widget.Material3.TextInputEditText.OutlinedBox.Dense">
-        <!-- Use the green accent color for the text caret and selection handles -->
-        <item name="android:theme">@style/ThemeOverlay.App.GreenAccent</item>
-        <item name="android:textColorHighlight">@color/selection_highlight_green</item>
-        <item name="android:textCursorDrawable">@null</item> <!-- This allows colorControlActivated/colorPrimary to take over -->
+        <item name="android:textColorHighlight">@color/selection_highlight_neutral</item>
     </style>
 
-    <!-- Theme Overlay to force Green (Secondary) accent colors -->
-    <style name="ThemeOverlay.App.GreenAccent" parent="">
-        <item name="colorPrimary">?attr/colorSecondary</item>
-        <item name="colorOnPrimary">?attr/colorOnSecondary</item>
-        <!-- Ensure colorControlActivated follows suit for API < 21 or defaults -->
-        <item name="colorControlActivated">?attr/colorSecondary</item>
-    </style>
-
-    <!-- Text buttons -->
-    <style name="Widget.App.Button.OutlinedButton" parent="Widget.Material3.Button.OutlinedButton">
-        <item name="android:textColor">?attr/colorSecondary</item>
-        <item name="strokeColor">?attr/colorSecondary</item>
-    </style>
-    <style name="Widget.App.Button.TextButton" parent="Widget.Material3.Button.TextButton">
-        <item name="android:textColor">?attr/colorSecondary</item>
-    </style>
 </resources>

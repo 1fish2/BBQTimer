@@ -7,12 +7,7 @@
         <item name="actionBarStyle">@style/FireyActionBar</item>
         <item name="actionBarSize">40dp</item>
         <item name="snackbarTextViewStyle">@style/snackbarText</item>
-        <item name="checkboxStyle">@style/Widget.App.CheckBox</item>
         <item name="editTextStyle">@style/Widget.App.EditText</item>
-
-        <!-- Style all text buttons, including those in dialogs -->
-        <item name="materialButtonOutlinedStyle">@style/Widget.App.Button.OutlinedButton</item>
-        <item name="borderlessButtonStyle">@style/Widget.App.Button.TextButton</item>
 
         <!-- From Material Theme Builder. -->
         <item name="colorPrimary">@color/md_theme_primary</item>
