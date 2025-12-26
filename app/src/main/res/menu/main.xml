@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/action_lock_status"
+        android:icon="@drawable/ic_lock_outline"
+        android:title="@string/action_locked"
+        app:showAsAction="always"
+        android:visible="false" />
+</menu>

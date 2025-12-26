@@ -14,7 +14,7 @@
         android:gravity="center_horizontal|top"
         android:maxLines="1"
         android:text="@string/edit_list_title"
-        android:textColor="@color/orange_red_text"
+        android:textColor="@color/md_theme_secondaryContainer"
         android:textSize="@dimen/controls_text_size"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"

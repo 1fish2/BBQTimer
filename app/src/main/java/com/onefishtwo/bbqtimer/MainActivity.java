@@ -23,6 +23,7 @@ import static android.Manifest.permission.POST_NOTIFICATIONS;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.KeyguardManager;
 import android.app.PendingIntent;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
@@ -198,6 +199,7 @@ public class MainActivity extends AppCompatActivity
     private String lastRecipes; // the last input to styleTheRecipes()
     private Vector<SpannableString> styledRecipes; // the output from styleTheRecipes()
     private PopupMenu popupMenu;
+    private MenuItem lockStatusItem; // the "phone is locked" action bar item
     private int notificationRequestCount;
 
     private NestedScrollView mainContainer;
@@ -357,10 +359,28 @@ public class MainActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(@NonNull Menu menu) {
         super.onCreateOptionsMenu(menu);
 
-        // Inflate the menu; this adds items to the action bar if it is present.
-        // TODO: Inflate the menu once it has useful items:
-        // getMenuInflater().inflate(R.menu.main, menu);
+        getMenuInflater().inflate(R.menu.main, menu);
+        lockStatusItem = menu.findItem(R.id.action_lock_status);
+        updateLockStatus();
         return true;
+    }
+
+    /**
+     * Shows/hides a "phone is (still) locked" icon in the action bar so the user doesn't worry
+     * about security. It's surprising that the app can open from the lock screen notification or
+     * widget without unlocking, and that turning the screen off then on shows the app without
+     * unlocking the phone. Android doesn't reveal that the app is now "on top of the lock screen."
+     */
+    @UiThread
+    private void updateLockStatus() {
+        if (lockStatusItem == null) {
+            return;
+        }
+
+        KeyguardManager myKM = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
+        boolean isLocked = myKM != null && myKM.isKeyguardLocked();
+
+        lockStatusItem.setVisible(isLocked);
     }
 
     /**
@@ -423,6 +443,7 @@ public class MainActivity extends AppCompatActivity
         shortcutAction = SHORTCUT_NONE;
 
         updateUI();
+        updateLockStatus();
 
         updateHandler.beginScheduledUpdate();
     }
@@ -431,6 +452,8 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
+
+        updateLockStatus();
 
         // WORKAROUND: On API ≤ 27, the alarmPeriod EditText auto-focuses when the Activity starts
         // in landscape mode or is rotated to landscape. That's annoying.
@@ -603,6 +626,13 @@ public class MainActivity extends AppCompatActivity
     public void onConfigurationChanged(@NonNull Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         logTheConfiguration(newConfig);
+    }
+
+    /** Called when the Activity's Window gains or loses focus. */
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        updateLockStatus();
     }
 
     /** The user tapped a Run/Pause action. */

@@ -80,13 +80,13 @@
     <style name="FireyActionBar" parent="Widget.AppCompat.ActionBar">
         <!-- Android API < 28 shows the theme's colorPrimary rather than this background color in
              the app switcher, but no need to work around that. -->
-        <item name="background">@color/orange_red_text</item>
+        <item name="background">@color/md_theme_secondaryContainer</item>
         <item name="titleTextStyle">@style/FireyActionBar.Text</item>
     </style>
 
     <style name="FireyActionBar.Text" parent="TextAppearance.AppCompat.Widget.ActionBar.Title">
         <item name="android:textStyle">bold</item>
-        <item name="android:textColor">@color/md_theme_onPrimaryContainer</item>
+        <item name="android:textColor">@color/md_theme_onSecondaryContainer</item>
     </style>
 
     <style name="HintTextAppearance" parent="TextAppearance.Material3.LabelSmall">
