@@ -40,5 +40,5 @@
     <string name="timer_stopped">Gestoppt</string>
     <string name="widget_preview_time">07:00</string>
     <string name="widget_preview_countdown">00:30</string>
-    <string name="action_locked">Gesperrt</string>
+    <string name="action_locked">Gerät ist gesperrt</string>
 </resources>

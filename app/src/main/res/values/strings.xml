@@ -171,9 +171,9 @@
     <!-- Cancel edits in the recipe editor. -->
     <string name="cancel_edits">Cancel</string>
 
-    <!-- ActionBar menu item for a "phone is locked" icon.
-      This menu item is set to "always", i.e. the item will always be displayed as an icon in the
-      app bar, so this text string shouldn't be visible (except to a screen reader?). That means
-      translated versions of this string won't be visible. -->
-    <string name="action_locked">Locked</string>
+    <!-- ActionBar's "Device is locked" menu item.
+      The menu item has showAsAction="always", i.e. always display as an icon in the app bar.
+      Long-pressing the item shows this item name string in a popup hint. It might also appear to a
+      screen reader. -->
+    <string name="action_locked">Device is locked</string>
 </resources>
