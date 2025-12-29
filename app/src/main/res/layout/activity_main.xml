@@ -89,7 +89,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/button_margin"
             android:layout_marginRight="@dimen/button_margin"
-            android:contentDescription="@string/reset"
+            android:contentDescription="@string/reset_pause"
             android:drawableLeft="@drawable/ic_replay"
             android:drawableTint="@color/button_tint_color"
             android:focusable="true" />

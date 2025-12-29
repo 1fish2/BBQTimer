@@ -47,10 +47,11 @@
     <!-- The "configure" Snackbar action (hence all upper-case) for the notifications_misconfigured. -->
     <string name="notifications_configure">CONFIGURE</string>
 
-    <!-- Label for the button that resets the timer to be stopped at 00:00. -->
+    <!-- Label for the notification button that resets the timer to be stopped at 00:00,
+       ALSO for the recipe editor button that resets the recipe list. -->
     <string name="reset">Reset</string>
 
-    <!-- Label for the button that starts or resumes the stopped timer. -->
+    <!-- Label for the notification button that starts or resumes the stopped timer. -->
     <string name="start">Start</string>
 
     <!-- App shortcut that Resets the timer to 00:00 then Starts it. The long label appears in the
@@ -61,7 +62,7 @@
        places like pinned shortcut icons. It's "limited to about 10 characters." -->
     <string name="start_at_0_short">Start</string>
 
-    <!-- Label for the button that pauses the running timer. This doesn't reset the timer nor hide
+    <!-- Label for the notification button that pauses the running timer. This doesn't reset the timer nor hide
       its notification. -->
     <string name="pause">Pause</string>
 
@@ -73,12 +74,14 @@
        places like pinned shortcut icons. It's "limited to about 10 characters." -->
     <string name="pause_at_0_short">Pause 00:00</string>
 
-    <!-- Label for the button that stops and resets the timer and hides its notification. -->
+    <!-- Label for the activity and notification button that stops and resets the timer and hides its notification. -->
     <string name="stop">Stop</string>
 
-    <!-- Accessibility description for the button that starts or resumes a timer or else
-      pauses a running timer. -->
+    <!-- Label for the activity and widget button that starts or resumes a timer or else pauses a running timer. -->
     <string name="start_pause">Start/Pause</string>
+
+    <!-- Label for the activity button that resets or pauses a timer. -->
+    <string name="reset_pause">Reset/Pause</string>
 
     <!-- The checkbox that turns periodic reminder interval alarms on/off; this checkbox ALSO acts
       as the label for the adjacent text field used to enter the interval time period. -->
@@ -165,10 +168,10 @@
     <!-- Hint for what to type into the recipe editor. -->
     <string name="edit_list_hint">m, m:s, or h:m:s with optional notes</string>
 
-    <!-- Save edits in the recipe editor. -->
+    <!-- "Save edits" button in the recipe editor. -->
     <string name="save_edits">Save</string>
 
-    <!-- Cancel edits in the recipe editor. -->
+    <!-- "Cancel edits" button in the recipe editor. -->
     <string name="cancel_edits">Cancel</string>
 
     <!-- ActionBar's "Device is locked" menu item.

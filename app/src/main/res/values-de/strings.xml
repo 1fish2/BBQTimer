@@ -23,8 +23,9 @@
     <string name="notifications_permission_needed">BBQ Timer benötigt Benachrichtigungen für Alarmtöne, Sperrbildschirm-Steuerungen und Pulldown-Steuerungen</string>
     <string name="no_reminders_tip">Keine regelmäßigen Alarme</string>
     <string name="pause">Pause</string>
-    <string name="pause_at_0_long">Anhalten bei 00:00</string>
-    <string name="pause_at_0_short">Anhalten 0:00</string>
+    <string name="pause_at_0_long">Pause bei 00:00</string>
+    <string name="pause_at_0_short">Pause 00:00</string>
+    <string name="reset_pause">Zurücksetzen/Pause</string>
     <string name="reminder_switch">Periodisches Alarmintervall:</string>
     <string name="recipes">6 dünne Fischfilets, bis %1$s\n7 Burger, bis %2$s\n:30\n1\n1:30\n2\n3\n4\n5\n6\n7\n8\n9\n10\n15\n1:30:00</string>
     <string name="reset">Zurücksetzen</string>
@@ -32,7 +33,7 @@
     <string name="start">Start</string>
     <string name="start_at_0_long">Start</string>
     <string name="start_at_0_short">Start</string>
-    <string name="start_pause">Timer starten/pausieren</string>
+    <string name="start_pause">Start/Pause</string>
     <string name="stop">Stopp</string>
     <string name="time0">00:00,0</string>
     <string name="timer_paused">Pausiert %1$s</string>

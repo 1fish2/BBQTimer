@@ -62,6 +62,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
+import androidx.annotation.IdRes;
 import androidx.annotation.IntDef;
 import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
@@ -71,6 +72,7 @@ import androidx.annotation.StringRes;
 import androidx.annotation.UiThread;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.PopupMenu;
+import androidx.appcompat.widget.TooltipCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.app.TaskStackBuilder;
 import androidx.core.content.ContextCompat;
@@ -250,9 +252,9 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         mainContainer = findViewById(R.id.main_container);
 
-        resetButton = findViewById(R.id.resetButton);
-        pauseResumeButton = findViewById(R.id.pauseResumeButton);
-        stopButton = findViewById(R.id.stopButton);
+        resetButton = findViewByIdAndSetTooltip(R.id.resetButton);
+        pauseResumeButton = findViewByIdAndSetTooltip(R.id.pauseResumeButton);
+        stopButton = findViewByIdAndSetTooltip(R.id.stopButton);
         countUpDisplay = findViewById(R.id.countUpDisplay);
         countdownDisplay = findViewById(R.id.countdownDisplay);
         alarmPeriod = findViewById(R.id.alarmPeriod);
@@ -307,6 +309,16 @@ public class MainActivity extends AppCompatActivity
         }
 
         logTheConfiguration(getResources().getConfiguration());
+    }
+
+    /** Finds a View and sets its Tooltip to match its ContentDescription. */
+    <T extends View> T findViewByIdAndSetTooltip(@IdRes int id) {
+        T view = super.findViewById(id);
+
+        if (view != null) {
+            TooltipCompat.setTooltipText(view, view.getContentDescription());
+        }
+        return view;
     }
 
     /**
