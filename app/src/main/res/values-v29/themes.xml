@@ -7,7 +7,6 @@
         <item name="actionBarStyle">@style/FireyActionBar</item>
         <item name="actionBarSize">40dp</item>
         <item name="snackbarTextViewStyle">@style/snackbarText</item>
-        <item name="editTextStyle">@style/Widget.App.EditText</item>
 
         <!-- From Material Theme Builder. -->
         <item name="colorPrimary">@color/md_theme_primary</item>
