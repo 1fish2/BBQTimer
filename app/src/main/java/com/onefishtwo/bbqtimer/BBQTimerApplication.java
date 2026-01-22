@@ -4,6 +4,8 @@ import android.app.Application;
 import android.os.Build;
 import android.os.StrictMode;
 
+import com.google.android.material.color.ColorContrast;
+import com.google.android.material.color.ColorContrastOptions;
 import com.onefishtwo.bbqtimer.state.ApplicationState;
 
 public class BBQTimerApplication extends Application {
@@ -28,10 +30,14 @@ public class BBQTimerApplication extends Application {
 
         super.onCreate();
 
-        // Start loading the state now, not in the UI thread, to avoid delaying the UI thread, and
-        // under cover of the splash screen animation. The overlap probably doesn't help much.
+        // Start loading the state in a background thread, under cover of the splash screen
+        // animation, to delay the UI thread less. The overlap might not help much.
         new Thread(() -> ApplicationState.sharedInstance(this)).start();
 
-        // DynamicColors.applyToActivitiesIfAvailable(this);
+        ColorContrastOptions options = new ColorContrastOptions.Builder()
+                .setMediumContrastThemeOverlay(R.style.ThemeOverlay_App_Contrast_Medium)
+                .setHighContrastThemeOverlay(R.style.ThemeOverlay_App_Contrast_High)
+                .build();
+        ColorContrast.applyToActivitiesIfAvailable(this, options);
     }
 }

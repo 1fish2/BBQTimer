@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- The App Widget can't access color theme style attrs. -->
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:color="@color/to_stop_text"
           android:state_pressed="true" />
-    <item android:color="?attr/colorSecondaryContainer" />
+    <item android:color="@color/orange_red_text" />
 </selector>
