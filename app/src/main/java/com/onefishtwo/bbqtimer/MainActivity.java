@@ -107,6 +107,7 @@ public class MainActivity extends AppCompatActivity
      * The PopupMenu insets need investigation.
      */
     private static final boolean EDGE_TO_EDGE = Build.VERSION.SDK_INT >= 29;
+    public static final int REMINDER_STREAM = AudioManager.STREAM_ALARM;
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({SHORTCUT_NONE, SHORTCUT_PAUSE, SHORTCUT_START})
@@ -288,7 +289,7 @@ public class MainActivity extends AppCompatActivity
         TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(countdownDisplay, 14,
                 56, 1, TypedValue.COMPLEX_UNIT_DIP);
 
-        setVolumeControlStream(AudioManager.STREAM_ALARM);
+        setVolumeControlStream(REMINDER_STREAM);
 
         shortcutAction = SHORTCUT_NONE;
         Intent callingIntent = getIntent();
@@ -584,7 +585,7 @@ public class MainActivity extends AppCompatActivity
 
         final AudioManager am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         if (am != null) {
-            int volume = am.getStreamVolume(AudioManager.STREAM_ALARM);
+            int volume = am.getStreamVolume(REMINDER_STREAM);
 
             // Check for muted alarms.
             if (volume <= 0) {
@@ -592,7 +593,7 @@ public class MainActivity extends AppCompatActivity
 
                 Log.w(TAG, "App Notifications sounds are muted");
                 setSnackbarAction(snackbar, R.string.alarm_unmute,
-                        view -> am.adjustStreamVolume(AudioManager.STREAM_ALARM,
+                        view -> am.adjustStreamVolume(REMINDER_STREAM,
                                     AudioManager.ADJUST_RAISE, 0));
                 snackbar.show();
                 return;

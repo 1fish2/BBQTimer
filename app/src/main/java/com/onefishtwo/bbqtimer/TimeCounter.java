@@ -39,8 +39,8 @@ import java.util.regex.Pattern;
 /**
  * A stopwatch time counter (data model).
  * <p/>
- * The run states are {Running, Paused, Stopped}, where Paused is like Stopped plus an ongoing
- * Notification so it can be viewed and resumed on the Android lock screen.
+ * The run states are {Running, Paused, Stopped}, where Paused is like Stopped with a
+ * Notification that can be viewed and resumed on the Android lock screen.
  */
 @SuppressWarnings("SynchronizationOnStaticField")
 public class TimeCounter {

@@ -44,15 +44,14 @@ import androidx.annotation.RawRes;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.StringRes;
 import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationCompat.WearableExtender;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
-import androidx.media.app.NotificationCompat.DecoratedMediaCustomViewStyle;
-import androidx.media.app.NotificationCompat.MediaStyle;
 
 import com.onefishtwo.bbqtimer.state.ApplicationState;
 
 /**
- * Manages the app's Android Notifications.
+ * Manages the app's Android Notifications. One-shot use to build and show a notification.
  */
 public class Notifier {
     private static final String TAG = "Notifier";
@@ -68,13 +67,13 @@ public class Notifier {
     private static final int[][] ACTION_INDICES = {{}, {0}, {0, 1}, {0, 1, 2}};
 
     static final String ALARM_NOTIFICATION_CHANNEL_ID = "alarmChannel";
-
-    // Was in release "2.5" (v15) and will remain immutable on devices while the app is installed:
-    // static final String CONTROLS_NOTIFICATION_CHANNEL_ID = "controlsChannel";
+    // Channel IDs in previous releases will remain immutable on devices while the app is installed:
+    // "controlsChannel"
 
     // --- R.id.countUpViewFlipper and R.id.countdownViewFlipper child indexes.
     private static final int RUNNING_FLIPPER_CHILD = 0;
     private static final int PAUSED_FLIPPER_CHILD = 1;
+    public static final int REMINDER_STREAM = AudioManager.STREAM_ALARM;
 
     /** A listener for UI notifications posted, for testing. */
     public interface NotificationListener {
@@ -130,7 +129,7 @@ public class Notifier {
     }
 
     /**
-     * Adds an action button to the given NotificationBuilder and to the
+     * Adds an action button to the given Notification Builder and to the
      * {@link #setMediaStyleActionsInCompactView} list.
      */
     private void addAction(@NonNull NotificationCompat.Builder builder, @DrawableRes int iconId,
@@ -140,22 +139,29 @@ public class Notifier {
     }
 
     /**
-     * Makes the first 3 added {@link #addAction} actions appear in a MediaStyle notification
-     * view. The Media template should fit 3 actions in its collapsed view, 6 actions in expanded
-     * view, or 5 actions in expanded view with a large image but I haven't tested that.
+     * Sets the notification style to DecoratedCustomViewStyle to include {@link #addAction} actions.
+     * <p/>
+     * Experimentally, MediaStyle blocks Wear OS bridging, with or without a MediaSession. That's a
+     * bummer since DecoratedCustomViewStyle doesn't show actions in the compact view.
      *<p/>
      * Calls builder.setColor() on some versions of Android to cope with OS vagaries.
+     * <p/>
+     * TODO: Try to restore the icon buttons on the Phone and Wearable.
+     * TODO: Try to compensate for no actions visible in compressed view, e.g. default to expanded
+     *  view somehow.
+     * TODO: Or use MediaStyle if there's no connected Wearable.
      */
     private void setMediaStyleActionsInCompactView(@NonNull NotificationCompat.Builder builder) {
-        int num = Math.min(numActions, ACTION_INDICES.length - 1);
+//        int num = Math.min(numActions, ACTION_INDICES.length - 1);
+//
+//        if (num < 1) {
+//            return;
+//        }
 
-        if (num < 1) {
-            return;
-        }
+        // DecoratedCustomViewStyle wraps the custom view with standard chrome (actions, icon).
+        NotificationCompat.Style style = new NotificationCompat.DecoratedCustomViewStyle();
 
-        MediaStyle style = new DecoratedMediaCustomViewStyle();
-
-        style.setShowActionsInCompactView(ACTION_INDICES[num]);
+//        style.setShowActionsInCompactView(ACTION_INDICES[num]);
         builder.setStyle(style);
 
         // === MediaStyle setColor() [the "accent color"] vs. Android API levels ===
@@ -259,8 +265,13 @@ public class Notifier {
     }
 
     /**
-     * Creates a notification channel that matches the parameters #buildNotification() uses. The
-     * "Alarm" channel sounds an alarm at heads-up High importance.
+     * Creates a notification channel that matches what #buildNotification() needs. The "Alarm"
+     * channel sounds an alarm at High importance for a
+     * <a href="https://developer.android.com/develop/ui/views/notifications#Heads-up">Heads-up
+     * notification</a> although the user can adjust the channel's importance to not "Pop on screen"
+     * and make it silent or play a different ringtone.
+     * API < 26 doesn't have notification channels; heads-up pop on screen is triggered by
+     * high priority and a ringtone or vibration.
      */
     @RequiresApi(26)
     private void createNotificationChannelV26() {
@@ -281,7 +292,7 @@ public class Notifier {
 
         {
             AudioAttributes audioAttributes = new AudioAttributes.Builder()
-                    //.setLegacyStreamType(AudioManager.STREAM_ALARM)
+                    //.setLegacyStreamType(REMINDER_STREAM)
                     .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
                     .setUsage(AudioAttributes.USAGE_ALARM)
                     // .setFlags(): Nope. See https://stackoverflow.com/q/44855786 and
@@ -385,16 +396,50 @@ public class Notifier {
     /**
      * Builds a notification. Its alarm sound, vibration, and LED light flashing are switched on/off
      * by {@link #setAlarm(boolean)}.
+     * <p/>
+     * TODO: Get the notification bridged to Wearables, esp. so that the Watch app's
+     *  "Mute notifications on phone" setting won't totally mute the app's notifications.
+     *  <a href="https://developer.android.com/training/wearables/notifications/bridger#non-bridged">When
+     *  notifications aren't bridged</a>.
+     * <p/>
+     * Various chats with Gemini claim/hypothesize
+     * - it has to be from a Foreground service -- no,
+     * - it can't be CATEGORY_ALARM -- no,
+     * - it can't be silent -- ?,
+     * - it can't use a custom app sound resource -- no,
+     * - it must have IMPORTANCE_HIGH -- ?,
+     * - it can't be MediaStyle with or without a MediaSession -- YES,
+     * - it must explicitly setLocalOnly(false) -- ?,
+     * - custom remote views -- no,
+     * - the channel ID ALARM_NOTIFICATION_CHANNEL_ID ("alarmChannel") might be heuristic-matched by
+     *   Wear OS to block -- no,
+     * - Chronometers in the notification's RemoteViews -- no,
+     * - AudioAttributes.USAGE_ALARM (vs. USAGE_NOTIFICATION_EVENT) -- no,
+     * ...
+     * <p/>
+     * MediaStyle notifications were a blocker. Haven't yet tested if we can revert other changes
+     * like CATEGORY_REMINDER, and AudioAttributes.USAGE_NOTIFICATION_EVENT (which changed the volume
+     * control channel and required changing the notification channel).
+     * <p/>
+     * TODO: Try to get the action buttons to use icons on Phone and Watch.
+     * TODO: Try to get the action buttons to appear w/o the user having to expand it.
+     *  *OR* Use MediaStyle if there's no connected Wearable?
+     * TODO: Rename the "Start" action to "Run".
+     * TODO: (Try to play a custom sound on the watch.)
      */
     @NonNull
     protected Notification buildNotification(@NonNull ApplicationState state) {
         createNotificationChannels();
 
+        int pri = soundAlarm ? NotificationCompat.PRIORITY_MAX : NotificationCompat.PRIORITY_LOW;
         NotificationCompat.Builder builder =
                 new NotificationCompat.Builder(context, ALARM_NOTIFICATION_CHANNEL_ID)
-                .setPriority(NotificationCompat.PRIORITY_MAX)
+                .setPriority(pri) // for API < 26
                 .setCategory(NotificationCompat.CATEGORY_ALARM)
-                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
+                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                .setLocalOnly(false) // just in case
+                .setOnlyAlertOnce(!soundAlarm) // running -> paused, Activity onStart() won't ding a Wearable
+                .extend(new WearableExtender()); // TODO: needed? adjustable?
 
         {  // Construct the visible notification contents.
             TimeCounter timer = state.getTimeCounter();
@@ -460,23 +505,22 @@ public class Notifier {
                     addAction(builder, R.drawable.ic_action_stop, R.string.stop, stopIntent);
                 }
 
-                // Allow stopping via dismissing the notification (unless it's "ongoing").
+                // Swiping away the notification will Stop the timer unless "ongoing" blocks swiping.
+                // TODO: "Ongoing notifications can't be swiped away on locked devices," but
+                //  apparently only on API < 34 and not only on locked devices.
+                //  Is builder.setOngoing(isRunning) needed on older API versions?
                 builder.setDeleteIntent(stopIntent);
 
                 setMediaStyleActionsInCompactView(builder);
             }
-
-            if (isRunning) {
-                builder.setOngoing(true);
-            }
         }
 
         if (soundAlarm) {
-            builder.setSound(getSoundUri(R.raw.cowbell4), AudioManager.STREAM_ALARM);
+            builder.setSound(getSoundUri(R.raw.cowbell4), REMINDER_STREAM);
             builder.setVibrate(VIBRATE_PATTERN);
             builder.setLights(notificationLightColor, 1000, 2000);
         } else {
-            builder.setSilent(true);
+            builder.setSilent(true); // TODO: Fix: re-showing the activity when paused still sounds on wearable
         }
 
         return builder.build();
