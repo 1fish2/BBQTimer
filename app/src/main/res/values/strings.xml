@@ -51,14 +51,14 @@
        ALSO for the recipe editor button that resets the recipe list. -->
     <string name="reset">Reset</string>
 
-    <!-- Label for the notification button that starts or resumes the stopped timer. -->
-    <string name="start">Start</string>
+    <!-- Label for the notification button that runs (i.e. starts or resumes) the stopped timer. -->
+    <string name="start">Run</string>
 
-    <!-- App shortcut that Resets the timer to 00:00 then Starts it. The long label appears in the
-       menu of app shortcuts, which is "limited to about 25 characters." Call this "Start",
-       "Start at 00:00", "Restart", "Reset + Start", or what? -->
+    <!-- App shortcut that Starts the timer running at 00:00. The long label appears in the
+       menu of app shortcuts, which is "limited to about 25 characters." Call this "Start" or
+       "Start at 00:00". -->
     <string name="start_at_0_long">Start</string>
-    <!-- App shortcut that Resets the timer to 00:00 then Starts it. The short label is used in
+    <!-- App shortcut that Resets the timer to 00:00 then Starts it Running. This short label is used in
        places like pinned shortcut icons. It's "limited to about 10 characters." -->
     <string name="start_at_0_short">Start</string>
 
@@ -77,11 +77,9 @@
     <!-- Label for the activity and notification button that stops and resets the timer and hides its notification. -->
     <string name="stop">Stop</string>
 
-    <!-- Label for the activity and widget button that starts or resumes a timer or else pauses a running timer. -->
-    <string name="start_pause">Start/Pause</string>
-
-    <!-- Label for the activity button that resets or pauses a timer. -->
-    <string name="reset_pause">Reset/Pause</string>
+    <!-- Label for the activity and widget button that runs (i.e. starts or resumes) a timer or else pauses a running timer.
+        In German user interfaces for timers and stopwatches, "Start" is the standard term used to begin or resume the timer. -->
+    <string name="start_pause">Run/Pause</string>
 
     <!-- The checkbox that turns periodic reminder interval alarms on/off; this checkbox ALSO acts
       as the label for the adjacent text field used to enter the interval time period. -->
@@ -119,13 +117,6 @@
     <!-- Notification body message: The timer is stopped. This message must be short enough to fit
        in one line of the notification drawer area. -->
     <string name="timer_stopped">Stopped</string>
-
-    <!-- Notification body subtext (third line): A tip that swiping will dismiss the notification.
-       This message must be short enough to fit in one line of the notification drawer area.
-
-       NOTE: This message is not important. An empty string would be OK. Fitting into about 18
-       characters is more important than the parentheses. -->
-    <string name="dismiss_tip">(Swipe to stop)</string>
 
     <!-- Notification body subtext (third line): Indicates that periodic reminder alarms are turned
       off. This message must be short enough to fit in one line of the notification drawer area. -->

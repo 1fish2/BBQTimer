@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="notification_text">#f8f8f8</color>
+    <!-- Desaturated blue tertiary for notification actions on dark background -->
+    <color name="notification_action_tint">#A0C0E0</color>
 
 </resources>

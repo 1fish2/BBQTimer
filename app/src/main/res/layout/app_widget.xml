@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- This background id enables a smoother transition launching the app from the widget.
+<!-- This layout is used in RemoteViews so it can't reliably access theme attributes `?attr/`.
+     This background id enables a smoother transition launching the app from the widget.
      The widget provider also references this View by id. -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"

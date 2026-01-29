@@ -64,8 +64,6 @@ public class Notifier {
     // Workaround: Start with a tiny pulse for when Android drops the initial "off" interval.
     private static final long[] VIBRATE_PATTERN = {0, 1,  280, 40,  220, 80,  440, 45,  265, 55};
 
-    private static final int[][] ACTION_INDICES = {{}, {0}, {0, 1}, {0, 1, 2}};
-
     static final String ALARM_NOTIFICATION_CHANNEL_ID = "alarmChannel";
     // Channel IDs in previous releases will remain immutable on devices while the app is installed:
     // "controlsChannel"
@@ -93,7 +91,6 @@ public class Notifier {
     private final int notificationLightColor;
 
     private boolean soundAlarm = false; // whether the next notification should sound an alarm
-    private int numActions; // the number of action buttons added to the notification being built
 
     /** Sets a listener for when the Notifier posts UI notifications, for testing. */
     public static void setNotificationListener(NotificationListener listener) {
@@ -129,39 +126,26 @@ public class Notifier {
     }
 
     /**
-     * Adds an action button to the given Notification Builder and to the
-     * {@link #setMediaStyleActionsInCompactView} list.
+     * Adds an action button to the given WearableExtender.
      */
-    private void addAction(@NonNull NotificationCompat.Builder builder, @DrawableRes int iconId,
+    private void addAction(@NonNull WearableExtender extender, @DrawableRes int iconId,
             @StringRes int titleId, PendingIntent intent) {
-        builder.addAction(iconId, context.getString(titleId), intent);
-        ++numActions;
+        extender.addAction(new NotificationCompat.Action(iconId, context.getString(titleId), intent));
     }
 
     /**
-     * Sets the notification style to DecoratedCustomViewStyle to include {@link #addAction} actions.
-     * <p/>
-     * Experimentally, MediaStyle blocks Wear OS bridging, with or without a MediaSession. That's a
-     * bummer since DecoratedCustomViewStyle doesn't show actions in the compact view.
-     *<p/>
+     * Sets the notification style to DecoratedCustomViewStyle, which wraps a custom view with
+     * standard chrome (actions, icon).
      * Calls builder.setColor() on some versions of Android to cope with OS vagaries.
      * <p/>
-     * TODO: Try to restore the icon buttons on the Phone and Wearable.
-     * TODO: Try to compensate for no actions visible in compressed view, e.g. default to expanded
-     *  view somehow.
-     * TODO: Or use MediaStyle if there's no connected Wearable.
+     * NOTE: DecoratedMediaCustomViewStyle was nice (showing actions in the compact view) but it
+     * blocks the bridge to Wear OS, with or without a MediaSession.
+     * <p/>
+     * TODO: Can the Wearable use icon buttons?
      */
-    private void setMediaStyleActionsInCompactView(@NonNull NotificationCompat.Builder builder) {
-//        int num = Math.min(numActions, ACTION_INDICES.length - 1);
-//
-//        if (num < 1) {
-//            return;
-//        }
-
-        // DecoratedCustomViewStyle wraps the custom view with standard chrome (actions, icon).
+    private void setNotificationStyle(@NonNull NotificationCompat.Builder builder) {
         NotificationCompat.Style style = new NotificationCompat.DecoratedCustomViewStyle();
 
-//        style.setShowActionsInCompactView(ACTION_INDICES[num]);
         builder.setStyle(style);
 
         // === MediaStyle setColor() [the "accent color"] vs. Android API levels ===
@@ -205,7 +189,7 @@ public class Notifier {
      * Returns a localized description of the periodic alarms.
      *
      * @param state the ApplicationState.
-     * @return a localized string like "Alarm every 2 minutes", or "" for no periodic alarms.
+     * @return a localized string like "Alarm every 2 minutes" or "No periodic alarms".
      */
     @NonNull
     String describePeriodicAlarms(@NonNull ApplicationState state) {
@@ -213,8 +197,8 @@ public class Notifier {
         String intervalMmSs = state.formatIntervalTimeHhMmSs();
 
         return state.isEnableReminders()
-                ? context.getResources().getString(R.string.notification_body, intervalMmSs)
-                : "";
+                ? context.getString(R.string.notification_body, intervalMmSs)
+                : context.getString(R.string.no_reminders_tip);
     }
 
     /**
@@ -336,23 +320,34 @@ public class Notifier {
 
     /**
      * Make and initialize the RemoteViews for a Custom Notification.
-     *<p/>
+     * <p/>
      * Workaround: A paused Chronometer doesn't show a stable value, e.g. switching light/dark theme
      * can change it, and it ignores its format string thus ruling out some workarounds.
      * *SO* when the timer is paused, flip to a TextView.
+     * <p/>
+     * TODO: Ensure the layout doesn't switch to huge button icons on tablets; uses vector
+     *  graphics on supporting Android API versions; define and use day/night colors for the buttons
+     *  such as md_theme_primary, or better yet slightly darker, more "forest" green (e.g., #2E7D32)
+     *  for day and a brighter, more "neon" or pastel green (e.g., #81C784) for night to ensure it
+     *  passes contrast checks against light grey/white notification backgrounds, or blue-gray like
+     *  they used to be; switch to full contrast notification_text if `isHighContrastEnabled(context)`.
+     *  int primaryColor = ContextCompat.getColor(context, R.color.md_theme_primary);
+     *  if (isHighContrastEnabled(context)) {
+     *      // Use a high-visibility color (like pure Black or White depending on theme)
+     *      // instead of the brand green if the user has accessibility needs.
+     *      primaryColor = ContextCompat.getColor(context, R.color.notification_text);
+     *  }
+     *  remoteViews.setInt(R.id.btnStart, "setColorFilter", primaryColor);
      *
-     * @param layoutId the layout resource ID for the RemoteViews.
-     * @param state the ApplicationState to show.
-     * @param countUpMessage the message to show next to the count-up (stopwatch) Chronometer. This
-     *                       Chronometer and its message are GONE if there are no periodic alarms.
-     * @param countDownMessage the message to show next to the count-down (timer) Chronometer.
+     * @param layoutId          the layout resource ID for the RemoteViews.
+     * @param state             the ApplicationState to show.
+     * @param timerStateMessage the Running/Paused/Stopped state message.
      * @return RemoteViews
      * @noinspection SameParameterValue
      */
     @NonNull
     private RemoteViews makeRemoteViews(
-            @LayoutRes int layoutId, @NonNull ApplicationState state, @NonNull CharSequence countUpMessage,
-            @NonNull CharSequence countDownMessage) {
+            @LayoutRes int layoutId, @NonNull ApplicationState state, @NonNull CharSequence timerStateMessage) {
         TimeCounter timer = state.getTimeCounter();
         long elapsedTime = timer.getElapsedTime();
         boolean isRunning = timer.isRunning();
@@ -368,7 +363,7 @@ public class Notifier {
         remoteViews.setDisplayedChild(R.id.countUpViewFlipper, childId);
         remoteViews.setChronometer(
                 R.id.countUpChronometer, countUpBase, null, isRunning);
-        remoteViews.setTextViewText(R.id.countUpMessage, countUpMessage);
+        remoteViews.setTextViewText(R.id.timerStateMessage, timerStateMessage);
 
         // Count-down time and status
         if (state.isEnableReminders()) {
@@ -382,55 +377,76 @@ public class Notifier {
             remoteViews.setDisplayedChild(R.id.countdownViewFlipper, childId);
             remoteViews.setChronometer(
                     R.id.countdownChronometer, countdownBase, null, isRunning);
-            remoteViews.setTextViewText(R.id.countdownMessage, countDownMessage);
         } else {
             remoteViews.setChronometer(
                     R.id.countdownChronometer, 0, null, false);
+            remoteViews.setViewVisibility(R.id.alarmIcon, View.GONE);
             remoteViews.setViewVisibility(R.id.countdownChronometer, View.GONE);
-            remoteViews.setViewVisibility(R.id.countdownMessage, View.GONE);
+        }
+
+        // Configure custom buttons logic
+        // TODO: Refactor to share code with WearableExtender addActions.
+        PendingIntent resetIntent = makeActionIntent(TimerAppWidgetProvider.ACTION_RESET);
+        remoteViews.setOnClickPendingIntent(R.id.btnReset, resetIntent);
+        if (timer.isPaused() && !timer.isPausedAt0()) {
+            remoteViews.setViewVisibility(R.id.btnReset, View.VISIBLE);
+        } else {
+            remoteViews.setViewVisibility(R.id.btnReset, View.INVISIBLE);
+        }
+
+        PendingIntent runPauseIntent = makeActionIntent(TimerAppWidgetProvider.ACTION_RUN_PAUSE);
+        remoteViews.setOnClickPendingIntent(R.id.btnStart, runPauseIntent);
+        remoteViews.setOnClickPendingIntent(R.id.btnPause, runPauseIntent);
+        if (!isRunning) {
+            remoteViews.setViewVisibility(R.id.btnStart, View.VISIBLE);
+        } else {
+            remoteViews.setViewVisibility(R.id.btnStart, View.GONE);
+        }
+
+        if (!timer.isPaused()) {
+            remoteViews.setViewVisibility(R.id.btnPause, View.VISIBLE);
+        } else {
+            remoteViews.setViewVisibility(R.id.btnPause, View.GONE);
+        }
+
+        PendingIntent stopIntent = makeActionIntent(TimerAppWidgetProvider.ACTION_STOP);
+        remoteViews.setOnClickPendingIntent(R.id.btnStop, stopIntent);
+        if (!timer.isStopped()) {
+            remoteViews.setViewVisibility(R.id.btnStop, View.VISIBLE);
+        } else {
+            remoteViews.setViewVisibility(R.id.btnStop, View.INVISIBLE);
         }
 
         return remoteViews;
     }
 
     /**
-     * Builds a notification. Its alarm sound, vibration, and LED light flashing are switched on/off
-     * by {@link #setAlarm(boolean)}.
+     * Builds a notification that also gets bridged to Wearable smart watches. (So in the Watch App,
+     * setting "Notifications > Mute notifications on phone" won't totally mute the app's
+     * notifications.) The notification alarm sound, vibration, and LED light flashing are switched
+     * on/off by {@link #setAlarm(boolean)}.
      * <p/>
-     * TODO: Get the notification bridged to Wearables, esp. so that the Watch app's
-     *  "Mute notifications on phone" setting won't totally mute the app's notifications.
-     *  <a href="https://developer.android.com/training/wearables/notifications/bridger#non-bridged">When
-     *  notifications aren't bridged</a>.
-     * <p/>
-     * Various chats with Gemini claim/hypothesize
+     * Hypotheses on why bridging was failing:
+     * - it can't be ongoing -- yes,
      * - it has to be from a Foreground service -- no,
      * - it can't be CATEGORY_ALARM -- no,
      * - it can't be silent -- ?,
      * - it can't use a custom app sound resource -- no,
      * - it must have IMPORTANCE_HIGH -- ?,
-     * - it can't be MediaStyle with or without a MediaSession -- YES,
+     * - it can't be MediaStyle with or without a MediaSession -- **YES**,
      * - it must explicitly setLocalOnly(false) -- ?,
-     * - custom remote views -- no,
-     * - the channel ID ALARM_NOTIFICATION_CHANNEL_ID ("alarmChannel") might be heuristic-matched by
-     *   Wear OS to block -- no,
-     * - Chronometers in the notification's RemoteViews -- no,
-     * - AudioAttributes.USAGE_ALARM (vs. USAGE_NOTIFICATION_EVENT) -- no,
-     * ...
+     * - it can't have custom remote views -- no,
+     * - the channel ID ("alarmChannel") must not heuristically match the string "alarm" -- no,
+     * - it can't have Chronometers in the notification RemoteViews -- no,
+     * - it can use USAGE_NOTIFICATION_EVENT, not AudioAttributes.USAGE_ALARM -- no,
      * <p/>
-     * MediaStyle notifications were a blocker. Haven't yet tested if we can revert other changes
-     * like CATEGORY_REMINDER, and AudioAttributes.USAGE_NOTIFICATION_EVENT (which changed the volume
-     * control channel and required changing the notification channel).
-     * <p/>
-     * TODO: Try to get the action buttons to use icons on Phone and Watch.
-     * TODO: Try to get the action buttons to appear w/o the user having to expand it.
-     *  *OR* Use MediaStyle if there's no connected Wearable?
-     * TODO: Rename the "Start" action to "Run".
-     * TODO: (Try to play a custom sound on the watch.)
+     * TODO: Play a custom sound on the watch?
      */
     @NonNull
     protected Notification buildNotification(@NonNull ApplicationState state) {
         createNotificationChannels();
 
+        WearableExtender wearableExtender = new WearableExtender().clearActions();
         int pri = soundAlarm ? NotificationCompat.PRIORITY_MAX : NotificationCompat.PRIORITY_LOW;
         NotificationCompat.Builder builder =
                 new NotificationCompat.Builder(context, ALARM_NOTIFICATION_CHANNEL_ID)
@@ -438,89 +454,79 @@ public class Notifier {
                 .setCategory(NotificationCompat.CATEGORY_ALARM)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setLocalOnly(false) // just in case
-                .setOnlyAlertOnce(!soundAlarm) // running -> paused, Activity onStart() won't ding a Wearable
-                .extend(new WearableExtender()); // TODO: needed? adjustable?
+                .setOnlyAlertOnce(!soundAlarm); // so running -> paused and Activity onStart() won't ding a Wearable
 
         {  // Construct the visible notification contents.
             TimeCounter timer = state.getTimeCounter();
             boolean isRunning = timer.isRunning();
+            String alarms = describePeriodicAlarms(state);
+            String runPauseStop = timerRunState(timer, true); // Running/Paused 00:12.3/Stopped
 
             builder.setSmallIcon(R.drawable.notification_icon)
-                    .setContentTitle(context.getString(R.string.app_name));
+                    .setContentTitle(context.getString(R.string.app_name)); // TODO: A better use of this field?
 
             // The "when" field is redundant with the content text and would take space from the
             // action buttons (Reset, Start, Stop) in compact view.
             builder.setShowWhen(false);
 
-            String alarmEvery = describePeriodicAlarms(state);
+            // Subtext shows in expanded notifications after the app name. Both show on Wearables.
+            builder.setSubText(alarms);
+            builder.setContentText(runPauseStop);
 
-            if (isRunning && state.isEnableReminders()) {
-                builder.setContentText(alarmEvery);
-            } else {
-                String runPauseStop = timerRunState(timer, true); // Running/Paused 00:12.3/Stopped
-                builder.setContentText(runPauseStop);
-                if (timer.isPaused()) {
-                    builder.setSubText(context.getString(R.string.dismiss_tip));
-                } else if (isRunning) {
-                    builder.setSubText(context.getString(R.string.no_reminders_tip));
-                }
-            }
-
-            String countUpMessage = timerRunState(timer, false); // Running/Paused/Stopped
+            String timerStateMessage = timerRunState(timer, false); // Running/Paused/Stopped
             RemoteViews notificationView = makeRemoteViews(
-                    R.layout.custom_notification, state, countUpMessage, alarmEvery);
+                    R.layout.custom_notification, state, timerStateMessage);
 
             builder.setCustomContentView(notificationView);
             builder.setCustomHeadsUpContentView(notificationView);
             builder.setCustomBigContentView(notificationView);
-            numActions = 0;
 
             {
                 PendingIntent activityPendingIntent = MainActivity.makePendingIntent(context);
                 builder.setContentIntent(activityPendingIntent);
 
-                // Action button to reset the timer.
-                if (timer.isPaused() && !timer.isPausedAt0()) {
-                    PendingIntent resetIntent =
-                            makeActionIntent(TimerAppWidgetProvider.ACTION_RESET);
-                    addAction(builder, R.drawable.ic_action_replay, R.string.reset, resetIntent);
-                }
-
                 // Action button to run (start) the timer.
                 if (!isRunning) {
                     PendingIntent runIntent = makeActionIntent(TimerAppWidgetProvider.ACTION_RUN);
-                    addAction(builder, R.drawable.ic_action_play, R.string.start, runIntent);
+                    addAction(wearableExtender, R.drawable.ic_action_play, R.string.start, runIntent);
                 }
 
                 // Action button to pause the timer.
                 if (!timer.isPaused()) {
                     PendingIntent pauseIntent
                             = makeActionIntent(TimerAppWidgetProvider.ACTION_PAUSE);
-                    addAction(builder, R.drawable.ic_action_pause, R.string.pause, pauseIntent);
+                    addAction(wearableExtender, R.drawable.ic_action_pause, R.string.pause, pauseIntent);
                 }
 
                 // Action button to stop the timer.
                 PendingIntent stopIntent = makeActionIntent(TimerAppWidgetProvider.ACTION_STOP);
                 if (!timer.isStopped()) {
-                    addAction(builder, R.drawable.ic_action_stop, R.string.stop, stopIntent);
+                    addAction(wearableExtender, R.drawable.ic_action_stop, R.string.stop, stopIntent);
                 }
 
-                // Swiping away the notification will Stop the timer unless "ongoing" blocks swiping.
-                // TODO: "Ongoing notifications can't be swiped away on locked devices," but
-                //  apparently only on API < 34 and not only on locked devices.
-                //  Is builder.setOngoing(isRunning) needed on older API versions?
+                // Action button to reset the timer to 0:00.
+                if (timer.isPaused() && !timer.isPausedAt0()) {
+                    PendingIntent resetIntent =
+                            makeActionIntent(TimerAppWidgetProvider.ACTION_RESET);
+                    addAction(wearableExtender, R.drawable.ic_action_replay, R.string.reset, resetIntent);
+                }
+
+                // Swiping away the notification will Stop the timer (unless "ongoing" blocks
+                // swiping, but "ongoing" also blocks bridging to Wearables).
                 builder.setDeleteIntent(stopIntent);
 
-                setMediaStyleActionsInCompactView(builder);
+                setNotificationStyle(builder);
             }
         }
+
+        builder.extend(wearableExtender);
 
         if (soundAlarm) {
             builder.setSound(getSoundUri(R.raw.cowbell4), REMINDER_STREAM);
             builder.setVibrate(VIBRATE_PATTERN);
             builder.setLights(notificationLightColor, 1000, 2000);
         } else {
-            builder.setSilent(true); // TODO: Fix: re-showing the activity when paused still sounds on wearable
+            builder.setSilent(true);
         }
 
         return builder.build();
