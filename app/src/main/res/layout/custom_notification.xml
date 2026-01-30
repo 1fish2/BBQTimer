@@ -20,12 +20,11 @@
 
         <!-- ELAPSED TIME SECTION -->
         <ImageView
-            android:layout_width="16dp"
-            android:layout_height="16dp"
+            android:layout_width="@dimen/notification_icon_size"
+            android:layout_height="@dimen/notification_icon_size"
             android:src="@drawable/ic_clock"
             android:tint="@color/notification_text"
-            android:layout_marginRight="4dp"
-            android:layout_marginEnd="4dp"
+            android:layout_marginEnd="@dimen/notification_icon_spacer"
             tools:ignore="UseAppTint"
             android:contentDescription="@null" />
 
@@ -68,14 +67,12 @@
         <!-- ALARM COUNTDOWN SECTION -->
         <ImageView
             android:id="@+id/alarmIcon"
-            android:layout_width="16dp"
-            android:layout_height="16dp"
+            android:layout_width="@dimen/notification_icon_size"
+            android:layout_height="@dimen/notification_icon_size"
             android:src="@drawable/ic_bell"
             android:tint="@color/notification_text"
-            android:layout_marginRight="4dp"
-            android:layout_marginEnd="4dp"
-            android:layout_marginLeft="@dimen/notification_spacer"
-            android:layout_marginStart="@dimen/notification_spacer"
+            android:layout_marginStart="@dimen/notification_chronometer_spacer"
+            android:layout_marginEnd="@dimen/notification_icon_spacer"
             tools:ignore="UseAppTint"
             android:contentDescription="@null" />
 
@@ -117,8 +114,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:layout_marginLeft="@dimen/notification_spacer"
-            android:layout_marginStart="@dimen/notification_spacer"
+            android:layout_marginStart="@dimen/notification_chronometer_spacer"
             android:maxLines="1"
             android:ellipsize="end"
             android:hyphenationFrequency="full"
@@ -133,8 +129,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:gravity="left"
-        android:paddingTop="0dp">
+        android:gravity="left">
 
         <!-- TODO: Make these the size of the info icons, 16dp, using vector graphics. -->
         <ImageButton
