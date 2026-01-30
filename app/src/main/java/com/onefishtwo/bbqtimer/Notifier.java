@@ -127,10 +127,26 @@ public class Notifier {
 
     /**
      * Adds an action button to the given WearableExtender.
+     * Gemini says the Wearable's notification bridge might choose the action's title over its icon.
+     * Why isn't that documented?
      */
     private void addAction(@NonNull WearableExtender extender, @DrawableRes int iconId,
             @StringRes int titleId, PendingIntent intent) {
-        extender.addAction(new NotificationCompat.Action(iconId, context.getString(titleId), intent));
+        NotificationCompat.Action action =
+                new NotificationCompat.Action.Builder(iconId, context.getString(titleId), intent)
+                        .extend(new NotificationCompat.Action.WearableExtender().setAvailableOffline(true))
+                        .build();
+        extender.addAction(action);
+    }
+
+    /**
+     * Adds an action button to the given WearableExtender to invoke a named
+     * TimerAppWidgetProvider.ACTION_*.
+     */
+    private void addAction(@NonNull WearableExtender extender, @DrawableRes int iconId,
+            @StringRes int titleId, @NonNull String action) {
+        PendingIntent intent = makeActionIntent(action);
+        addAction(extender, iconId, titleId, intent);
     }
 
     /**
@@ -140,8 +156,6 @@ public class Notifier {
      * <p/>
      * NOTE: DecoratedMediaCustomViewStyle was nice (showing actions in the compact view) but it
      * blocks the bridge to Wear OS, with or without a MediaSession.
-     * <p/>
-     * TODO: Can the Wearable use icon buttons?
      */
     private void setNotificationStyle(@NonNull NotificationCompat.Builder builder) {
         NotificationCompat.Style style = new NotificationCompat.DecoratedCustomViewStyle();
@@ -485,17 +499,16 @@ public class Notifier {
                 PendingIntent activityPendingIntent = MainActivity.makePendingIntent(context);
                 builder.setContentIntent(activityPendingIntent);
 
-                // Action button to run (start) the timer.
+                // Action button to run (start or resume) the timer.
                 if (!isRunning) {
-                    PendingIntent runIntent = makeActionIntent(TimerAppWidgetProvider.ACTION_RUN);
-                    addAction(wearableExtender, R.drawable.ic_action_play, R.string.start, runIntent);
+                    addAction(wearableExtender, R.drawable.ic_action_play, R.string.start,
+                            TimerAppWidgetProvider.ACTION_RUN);
                 }
 
                 // Action button to pause the timer.
                 if (!timer.isPaused()) {
-                    PendingIntent pauseIntent
-                            = makeActionIntent(TimerAppWidgetProvider.ACTION_PAUSE);
-                    addAction(wearableExtender, R.drawable.ic_action_pause, R.string.pause, pauseIntent);
+                    addAction(wearableExtender, R.drawable.ic_action_pause, R.string.pause,
+                            TimerAppWidgetProvider.ACTION_PAUSE);
                 }
 
                 // Action button to stop the timer.
@@ -506,9 +519,8 @@ public class Notifier {
 
                 // Action button to reset the timer to 0:00.
                 if (timer.isPaused() && !timer.isPausedAt0()) {
-                    PendingIntent resetIntent =
-                            makeActionIntent(TimerAppWidgetProvider.ACTION_RESET);
-                    addAction(wearableExtender, R.drawable.ic_action_replay, R.string.reset, resetIntent);
+                    addAction(wearableExtender, R.drawable.ic_action_replay, R.string.reset,
+                            TimerAppWidgetProvider.ACTION_RESET);
                 }
 
                 // Swiping away the notification will Stop the timer (unless "ongoing" blocks
