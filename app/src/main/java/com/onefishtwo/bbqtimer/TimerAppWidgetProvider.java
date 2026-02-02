@@ -71,6 +71,8 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
     static final String ACTION_STOP       = "com.onefishtwo.bbqtimer.ACTION_STOP";
     static final String ACTION_CYCLE      = "com.onefishtwo.bbqtimer.ACTION_CYCLE";
 
+    private static int workaroundCount = (int) SystemClock.uptimeMillis();
+
     @NonNull
     static ComponentName getComponentName(Context context) {
         return new ComponentName(context, TimerAppWidgetProvider.class);
@@ -309,11 +311,31 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
         }
     }
 
-    /** Constructs a PendingIntent for the widget to send an action event to this Receiver. */
+    /**
+     * Constructs a PendingIntent for the widget to send an action event to this Receiver.
+     * <br/>
+     * Workaround: A unique requestCode value makes the PendingIntent != previous Intents, to work
+     * around a bug on Wear OS 4.0, Android 13.0 Tiramisu API 33.
+     * The bug does not appear on Wear OS 6.0, Android 16.0 Baklava API 36.0.
+     * <br/>
+     * Test case: In the Watch display of a BBQ Timer notification, tap Pause, Reset, then Run.
+     * Repeated taps on Pause and Run work fine, the Reset and Stop buttons work fine, yet the
+     * Pause -> Reset -> Run sequence fails to deliver the second ACTION_RUN Intent to
+     * TimerAppWidgetProvider. Then onReceive() doesn't log an Intent or start the timer.
+     * <br/>
+     * Unsuccessful workarounds: Change the Intent's action, add Intent flags or extras, reorder or
+     * rename the action buttons in the Wear notification, ...
+     * <br/>
+     * NOTE: After installing the Pixel Watch app on Android, go into Setting and turn on the app's
+     * ability to send notifications and its special app access permission for notification access.
+     */
+    @NonNull
     static PendingIntent makeActionIntent(Context context, String action) {
         Intent intent = new Intent(context, TimerAppWidgetProvider.class);
+
         intent.setAction(action).addFlags(Intent.FLAG_RECEIVER_FOREGROUND);
-        return PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_IMMUTABLE);
+        return PendingIntent.getBroadcast(context, ++workaroundCount, intent,
+                PendingIntent.FLAG_IMMUTABLE);
     }
 
     /**
