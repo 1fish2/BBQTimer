@@ -444,15 +444,15 @@ public class Notifier {
      * - it can't be ongoing -- yes,
      * - it has to be from a Foreground service -- no,
      * - it can't be CATEGORY_ALARM -- no,
-     * - it can't be silent -- no,
+     * - it can't be silent -- ?,
      * - it can't use a custom app sound resource -- no,
      * - it must have IMPORTANCE_HIGH -- ?,
      * - it can't be MediaStyle with or without a MediaSession -- **YES**,
      * - it must explicitly setLocalOnly(false) -- ?,
-     * - it can't have custom RemoteViews -- no,
-     * - it can't have Chronometers in the notification RemoteViews -- no,
+     * - it can't have custom remote views -- no,
      * - the channel ID ("alarmChannel") must not heuristically match the string "alarm" -- no,
-     * - the channel sound must use AudioAttributes.USAGE_NOTIFICATION_EVENT, not USAGE_ALARM -- no,
+     * - it can't have Chronometers in the notification RemoteViews -- no,
+     * - it can use USAGE_NOTIFICATION_EVENT, not AudioAttributes.USAGE_ALARM -- no,
      * <p/>
      * TODO: Play a custom sound on the watch?
      */
