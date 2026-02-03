@@ -31,7 +31,8 @@
         android:paddingLeft="@dimen/small_button_padding"
         android:paddingRight="@dimen/small_button_padding"
         android:src="@drawable/ic_action_play"
-        tools:ignore="UnusedAttribute" />
+        android:tint="@color/widget_button"
+        tools:ignore="UnusedAttribute,UseAppTint" />
 
     <!-- Note: The code needs child indexes that match the order of children. -->
     <ViewFlipper

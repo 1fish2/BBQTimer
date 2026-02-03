@@ -25,7 +25,9 @@
         android:contentDescription="@string/start_pause"
         android:paddingLeft="@dimen/small_button_padding"
         android:paddingRight="@dimen/small_button_padding"
-        android:src="@drawable/ic_action_play" />
+        android:src="@drawable/ic_action_play"
+        android:tint="@color/widget_button"
+        tools:ignore="UseAppTint" />
 
     <TextView
         android:id="@+id/pausedChronometerText"

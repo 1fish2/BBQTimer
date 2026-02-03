@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- aliases -->
+    <!-- aliases to 64x64dp images, overriding 32x32dp values/dimens.xml -->
     <drawable name="ic_pause">@drawable/ic_pause_big</drawable>
     <drawable name="ic_play">@drawable/ic_play_big</drawable>
     <drawable name="ic_replay">@drawable/ic_replay_big</drawable>
