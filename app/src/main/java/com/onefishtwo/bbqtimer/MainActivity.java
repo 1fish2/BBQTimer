@@ -1001,8 +1001,15 @@ public class MainActivity extends AppCompatActivity
         if (viewConfiguration != newConfiguration) { // optimize out the nearly-always no-op case
             viewConfiguration = newConfiguration;
 
-            setDrawableRes(resetButton, isStopped ? R.drawable.ic_pause : R.drawable.ic_replay);
-            resetButton.setVisibility(isRunning || isPausedAt0 ? View.INVISIBLE : View.VISIBLE);
+            if (isRunning || isPausedAt0) {
+                resetButton.setVisibility(View.INVISIBLE);
+            } else {
+                resetButton.setVisibility(View.VISIBLE);
+                setDrawableRes(resetButton, isStopped ? R.drawable.ic_pause : R.drawable.ic_replay);
+                TooltipCompat.setTooltipText(resetButton,
+                        getText(isStopped ? R.string.pause : R.string.reset));
+            }
+
             setDrawableRes(pauseResumeButton, isRunning ? R.drawable.ic_pause : R.drawable.ic_play);
             setDrawableRes(stopButton, R.drawable.ic_stop);
             stopButton.setVisibility(isStopped ? View.INVISIBLE : View.VISIBLE);
