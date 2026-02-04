@@ -3,13 +3,13 @@
      The negative margins squeeze it a little so the heads-up notification
      doesn't clip the Pause & Play action buttons. -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="-2sp"
     android:layout_marginTop="-2sp"
     android:orientation="vertical"
-    tools:viewBindingIgnore="true"
-    xmlns:tools="http://schemas.android.com/tools">
+    tools:viewBindingIgnore="true">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -131,7 +131,6 @@
         android:orientation="horizontal"
         android:gravity="left">
 
-        <!-- TODO: Make these the size of the info icons, 16dp, using vector graphics. -->
         <ImageButton
             android:id="@+id/btnStart"
             android:layout_width="wrap_content"

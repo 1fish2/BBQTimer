@@ -22,16 +22,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
-        android:layout_marginLeft="@dimen/widget_button_margin"
-        android:layout_marginTop="@dimen/widget_button_margin"
-        android:layout_marginBottom="@dimen/widget_button_margin"
+        android:layout_margin="@dimen/widget_button_margin"
         android:layout_weight="0"
-        android:backgroundTint="@color/widget_button_background"
+        android:background="@drawable/widget_button_rounded_background"
         android:contentDescription="@string/start_pause"
-        android:paddingLeft="@dimen/small_button_padding"
-        android:paddingRight="@dimen/small_button_padding"
+        android:padding="2dp"
         android:src="@drawable/ic_action_play"
-        android:tint="@color/widget_button"
+        android:tint="@color/button_tint_color_unstyled"
         tools:ignore="UnusedAttribute,UseAppTint" />
 
     <!-- Note: The code needs child indexes that match the order of children. -->

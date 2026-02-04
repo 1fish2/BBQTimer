@@ -21,12 +21,11 @@
         android:layout_gravity="center_vertical"
         android:layout_margin="@dimen/widget_button_margin"
         android:layout_weight="0"
-        android:backgroundTint="@color/widget_button_background"
+        android:background="@drawable/widget_button_rounded_background"
         android:contentDescription="@string/start_pause"
-        android:paddingLeft="@dimen/small_button_padding"
-        android:paddingRight="@dimen/small_button_padding"
+        android:padding="2dp"
         android:src="@drawable/ic_action_play"
-        android:tint="@color/widget_button"
+        android:tint="@color/button_tint_color_unstyled"
         tools:ignore="UseAppTint" />
 
     <TextView
