@@ -163,6 +163,7 @@ public class Notifier {
         builder.setStyle(style);
 
         // === MediaStyle setColor() [the "accent color"] vs. Android API levels ===
+        // [Irrelevant with DecoratedCustomViewStyle?]
         // API 21 L - 22 L1: colors the notification area background needlessly. By default,
         //   * Heads-up notifications: Medium gray text on light white background.
         //   * Pull-down notifications: Light white text on dark gray background.
@@ -178,7 +179,8 @@ public class Notifier {
         // API 31 S+: colors the small icon's circular background.
         // setColorized(false) didn't change any of these results.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            @ColorInt int iconBackgroundColor = context.getColor(R.color.dark_orange_red);
+            @ColorInt int iconBackgroundColor =
+                    ContextCompat.getColor(context, R.color.dark_orange_red);
             builder.setColor(iconBackgroundColor);
         }
     }
@@ -339,19 +341,12 @@ public class Notifier {
      * can change it, and it ignores its format string thus ruling out some workarounds.
      * *SO* when the timer is paused, flip to a TextView.
      * <p/>
-     * TODO: Ensure the layout doesn't switch to huge button icons on tablets; uses vector
-     *  graphics on supporting Android API versions; define and use day/night colors for the buttons
-     *  such as md_theme_primary, or better yet slightly darker, more "forest" green (e.g., #2E7D32)
-     *  for day and a brighter, more "neon" or pastel green (e.g., #81C784) for night to ensure it
-     *  passes contrast checks against light grey/white notification backgrounds, or blue-gray like
-     *  they used to be; switch to full contrast notification_text if `isHighContrastEnabled(context)`.
-     *  int primaryColor = ContextCompat.getColor(context, R.color.md_theme_primary);
-     *  if (isHighContrastEnabled(context)) {
-     *      // Use a high-visibility color (like pure Black or White depending on theme)
-     *      // instead of the brand green if the user has accessibility needs.
-     *      primaryColor = ContextCompat.getColor(context, R.color.notification_text);
-     *  }
-     *  remoteViews.setInt(R.id.btnStart, "setColorFilter", primaryColor);
+     * TODO: Switch the action buttons to higher contrast R.color.notification_text if
+     *  isHighContrastEnabled(context)?
+     *  Use ContextCompat.getColor(context, R.color.md_theme_tertiary) which responds to day/night
+     *  themes and might respond to the high contrast setting?
+     *      int highColor = ContextCompat.getColor(context, R.color.notification_text);
+     *      remoteViews.setInt(R.id.btnStart, "setColorFilter", primaryColor);
      *
      * @param layoutId          the layout resource ID for the RemoteViews.
      * @param state             the ApplicationState to show.
@@ -441,18 +436,22 @@ public class Notifier {
      * on/off by {@link #setAlarm(boolean)}.
      * <p/>
      * Hypotheses on why bridging was failing:
-     * - it can't be ongoing -- yes,
+     * - it must not be ongoing -- yes,
+     * - it must not set Notification.FLAG_ONGOING_EVENT -- ?,
      * - it has to be from a Foreground service -- no,
-     * - it can't be CATEGORY_ALARM -- no,
-     * - it can't be silent -- ?,
-     * - it can't use a custom app sound resource -- no,
+     * - it must not be CATEGORY_ALARM -- no,
+     * - it must not be silent -- ?,
+     * - it must not use a custom app sound resource -- no,
      * - it must have IMPORTANCE_HIGH -- ?,
-     * - it can't be MediaStyle with or without a MediaSession -- **YES**,
+     * - it must not be MediaStyle with or without a MediaSession -- **YES**,
      * - it must explicitly setLocalOnly(false) -- ?,
-     * - it can't have custom remote views -- no,
+     * - it must not setLocalOnly(true) -- presumably?,
+     * - it must not set Notification.FLAG_NO_CLEAR (non-clearable notification) -- ?
+     * - it must not have custom remote views -- no,
      * - the channel ID ("alarmChannel") must not heuristically match the string "alarm" -- no,
-     * - it can't have Chronometers in the notification RemoteViews -- no,
+     * - it must not have Chronometers in the notification RemoteViews -- no,
      * - it can use USAGE_NOTIFICATION_EVENT, not AudioAttributes.USAGE_ALARM -- no,
+     * - the Wearable app must have the app's (or all apps') notifications enabled -- ?
      * <p/>
      * TODO: Play a custom sound on the watch?
      */

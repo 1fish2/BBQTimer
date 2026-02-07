@@ -13,10 +13,13 @@ public class BBQTimerApplication extends Application {
     @Override
     public void onCreate() {
         if (BuildConfig.ENABLE_STRICT_MODE) {
-            StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
+            StrictMode.VmPolicy.Builder builder1 = new StrictMode.VmPolicy.Builder()
                     .detectAll() // Instead?: .detectLeakedClosableObjects()
-                    .penaltyLog()
-                    .build());
+                    .penaltyLog();
+            if (Build.VERSION.SDK_INT >= 28) {
+                builder1.detectNonSdkApiUsage();
+            }
+            StrictMode.setVmPolicy(builder1.build());
 
             StrictMode.ThreadPolicy.Builder builder = new StrictMode.ThreadPolicy.Builder()
                     .detectAll();
