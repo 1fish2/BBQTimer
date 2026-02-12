@@ -21,3 +21,8 @@
 local.properties
 /tmp
 /bin/__pycache__/
+
+# Don't ignore the wrapper/daemon configuration
+!gradle/gradle-wrapper.properties
+!gradle/wrapper/gradle-wrapper.jar
+!gradle/gradle-daemon-jvm.properties
