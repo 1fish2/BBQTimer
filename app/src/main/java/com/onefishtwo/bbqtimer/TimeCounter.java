@@ -230,7 +230,8 @@ public class TimeCounter {
     /**
      * Returns the Timer's Running/Paused/Stopped state for debugging. Not localized.
      *
-     * @see Notifier#timerRunState(TimeCounter, boolean)
+     * @see Notifier#timerRunState(TimeCounter)
+     * @see Notifier#timerRunStateValue(TimeCounter)
      */
     @NonNull
     String runState() {

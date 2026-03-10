@@ -105,14 +105,29 @@
        be short enough to fit in one line of the notification drawer area. -->
     <string name="timer_running">Running</string>
 
-    <!-- Notification body message: The timer is paused with <elapsed_time>. This message must be
-       short enough to fit in one line of the notification shade.
+    <!-- Notification body message for Wear OS: The timer is running at {elapsed_time} and counting. -->
+    <string name="running_up_at">Running %1$s➚︎</string>
+
+    <!-- Notification body message: The timer is paused. -->
+    <string name="timer_paused">Paused</string>
+
+    <!-- Notification body message for Wear OS: The timer is paused at {elapsed_time}.
+       This message must be short enough to fit in one line of the notification shade.
 
        "%1$s" is placeholder #1 for the timer's string value such as "10:23" ("s" for string).
 
+       The arrows convey that the time value gets stale. The emoji makes it more glanceable.
+
        NOTE: The <elapsed_time> is the accumulated timer duration, not the time of day when the
-       pause occurred. In English, "Paused at 10:23" is ambiguous; it could mean either one. -->
-    <string name="timer_paused">Paused %1$s</string>
+       pause occurred. In English, "Paused at 10:23" is ambiguous. -->
+    <string name="timer_paused_at">Paused %1$s</string>
+
+    <!-- Notification body message for Wear OS: The next alarm is in {elapsed_time} and counting
+       down. -->
+    <string name="counting_down_at">Next ♫ in %1$s➘</string>
+
+    <!-- Notification body message for Wear OS: The next alarm is in {elapsed_time}. -->
+    <string name="count_down_at">Next ♫ in %1$s</string>
 
     <!-- Notification body message: The timer is stopped. This message must be short enough to fit
        in one line of the notification drawer area. -->
@@ -153,7 +168,7 @@
     <!-- Menu command to edit the pop-up list of "recipes" of alarm intervals with optional notes. -->
     <string name="edit_this_list">Edit these intervals…</string>
 
-    <!-- Title for the the dialog to edit "recipes" of alarm intervals with optional notes. -->
+    <!-- Title for the dialog to edit "recipes" of alarm intervals with optional notes. -->
     <string name="edit_list_title">Alarm intervals</string>
 
     <!-- Hint for what to type into the recipe editor. -->

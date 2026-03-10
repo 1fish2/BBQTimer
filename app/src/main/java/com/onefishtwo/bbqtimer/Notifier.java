@@ -30,7 +30,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.SystemClock;
 import android.text.Spanned;
-import android.text.SpannedString;
 import android.util.Log;
 import android.view.View;
 import android.widget.RemoteViews;
@@ -56,8 +55,6 @@ import com.onefishtwo.bbqtimer.state.ApplicationState;
 public class Notifier {
     private static final String TAG = "Notifier";
     private static final int NOTIFICATION_ID = 7;
-
-    private static final Spanned EMPTY_SPAN = new SpannedString("");
 
     // Vibration pattern: ms off, on, off, ...
     // Match the notification sound to the degree feasible.
@@ -186,19 +183,62 @@ public class Notifier {
     }
 
     /**
-     * Returns a localized description of the timer's run state: "Running", "Paused 00:12.3"
-     * (optionally including the time value), or "Stopped".
+     * Returns a localized description of the timer's run state: "Running", "Paused", or "Stopped".
      */
     @NonNull
-    String timerRunState(@NonNull TimeCounter timer, boolean includeTime) {
+    String timerRunState(@NonNull TimeCounter timer) {
         if (timer.isRunning()) {
             return context.getString(R.string.timer_running);
         } else if (timer.isPaused()) {
-            Spanned pauseTime = includeTime ? timer.formatHhMmSsFraction() : EMPTY_SPAN;
-            return context.getString(R.string.timer_paused, pauseTime);
+            return context.getString(R.string.timer_paused);
         } else {
             return context.getString(R.string.timer_stopped);
         }
+    }
+
+    /**
+     * Returns a localized description of the timer's run state with the current time value for
+     * Wearable notifications. Deal with the lack of Chronometers and Images:
+     *   "Running 00:15➚︎", "Paused 00:15.1", or "Stopped".
+     * The arrow conveys that the value is going up from the snapshot number.
+     * <p>
+     * Gemini: "Emojis like ⏱️ (Stopwatch), ⏲️ (Timer Clock), and 🔔 (Bell) are widely supported
+     * across all Wear OS versions."
+     */
+    @NonNull
+    String timerRunStateValue(@NonNull TimeCounter timer) {
+        if (timer.isRunning()) {
+            String timerHhMmSs = timer.formatHhMmSs();
+            return context.getString(R.string.running_up_at, timerHhMmSs);
+        } else if (timer.isPaused()) {
+            Spanned pauseTime = timer.formatHhMmSsFraction();
+            return context.getString(R.string.timer_paused_at, pauseTime);
+        } else {
+            return context.getString(R.string.timer_stopped);
+        }
+    }
+
+    /**
+     * Returns a localized description of the time until the next alarm for Wearable notifications
+     * which don't support Chronometers or Images:
+     *   "Next ♫ in 00:15➘".
+     * The arrow is visible if the timer is running to convey that the value is going down from the
+     * snapshot number. The ♫ stands for "alarm", fits on a smartwatch, and doesn't have distracting
+     * emoji colors.
+     */
+    @NonNull
+    String nextAlarmValue(@NonNull ApplicationState state) {
+        if (state.isEnableReminders()) {
+            @NonNull TimeCounter timer = state.getTimeCounter();
+            long countdownToNextAlarm = state.getMillisecondsToNextAlarm();
+            String countDownHhMmSs = TimeCounter.formatHhMmSs(countdownToNextAlarm);
+
+            return context.getString(
+                    timer.isPaused() ? R.string.count_down_at : R.string.counting_down_at,
+                    countDownHhMmSs);
+        }
+
+        return "";
     }
 
     /**
@@ -430,11 +470,13 @@ public class Notifier {
     }
 
     /**
-     * Builds a notification that also gets bridged to Wearable smart watches. (So in the Watch App,
-     * setting "Notifications > Mute notifications on phone" won't totally mute the app's
+     * Builds a notification that also gets bridged to Wearable smartwatches. (So in the Watch App,
+     * setting "Notifications > Mute notifications on phone" won't totally mute this app's
      * notifications.) The notification alarm sound, vibration, and LED light flashing are switched
      * on/off by {@link #setAlarm(boolean)}.
-     * <p/>
+     * <p>
+     * REQUIRES: Use NotificationManagerCompat to notify() the returned Notification.
+     * <p>
      * Hypotheses on why bridging was failing:
      * - it must not be ongoing -- yes,
      * - it must not set Notification.FLAG_ONGOING_EVENT -- ?,
@@ -467,32 +509,49 @@ public class Notifier {
                 .setCategory(NotificationCompat.CATEGORY_ALARM)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setLocalOnly(false) // just in case
-                .setOnlyAlertOnce(!soundAlarm); // so running -> paused and Activity onStart() won't ding a Wearable
+                .setOnlyAlertOnce(!soundAlarm); // so running -> paused and Activity#onStart() won't ding a wearable
 
         {  // Construct the visible notification contents.
             TimeCounter timer = state.getTimeCounter();
             boolean isRunning = timer.isRunning();
             String alarms = describePeriodicAlarms(state);
-            String runPauseStop = timerRunState(timer, true); // Running/Paused 00:12.3/Stopped
 
-            builder.setSmallIcon(R.drawable.notification_icon)
-                    .setContentTitle(context.getString(R.string.app_name)); // TODO: A better use of this field?
+            builder.setSmallIcon(R.drawable.notification_icon);
 
-            // The "when" field is redundant with the content text and would take space from the
-            // action buttons (Reset, Start, Stop) in compact view.
+            // Hide the "when" field on the phone which'd be redundant with the content view and
+            // would crowd out the "Alarm every 00:15" subtext field. setShowWhen(false) doesn't
+            // affect Wearable notifications, which start out at "Now" and can, e.g., change to
+            // "2m" if the user refreshes the notification view after 2 min.
+            // setUsesChronometer(true) doesn't work on Wearables.
+            // setWhen(System.currentTimeMillis() - elapsedTime) seems to be ignored on Wearables.
             builder.setShowWhen(false);
 
-            // Subtext shows in expanded notifications after the app name. Both show on Wearables.
-            builder.setSubText(alarms);
-            builder.setContentText(runPauseStop);
+            // Phone collapsed: "⏱ 00:08  🔔 00:07 / [buttons]"
+            // Phone expanded: "BBQ Timer • Alarm every 00:15 / ⏱ 00:08  🔔 00:07 / [buttons]"
+            //                 AppName • SubText / RemoteViews
+            //
+            // Wearable popup:     "Running 00:15➚︎"
+            // Wearable collapsed: "BBQ Timer / Running 00:15➚︎ / Next ♫ in 00:30➘"
+            // Wearable expanded:  "BBQ Timer / Alarm every 00:15 / Running 00:15➚︎ / Next ♫ in 00:30➘"
+            //                     AppName / SubText / ContentText / ContentTitle
+            //
+            // Note: ⏱ stopwatch character might render as a simple circular outline. ⏲ is like a
+            // kitchen timer. Emoji clocks 🕐 1:00, 🕒 3:00, … every hour and half-hour
+            // (U+1F550 through U+1F567). Emojis are supposed to be forceable into monochrome by
+            // appending the Variation Selector-15 (U+FE0E) immediately after the character, but it
+            // doesn't work on WearOS. I didn't test Android since the notification area supports
+            // image views.
+            builder.setSubText(alarms) // Alarm every 00:15
+                   .setContentTitle(timerRunStateValue(timer)) // bold, cyan text
+                   .setContentText(nextAlarmValue(state));
 
-            String timerStateMessage = timerRunState(timer, false); // Running/Paused/Stopped
+            String timerStateMessage = timerRunState(timer); // Running/Paused/Stopped
             RemoteViews notificationView = makeRemoteViews(
                     R.layout.custom_notification, state, timerStateMessage);
 
-            builder.setCustomContentView(notificationView);
-            builder.setCustomHeadsUpContentView(notificationView);
-            builder.setCustomBigContentView(notificationView);
+            builder.setCustomContentView(notificationView)
+                   .setCustomHeadsUpContentView(notificationView)
+                   .setCustomBigContentView(notificationView);
 
             {
                 PendingIntent activityPendingIntent = MainActivity.makePendingIntent(context);

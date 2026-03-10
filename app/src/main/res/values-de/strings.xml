@@ -6,6 +6,8 @@
     <string name="app_name">BBQ Timer</string>
     <string name="app_description">Eine Stoppuhr und ein Intervall-Timer, die Sie auf dem Sperrbildschirm verwenden können.</string>
     <string name="cancel_edits">Abbrechen</string>
+    <string name="count_down_at">Nächster ♫ in %1$s</string>
+    <string name="counting_down_at">Nächster ♫ in %1$s➘</string>
     <string name="edit_list_hint">m, m:s oder h:m:s mit optionalen Notizen</string>
     <string name="edit_list_title">Alarmintervalle</string>
     <string name="edit_this_list">Diese Intervalle bearbeiten…</string>
@@ -27,6 +29,7 @@
     <string name="reminder_switch">Periodisches Alarmintervall:</string>
     <string name="recipes">6 dünne Fischfilets, bis %1$s\n7 Burger, bis %2$s\n:30\n1\n1:30\n2\n3\n4\n5\n6\n7\n8\n9\n10\n15\n1:30:00</string>
     <string name="reset">Zurücksetzen</string>
+    <string name="running_up_at">Läuft %1$s➚︎</string>
     <string name="save_edits">Speichern</string>
     <string name="start">Start</string>
     <string name="start_at_0_long">Start</string>
@@ -34,7 +37,8 @@
     <string name="start_pause">Start/Pause</string>
     <string name="stop">Stopp</string>
     <string name="time0">00:00,0</string>
-    <string name="timer_paused">Pausiert %1$s</string>
+    <string name="timer_paused">Pausiert</string>
+    <string name="timer_paused_at">Pausiert %1$s</string>
     <string name="timer_running">Läuft</string>
     <string name="timer_stopped">Gestoppt</string>
     <string name="widget_preview_time">07:00</string>
