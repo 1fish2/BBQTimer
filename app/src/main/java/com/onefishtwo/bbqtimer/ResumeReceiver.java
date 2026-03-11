@@ -29,9 +29,10 @@ import androidx.annotation.NonNull;
 import com.onefishtwo.bbqtimer.state.ApplicationState;
 
 /**
- * A BroadcastReceiver to resume/adjust/stop the running timer and notification after an app
- * upgrade, clock adjustment, timezone adjustment, locale change, or ACTION_BOOT_COMPLETED (either
- * system reboot then login, or user interaction with the app after Force Stop on Android 15+).
+ * A BroadcastReceiver to resume/adjust/stop the running timer and notification after: app
+ * upgrade, clock adjustment, timezone adjustment, locale change, or ACTION_BOOT_COMPLETED.
+ * ACTION_BOOT_COMPLETED happens when the system reboots then the user logs in, also when the user
+ * interacts with the app after Force Stop on Android 15+.
  *<p/>
  * NOTE: With Android 7.0 (API 24) and 8.0 (API 26) Broadcast Intent limitations, apps can register
  * for a subset of the original implicit broadcast actions, including:

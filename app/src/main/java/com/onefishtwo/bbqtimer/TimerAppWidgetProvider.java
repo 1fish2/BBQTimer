@@ -227,7 +227,7 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
                 hideTheCountdown(views);
             }
 
-            // minWidth in [117 .. 184) -- 3 cells on API 29 Nexus 5, else 2 cells
+            // minWidth in [117, 184) -- 3 cells on API 29 Nexus 5, else 2 cells
             // ==> The code above switched to the small count-up views.
 
             if (minWidth < 117) { // < 3 cells on API 29 Nexus 5, else < 2 cells

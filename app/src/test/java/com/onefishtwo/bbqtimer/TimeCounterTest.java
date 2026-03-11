@@ -171,7 +171,7 @@ public class TimeCounterTest {
     /**
      * Make a test call to formatHhMmSsCompact(). When hours > 0, that calls
      * DateUtils.formatElapsedTime(), in which case this must mock out the underlying Formatter.
-     * Otherwise it doesn't, so the mock returns the wrong string result there, thus testing that
+     * Otherwise, it doesn't, so the mock returns the wrong string result there, thus testing that
      * formatHhMmSsCompact() doesn't use it.
      */
     private static String fc(long hours, long minutes, long seconds) {

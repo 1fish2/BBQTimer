@@ -36,10 +36,10 @@ import org.hamcrest.Matcher;
 
 /**
  * A ViewAction that bypasses bunch of Espresso work to call View#performClick() from the UI thread.
- * This is a WORKAROUND for a bug on certain API levels (29, 35, 36) where a normal click() on one
- * of the standard dialog buttons (BUTTON_POSITIVE, BUTTON_NEGATIVE, BUTTON_NEUTRAL) fails to
- * dismiss the dialog, so Espresso times out waiting (DialogIdlingResource) on the dialog to close
- * <em>unless</em> I manually click the button while the test waits.
+ * WORKAROUND for a bug on API levels (29, 35, 36) where a normal click() on a dialog button
+ * (BUTTON_POSITIVE, BUTTON_NEGATIVE, or BUTTON_NEUTRAL) fails to dismiss the dialog. Espresso
+ * times out waiting (DialogIdlingResource) for the dialog to close.
+ * Manually clicking the button would resume the test.
  * Experiments showed that it's not a race condition. The click just doesn't get through.
  *<p>
  * Gemini 2.5 Pro generated the first cut.

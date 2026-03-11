@@ -41,6 +41,7 @@ import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.RawRes;
 import androidx.annotation.RequiresApi;
+import androidx.annotation.RestrictTo;
 import androidx.annotation.StringRes;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationCompat.WearableExtender;
@@ -90,6 +91,7 @@ public class Notifier {
     private boolean soundAlarm = false; // whether the next notification should sound an alarm
 
     /** Sets a listener for when the Notifier posts UI notifications, for testing. */
+    @RestrictTo(RestrictTo.Scope.TESTS)
     public static void setNotificationListener(NotificationListener listener) {
         notificationListener = listener;
     }
@@ -518,7 +520,7 @@ public class Notifier {
 
             builder.setSmallIcon(R.drawable.notification_icon);
 
-            // Hide the "when" field on the phone which'd be redundant with the content view and
+            // Hide the "when" field on the phone. It'd be redundant with the content view and
             // would crowd out the "Alarm every 00:15" subtext field. setShowWhen(false) doesn't
             // affect Wearable notifications, which start out at "Now" and can, e.g., change to
             // "2m" if the user refreshes the notification view after 2 min.

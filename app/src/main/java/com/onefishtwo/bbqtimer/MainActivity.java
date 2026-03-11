@@ -245,7 +245,7 @@ public class MainActivity extends AppCompatActivity
         popupMenu = null;
         notificationRequestCount = 0;
 
-        // View Binding has potential but it makes project inspections create a lot of spurious
+        // View Binding has potential, but it makes project inspections create a lot of spurious
         // warnings about unused resource IDs, methods, and method arguments.
         //ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater())
         //mainContainer = binding.getRoot()
@@ -468,7 +468,7 @@ public class MainActivity extends AppCompatActivity
 
         updateLockStatus();
 
-        // WORKAROUND: On API ≤ 27, the alarmPeriod EditText auto-focuses when the Activity starts
+        // WORKAROUND: On API ≤ 27, the alarmPeriod EditText autofocuses when the Activity starts
         // in landscape mode or is rotated to landscape. That's annoying.
         // (A previous workaround set android:focusable="true",  android:focusableInTouchMode="true"
         // on an empty or outer layout view, but the empty one no longer works in API 25-27 and the
@@ -511,7 +511,7 @@ public class MainActivity extends AppCompatActivity
      * open the OS UI straightaway, or give up and stop pestering.
      *<p/>
      * NOTE: Even w/o permission the app creates notifications, in which case they're hidden but
-     * might still needed if the app gets a Foreground Service.
+     * might still be needed if the app gets a Foreground Service.
      *<p/>
      * NOTE: If notifications are disabled, so are Toasts.
      */
@@ -568,9 +568,9 @@ public class MainActivity extends AppCompatActivity
 
     /**
      * Informs the user if the Alarm notification channel is muted or misconfigured and offers to
-     * help, BUT does nothing if the app needs Notifications permission (in which case the channel
-     * configuration doesn't matter and probably can't be fixed) or if periodic reminder alarms are
-     * turned off.
+     * help. BUT this does nothing if the app needs Notifications permission (in which case the
+     * channel configuration doesn't matter and probably can't be fixed) or if periodic reminder
+     * alarms are turned off.
      * <p/>
      * TODO: How to detect if the app's notifications are visible but "silenced"? Silencing kills
      * the audio and heads-up notification shades.
@@ -605,7 +605,7 @@ public class MainActivity extends AppCompatActivity
             Snackbar snackbar = makeSnackbar(R.string.notifications_misconfigured);
 
             Log.w(TAG, "The app's Notifications channel is misconfigured");
-            if (Build.VERSION.SDK_INT >= 26) { // Where this Settings Intent works.
+            if (Build.VERSION.SDK_INT >= 26) { // Where this Intent works.
                 setSnackbarAction(snackbar, R.string.notifications_configure,
                         view -> openNotificationChannelSettings(
                                 Notifier.ALARM_NOTIFICATION_CHANNEL_ID));
@@ -720,7 +720,7 @@ public class MainActivity extends AppCompatActivity
     @UiThread
     public void onClickRecipeMenuButton(View v) {
         // Workaround: Gravity.END places the PopupMenu out of the right side system gesture and
-        // cutout areas. It still possible to extend into the left side system gesture area in
+        // cutout areas. It might still extend into the left side system gesture area in
         // portrait mode, but at least it won't be hidden by a cutout in landscape mode.
         popupMenu = new PopupMenu(this, v, Gravity.END, 0, R.style.PopupMenu);
         Menu menu = popupMenu.getMenu();
@@ -813,7 +813,7 @@ public class MainActivity extends AppCompatActivity
 
         alarmPeriod.setText(token);
 
-        // Submit the input whether or not the text field has focus.
+        // Submit the input whether the text field has focus or not.
         processAlarmPeriodInput();
         return true;
     }

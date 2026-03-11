@@ -35,7 +35,7 @@ public class RecipeEditorDialogFragment extends DialogFragment {
     public interface RecipeEditorDialogFragmentListener {
         /** The user changed (edited or reset) the recipes. */
         void onEditorDialogPositiveClick(DialogInterface dialog, @NonNull String text);
-        /** The user cancelled the dialog; no change to the recipes. */
+        /** The user canceled the dialog; no change to the recipes. */
         @SuppressWarnings("EmptyMethod")
         void onEditorDialogNegativeClick(DialogInterface dialog);
         // Override onDismiss() to notice all dismissal cases? onDismiss() calling hideKeyboard()
@@ -83,7 +83,6 @@ public class RecipeEditorDialogFragment extends DialogFragment {
      * To avoid the delay and potential ANR, just bypass the irrelevant TextClassifier. (This
      * problem might not occur on API 28 - 29, but it's safer to do this uniformly.)
      */
-    @SuppressWarnings("SpellCheckingInspection")
     public static void workaroundTextClassifier(EditText editText) {
         if (Build.VERSION.SDK_INT >= 27) {
             editText.setTextClassifier(TextClassifier.NO_OP);

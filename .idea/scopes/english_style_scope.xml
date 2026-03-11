@@ -1,0 +1,3 @@
+<component name="DependencyValidationManager">
+  <scope name="english_style_scope" pattern="(file:*||file:*//*)&amp;&amp;!file:LICENSE.md" />
+</component>

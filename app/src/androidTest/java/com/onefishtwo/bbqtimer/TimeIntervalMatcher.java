@@ -30,7 +30,7 @@ import java.util.regex.MatchResult;
 import java.util.regex.Pattern;
 
 /**
- * A Matcher that matches a time string in the format "MM:SS.F" within the interval [min .. max]
+ * A Matcher that matches a time string in the format "MM:SS.F" within the interval [min, max]
  * milliseconds. It stores the time value parsed from each match attempt in the instance variable
  * {@link #time} so the caller can use a relative time in the next match.
  */
@@ -46,7 +46,7 @@ public class TimeIntervalMatcher extends CustomTypeSafeMatcher<String> {
 
     public TimeIntervalMatcher(long _min, long _max, boolean _expectFraction) {
         super("a time string in [" + TimeCounter.formatHhMmSsFraction(_min)
-                + " .. " + TimeCounter.formatHhMmSsFraction(_max) + "]");
+                + ", " + TimeCounter.formatHhMmSsFraction(_max) + "]");
         this.min = _min;
         this.max = _max;
         this.expectFraction = _expectFraction;
@@ -56,13 +56,13 @@ public class TimeIntervalMatcher extends CustomTypeSafeMatcher<String> {
         this(_min, _max, true);
     }
 
-    /** Matches a time string "MM:SS.F" in the interval [min .. max] milliseconds. */
+    /** Matches a time string "MM:SS.F" in the interval [min, max] milliseconds. */
     @NonNull
     public static TimeIntervalMatcher inTimeInterval(long min, long max) {
         return new TimeIntervalMatcher(min, max);
     }
 
-    /** Matches a time string "MM:SS" in the interval [min .. max] milliseconds. */
+    /** Matches a time string "MM:SS" in the interval [min, max] milliseconds. */
     @NonNull
     public static TimeIntervalMatcher inWholeTimeInterval(long min, long max) {
         return new TimeIntervalMatcher(min, max, false);

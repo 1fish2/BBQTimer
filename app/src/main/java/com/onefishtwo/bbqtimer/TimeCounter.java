@@ -46,7 +46,7 @@ import java.util.regex.Pattern;
 public class TimeCounter {
 
     /**
-     * Separator pattern to split an hh:mm:ss string into fields: a ":".
+     * Separator pattern to split hh:mm:ss string into fields: a ":".
      * <p/>
      * This needn't handle spaces since the EditText with inputType="time" rejects spaces even from
      * a physical keyboard, restricting typed or pasted characters to [0-9:apm] (maybe more).
@@ -410,7 +410,7 @@ public class TimeCounter {
     }
 
     /**
-     * Parses a field of an hh:mm:ss string.
+     * Parses a field of hh:mm:ss string.
      * Returns -1 if it's not an unsigned integer, but "" is OK.
      */
     private static int parseField(String field) {
@@ -427,8 +427,8 @@ public class TimeCounter {
 
     /**
      * Parses a time duration in the form: h:m:s|m:s|m. Each field has zero or more digits,
-     * but commonly two digits, dd[:dd[:dd]]. This is forgiving but it returns -1 if the input isn't
-     * in a recognized format. All spaces get squeezed out. The field separator is ":".
+     * but commonly two digits, dd[:dd[:dd]]. This is forgiving, but it returns -1 if the input
+     * isn't in a recognized format. All spaces get squeezed out. The field separator is ":".
      * <p/>
      * Returns the parsed number of seconds, or -1 if the input is not in the right format.
      */

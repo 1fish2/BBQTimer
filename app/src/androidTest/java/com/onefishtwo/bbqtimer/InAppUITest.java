@@ -189,7 +189,7 @@ public class InAppUITest implements Notifier.NotificationListener {
      * Tests all the nodes and arcs in the app's play/pause/reset/stop FSM.
      * <p/>
      * NOTE: Testing the timer is inherently timing-dependent. A test run could fail by not
-     * allowing the app enough time to respond. ARM emulators need extra response time. Mocking
+     * allowing the app enough time to respond. ARM emulators need extra time. Mocking
      * the TimeCounter clock might fix this even with MainActivity's Handler.
      */
     @Test
@@ -473,7 +473,7 @@ public class InAppUITest implements Notifier.NotificationListener {
                 withContentDescription("Text löschen"))); // de
         delayForDefocusTextFieldWorkaround();
 
-        // Check that the endIcon isn't displayed and the alarmPeriod EditText didn't auto-focus.
+        // Check that the endIcon isn't displayed and the alarmPeriod EditText didn't autofocus.
         clearTextImageButton.check(matches(not(isDisplayed())));
         alarmPeriodTextField.check(matches(not(hasFocus())));
         alarmPeriodTextField.check(matches(withText("5")));
@@ -508,7 +508,7 @@ public class InAppUITest implements Notifier.NotificationListener {
         // These steps ALSO discovered that on HVGA slider 320x480 running at least API 22-23, the
         // adjustPan feature (pans to keep the text field visible when the soft keyboard opens) only
         // worked once after the Activity opens or rotates. The fix for that was to fix the text
-        // field auto-focussing by making a LinearLayout focusable instead of having onResume()
+        // field autofocussing by making a LinearLayout focusable instead of having onResume()
         // call defocusTextField(alarmPeriod).
         enableRemindersToggle.perform(click());
         enableRemindersToggle.check(matches(isChecked()));

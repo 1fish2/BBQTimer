@@ -15,7 +15,7 @@ public class LocaleUtils {
     /** Indicates whether the given locale should format temperatures in Fahrenheit °F rather
      * than Celsius °C.
      * </p>
-     * To clarify LocalePreferences.getTemperatureUnit(Locale locale, boolean resolved):
+     * To clarify <code>LocalePreferences.getTemperatureUnit(Locale locale, boolean resolved)</code>:
      * <p style="margin-left: 30px">
      *   Returns any user regional preference temperature unit (from the Locale's extension value)
      *   on Android 14+, else optionally "resolves" a fallback from the Locale, else returns "".
