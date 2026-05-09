@@ -25,6 +25,7 @@
         android:appCategory="productivity"
         android:description="@string/app_description"
         android:icon="@mipmap/ic_launcher"
+        android:intentMatchingFlags="enforceIntentFilter"
         android:label="@string/app_name"
         android:name=".BBQTimerApplication"
         android:theme="@style/Theme.App"
@@ -41,10 +42,13 @@
             android:configChanges="keyboard|keyboardHidden|screenSize|mcc|mnc"
             android:windowSoftInputMode="adjustResize"
             android:showWhenLocked="true"
-            android:exported="true">
+            android:exported="true"
+            android:intentMatchingFlags="allowNullAction">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.intent.action.EDIT" />
+                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.QUICK_CLOCK" />
+                <action android:name="android.intent.action.RUN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
@@ -60,7 +64,19 @@
                   android:label="@string/app_name"
                   android:exported="false">
             <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_DELETED" />
+                <action android:name="android.appwidget.action.APPWIDGET_DISABLED" />
+                <action android:name="android.appwidget.action.APPWIDGET_ENABLED" />
+                <action android:name="android.appwidget.action.APPWIDGET_ENABLE_AND_UPDATE" />
+                <action android:name="android.appwidget.action.APPWIDGET_RESTORED" />
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE_OPTIONS" />
+                <action android:name="com.onefishtwo.bbqtimer.ACTION_CYCLE" />
+                <action android:name="com.onefishtwo.bbqtimer.ACTION_PAUSE" />
+                <action android:name="com.onefishtwo.bbqtimer.ACTION_RESET" />
+                <action android:name="com.onefishtwo.bbqtimer.ACTION_RUN" />
+                <action android:name="com.onefishtwo.bbqtimer.ACTION_RUN_PAUSE" />
+                <action android:name="com.onefishtwo.bbqtimer.ACTION_STOP" />
             </intent-filter>
 
             <meta-data
@@ -72,6 +88,9 @@
             android:name=".AlarmReceiver"
             android:enabled="true"
             android:exported="false" >
+            <intent-filter>
+                <action android:name="com.onefishtwo.bbqtimer.ACTION_ALARM" />
+            </intent-filter>
         </receiver>
 
         <receiver
