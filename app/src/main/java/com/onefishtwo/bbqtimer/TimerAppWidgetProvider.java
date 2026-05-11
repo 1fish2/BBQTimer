@@ -19,6 +19,7 @@
 
 package com.onefishtwo.bbqtimer;
 
+import android.annotation.SuppressLint;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
@@ -70,6 +71,44 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
     static final String ACTION_RESET      = "com.onefishtwo.bbqtimer.ACTION_RESET";
     static final String ACTION_STOP       = "com.onefishtwo.bbqtimer.ACTION_STOP";
     static final String ACTION_CYCLE      = "com.onefishtwo.bbqtimer.ACTION_CYCLE";
+
+    @androidx.annotation.VisibleForTesting
+    public static final String PREFS_TESTING = "Testing_Prefs";
+    @androidx.annotation.VisibleForTesting
+    public static final String PREF_LAST_ACTION = "lastActionForTesting";
+
+    /**
+     * Saves the given Intent action (or null for none) in persistent storage so a test can check
+     * that the Intent was received.
+     * <p>
+     * NOTE: This commits the storage update synchronously so the test can reliably retrieve it from
+     * another process, but that delays the main thread and causes StrictMode disk I/O policy
+     * violations, so don't call this for production Intents.
+     */
+    @androidx.annotation.VisibleForTesting
+    @SuppressLint("ApplySharedPref")
+    public static void saveActionForTesting(@NonNull Context context, String action) {
+        context.getSharedPreferences(PREFS_TESTING, Context.MODE_PRIVATE).edit()
+                .putString(PREF_LAST_ACTION, action).commit();
+    }
+
+    /**
+     * If the given Intent has FLAG_DEBUG_LOG_RESOLUTION, saves its action in persistent storage so
+     * a test can check that the Intent was received. Only test code should set
+     * FLAG_DEBUG_LOG_RESOLUTION, so ordinary production Intents won't cause StrictMode disk I/O
+     * policy violations.
+     * <p>
+     * NOTE: This commits the storage update synchronously so the test can reliably retrieve it from
+     * another process, but that delays the main thread, so don't call this for production Intents.
+     */
+    @androidx.annotation.VisibleForTesting
+    public static void saveIntentActionForTesting(@NonNull Context context, @NonNull Intent intent) {
+        int flags = intent.getFlags();
+
+        if ((flags & Intent.FLAG_DEBUG_LOG_RESOLUTION) != 0) {
+            saveActionForTesting(context, intent.getAction());
+        }
+    }
 
     private static int workaroundCount = (int) SystemClock.uptimeMillis();
 
@@ -344,13 +383,15 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
      */
     @Override
     public void onReceive(@NonNull Context context, @NonNull Intent intent) {
-        super.onReceive(context, intent);
-
         String action          = intent.getAction();
-        ApplicationState state = ApplicationState.sharedInstance(context);
-        TimeCounter timer      = state.getTimeCounter();
 
         Log.v(TAG, "Intent: " + action);
+        saveIntentActionForTesting(context, intent);
+
+        super.onReceive(context, intent);
+
+        ApplicationState state = ApplicationState.sharedInstance(context);
+        TimeCounter timer      = state.getTimeCounter();
 
         if (ACTION_RUN_PAUSE.equals(action)) { // Run/Pause button
             timer.togglePauseRun();

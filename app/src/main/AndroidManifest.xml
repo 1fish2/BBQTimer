@@ -50,6 +50,7 @@
                 <action android:name="android.intent.action.QUICK_CLOCK" />
                 <action android:name="android.intent.action.RUN" />
 
+                <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
             <meta-data android:name="android.app.shortcuts"
@@ -103,7 +104,8 @@
                 <action android:name="android.intent.action.TIME_SET" />
                 <action android:name="android.intent.action.TIMEZONE_CHANGED" />
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
-                <!-- TODO: ACTION_LOCKED_BOOT_COMPLETED? -->
+                <action android:name="android.intent.action.RUN" />
+                <!-- TODO: QUICKBOOT_POWERON? ACTION_LOCKED_BOOT_COMPLETED? -->
             </intent-filter>
         </receiver>
     </application>

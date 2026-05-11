@@ -291,22 +291,23 @@ public class MainActivity extends AppCompatActivity
 
         setVolumeControlStream(REMINDER_STREAM);
 
+        // Trigger any App Shortcut action but only in the initial launch, not after screen
+        // rotation, a theme change, enter/exit multi-window mode, etc.
         shortcutAction = SHORTCUT_NONE;
-        Intent callingIntent = getIntent();
-        if (callingIntent != null) {
-            String action = callingIntent.getAction(); // null action occurred in multi-window testing
-            if (Intent.ACTION_QUICK_CLOCK.equals(action)) { // App Shortcut: Pause @ 00:00
-                shortcutAction = SHORTCUT_PAUSE;
-                // Modify the Intent so a configuration change like enter/exit multi-window mode
-                // won't repeat the shortcut action when it re-creates the Activity.
-                callingIntent.setAction(Intent.ACTION_MAIN);
-            } else if (Intent.ACTION_RUN.equals(action)) { // App Shortcut: Start @ 00:00
-                shortcutAction = SHORTCUT_START;
-                callingIntent.setAction(Intent.ACTION_MAIN);
+        if (savedInstanceState == null) {
+            Intent callingIntent = getIntent();
+            if (callingIntent != null) {
+                String action = callingIntent.getAction(); // null action occurred in multi-window testing
+                if (Intent.ACTION_QUICK_CLOCK.equals(action)) { // App Shortcut: Pause @ 00:00
+                    shortcutAction = SHORTCUT_PAUSE;
+                } else if (Intent.ACTION_RUN.equals(action)) { // App Shortcut: Start @ 00:00
+                    shortcutAction = SHORTCUT_START;
+                }
+                Log.v(TAG, "Shortcut Action " + shortcutAction + ", Intent: " + callingIntent);
+                // ACTION_MAIN from a Widget or Notification
+                // ACTION_EDIT from AlarmManager.AlarmClockInfo()
+                // whatever with category.LAUNCHER
             }
-            // ACTION_MAIN from a Widget or Notification
-            // ACTION_EDIT from AlarmManager.AlarmClockInfo()
-            // whatever with category.LAUNCHER
         }
 
         logTheConfiguration(getResources().getConfiguration());
@@ -439,21 +440,22 @@ public class MainActivity extends AppCompatActivity
         timer = state.getTimeCounter();
 
         // Apply the app shortcut action, if any, once.
-        switch (shortcutAction) {
-            case SHORTCUT_PAUSE: // App Shortcut: Pause @ 00:00
-                timer.reset();
-                break;
-            case SHORTCUT_START: // App Shortcut: Start @ 00:00
-                timer.reset();
-                timer.start();
-                break;
-            case SHORTCUT_NONE:
-                break;
-        }
         if (shortcutAction != SHORTCUT_NONE) {
+            Log.v(TAG, "Applying App Shortcut Action " + shortcutAction);
+            switch (shortcutAction) {
+                case SHORTCUT_PAUSE: // App Shortcut: Pause @ 00:00
+                    timer.reset();
+                    break;
+                case SHORTCUT_START: // App Shortcut: Start @ 00:00
+                    timer.reset();
+                    timer.start();
+                    break;
+                case SHORTCUT_NONE:
+                    break;
+            }
             state.save(this);
+            shortcutAction = SHORTCUT_NONE;
         }
-        shortcutAction = SHORTCUT_NONE;
 
         updateUI();
         updateLockStatus();

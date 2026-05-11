@@ -19,6 +19,7 @@
 
 package com.onefishtwo.bbqtimer;
 
+import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -59,9 +60,12 @@ public class ResumeReceiver extends BroadcastReceiver {
     private static final String TAG = "ResumeReceiver";
 
     /** Handles an incoming Intent. */
+    @SuppressLint("VisibleForTests")
     @Override
     public void onReceive(@NonNull Context context, @NonNull Intent intent) {
         String action = intent.getAction();
+
+        TimerAppWidgetProvider.saveIntentActionForTesting(context, intent);
 
         Log.i(TAG, "Broadcast intent: " + action);
 

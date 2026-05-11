@@ -19,6 +19,7 @@
 
 package com.onefishtwo.bbqtimer;
 
+import android.annotation.SuppressLint;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
@@ -67,6 +68,7 @@ public class AlarmReceiver extends BroadcastReceiver {
     private static final String EXTRA_ELAPSED_REALTIME_TARGET =
             "com.onefishtwo.bbqtimer.ElapsedRealtimeTarget";
     static final String ACTION_ALARM = "com.onefishtwo.bbqtimer.ACTION_ALARM";
+
     /** Tolerance value for an early alarm. */
     private static final long ALARM_TOLERANCE_MS = 10L;
 
@@ -276,8 +278,11 @@ public class AlarmReceiver extends BroadcastReceiver {
      * Handles an AlarmManager Intent: Shows/plays a reminder alarm and vibration via the Notifier
      * and schedules the next repeating alarm. Detects and quiets early alarms.
      */
+    @SuppressLint("VisibleForTests")
     @Override
     public final void onReceive(@NonNull Context context, @NonNull Intent intent) {
+        TimerAppWidgetProvider.saveIntentActionForTesting(context, intent);
+
         if (!ACTION_ALARM.equals(intent.getAction())) {
             return;
         }
