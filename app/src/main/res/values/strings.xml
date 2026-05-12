@@ -105,8 +105,9 @@
        be short enough to fit in one line of the notification drawer area. -->
     <string name="timer_running">Running</string>
 
-    <!-- Notification body message for Wear OS: The timer is running at {elapsed_time} and counting. -->
-    <string name="running_up_at">Running %1$s➚︎</string>
+    <!-- Notification body message for Wear OS: The timer is running at {elapsed_time} and counting.
+       [Evaluating "≥1:30" and "1:30➚︎".] -->
+    <string name="running_up_at">Running ≥%1$s</string>
 
     <!-- Notification body message: The timer is paused. -->
     <string name="timer_paused">Paused</string>
@@ -122,11 +123,11 @@
        pause occurred. In English, "Paused at 10:23" is ambiguous. -->
     <string name="timer_paused_at">Paused %1$s</string>
 
-    <!-- Notification body message for Wear OS: The next alarm is in {elapsed_time} and counting
-       down. -->
-    <string name="counting_down_at">Next ♫ in %1$s➘</string>
+    <!-- Notification body message for Wear OS: The next alarm is in {time} and counting down.
+       [Evaluating "≤1:30" and "1:30➘".] -->
+    <string name="counting_down_at">Next ♫ in ≤%1$s</string>
 
-    <!-- Notification body message for Wear OS: The next alarm is in {elapsed_time}. -->
+    <!-- Notification body message for Wear OS: The next alarm is in {time}. -->
     <string name="count_down_at">Next ♫ in %1$s</string>
 
     <!-- Notification body message: The timer is stopped. This message must be short enough to fit

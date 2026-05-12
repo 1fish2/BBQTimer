@@ -201,7 +201,7 @@ public class Notifier {
     /**
      * Returns a localized description of the timer's run state with the current time value for
      * Wearable notifications. Deal with the lack of Chronometers and Images:
-     *   "Running 00:15➚︎", "Paused 00:15.1", or "Stopped".
+     *   "Running 00:15➚︎" or "Running ≥00:15", "Paused 00:15.1", or "Stopped".
      * The arrow conveys that the value is going up from the snapshot number.
      * <p>
      * Gemini: "Emojis like ⏱️ (Stopwatch), ⏲️ (Timer Clock), and 🔔 (Bell) are widely supported
@@ -223,7 +223,7 @@ public class Notifier {
     /**
      * Returns a localized description of the time until the next alarm for Wearable notifications
      * which don't support Chronometers or Images:
-     *   "Next ♫ in 00:15➘".
+     *   "Next ♫ in 00:15➘" or "Next ♫ in ≤00:15".
      * The arrow is visible if the timer is running to convey that the value is going down from the
      * snapshot number. The ♫ stands for "alarm", fits on a smartwatch, and doesn't have distracting
      * emoji colors.
