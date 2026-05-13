@@ -1,9 +1,9 @@
 plugins {
-    id 'com.android.application'
+    alias libs.plugins.android.application
 }
 
 android {
-    compileSdkVersion 'android-36.1'
+    compileSdkVersion 37
     buildToolsVersion = '36.1.0'
 
     defaultConfig {
@@ -64,22 +64,21 @@ allprojects {
 }
 
 dependencies {
-    implementation 'androidx.activity:activity:1.13.0'
-    implementation 'androidx.appcompat:appcompat:1.7.1'
-    implementation "androidx.core:core:1.18.0"
-    implementation 'androidx.media:media:1.7.1'
-    implementation 'com.google.android.material:material:1.13.0'
+    implementation libs.androidx.activity
+    implementation libs.androidx.appcompat
+    implementation libs.androidx.core
+    implementation libs.material
 
-    testImplementation 'junit:junit:4.13.2'
+    testImplementation libs.junit
 
     // See https://developer.android.com/training/testing/set-up-project for more.
-    androidTestImplementation 'androidx.test.ext:junit:1.3.0'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.7.0'
-    androidTestImplementation 'androidx.test:runner:1.7.0'
-    androidTestImplementation 'androidx.test:core:1.7.0'
-    androidTestImplementation 'androidx.test:rules:1.7.0'
+    androidTestImplementation libs.androidx.junit
+    androidTestImplementation libs.androidx.espresso.core
+    androidTestImplementation libs.androidx.runner
+    androidTestImplementation libs.core
+    androidTestImplementation libs.androidx.rules
     // See https://github.com/android/android-test/issues/1042
-    androidTestUtil 'androidx.test:orchestrator:1.6.1'
+    androidTestUtil libs.androidx.orchestrator
 
     // Workaround for failed task ':app:checkDebugDuplicateClasses' with androidx.activity:activity:1.7.2,
     // Duplicate class kotlin.collections.jdk8.CollectionsJDK8Kt found in jetified-kotlin-stdlib-1.8.0 and jetified-kotlin-stdlib-jdk8-1.7.21
