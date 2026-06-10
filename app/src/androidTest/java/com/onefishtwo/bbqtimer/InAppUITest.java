@@ -468,6 +468,7 @@ public class InAppUITest implements Notifier.NotificationListener {
     @Test
     public void endIconTest() {
         //noinspection SpellCheckingInspection
+        @SuppressWarnings("GrazieInspectionRunner")
         ViewInteraction clearTextImageButton = onView(anyOf(
                 withContentDescription("Clear text"),     // en
                 withContentDescription("Text löschen"))); // de

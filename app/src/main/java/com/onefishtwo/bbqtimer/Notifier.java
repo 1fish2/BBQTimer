@@ -432,7 +432,7 @@ public class Notifier {
             remoteViews.setChronometer(
                     R.id.countdownChronometer, 0, null, false);
             remoteViews.setViewVisibility(R.id.alarmIcon, View.GONE);
-            remoteViews.setViewVisibility(R.id.countdownChronometer, View.GONE);
+            remoteViews.setViewVisibility(R.id.countdownViewFlipper, View.GONE);
         }
 
         // Configure custom buttons logic
