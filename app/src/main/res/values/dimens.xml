@@ -8,6 +8,7 @@
     <dimen name="button_padding">10dp</dimen>
     <dimen name="button_margin">3dp</dimen>
     <dimen name="small_button_padding">8dp</dimen>
+    <dimen name="min_touch_target_size">48dp</dimen>
     <dimen name="widget_horizontal_padding">3dp</dimen>
     <dimen name="widget_vertical_padding">0dp</dimen>
     <dimen name="max_checkbox_width">300dp</dimen>
