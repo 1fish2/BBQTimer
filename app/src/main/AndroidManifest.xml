@@ -63,7 +63,9 @@
 
         <receiver android:name=".TimerAppWidgetProvider"
                   android:label="@string/app_name"
-                  android:exported="false">
+                  android:exported="false"
+                  android:intentMatchingFlags="none"> <!-- Opt out of strict matching so future or
+                    manufacturer-specific Intents will get through to super.onReceive(). -->
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_DELETED" />
                 <action android:name="android.appwidget.action.APPWIDGET_DISABLED" />

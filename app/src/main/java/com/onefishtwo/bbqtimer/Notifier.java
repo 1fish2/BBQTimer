@@ -177,6 +177,15 @@ public class Notifier {
         // API 28 P - API 30 R: colors the small icon and action button. Garish.
         // API 31 S+: colors the small icon's circular background.
         // setColorized(false) didn't change any of these results.
+        //
+        // TODO: Retest setColorized(true) with DecoratedCustomViewStyle. It might noop unless it's
+        //  a foreground service notification. For a high priority ongoing task's notification, it
+        //  might affect the notification's ranking. Ensure the XML backgrounds are transparent.
+        //  Because setColorized() forces a dark or highly saturated tint, standard black or white
+        //  text may be unreadable. In the custom XML, use the compatible text appearances so text
+        //  contrast automatically flips based on the background:
+        //  @style/TextAppearance.Compat.Notification.Title,
+        //  @style/TextAppearance.Compat.Notification (for body & content text).
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             @ColorInt int iconBackgroundColor =
                     ContextCompat.getColor(context, R.color.dark_orange_red);

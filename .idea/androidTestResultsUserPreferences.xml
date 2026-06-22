@@ -67,8 +67,9 @@
               <option name="preferredColumnWidths">
                 <map>
                   <entry key="36.1_16.0_B_16K_Pixel_9a_1080x2424" value="120" />
-                  <entry key="Duration" value="90" />
-                  <entry key="Tests" value="360" />
+                  <entry key="36.1_16.0_B_Pixel_9a_1080x2424" value="407" />
+                  <entry key="Duration" value="378" />
+                  <entry key="Tests" value="648" />
                 </map>
               </option>
             </AndroidTestResultsTableState>
@@ -123,6 +124,7 @@
               <option name="preferredColumnWidths">
                 <map>
                   <entry key="36.1_16.0_B_16K_Pixel_9a_1080x2424" value="120" />
+                  <entry key="36.1_16.0_B_Pixel_9a_1080x2424" value="120" />
                   <entry key="Duration" value="90" />
                   <entry key="Tests" value="360" />
                 </map>
@@ -304,6 +306,8 @@
                   <entry key="34_14.0_U_Pixel_6_1080x2400_420dpi_hole-punch" value="120" />
                   <entry key="34_U_Pixel_6_1080x2400_420dpi" value="120" />
                   <entry key="36.1_16.0_B_16KB_Flip5_cover_screen_720x748" value="120" />
+                  <entry key="36.1_16.0_B_Pixel_9a_1080x2424" value="120" />
+                  <entry key="37.0_17.0_C_16K_Pixel_10_Pro_1280x2856" value="120" />
                   <entry key="Duration" value="90" />
                   <entry key="Google Pixel 6" value="120" />
                   <entry key="Tests" value="360" />

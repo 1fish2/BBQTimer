@@ -85,7 +85,7 @@ public class IntentMatchingTest {
         SystemClock.sleep(500);
     }
 
-    /** Returns the last Intent Action saved by an Intent receiver for test checking. */
+    /** Returns the last Intent Action saved by an app Intent receiver for testing. */
     private String getLastAction() {
         return context.getSharedPreferences(
                 TimerAppWidgetProvider.PREFS_TESTING, Context.MODE_PRIVATE)
@@ -116,33 +116,6 @@ public class IntentMatchingTest {
         return intent;
     }
 
-    /**
-     * Sends a broadcast explicitly to a component via shell.
-     * Sets Intent.FLAG_DEBUG_LOG_RESOLUTION == 0x8 like makeImplicitIntent().
-     */
-    @SuppressWarnings("SameParameterValue")
-    private void sendExplicitBroadcastViaShell(String action, String component) {
-        String pkg = context.getPackageName();
-        String fullComponent = component.startsWith(".") ? pkg + component : component;
-        String cmd = "am broadcast -a " + action + " -n " + pkg + "/" + fullComponent +
-                " -f 0x8 --receiver-include-background --include-stopped-packages";
-        try {
-            Log.d(TAG, "Running shell command: " + cmd);
-            android.os.ParcelFileDescriptor pfd = InstrumentationRegistry.getInstrumentation().getUiAutomation()
-                    .executeShellCommand(cmd);
-            try (BufferedReader reader = new BufferedReader(
-                    new InputStreamReader(new android.os.ParcelFileDescriptor.AutoCloseInputStream(pfd)))) {
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    Log.d(TAG, "Shell: " + line);
-                }
-            }
-            pfd.close();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     /** Verifies that a filter exists for the given action in the receiver's manifest entry. */
     private void verifyReceiverFilterExists(String action, @SuppressWarnings("SameParameterValue") Class<?> receiverClass) {
         List<ResolveInfo> receivers = context.getPackageManager()
@@ -170,7 +143,7 @@ public class IntentMatchingTest {
         }
     }
 
-    /** Sets Intent.FLAG_DEBUG_LOG_RESOLUTION == 0x8 like makeImplicitIntent(). */
+    /** Sets Intent.FLAG_DEBUG_LOG_RESOLUTION (0x8) like makeImplicitIntent(). */
     @Test
     public void testMainActivityNullActionViaShell() {
         String pkg = context.getPackageName();
@@ -235,19 +208,36 @@ public class IntentMatchingTest {
 
     @Test
     public void testTimerAppWidgetProviderIntents() {
-        // Test implicit delivery from same app for all app-specific actions.
-        String[] actions = {
-                TimerAppWidgetProvider.ACTION_RUN,
-                TimerAppWidgetProvider.ACTION_PAUSE,
-                TimerAppWidgetProvider.ACTION_RESET,
-                TimerAppWidgetProvider.ACTION_STOP,
-                TimerAppWidgetProvider.ACTION_CYCLE,
-                TimerAppWidgetProvider.ACTION_RUN_PAUSE
+        // System/protected actions that we can't send via context.sendBroadcast() but should verify
+        // their filters exist.
+        String[] protectedActions = {
+                "android.appwidget.action.APPWIDGET_DELETED",
+                "android.appwidget.action.APPWIDGET_DISABLED",
+                "android.appwidget.action.APPWIDGET_ENABLED",
+                "android.appwidget.action.APPWIDGET_ENABLE_AND_UPDATE",
+                "android.appwidget.action.APPWIDGET_RESTORED",
+                "android.appwidget.action.APPWIDGET_UPDATE",
+                "android.appwidget.action.APPWIDGET_UPDATE_OPTIONS",
         };
 
-        for (String action : actions) {
-            TimerAppWidgetProvider.saveActionForTesting(context, null);
+        // App-specific actions that we can test for implicit delivery.
+        String[] appActions = {
+                TimerAppWidgetProvider.ACTION_CYCLE,
+                TimerAppWidgetProvider.ACTION_PAUSE,
+                TimerAppWidgetProvider.ACTION_RESET,
+                TimerAppWidgetProvider.ACTION_RUN,
+                TimerAppWidgetProvider.ACTION_RUN_PAUSE,
+                TimerAppWidgetProvider.ACTION_STOP
+        };
 
+        for (String action : protectedActions) {
+            verifyReceiverFilterExists(action, TimerAppWidgetProvider.class);
+        }
+
+        for (String action : appActions) {
+            verifyReceiverFilterExists(action, TimerAppWidgetProvider.class);
+
+            TimerAppWidgetProvider.saveActionForTesting(context, null);
             context.sendBroadcast(makeImplicitIntent(action));
             waitForBroadcast();
             assertEquals("Failed for action: " + action, action, getLastAction());
@@ -276,21 +266,5 @@ public class IntentMatchingTest {
         context.sendBroadcast(makeImplicitIntent(action));
         waitForBroadcast();
         assertEquals(action, getLastAction());
-
-        // Test receipt via explicit shell broadcast for a protected action (smoke test).
-        // Clear preference first so we don't see the previous action if shell fails.
-        TimerAppWidgetProvider.saveActionForTesting(context, null);
-
-        // NOTE: Delivery from shell to non-exported receivers might be blocked in some
-        // test environments even with root-like access.
-        sendExplicitBroadcastViaShell(Intent.ACTION_TIME_CHANGED, ".ResumeReceiver");
-        waitForBroadcast();
-        String lastAction = getLastAction();
-        if (lastAction == null) {
-            Log.w(TAG, "Shell broadcast for TIME_CHANGED not received. "
-                    + "Relying on PackageManager verification for protected actions.");
-        } else {
-            assertEquals(Intent.ACTION_TIME_CHANGED, lastAction);
-        }
     }
 }
