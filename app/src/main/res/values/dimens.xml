@@ -13,9 +13,9 @@
     <dimen name="widget_vertical_padding">0dp</dimen>
     <dimen name="max_checkbox_width">300dp</dimen>
     <dimen name="notification_button_spacer">8sp</dimen>
-    <dimen name="notification_chronometer_spacer">10sp</dimen>
+    <dimen name="notification_chronometer_spacer">8sp</dimen>
     <dimen name="notification_icon_size">14sp</dimen>
-    <dimen name="notification_icon_spacer">4dp</dimen>
+    <dimen name="notification_icon_spacer">2dp</dimen>
     <dimen name="countdown_padding">5dp</dimen>
     <dimen name="widget_button_margin">4dp</dimen>
     <dimen name="widget_margin">8dp</dimen>

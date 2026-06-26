@@ -489,14 +489,14 @@ public class Notifier {
      * REQUIRES: Use NotificationManagerCompat to notify() the returned Notification.
      * <p>
      * Hypotheses on why bridging was failing:
-     * - it must not be ongoing -- yes,
+     * - it must not setOngoing(true) -- yes,
      * - it must not set Notification.FLAG_ONGOING_EVENT -- ?,
      * - it has to be from a Foreground service -- no,
      * - it must not be CATEGORY_ALARM -- no,
      * - it must not be silent -- ?,
      * - it must not use a custom app sound resource -- no,
      * - it must have IMPORTANCE_HIGH -- ?,
-     * - it must not be MediaStyle with or without a MediaSession -- **YES**,
+     * - it must not be MediaStyle, with or without a MediaSession -- **YES**,
      * - it must explicitly setLocalOnly(false) -- ?,
      * - it must not setLocalOnly(true) -- presumably?,
      * - it must not set Notification.FLAG_NO_CLEAR (non-clearable notification) -- ?
@@ -535,15 +535,17 @@ public class Notifier {
             // "2m" if the user refreshes the notification view after 2 min.
             // setUsesChronometer(true) doesn't work on Wearables.
             // setWhen(System.currentTimeMillis() - elapsedTime) seems to be ignored on Wearables.
+            //
+            // TODO: Retry setUsesChronometer(true); [setChronometerCountDown(true);] setWhen(...); [setShowWhen(true);] with Wear OS 7.
             builder.setShowWhen(false);
 
-            // Phone collapsed: "⏱ 00:08  🔔 00:07 / [buttons]"
-            // Phone expanded: "BBQ Timer • Alarm every 00:15 / ⏱ 00:08  🔔 00:07 / [buttons]"
+            // Phone collapsed: "🔔 00:07  ⏱ 00:08  Running / [buttons]"
+            // Phone expanded: "BBQ Timer • Alarm every 00:15 / 🔔 00:07  ⏱ 00:08  Running / [buttons]"
             //                 AppName • SubText / RemoteViews
             //
-            // Wearable popup:     "Running 00:15➚︎"
-            // Wearable collapsed: "BBQ Timer / Running 00:15➚︎ / Next ♫ in 00:30➘"
-            // Wearable expanded:  "BBQ Timer / Alarm every 00:15 / Running 00:15➚︎ / Next ♫ in 00:30➘"
+            // Wearable popup:     "Running ≥00:15"
+            // Wearable collapsed: "BBQ Timer / Running ≥00:15 / Next ♫ in ≤00:30"
+            // Wearable expanded:  "BBQ Timer / Alarm every 00:15 / Running ≥00:15 / Next ♫ in ≤00:30"
             //                     AppName / SubText / ContentText / ContentTitle
             //
             // Note: ⏱ stopwatch character might render as a simple circular outline. ⏲ is like a
