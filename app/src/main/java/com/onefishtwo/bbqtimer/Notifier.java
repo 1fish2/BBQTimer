@@ -531,13 +531,33 @@ public class Notifier {
 
             // Hide the "when" field on the phone. It'd be redundant with the content view and
             // would crowd out the "Alarm every 00:15" subtext field. setShowWhen(false) doesn't
-            // affect Wearable notifications, which start out at "Now" and can, e.g., change to
+            // affect Wearable notifications, which start out at "Now" and can update to, e.g.,
             // "2m" if the user refreshes the notification view after 2 min.
             // setUsesChronometer(true) doesn't work on Wearables.
             // setWhen(System.currentTimeMillis() - elapsedTime) seems to be ignored on Wearables.
             //
-            // TODO: Retry setUsesChronometer(true); [setChronometerCountDown(true);] setWhen(...); [setShowWhen(true);] with Wear OS 7.
-            builder.setShowWhen(false);
+            // NOTES:
+            // `builder.setWhen(countUpBase).setShowWhen(true).setUsesChronometer(true)` shows the
+            // timer on Wearables as "now", "1m", ..., but it doesn't look like a chronometer, it
+            // updates when the screen is off, and on the phone it can shorten the subtext to
+            // display a chronometer that's redundant with the RemoteViews.
+            //
+            // `builder.setWhen(countUpBase).setShowWhen(false)` does nothing w/o .setUsesChronometer().
+            //
+            // With `.setShowWhen(false)`, the watch displays the time since the last notification
+            // change, again as minutes "1m" and updating when the screen is off.
+            final boolean USE_NATIVE_CHRONOMETER = true;
+            //noinspection ConstantValue
+            if (USE_NATIVE_CHRONOMETER) {
+                long elapsedTime = timer.getElapsedTime();
+                long countUpBase = System.currentTimeMillis() - elapsedTime; // not elapsedRealtime()
+                if (isRunning) {
+                    builder.setWhen(countUpBase).setUsesChronometer(true);
+                }
+                builder.setShowWhen(isRunning);
+            } else {
+                builder.setShowWhen(false);
+            }
 
             // Phone collapsed: "🔔 00:07  ⏱ 00:08  Running / [buttons]"
             // Phone expanded: "BBQ Timer • Alarm every 00:15 / 🔔 00:07  ⏱ 00:08  Running / [buttons]"
@@ -555,7 +575,7 @@ public class Notifier {
             // doesn't work on WearOS. I didn't test Android since the notification area supports
             // image views.
             builder.setSubText(alarms) // Alarm every 00:15
-                   .setContentTitle(timerRunStateValue(timer)) // bold, cyan text
+                   .setContentTitle(timerRunStateValue(timer)) // bold
                    .setContentText(nextAlarmValue(state));
 
             String timerStateMessage = timerRunState(timer); // Running/Paused/Stopped
