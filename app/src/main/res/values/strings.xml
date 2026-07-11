@@ -96,10 +96,10 @@
       "%1$s" is placeholder #1 for the number of hours:minutes:seconds or minutes:seconds.
       Examples: "Alarm every 00:30", "Alarm every 05:30", and "Alarm every 2:10:30".
       This needs to be very short to fit in one line in a pull-down notification, esp. on narrow
-      screens.
+      screens and screens with the Font or Display Size turned up by the user.
       This could be in command form, meaning "Sound an alarm every...", or a noun phrase, meaning
       "(There will be an) alarm every...". -->
-    <string name="notification_body">Alarm every %1$s</string>
+    <string name="notification_body">Every %1$s</string>
 
     <!-- Notification body message: The timer is running with no reminder alarms. This message must
        be short enough to fit in one line of the notification drawer area. -->

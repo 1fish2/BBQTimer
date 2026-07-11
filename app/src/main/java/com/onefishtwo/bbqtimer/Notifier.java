@@ -48,7 +48,10 @@ import androidx.core.app.NotificationCompat.WearableExtender;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 
+import com.google.android.gms.wearable.Wearable;
 import com.onefishtwo.bbqtimer.state.ApplicationState;
+
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Manages the app's Android Notifications. One-shot use to build and show a notification.
@@ -57,10 +60,16 @@ public class Notifier {
     private static final String TAG = "Notifier";
     private static final int NOTIFICATION_ID = 7;
 
+    /**
+     * Whether a Wearable device (like a SmartWatch) is connected, used to conditionally modify
+     * notifications to aid Wearables.
+     */
+    private static final AtomicBoolean lastKnownWatchConnected = new AtomicBoolean(false);
+
     // Vibration pattern: ms off, on, off, ...
     // Match the notification sound to the degree feasible.
     // Workaround: Start with a tiny pulse for when Android drops the initial "off" interval.
-    private static final long[] VIBRATE_PATTERN = {0, 1,  280, 40,  220, 80,  440, 45,  265, 55};
+    private static final long[] VIBRATE_PATTERN = { 0, 1, 280, 40, 220, 80, 440, 45, 265, 55 };
 
     static final String ALARM_NOTIFICATION_CHANNEL_ID = "alarmChannel";
     // Channel IDs in previous releases will remain immutable on devices while the app is installed:
@@ -90,7 +99,9 @@ public class Notifier {
 
     private boolean soundAlarm = false; // whether the next notification should sound an alarm
 
-    /** Sets a listener for when the Notifier posts UI notifications, for testing. */
+    /**
+     * Sets a listener for when the Notifier posts UI notifications, for testing.
+     */
     @RestrictTo(RestrictTo.Scope.TESTS)
     public static void setNotificationListener(NotificationListener listener) {
         notificationListener = listener;
@@ -98,8 +109,7 @@ public class Notifier {
 
     public Notifier(@NonNull Context _context) {
         this.context = _context;
-        notificationManager =
-                (NotificationManager) _context.getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager = (NotificationManager) _context.getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManagerCompat = NotificationManagerCompat.from(_context);
         notificationLightColor = ContextCompat.getColor(_context, R.color.notification_light_color);
     }
@@ -114,7 +124,7 @@ public class Notifier {
         return this;
     }
 
-    /** @noinspection SameParameterValue*/
+    /** @noinspection SameParameterValue */
     private Uri getSoundUri(@RawRes int soundId) {
         return Uri.parse("android.resource://" + context.getPackageName() + "/" + soundId);
     }
@@ -128,13 +138,15 @@ public class Notifier {
      * Adds an action button to the given WearableExtender.
      * Gemini says the Wearable's notification bridge might choose the action's title over its icon.
      * Why isn't that documented?
+     * </p>
+     * TODO: Experiment with setAvailableOffline().
      */
     private void addAction(@NonNull WearableExtender extender, @DrawableRes int iconId,
             @StringRes int titleId, PendingIntent intent) {
         NotificationCompat.Action action =
                 new NotificationCompat.Action.Builder(iconId, context.getString(titleId), intent)
-                        .extend(new NotificationCompat.Action.WearableExtender().setAvailableOffline(true))
-                        .build();
+                .extend(new NotificationCompat.Action.WearableExtender().setAvailableOffline(true))
+                .build();
         extender.addAction(action);
     }
 
@@ -157,9 +169,7 @@ public class Notifier {
      * blocks the bridge to Wear OS, with or without a MediaSession.
      */
     private void setNotificationStyle(@NonNull NotificationCompat.Builder builder) {
-        NotificationCompat.Style style = new NotificationCompat.DecoratedCustomViewStyle();
-
-        builder.setStyle(style);
+        builder.setStyle(new NotificationCompat.DecoratedCustomViewStyle());
 
         // === MediaStyle setColor() [the "accent color"] vs. Android API levels ===
         // [Irrelevant with DecoratedCustomViewStyle?]
@@ -187,8 +197,8 @@ public class Notifier {
         //  @style/TextAppearance.Compat.Notification.Title,
         //  @style/TextAppearance.Compat.Notification (for body & content text).
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            @ColorInt int iconBackgroundColor =
-                    ContextCompat.getColor(context, R.color.dark_orange_red);
+            @ColorInt
+            int iconBackgroundColor = ContextCompat.getColor(context, R.color.dark_orange_red);
             builder.setColor(iconBackgroundColor);
         }
     }
@@ -210,7 +220,7 @@ public class Notifier {
     /**
      * Returns a localized description of the timer's run state with the current time value for
      * Wearable notifications. Deal with the lack of Chronometers and Images:
-     *   "Running 00:15➚︎" or "Running ≥00:15", "Paused 00:15.1", or "Stopped".
+     * "Running 00:15➚︎" or "Running ≥00:15", "Paused 00:15.1", "Stopped".
      * The arrow conveys that the value is going up from the snapshot number.
      * <p>
      * Gemini: "Emojis like ⏱️ (Stopwatch), ⏲️ (Timer Clock), and 🔔 (Bell) are widely supported
@@ -232,7 +242,7 @@ public class Notifier {
     /**
      * Returns a localized description of the time until the next alarm for Wearable notifications
      * which don't support Chronometers or Images:
-     *   "Next ♫ in 00:15➘" or "Next ♫ in ≤00:15".
+     * "Next ♫ in 00:15➘" or "Next ♫ in ≤00:15".
      * The arrow is visible if the timer is running to convey that the value is going down from the
      * snapshot number. The ♫ stands for "alarm", fits on a smartwatch, and doesn't have distracting
      * emoji colors.
@@ -240,7 +250,8 @@ public class Notifier {
     @NonNull
     String nextAlarmValue(@NonNull ApplicationState state) {
         if (state.isEnableReminders()) {
-            @NonNull TimeCounter timer = state.getTimeCounter();
+            @NonNull
+            TimeCounter timer = state.getTimeCounter();
             long countdownToNextAlarm = state.getMillisecondsToNextAlarm();
             String countDownHhMmSs = TimeCounter.formatHhMmSs(countdownToNextAlarm);
 
@@ -276,20 +287,57 @@ public class Notifier {
      * @param state the ApplicationState state to display.
      */
     public void openOrCancel(@NonNull ApplicationState state) {
+        buildAndNotify(state);
+
+        // Check and update for wearables.
+        updateWatchConnectedAsync(state);
+    }
+
+    /**
+     * Builds and posts or cancels the notification.
+     */
+    private void buildAndNotify(@NonNull ApplicationState state) {
         TimeCounter timer = state.getTimeCounter();
 
         if (!timer.isStopped() || soundAlarm) {
             Notification notification = buildNotification(state);
-            try {
-                notificationManagerCompat.notify(NOTIFICATION_ID, notification);
-                if (notificationListener != null) {
-                    notificationListener.onNotificationPosted();
-                }
-            } catch (SecurityException e) { // ≈API 33+: The app should've requested permission already.
-                Log.e(TAG, "Need POST_NOTIFICATIONS permission", e);
-            }
+            notify(NOTIFICATION_ID, notification);
         } else {
             cancelAll();
+        }
+    }
+
+    /**
+     * Asynchronously checks if any Wearable devices are connected, updates
+     * {@link #lastKnownWatchConnected}, and updates the current notification unless that would
+     * interrupt an alarm sound, replacing a PRIORITY_MAX heads-up notification with a PRIORITY_LOW.
+     */
+    private void updateWatchConnectedAsync(@NonNull ApplicationState state) {
+        Wearable.getNodeClient(context).getConnectedNodes()
+                .addOnSuccessListener(nodes -> {
+                    boolean connected = nodes != null && !nodes.isEmpty();
+                    if (lastKnownWatchConnected.getAndSet(connected) != connected) {
+                        if (!soundAlarm) {
+                            buildAndNotify(state);
+                        }
+                    }
+                });
+    }
+
+    /**
+     * Posts a notification to the system and the {@link #notificationListener} if any.
+     *
+     * @param id           the notification ID.
+     * @param notification the notification to post.
+     */
+    private void notify(@SuppressWarnings("SameParameterValue") int id, Notification notification) {
+        try {
+            notificationManagerCompat.notify(id, notification);
+            if (notificationListener != null) {
+                notificationListener.onNotificationPosted();
+            }
+        } catch (SecurityException e) { // ≈API 33+: The app should've requested permission already.
+            Log.e(TAG, "Need POST_NOTIFICATIONS permission", e);
         }
     }
 
@@ -343,7 +391,7 @@ public class Notifier {
 
         {
             AudioAttributes audioAttributes = new AudioAttributes.Builder()
-                    //.setLegacyStreamType(REMINDER_STREAM)
+                    // .setLegacyStreamType(REMINDER_STREAM)
                     .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
                     .setUsage(AudioAttributes.USAGE_ALARM)
                     // .setFlags(): Nope. See https://stackoverflow.com/q/44855786 and
@@ -359,7 +407,9 @@ public class Notifier {
         notificationManager.createNotificationChannel(channel); // goofy naming
     }
 
-    /** Creates notification channel(s) lazily (or updates the text) on Android O+. */
+    /**
+     * Creates notification channel(s) lazily (or updates the text) on Android O+.
+     */
     private void createNotificationChannels() {
         if (Build.VERSION.SDK_INT < 26 || builtNotificationChannels) {
             return;
@@ -371,13 +421,15 @@ public class Notifier {
         builtNotificationChannels = true;
     }
 
-    /** Update the notification channel (not the notification) for a UI Locale change. */
+    /**
+     * Update the notification channel (not the notification) for a UI Locale change.
+     */
     void onLocaleChange() {
         if (Build.VERSION.SDK_INT >= 26) {
             NotificationChannel channel = notificationManager.getNotificationChannel(
                     ALARM_NOTIFICATION_CHANNEL_ID);
 
-            //noinspection VariableNotUsedInsideIf
+            // noinspection VariableNotUsedInsideIf
             if (channel != null) {
                 builtNotificationChannels = false;
                 createNotificationChannels();
@@ -413,7 +465,8 @@ public class Notifier {
         boolean isRunning = timer.isRunning();
         long rt = SystemClock.elapsedRealtime();
         long countUpBase = rt - elapsedTime;
-        @IdRes int childId = isRunning ? RUNNING_FLIPPER_CHILD : PAUSED_FLIPPER_CHILD;
+        @IdRes
+        int childId = isRunning ? RUNNING_FLIPPER_CHILD : PAUSED_FLIPPER_CHILD;
         RemoteViews remoteViews = new RemoteViews(context.getPackageName(), layoutId);
 
         // Count-up time and status
@@ -522,39 +575,34 @@ public class Notifier {
                 .setLocalOnly(false) // just in case
                 .setOnlyAlertOnce(!soundAlarm); // so running -> paused and Activity#onStart() won't ding a wearable
 
-        {  // Construct the visible notification contents.
+        { // Construct the visible notification contents.
             TimeCounter timer = state.getTimeCounter();
             boolean isRunning = timer.isRunning();
             String alarms = describePeriodicAlarms(state);
 
             builder.setSmallIcon(R.drawable.notification_icon);
 
-            // Hide the "when" field on the phone. It'd be redundant with the content view and
-            // would crowd out the "Alarm every 00:15" subtext field. setShowWhen(false) doesn't
-            // affect Wearable notifications, which start out at "Now" and can update to, e.g.,
-            // "2m" if the user refreshes the notification view after 2 min.
-            // setUsesChronometer(true) doesn't work on Wearables.
-            // setWhen(System.currentTimeMillis() - elapsedTime) seems to be ignored on Wearables.
+            // Show the top line "native" notification chronometer if a SmartWatch is connected.
+            // It's redundant with the phone's RemoteViews content, but it makes the SmartWatch
+            // notification's chronometer show the correct running elapsed timer instead of time
+            // since the last notify().
             //
-            // NOTES:
-            // `builder.setWhen(countUpBase).setShowWhen(true).setUsesChronometer(true)` shows the
-            // timer on Wearables as "now", "1m", ..., but it doesn't look like a chronometer, it
-            // updates when the screen is off, and on the phone it can shorten the subtext to
-            // display a chronometer that's redundant with the RemoteViews.
+            // The native chronometer crowds the "Alarm every 00:15" subtext. On a modern phone
+            // screen the crowding matters if the Display Size or Font Size is larger than default.
+            // Changing the subtext to "Every 00:15" reduced the crowding.
             //
-            // `builder.setWhen(countUpBase).setShowWhen(false)` does nothing w/o .setUsesChronometer().
+            // The phone can display minutes "1m" since notify() [setShowWhen(true)], a native
+            // chronometer "01:10" [setShowWhen(true).setUsesChronometer(true)], or no time
+            // [setShowWhen(false)].
             //
-            // With `.setShowWhen(false)`, the watch displays the time since the last notification
-            // change, again as minutes "1m" and updating when the screen is off.
-            final boolean USE_NATIVE_CHRONOMETER = true;
-            //noinspection ConstantValue
-            if (USE_NATIVE_CHRONOMETER) {
+            // The SmartWatch always displays a time, either a given chronometer or time since
+            // notify(). It doesn't look like a chronometer since it truncates to whole minutes like
+            // "now", "1m", "2m", ... and it won't update while visible.
+            if (lastKnownWatchConnected.get() && isRunning) {
                 long elapsedTime = timer.getElapsedTime();
-                long countUpBase = System.currentTimeMillis() - elapsedTime; // not elapsedRealtime()
-                if (isRunning) {
-                    builder.setWhen(countUpBase).setUsesChronometer(true);
-                }
-                builder.setShowWhen(isRunning);
+                long countUpBase = System.currentTimeMillis() - elapsedTime; // NOT elapsedRealtime()
+
+                builder.setWhen(countUpBase).setUsesChronometer(true).setShowWhen(true);
             } else {
                 builder.setShowWhen(false);
             }
@@ -575,16 +623,18 @@ public class Notifier {
             // doesn't work on WearOS. I didn't test Android since the notification area supports
             // image views.
             builder.setSubText(alarms) // Alarm every 00:15
-                   .setContentTitle(timerRunStateValue(timer)) // bold
-                   .setContentText(nextAlarmValue(state));
+                    .setContentTitle(timerRunStateValue(timer)) // bold
+                    .setContentText(nextAlarmValue(state));
 
-            String timerStateMessage = timerRunState(timer); // Running/Paused/Stopped
-            RemoteViews notificationView = makeRemoteViews(
-                    R.layout.custom_notification, state, timerStateMessage);
+            {
+                String timerStateMessage = timerRunState(timer); // Running/Paused/Stopped
+                RemoteViews notificationView = makeRemoteViews(
+                        R.layout.custom_notification, state, timerStateMessage);
 
-            builder.setCustomContentView(notificationView)
-                   .setCustomHeadsUpContentView(notificationView)
-                   .setCustomBigContentView(notificationView);
+                builder.setCustomContentView(notificationView)
+                        .setCustomHeadsUpContentView(notificationView)
+                        .setCustomBigContentView(notificationView);
+            }
 
             {
                 PendingIntent activityPendingIntent = MainActivity.makePendingIntent(context);

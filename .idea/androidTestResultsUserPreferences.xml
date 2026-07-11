@@ -283,7 +283,9 @@
                   <entry key="36_16.0_B_Pixel_Fold_2208x1840" value="120" />
                   <entry key="36c_Canary_16_B_16K_Pixel_9_1080x2424" value="120" />
                   <entry key="37.0_17.0_C_16K_Pixel_10_Pro_1280x2856" value="120" />
+                  <entry key="37.1_17.0_C_16K_Pixel_10_Pro_1280x2856" value="120" />
                   <entry key="Duration" value="90" />
+                  <entry key="Google Pixel 10 Pro" value="120" />
                   <entry key="Google Pixel 6" value="120" />
                   <entry key="Status" value="80" />
                   <entry key="Tests" value="360" />

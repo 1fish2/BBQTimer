@@ -16,7 +16,7 @@
     <string name="need_alarm_access">BBQ Timer benötigt „Spezieller App-Zugriff“ „Wecker und Erinnerungen“, um Alarme einzustellen</string>
     <string name="notification_alarm_channel_name">Alarm</string>
     <string name="notification_alarm_channel_description">Wichtigkeit muss für Alarme hoch oder höher sein; Mittel oder höher für den Sperrbildschirm</string>
-    <string name="notification_body">Alarm alle %1$s</string>
+    <string name="notification_body">Alle %1$s</string>
     <string name="notifications_disabled">Benachrichtigungen sind deaktiviert</string>
     <string name="notifications_enable">AKTIVIEREN</string>
     <string name="notifications_misconfigured">Der Alarmkanal muss eingeschaltet und darf nicht lautlos sein, um Alarme zu hören</string>
