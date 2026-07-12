@@ -267,7 +267,7 @@ public class Notifier {
      * Returns a localized description of the periodic alarms.
      *
      * @param state the ApplicationState.
-     * @return a localized string like "Alarm every 2 minutes" or "No periodic alarms".
+     * @return a localized string like "Every 2 minutes" or "No periodic alarms".
      */
     @NonNull
     String describePeriodicAlarms(@NonNull ApplicationState state) {
@@ -442,7 +442,7 @@ public class Notifier {
     }
 
     /**
-     * Make and initialize the RemoteViews for a Custom Notification.
+     * Make and initialize RemoteViews for a Custom Notification.
      * <p/>
      * Workaround: A paused Chronometer doesn't show a stable value, e.g. switching light/dark theme
      * can change it, and it ignores its format string thus ruling out some workarounds.
@@ -459,11 +459,11 @@ public class Notifier {
      * @param state             the ApplicationState to show.
      * @param timerStateMessage the Running/Paused/Stopped state message.
      * @return RemoteViews
-     * @noinspection SameParameterValue
      */
     @NonNull
     private RemoteViews makeRemoteViews(
-            @LayoutRes int layoutId, @NonNull ApplicationState state, @NonNull CharSequence timerStateMessage) {
+            @LayoutRes int layoutId, @NonNull ApplicationState state,
+            @NonNull CharSequence timerStateMessage) {
         TimeCounter timer = state.getTimeCounter();
         long elapsedTime = timer.getElapsedTime();
         boolean isRunning = timer.isRunning();
@@ -591,7 +591,7 @@ public class Notifier {
             // notification's chronometer show the correct running elapsed timer instead of time
             // since the last notify().
             //
-            // The native chronometer crowds the "Alarm every 00:15" subtext. On a modern phone
+            // The native chronometer crowds the "Every 00:15" subtext. On a modern phone
             // screen the crowding matters if the Display Size or Font Size is larger than default.
             // Changing the subtext to "Every 00:15" reduced the crowding.
             //
@@ -612,12 +612,12 @@ public class Notifier {
             }
 
             // Phone collapsed: "🔔 00:07  ⏱ 00:08  Running / [buttons]"
-            // Phone expanded: "BBQ Timer • Alarm every 00:15 / 🔔 00:07  ⏱ 00:08  Running / [buttons]"
+            // Phone expanded: "BBQ Timer • Every 00:15 / 🔔 00:07 / ⏱ 00:08  Running / [buttons]"
             //                 AppName • SubText / RemoteViews
             //
             // Wearable popup:     "Running ≥00:15"
             // Wearable collapsed: "BBQ Timer / Running ≥00:15 / Next ♫ in ≤00:30"
-            // Wearable expanded:  "BBQ Timer / Alarm every 00:15 / Running ≥00:15 / Next ♫ in ≤00:30"
+            // Wearable expanded:  "BBQ Timer / Every 00:15 / Running ≥00:15 / Next ♫ in ≤00:30"
             //                     AppName / SubText / ContentText / ContentTitle
             //
             // Note: ⏱ stopwatch character might render as a simple circular outline. ⏲ is like a
@@ -626,18 +626,20 @@ public class Notifier {
             // appending the Variation Selector-15 (U+FE0E) immediately after the character, but it
             // doesn't work on WearOS. I didn't test Android since the notification area supports
             // image views.
-            builder.setSubText(alarms) // Alarm every 00:15
-                    .setContentTitle(timerRunStateValue(timer)) // bold
-                    .setContentText(nextAlarmValue(state));
+            builder.setSubText(alarms) // small text, "Every 00:15"
+                    .setContentTitle(timerRunStateValue(timer)) // bold colored text, "Running ≥00:15"
+                    .setContentText(nextAlarmValue(state)); // plain text, "Next ♫ in ≤00:30"
 
             {
                 String timerStateMessage = timerRunState(timer); // Running/Paused/Stopped
-                RemoteViews notificationView = makeRemoteViews(
+                RemoteViews compactNotificationView = makeRemoteViews(
                         R.layout.custom_notification, state, timerStateMessage);
+                RemoteViews tallNotificationView = makeRemoteViews(
+                        R.layout.custom_notification_tall, state, timerStateMessage);
 
-                builder.setCustomContentView(notificationView)
-                        .setCustomHeadsUpContentView(notificationView)
-                        .setCustomBigContentView(notificationView);
+                builder.setCustomContentView(compactNotificationView)
+                        .setCustomHeadsUpContentView(tallNotificationView)
+                        .setCustomBigContentView(tallNotificationView);
             }
 
             {

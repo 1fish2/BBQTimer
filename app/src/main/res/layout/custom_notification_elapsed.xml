@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center_vertical">
+
+    <!-- ELAPSED TIME SECTION -->
+    <ImageView
+        android:layout_width="@dimen/notification_icon_size"
+        android:layout_height="@dimen/notification_icon_size"
+        android:src="@drawable/ic_clock"
+        android:tint="@color/notification_text"
+        android:layout_marginEnd="@dimen/notification_icon_spacer"
+        tools:ignore="UseAppTint"
+        android:contentDescription="@null" />
+
+    <!-- Notifier.java relies on the child views being #0 (Chronometer) and #1 (TextView) in
+         both ViewFlippers. -->
+    <ViewFlipper
+        android:id="@+id/countUpViewFlipper"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:measureAllChildren="false">
+
+        <Chronometer
+            android:id="@+id/countUpChronometer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:gravity="bottom|left"
+            android:layout_gravity="bottom|left"
+            android:maxLines="1"
+            android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+            android:textColor="@color/notification_text"
+            android:textStyle="bold"
+            android:typeface="sans" />
+
+        <TextView
+            android:id="@+id/pausedCountUp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:gravity="bottom|left"
+            android:layout_gravity="bottom|left"
+            android:maxLines="1"
+            android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+            android:textColor="@color/notification_text"
+            android:textStyle="bold"
+            android:typeface="sans" />
+    </ViewFlipper>
+
+    <!-- TIMER STATE SECTION -->
+    <TextView
+        android:id="@+id/timerStateMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginStart="@dimen/notification_chronometer_spacer"
+        android:ellipsize="end"
+        android:hyphenationFrequency="full"
+        android:maxLines="1"
+        android:text="@string/timer_running"
+        android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+        android:textColor="@color/notification_text" />
+
+</LinearLayout>

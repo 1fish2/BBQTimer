@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/actionButtons"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="left"
+    android:paddingTop="2dp">
+
+    <ImageButton
+        android:id="@+id/btnStart"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minWidth="@dimen/min_touch_target_size"
+        android:minHeight="@dimen/min_touch_target_size"
+        android:paddingHorizontal="@dimen/notification_button_spacer"
+        android:src="@drawable/ic_action_play"
+        android:contentDescription="@string/start"
+        android:background="@drawable/notification_button_background"
+        android:scaleType="centerInside"
+        android:tint="@color/notification_action_tint"
+        tools:ignore="UseAppTint" />
+
+    <ImageButton
+        android:id="@+id/btnPause"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minWidth="@dimen/min_touch_target_size"
+        android:minHeight="@dimen/min_touch_target_size"
+        android:paddingHorizontal="@dimen/notification_button_spacer"
+        android:src="@drawable/ic_action_pause"
+        android:contentDescription="@string/pause"
+        android:background="@drawable/notification_button_background"
+        android:scaleType="centerInside"
+        android:tint="@color/notification_action_tint"
+        tools:ignore="UseAppTint" />
+
+    <ImageButton
+        android:id="@+id/btnStop"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minWidth="@dimen/min_touch_target_size"
+        android:minHeight="@dimen/min_touch_target_size"
+        android:paddingHorizontal="@dimen/notification_button_spacer"
+        android:src="@drawable/ic_action_stop"
+        android:contentDescription="@string/stop"
+        android:background="@drawable/notification_button_background"
+        android:scaleType="centerInside"
+        android:tint="@color/notification_action_tint"
+        tools:ignore="UseAppTint" />
+
+    <ImageButton
+        android:id="@+id/btnReset"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minWidth="@dimen/min_touch_target_size"
+        android:minHeight="@dimen/min_touch_target_size"
+        android:paddingHorizontal="@dimen/notification_button_spacer"
+        android:src="@drawable/ic_action_replay"
+        android:contentDescription="@string/reset"
+        android:background="@drawable/notification_button_background"
+        android:scaleType="centerInside"
+        android:tint="@color/notification_action_tint"
+        tools:ignore="UseAppTint" />
+
+</LinearLayout>
