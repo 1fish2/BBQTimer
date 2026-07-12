@@ -311,12 +311,16 @@ public class Notifier {
      * Asynchronously checks if any Wearable devices are connected, updates
      * {@link #lastKnownWatchConnected}, and updates the current notification unless that would
      * interrupt an alarm sound, replacing a PRIORITY_MAX heads-up notification with a PRIORITY_LOW.
+     * This gets called when opening or cancelling a notification, including Activity onStart() and
+     * BOOT_COMPLETED.
      */
     private void updateWatchConnectedAsync(@NonNull ApplicationState state) {
         Wearable.getNodeClient(context).getConnectedNodes()
                 .addOnSuccessListener(nodes -> {
                     boolean connected = nodes != null && !nodes.isEmpty();
                     if (lastKnownWatchConnected.getAndSet(connected) != connected) {
+                        Log.i(TAG, (connected ? "Connected" : "Not connected")
+                                + " to a WearOS device");
                         if (!soundAlarm) {
                             buildAndNotify(state);
                         }
@@ -559,7 +563,7 @@ public class Notifier {
      * - it can use USAGE_NOTIFICATION_EVENT, not AudioAttributes.USAGE_ALARM -- no,
      * - the Wearable app must have the app's (or all apps') notifications enabled -- ?
      * <p/>
-     * TODO: Play a custom sound on the watch?
+     * TODO: Add a Wear OS app to show full Chronometers and play a custom sound.
      */
     @NonNull
     protected Notification buildNotification(@NonNull ApplicationState state) {
