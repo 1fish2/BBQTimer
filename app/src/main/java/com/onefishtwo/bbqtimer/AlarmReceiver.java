@@ -292,7 +292,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 
         if (timer.isRunning()) {
             if (!isAlarmEarly(intent, timer)) {
-                Log.d(TAG, intent.toString()); // intent.getAction() == null
+                Log.i(TAG, intent.toString()); // intent.getAction() == null
                 Notifier notifier = new Notifier(context).setAlarm(true);
                 notifier.openOrCancel(state);
                 TimerAppWidgetProvider.updateAllWidgets(context, state);

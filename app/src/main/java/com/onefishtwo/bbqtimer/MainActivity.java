@@ -303,7 +303,7 @@ public class MainActivity extends AppCompatActivity
                 } else if (Intent.ACTION_RUN.equals(action)) { // App Shortcut: Start @ 00:00
                     shortcutAction = SHORTCUT_START;
                 }
-                Log.v(TAG, "Shortcut Action " + shortcutAction + ", Intent: " + callingIntent);
+                Log.i(TAG, "Shortcut Action " + shortcutAction + ", Intent: " + callingIntent);
                 // ACTION_MAIN from a Widget or Notification
                 // ACTION_EDIT from AlarmManager.AlarmClockInfo()
                 // whatever with category.LAUNCHER
@@ -441,7 +441,7 @@ public class MainActivity extends AppCompatActivity
 
         // Apply the app shortcut action, if any, once.
         if (shortcutAction != SHORTCUT_NONE) {
-            Log.v(TAG, "Applying App Shortcut Action " + shortcutAction);
+            Log.i(TAG, "Applying App Shortcut Action " + shortcutAction);
             switch (shortcutAction) {
                 case SHORTCUT_PAUSE: // App Shortcut: Pause @ 00:00
                     timer.reset();

@@ -343,7 +343,7 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
         super.onAppWidgetOptionsChanged(context, appWidgetManager, appWidgetId, newOptions);
 
         newOptions.keySet(); // reify the Bundle's contents so .toString() will format them
-        Log.i(TAG, "WidgetOptionsChanged: " + newOptions);
+        Log.d(TAG, "WidgetOptionsChanged: " + newOptions);
 
         if (Build.VERSION.SDK_INT < 31) {
             updateWidget(context, appWidgetManager, appWidgetId, state);
@@ -385,7 +385,7 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
     public void onReceive(@NonNull Context context, @NonNull Intent intent) {
         String action          = intent.getAction();
 
-        Log.v(TAG, "Intent: " + action);
+        Log.i(TAG, "Intent: " + action);
         saveIntentActionForTesting(context, intent);
 
         super.onReceive(context, intent);
