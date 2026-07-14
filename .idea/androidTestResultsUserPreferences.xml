@@ -41,6 +41,12 @@
               <option name="preferredColumnWidths">
                 <map>
                   <entry key="24_7.0_N_3.2-inch_HVGA_slider_320x480" value="120" />
+                  <entry key="24_7.0_N_3.2-inch_HVGA_slider_320x480_160dpi" value="120" />
+                  <entry key="24_7.0_N_Nexus_4_xhdpi_768x1280_320dpi" value="120" />
+                  <entry key="25_7.1.1_N.1_Nexus_5_xxhdpi_1080x1920" value="120" />
+                  <entry key="26_8.0_O_Pixel_2_xxhdpi_1080x1920" value="120" />
+                  <entry key="27_8.1_O.1_Pixel_3_xxhdpi_1080x2160" value="120" />
+                  <entry key="28_9.0_P_Pixel_2_cutout_xxhdpi_1080x1920" value="120" />
                   <entry key="29_10.0_Q_Nexus_5_xxhdpi_1080x1920" value="120" />
                   <entry key="29_10.0_Q_Pixel_4XL_xxhdpi_1440x3040" value="120" />
                   <entry key="30_11.0_R_G_Pixel_5_xxhdpi_1080x2340" value="120" />
@@ -53,6 +59,7 @@
                   <entry key="35_15.0_V_Pixel_9_Pro_XL_1344x2992_xxhdpi_-_3-button_nav" value="120" />
                   <entry key="35_15.0_V_resizable_phone_420dpi_gesture_handle_bar" value="120" />
                   <entry key="36_16.0_B_Pixel_Fold_2208x1840" value="120" />
+                  <entry key="37.1_17.0_C_16K_Pixel_10_Pro_1280x2856" value="120" />
                   <entry key="Duration" value="90" />
                   <entry key="Google Pixel 6" value="120" />
                   <entry key="Tests" value="360" />
@@ -310,6 +317,7 @@
                   <entry key="36.1_16.0_B_16KB_Flip5_cover_screen_720x748" value="120" />
                   <entry key="36.1_16.0_B_Pixel_9a_1080x2424" value="120" />
                   <entry key="37.0_17.0_C_16K_Pixel_10_Pro_1280x2856" value="120" />
+                  <entry key="37.1_17.0_C_16K_Pixel_10_Pro_1280x2856" value="120" />
                   <entry key="Duration" value="90" />
                   <entry key="Google Pixel 6" value="120" />
                   <entry key="Tests" value="360" />

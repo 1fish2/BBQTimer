@@ -11,17 +11,9 @@
     android:orientation="vertical"
     tools:viewBindingIgnore="true">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:gravity="center_vertical">
+    <include layout="@layout/custom_notification_countdown" />
 
-        <include layout="@layout/custom_notification_countdown" />
-
-        <include layout="@layout/custom_notification_elapsed" />
-
-    </LinearLayout>
+    <include layout="@layout/custom_notification_elapsed" />
 
     <include layout="@layout/custom_notification_buttons" />
 
