@@ -14,6 +14,7 @@ import java.io.IOException;
 
 /**
  * A JUnit {@link TestRule} that disables and re-enables animations for more reliable Espresso tests.
+ * It also collapses the notification shade so Espresso can access the app's UI.
  */
 public class DisableAnimationsRule implements TestRule {
     private static final String TAG = "DisableAnimationsRule";
@@ -24,11 +25,36 @@ public class DisableAnimationsRule implements TestRule {
         return new Statement() {
             @Override
             public void evaluate() throws Throwable {
+                collapseNotificationShade();
                 setAnimationScale("0.0");
                 try {
                     base.evaluate();
                 } finally {
                     setAnimationScale("1.0");
+                }
+            }
+
+            /**
+             * Collapse the notification shade so Espresso can access the app's UI.
+             */
+            private void collapseNotificationShade() {
+                final UiAutomation uiAutomation =
+                        InstrumentationRegistry.getInstrumentation().getUiAutomation();
+                final String command = android.os.Build.VERSION.SDK_INT >= 29
+                        ? "cmd statusbar collapse" // supported on Android API 29+
+                        : "service call statusbar 2";
+
+                try {
+                    android.os.ParcelFileDescriptor pfd = uiAutomation.executeShellCommand(command);
+                    try (java.io.InputStream is = new android.os.ParcelFileDescriptor.AutoCloseInputStream(pfd)) {
+                        byte[] buffer = new byte[1024];
+                        while (is.read(buffer) != -1) {
+                            // Consume output to let the command finish cleanly and prevent SIGPIPE crashes
+                            // which may cause "Test instrumentation process crashed".
+                        }
+                    }
+                } catch (IOException | RuntimeException e) {
+                    Log.w(TAG, "Failed to collapse status bar via: " + command, e);
                 }
             }
 
