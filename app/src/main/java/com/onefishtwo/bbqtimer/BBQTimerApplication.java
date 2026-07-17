@@ -3,6 +3,7 @@ package com.onefishtwo.bbqtimer;
 import android.app.Application;
 import android.os.Build;
 import android.os.StrictMode;
+import android.util.Log;
 
 import com.google.android.material.color.ColorContrast;
 import com.google.android.material.color.ColorContrastOptions;
@@ -18,6 +19,15 @@ public class BBQTimerApplication extends Application {
                     .penaltyLog();
             if (Build.VERSION.SDK_INT >= 28) {
                 builder1.detectNonSdkApiUsage();
+                builder1.penaltyListener(getMainExecutor(), violation -> {
+                    if (violation instanceof android.os.strictmode.NonSdkApiUsedViolation) {
+                        String msg = violation.getMessage();
+                        if (msg != null && msg.contains("makeOptionalFitsSystemWindows")) {
+                            Log.d("StrictMode", "^^^ NOTE: The NonSdkApiUsedViolation for " +
+                                    "makeOptionalFitsSystemWindows() is a known AppCompat issue.");
+                        }
+                    }
+                });
             }
             StrictMode.setVmPolicy(builder1.build());
 

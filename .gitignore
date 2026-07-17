@@ -1,6 +1,7 @@
 *.iml
 /build/
 .gradle
+/.artifacts/
 /local.properties
 /.idea/caches
 /.idea/csv-plugin.xml
