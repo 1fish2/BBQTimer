@@ -1,12 +1,13 @@
-<!-- Animated version of the app's launcher icon for the splash screen.
+<!-- Animated splash screen icon, derived from the launcher icon with animation and scaled to
+     240dp x 240dp per splash screen specs, even though the OS will scale it, to aid dev tools.
      The Android emulator or device needs animations enabled to test this. -->
 <animated-vector
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:aapt="http://schemas.android.com/aapt">
     <aapt:attr name="android:drawable">
         <vector
-            android:width="108dp"
-            android:height="108dp"
+            android:width="240dp"
+            android:height="240dp"
             android:viewportWidth="108"
             android:viewportHeight="108">
             <group
@@ -76,32 +77,32 @@
             <set>
                 <objectAnimator
                     android:propertyName="rotation"
-                    android:startOffset="500"
-                    android:duration="80"
+                    android:startOffset="140"
+                    android:duration="70"
                     android:valueFrom="0"
                     android:valueTo="10"
                     android:valueType="floatType"
                     android:interpolator="@android:anim/linear_interpolator"/>
                 <objectAnimator
                     android:propertyName="rotation"
-                    android:startOffset="600"
-                    android:duration="80"
+                    android:startOffset="230"
+                    android:duration="70"
                     android:valueFrom="10"
                     android:valueTo="0"
                     android:valueType="floatType"
                     android:interpolator="@android:anim/linear_interpolator"/>
                 <objectAnimator
                     android:propertyName="rotation"
-                    android:startOffset="700"
-                    android:duration="80"
+                    android:startOffset="320"
+                    android:duration="70"
                     android:valueFrom="0"
                     android:valueTo="10"
                     android:valueType="floatType"
                     android:interpolator="@android:anim/linear_interpolator"/>
                 <objectAnimator
                     android:propertyName="rotation"
-                    android:startOffset="800"
-                    android:duration="80"
+                    android:startOffset="410"
+                    android:duration="70"
                     android:valueFrom="10"
                     android:valueTo="0"
                     android:valueType="floatType"

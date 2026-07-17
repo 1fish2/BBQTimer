@@ -5,7 +5,7 @@
     <style name="Theme.App" parent="Theme.App.Base">
 
         <item name="android:windowSplashScreenIconBackgroundColor">@color/ic_launcher_background</item>
-        <item name="android:windowSplashScreenAnimatedIcon">@drawable/ic_launcher_anim_fg</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/ic_splash_anim</item>
         <item name="android:windowSplashScreenAnimationDuration">1000</item>
     </style>
 
