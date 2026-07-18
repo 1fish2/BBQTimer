@@ -602,8 +602,15 @@ public class MainActivity extends AppCompatActivity
 
                 Log.w(TAG, "App Notifications sounds are muted");
                 setSnackbarAction(snackbar, R.string.alarm_unmute,
-                        view -> am.adjustStreamVolume(REMINDER_STREAM,
-                                    AudioManager.ADJUST_RAISE, 0));
+                        view -> {
+                            try {
+                                am.adjustStreamVolume(REMINDER_STREAM,
+                                        AudioManager.ADJUST_RAISE, AudioManager.FLAG_SHOW_UI);
+                            } catch (SecurityException e) {
+                                Log.w(TAG, "Couldn't unmute directly: " + e);
+                                openVolumeSettings();
+                            }
+                        });
                 snackbar.show();
                 return;
             }
@@ -620,6 +627,25 @@ public class MainActivity extends AppCompatActivity
                                 Notifier.ALARM_NOTIFICATION_CHANNEL_ID));
             }
             snackbar.show();
+        }
+    }
+
+    /**
+     * Opens the Volume Settings panel (API 29+) or the system sound settings (API < 29).
+     */
+    private void openVolumeSettings() {
+        Intent intent = new Intent();
+
+        if (Build.VERSION.SDK_INT >= 29) {
+            intent.setAction(Settings.Panel.ACTION_VOLUME);
+        } else {
+            intent.setAction(Settings.ACTION_SOUND_SETTINGS);
+        }
+
+        try {
+            startActivity(intent);
+        } catch (ActivityNotFoundException e) {
+            Log.e(TAG, "Couldn't open volume/sound Settings: " + e);
         }
     }
 
