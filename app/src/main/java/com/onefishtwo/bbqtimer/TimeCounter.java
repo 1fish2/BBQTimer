@@ -77,6 +77,7 @@ public class TimeCounter {
     }
 
     /** Inject or mock for testing. */
+    @SuppressWarnings("CanBeFinal")
     @VisibleForTesting
     @NonNull
     static InjectForTesting injected = new InjectForTesting();

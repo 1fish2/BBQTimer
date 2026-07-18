@@ -1,6 +1,7 @@
 package com.onefishtwo.bbqtimer;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RestrictTo;
 import androidx.core.text.util.LocalePreferences;
 
 import java.util.Locale;
@@ -29,6 +30,8 @@ public class LocaleUtils {
     }
 
     /** Indicates whether to format temperatures in Fahrenheit °F rather than °C. */
+    @SuppressWarnings("unused")
+    @RestrictTo(RestrictTo.Scope.TESTS)
     public static boolean useFahrenheit() {
         Locale locale = getDefaultFormatLocale();
         return useFahrenheit(locale);

@@ -81,6 +81,7 @@ public class Notifier {
     public static final int REMINDER_STREAM = AudioManager.STREAM_ALARM;
 
     /** A listener for UI notifications posted, for testing. */
+    @SuppressWarnings("unused")
     public interface NotificationListener {
         void onNotificationPosted();
     }
@@ -102,6 +103,7 @@ public class Notifier {
     /**
      * Sets a listener for when the Notifier posts UI notifications, for testing.
      */
+    @SuppressWarnings("unused")
     @RestrictTo(RestrictTo.Scope.TESTS)
     public static void setNotificationListener(NotificationListener listener) {
         notificationListener = listener;

@@ -9,12 +9,14 @@ junit-version = "4.13.2"
 material = "1.14.0"
 orchestrator = "1.6.1"
 play-services-wearable = "20.0.1"
+splashscreen = "1.2.0"
 test = "1.7.0"
 
 [libraries]
 androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 androidx-core = { group = "androidx.core", name = "core", version.ref = "core" }
+androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "splashscreen" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espresso-core" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junit" }
 androidx-orchestrator = { group = "androidx.test", name = "orchestrator", version.ref = "orchestrator" }

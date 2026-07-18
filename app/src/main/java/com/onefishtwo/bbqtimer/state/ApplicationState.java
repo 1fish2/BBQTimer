@@ -92,6 +92,11 @@ public class ApplicationState {
         return sharedInstance;
     }
 
+    /** Returns true if the sharedInstance has been loaded. */
+    public static boolean isLoaded() {
+        return sharedInstance != null;
+    }
+
     private ApplicationState() {
     }
 

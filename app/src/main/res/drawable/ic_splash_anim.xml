@@ -77,7 +77,7 @@
             <set>
                 <objectAnimator
                     android:propertyName="rotation"
-                    android:startOffset="140"
+                    android:startOffset="340"
                     android:duration="70"
                     android:valueFrom="0"
                     android:valueTo="10"
@@ -85,7 +85,7 @@
                     android:interpolator="@android:anim/linear_interpolator"/>
                 <objectAnimator
                     android:propertyName="rotation"
-                    android:startOffset="230"
+                    android:startOffset="430"
                     android:duration="70"
                     android:valueFrom="10"
                     android:valueTo="0"
@@ -93,7 +93,7 @@
                     android:interpolator="@android:anim/linear_interpolator"/>
                 <objectAnimator
                     android:propertyName="rotation"
-                    android:startOffset="320"
+                    android:startOffset="520"
                     android:duration="70"
                     android:valueFrom="0"
                     android:valueTo="10"
@@ -101,7 +101,7 @@
                     android:interpolator="@android:anim/linear_interpolator"/>
                 <objectAnimator
                     android:propertyName="rotation"
-                    android:startOffset="410"
+                    android:startOffset="610"
                     android:duration="70"
                     android:valueFrom="10"
                     android:valueTo="0"

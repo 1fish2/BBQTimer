@@ -60,6 +60,7 @@ import android.widget.TextView;
 import androidx.activity.EdgeToEdge;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.core.splashscreen.SplashScreen;
 import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.IdRes;
@@ -233,6 +234,12 @@ public class MainActivity extends AppCompatActivity
     @MainThread
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // Implement the (backward-compatible) Splash Screen, and keep it open until the
+        // ApplicationState finishes loading.
+        // ASSUMES: BBQTimerApplication initiated loading the ApplicationState.
+        SplashScreen splashScreen = SplashScreen.installSplashScreen(this);
+        splashScreen.setKeepOnScreenCondition(() -> !ApplicationState.isLoaded());
+
         if (EDGE_TO_EDGE) {
             EdgeToEdge.enable(this);
         }

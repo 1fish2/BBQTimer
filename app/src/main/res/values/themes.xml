@@ -65,6 +65,13 @@
 
     <style name="Theme.App" parent="Theme.App.Base" />
 
+    <style name="Theme.App.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/md_theme_background</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_splash_anim</item>
+        <item name="windowSplashScreenAnimationDuration">1000</item>
+        <item name="postSplashScreenTheme">@style/Theme.App</item>
+    </style>
+
     <!-- AlertDialog adjustments -->
     <style name="AppThemeOverlay.Material3.MaterialAlertDialog"
         parent="@style/ThemeOverlay.Material3.MaterialAlertDialog">

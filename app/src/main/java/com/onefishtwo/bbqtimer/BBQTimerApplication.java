@@ -45,6 +45,7 @@ public class BBQTimerApplication extends Application {
 
         // Start loading the state in a background thread, under cover of the splash screen
         // animation, to delay the UI thread less. The overlap might not help much.
+        // ASSUMES: MainActivity keeps the Splash Screen open until the state finishes loading.
         new Thread(() -> ApplicationState.sharedInstance(this)).start();
 
         ColorContrastOptions options = new ColorContrastOptions.Builder()

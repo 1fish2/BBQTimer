@@ -39,6 +39,7 @@
 
         <activity
             android:name=".MainActivity"
+            android:theme="@style/Theme.App.Starting"
             android:configChanges="keyboard|keyboardHidden|screenSize|mcc|mnc"
             android:windowSoftInputMode="adjustResize"
             android:showWhenLocked="true"
