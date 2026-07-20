@@ -48,6 +48,8 @@ import androidx.core.app.NotificationCompat.WearableExtender;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.wearable.Wearable;
 import com.onefishtwo.bbqtimer.state.ApplicationState;
 
@@ -89,6 +91,9 @@ public class Notifier {
     private static NotificationListener notificationListener = null;
 
     private static boolean builtNotificationChannels = false;
+
+    private static boolean checkedForGooglePlayServices = false;
+    private static boolean hasWearOSCompanionApp = false;
 
     @NonNull
     private final Context context;
@@ -311,22 +316,53 @@ public class Notifier {
 
     /**
      * Asynchronously checks if any Wearable devices are connected, updates
-     * {@link #lastKnownWatchConnected}, and updates the current notification unless that would
-     * interrupt an alarm sound, replacing a PRIORITY_MAX heads-up notification with a PRIORITY_LOW.
-     * This gets called when opening or cancelling a notification, including Activity onStart() and
+     * {@link #lastKnownWatchConnected}, and updates the current notification <u>unless</u> that
+     * would interrupt an alarm sound (and replace a PRIORITY_MAX heads-up notification with a
+     * PRIORITY_LOW notification).
+     * This gets called when opening or canceling a notification, including Activity onStart() and
      * BOOT_COMPLETED.
      */
     private void updateWatchConnectedAsync(@NonNull ApplicationState state) {
+        // Fast, synchronous check for Google APIs and Google Play Services.
+        // Just once, unless the service is currently updating.
+        if (!checkedForGooglePlayServices) {
+            GoogleApiAvailability availability = GoogleApiAvailability.getInstance();
+            int resultCode = availability.isGooglePlayServicesAvailable(context);
+            // ^^^ Logs "W  com.onefishtwo.bbqtimer requires the Google Play Store, but it is missing."
+
+            // SUCCESS (0): OK, but maybe a stub implementation on GrapheneOS, MicroG, or missing
+            //   Wear OS companion app. getConnectedNodes() might log
+            //   `Wearable.API is not available on this device`.
+            // SERVICE_MISSING (1), SERVICE_VERSION_UPDATE_REQUIRED (2): The device supports
+            //   Google APIs but needs Play Store or an update, e.g. on Google APIs System Image,
+            //   GrapheneOS, MicroG.
+            // SERVICE_INVALID (9): Google Play Services cannot run, e.g. on AOSP OS.
+            //   getConnectedNodes() will fail with scary logs.
+            Log.i(TAG, "isGooglePlayServicesAvailable: "
+                    + (resultCode == ConnectionResult.SUCCESS ? "SUCCESS" : resultCode));
+            hasWearOSCompanionApp = resultCode == ConnectionResult.SUCCESS; // maybe...
+            checkedForGooglePlayServices = resultCode != ConnectionResult.SERVICE_UPDATING;
+        }
+
+        if (!hasWearOSCompanionApp) {
+            return;
+        }
+
         Wearable.getNodeClient(context).getConnectedNodes()
                 .addOnSuccessListener(nodes -> {
-                    boolean connected = nodes != null && !nodes.isEmpty();
+                    int numberOfNodes = nodes == null ? 0 : nodes.size();
+                    boolean connected = numberOfNodes > 0;
+
                     if (lastKnownWatchConnected.getAndSet(connected) != connected) {
-                        Log.i(TAG, (connected ? "Connected" : "Not connected")
-                                + " to a WearOS device");
+                        Log.i(TAG, "WearOS connected devices: " + numberOfNodes);
                         if (!soundAlarm) {
                             buildAndNotify(state);
                         }
                     }
+                })
+                .addOnFailureListener(exception -> {
+                    hasWearOSCompanionApp = false; // needs the Wear OS companion app
+                    Log.i(TAG, "Couldn't count connected Wearables: " + exception);
                 });
     }
 
