@@ -9,6 +9,9 @@ import com.google.android.material.color.ColorContrast;
 import com.google.android.material.color.ColorContrastOptions;
 import com.onefishtwo.bbqtimer.state.ApplicationState;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
 public class BBQTimerApplication extends Application {
 
     @Override
@@ -25,6 +28,16 @@ public class BBQTimerApplication extends Application {
                         if (msg != null && msg.contains("makeOptionalFitsSystemWindows")) {
                             Log.d("StrictMode", "^^^ NOTE: The NonSdkApiUsedViolation for " +
                                     "makeOptionalFitsSystemWindows() is a known AppCompat issue.");
+                        }
+                    } else if (violation instanceof android.os.strictmode.LeakedClosableViolation
+                            && Build.VERSION.SDK_INT == 32) {
+                        StringWriter sw = new StringWriter();
+                        violation.printStackTrace(new PrintWriter(sw));
+                        String stackTraceString = sw.toString();
+
+                        if (stackTraceString.contains("UnixSecureDirectoryStream")) {
+                            Log.d("StrictMode", "^^^ NOTE: This UnixSecureDirectoryStream leak" +
+                                    " is a known androidx/platform issue on API 32.");
                         }
                     }
                 });

@@ -101,12 +101,7 @@ public class MainActivity extends AppCompatActivity
         implements RecipeEditorDialogFragment.RecipeEditorDialogFragmentListener {
     private static final String TAG = "Main";
 
-    /**
-     * Enable edge-to-edge display? Required on API 35+. It breaks system bar contrast on API < 29.
-     * This app doesn't show anything under the status bar in edge-to-edge but EdgeToEdge.enable()
-     * handles the status bar foreground & background colors.
-     * The PopupMenu insets need investigation.
-     */
+    /** Enable edge-to-edge display? It's required on API 35+. */
     private static final boolean EDGE_TO_EDGE = Build.VERSION.SDK_INT >= 29;
     public static final int REMINDER_STREAM = AudioManager.STREAM_ALARM;
 
