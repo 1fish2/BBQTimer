@@ -11,7 +11,7 @@ android {
         versionCode 25
         versionName '5.0'
         minSdk = 24
-        targetSdk = 36
+        targetSdk = 37
         resourceConfigurations += ['en', 'de']
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
