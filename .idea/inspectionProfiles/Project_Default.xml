@@ -275,6 +275,7 @@
     <inspection_tool class="UnstableTypeUsedInSignature" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="UnusedExpressionResult" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="UseOfPropertiesAsHashtable" enabled="true" level="WARNING" enabled_by_default="true" />
+    <inspection_tool class="UsePropertyAccessSyntax" enabled="true" level="WEAK WARNING" enabled_by_default="true" />
     <inspection_tool class="ValueMayNotFitIntoReceiver" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="VariableNotUsedInsideIf" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="VolatileArrayField" enabled="true" level="WARNING" enabled_by_default="true" />

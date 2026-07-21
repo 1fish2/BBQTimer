@@ -23,6 +23,7 @@ public class BBQTimerApplication extends Application {
             if (Build.VERSION.SDK_INT >= 28) {
                 builder1.detectNonSdkApiUsage();
                 builder1.penaltyListener(getMainExecutor(), violation -> {
+                    //noinspection ChainOfInstanceofChecks
                     if (violation instanceof android.os.strictmode.NonSdkApiUsedViolation) {
                         String msg = violation.getMessage();
                         if (msg != null && msg.contains("makeOptionalFitsSystemWindows")) {

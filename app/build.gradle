@@ -2,6 +2,12 @@ plugins {
     alias libs.plugins.android.application
 }
 
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
 android {
     compileSdkVersion 37
     buildToolsVersion = '37.0.0'
@@ -45,8 +51,8 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_9
-        targetCompatibility JavaVersion.VERSION_1_9
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
 
     testOptions {
