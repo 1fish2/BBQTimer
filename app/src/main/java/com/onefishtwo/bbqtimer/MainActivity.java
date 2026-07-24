@@ -82,6 +82,9 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.core.widget.NestedScrollView;
 import androidx.core.widget.TextViewCompat;
+import androidx.dynamicanimation.animation.DynamicAnimation;
+import androidx.dynamicanimation.animation.SpringAnimation;
+import androidx.dynamicanimation.animation.SpringForce;
 
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
@@ -208,6 +211,7 @@ public class MainActivity extends AppCompatActivity
     private TextView countUpDisplay, countdownDisplay;
     private EditText2 alarmPeriod;
     private CheckBox enableReminders;
+    private SpringAnimation springX, springY;
 
     // This callback handles the user's response to the system permissions dialog.
     private final ActivityResultLauncher<String> requestPermissionLauncher =
@@ -494,6 +498,7 @@ public class MainActivity extends AppCompatActivity
         updateHandler.endScheduledUpdates();
 
         dismissPopupMenu();
+        cancelPauseResumeAnimations();
 
         super.onStop();
     }
@@ -1029,6 +1034,7 @@ public class MainActivity extends AppCompatActivity
         displayTime();
 
         if (viewConfiguration != newConfiguration) { // optimize out the nearly-always no-op case
+            boolean isFirstConfiguration = viewConfiguration == -1;
             viewConfiguration = newConfiguration;
 
             if (isRunning || isPausedAt0) {
@@ -1040,7 +1046,13 @@ public class MainActivity extends AppCompatActivity
                         getText(isStopped ? R.string.pause : R.string.reset));
             }
 
-            setDrawableRes(pauseResumeButton, isRunning ? R.drawable.ic_pause : R.drawable.ic_play);
+            int pauseResumeIconId = isRunning ? R.drawable.ic_pause : R.drawable.ic_play;
+            if (isFirstConfiguration) {
+                setDrawableRes(pauseResumeButton, pauseResumeIconId);
+            } else {
+                animatePauseResumeIcon(pauseResumeIconId);
+            }
+
             setDrawableRes(stopButton, R.drawable.ic_stop);
             stopButton.setVisibility(isStopped ? View.INVISIBLE : View.VISIBLE);
             countdownDisplay.setVisibility(areRemindersEnabled ? View.VISIBLE : View.INVISIBLE);
@@ -1049,7 +1061,87 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    /** Set the left drawable of a Button (or any TextView); tag it with the resId for testing. */
+    /**
+     * Checks if "Reduced Motion" is enabled in system settings.
+     */
+    private boolean isReducedMotionEnabled() {
+        try {
+            float animatorScale = Settings.Global.getFloat(
+                    getContentResolver(),
+                    Settings.Global.ANIMATOR_DURATION_SCALE,
+                    1.0f);
+            return animatorScale <= 0.0f;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    /**
+     * Animates the pause/resume button icon change using a SpringAnimation.
+     */
+    private void animatePauseResumeIcon(@DrawableRes int resId) {
+        Object currentTag = pauseResumeButton.getTag();
+        boolean sameIcon = currentTag instanceof Integer && (Integer) currentTag == resId;
+
+        if (sameIcon) {
+            return;
+        }
+
+        cancelPauseResumeAnimations();
+
+        // Fallback to static change if reduced motion is enabled.
+        if (isReducedMotionEnabled()) {
+            setDrawableRes(pauseResumeButton, resId);
+            return;
+        }
+
+        // Expressive animation: Scale down slightly, change icon, then spring back with overshoot.
+        pauseResumeButton.animate()
+                .scaleX(0.7f)
+                .scaleY(0.7f)
+                .setDuration(80)
+                .withEndAction(() -> {
+                    setDrawableRes(pauseResumeButton, resId);
+
+                    springX = new SpringAnimation(pauseResumeButton,
+                            DynamicAnimation.SCALE_X, 1.0f);
+                    springY = new SpringAnimation(pauseResumeButton,
+                            DynamicAnimation.SCALE_Y, 1.0f);
+
+                    SpringForce springForce = new SpringForce(1.0f)
+                            .setDampingRatio(SpringForce.DAMPING_RATIO_MEDIUM_BOUNCY)
+                            .setStiffness(SpringForce.STIFFNESS_MEDIUM);
+
+                    springX.setSpring(springForce);
+                    springY.setSpring(springForce);
+
+                    // Prevent sub-pixel background frame updates.
+                    springX.setMinimumVisibleChange(DynamicAnimation.MIN_VISIBLE_CHANGE_SCALE);
+                    springY.setMinimumVisibleChange(DynamicAnimation.MIN_VISIBLE_CHANGE_SCALE);
+
+                    springX.start();
+                    springY.start();
+                })
+                .start();
+    }
+
+    /**
+     * Cancels any running pause/resume button animations to prevent leaks and glitches.
+     */
+    private void cancelPauseResumeAnimations() {
+        pauseResumeButton.animate().cancel();
+        if (springX != null) {
+            springX.cancel();
+        }
+        if (springY != null) {
+            springY.cancel();
+        }
+    }
+
+    /**
+     * Set the left drawable of a Button (or any TextView); tag it with the resId for testing and to
+     * avoid redundant animations.
+     */
     private static void setDrawableRes(@NonNull TextView view, @DrawableRes int resId) {
         view.setCompoundDrawablesWithIntrinsicBounds(resId, 0, 0, 0);
         view.setTag(resId);
