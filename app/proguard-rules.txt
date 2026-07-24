@@ -14,10 +14,15 @@
 
 # Uncomment these lines to preserve the line number information for
 # debugging stack traces.
--keepattributes SourceFile,LineNumberTable
+#-keepattributes SourceFile,LineNumberTable
 -renamesourcefileattribute SourceFile
 
 #-keep class androidx.core.** { *; }
 #-keep class androidx.core.content.ContextCompat { *; }
--keepattributes Signature
+
+# Keep function signatures to use reflection-based libraries like Gson or Retrofit that require
+# generic signature preservation.
+#-keepattributes Signature
+
+# Keep exceptions for more useful stack traces in logs?
 -keepattributes Exceptions
