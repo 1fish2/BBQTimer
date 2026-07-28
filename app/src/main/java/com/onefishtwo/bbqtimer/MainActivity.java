@@ -329,6 +329,13 @@ public class MainActivity extends AppCompatActivity
         return view;
     }
 
+    private void setContentDescriptionAndTooltip(View view, @StringRes int resId) {
+        CharSequence desc = getText(resId);
+
+        view.setContentDescription(desc);
+        TooltipCompat.setTooltipText(view, desc);
+    }
+
     /**
      * Sets a WindowInsetsListener on the root View when in edge-to-edge mode to adjust its margins
      * to accommodate system bars, display cutouts, and the IME.
@@ -1042,11 +1049,16 @@ public class MainActivity extends AppCompatActivity
             } else {
                 resetButton.setVisibility(View.VISIBLE);
                 setDrawableRes(resetButton, isStopped ? R.drawable.ic_pause : R.drawable.ic_replay);
-                TooltipCompat.setTooltipText(resetButton,
-                        getText(isStopped ? R.string.pause : R.string.reset));
+                setContentDescriptionAndTooltip(resetButton, isStopped ? R.string.pause : R.string.reset);
             }
 
             int pauseResumeIconId = isRunning ? R.drawable.ic_pause : R.drawable.ic_play;
+            int pauseResumeDescId = isRunning ? R.string.pause : R.string.start;
+            // NOTE: This changes the ContentDescription, leaving the Tooltip = "Run/Pause", which
+            // should be more helpful with a stable description but changes on screen readers.
+            // TODO: Reconsider. The Pause/Reset button is handled differently, above.
+            pauseResumeButton.setContentDescription(getString(pauseResumeDescId));
+
             if (isFirstConfiguration) {
                 setDrawableRes(pauseResumeButton, pauseResumeIconId);
             } else {

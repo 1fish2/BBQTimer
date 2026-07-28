@@ -1,5 +1,6 @@
 plugins {
     alias libs.plugins.android.application
+    alias libs.plugins.roborazzi
 }
 
 java {
@@ -57,6 +58,9 @@ android {
 
     testOptions {
         execution = 'ANDROIDX_TEST_ORCHESTRATOR'
+        unitTests {
+            includeAndroidResources = true
+        }
     }
     namespace = 'com.onefishtwo.bbqtimer'
 }
@@ -79,6 +83,14 @@ dependencies {
     implementation libs.gms.play.services.wearable
 
     testImplementation libs.junit
+    testImplementation libs.androidx.junit
+    testImplementation libs.androidx.espresso.core
+    testImplementation libs.core
+    testImplementation libs.roborazzi
+    testImplementation libs.roborazzi.junit.rule
+    testImplementation libs.robolectric
+    // Roborazzi's Espresso support can require Compose UI Test for its internal overloads
+    testImplementation libs.compose.ui.test
 
     // See https://developer.android.com/training/testing/set-up-project for more.
     androidTestImplementation libs.androidx.junit
@@ -86,6 +98,10 @@ dependencies {
     androidTestImplementation libs.androidx.runner
     androidTestImplementation libs.core
     androidTestImplementation libs.androidx.rules
+    androidTestImplementation libs.uiautomator
+    androidTestImplementation libs.roborazzi
+    androidTestImplementation libs.roborazzi.junit.rule
+
     // See https://github.com/android/android-test/issues/1042
     androidTestUtil libs.androidx.orchestrator
 
