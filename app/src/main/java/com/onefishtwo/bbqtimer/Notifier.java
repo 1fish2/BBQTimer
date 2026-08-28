@@ -227,7 +227,7 @@ public class Notifier {
     /**
      * Returns a localized description of the timer's run state with the current time value for
      * Wearable notifications. Deal with the lack of Chronometers and Images:
-     * "Running 00:15➚︎" or "Running ≥00:15", "Paused 00:15.1", "Stopped".
+     * "Running 00:15➚︎"|"Running ≥00:15"|"Running >00:15", "Paused 00:15.1", "Stopped".
      * The arrow conveys that the value is going up from the snapshot number.
      * <p>
      * Gemini: "Emojis like ⏱️ (Stopwatch), ⏲️ (Timer Clock), and 🔔 (Bell) are widely supported
@@ -249,7 +249,7 @@ public class Notifier {
     /**
      * Returns a localized description of the time until the next alarm for Wearable notifications
      * which don't support Chronometers or Images:
-     * "Next ♫ in 00:15➘" or "Next ♫ in ≤00:15".
+     * "Next ♫ in 00:15➘"|"Next ♫ in ≤00:15"|"Next ♫ in <00:15".
      * The arrow is visible if the timer is running to convey that the value is going down from the
      * snapshot number. The ♫ stands for "alarm", fits on a smartwatch, and doesn't have distracting
      * emoji colors.
@@ -653,9 +653,9 @@ public class Notifier {
             // Phone expanded: "BBQ Timer • Every 00:15 / 🔔 00:07 / ⏱ 00:08  Running / [buttons]"
             //                 AppName • SubText / RemoteViews
             //
-            // Wearable popup:     "Running ≥00:15"
-            // Wearable collapsed: "BBQ Timer / Running ≥00:15 / Next ♫ in ≤00:30"
-            // Wearable expanded:  "BBQ Timer / Every 00:15 / Running ≥00:15 / Next ♫ in ≤00:30"
+            // Wearable popup:     "Running >00:15"
+            // Wearable collapsed: "BBQ Timer / Running >00:15 / Next ♫ in ≤00:30"
+            // Wearable expanded:  "BBQ Timer / Every 00:15 / Running >00:15 / Next ♫ in ≤00:30"
             //                     AppName / SubText / ContentText / ContentTitle
             //
             // Note: ⏱ stopwatch character might render as a simple circular outline. ⏲ is like a
@@ -665,8 +665,8 @@ public class Notifier {
             // doesn't work on WearOS. I didn't test Android since the notification area supports
             // image views.
             builder.setSubText(alarms) // small text, "Every 00:15"
-                    .setContentTitle(timerRunStateValue(timer)) // bold colored text, "Running ≥00:15"
-                    .setContentText(nextAlarmValue(state)); // plain text, "Next ♫ in ≤00:30"
+                    .setContentTitle(timerRunStateValue(timer)) // bold colored text, "Running >00:15"
+                    .setContentText(nextAlarmValue(state)); // plain text, "Next ♫ in <00:30"
 
             {
                 String timerStateMessage = timerRunState(timer); // Running/Paused/Stopped
