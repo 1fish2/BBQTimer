@@ -467,7 +467,6 @@ public class InAppUITest implements Notifier.NotificationListener {
     /** Tests the CLEAR_TEXT endIcon in the alarmPeriodLayout TextInputLayout. */
     @Test
     public void endIconTest() {
-        //noinspection SpellCheckingInspection
         @SuppressWarnings("GrazieInspectionRunner")
         ViewInteraction clearTextImageButton = onView(anyOf(
                 withContentDescription("Clear text"),     // en

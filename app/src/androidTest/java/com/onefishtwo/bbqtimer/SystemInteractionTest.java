@@ -112,6 +112,7 @@ public class SystemInteractionTest {
         return context.getString(resId);
     }
 
+    /** Launches the app with a launcher action (or null for none) and waits for it. */
     private void launchApp(String action) {
         Intent intent = context.getPackageManager().getLaunchIntentForPackage(PACKAGE_NAME);
 
@@ -233,8 +234,24 @@ public class SystemInteractionTest {
         final String originalScale = (scale.isEmpty() || scale.contains("null")) ? "1.0" : scale;
 
         try {
-            device.executeShellCommand("settings put system font_scale 1.5");
             launchApp();
+
+            device.executeShellCommand("settings put system font_scale 1.5");
+
+            // Wait for the configuration change to propagate to the test process.
+            boolean applied = false;
+            for (int i = 0; i < 20; i++) {
+                float currentScale = context.getResources().getConfiguration().fontScale;
+                if (Math.abs(currentScale - 1.5f) < 0.01f) {
+                    applied = true;
+                    break;
+                }
+                try { Thread.sleep(200); } catch (InterruptedException ignored) {}
+            }
+            assertTrue("Font scale 1.5 should be applied to system configuration", applied);
+
+            device.waitForIdle();
+
             UiObject2 container = device.wait(
                     Until.findObject(By.res(PACKAGE_NAME, "main_container")), TIMEOUT);
             assertNotNull("App should be visible with 1.5x font scale", container);
@@ -244,6 +261,7 @@ public class SystemInteractionTest {
         } finally {
             // Restore original font scale
             device.executeShellCommand("settings put system font_scale " + originalScale);
+            device.waitForIdle();
         }
     }
 
@@ -252,16 +270,20 @@ public class SystemInteractionTest {
         device.executeShellCommand("settings put system accelerometer_rotation 0");
         try {
             launchApp();
+
             device.setOrientationLeft();
             // Wait for rotation to finish
             boolean rotated = device.wait(Until.hasObject(By.pkg(PACKAGE_NAME)), TIMEOUT);
             assertTrue("App should still be visible after rotation", rotated);
-            assertFalse("App should not be in natural orientation (should be landscape)",
+            assertFalse("App should not be in natural orientation (landscape/portrait)",
                     device.isNaturalOrientation());
 
             int rotation = device.getDisplayRotation();
-            assertTrue("Display should be rotated (LANDSCAPE)",
+            assertTrue("Display should be rotated (landscape/portrait)",
                     rotation == Surface.ROTATION_90 || rotation == Surface.ROTATION_270);
+
+            // TODO: Test that rotation closes the soft keyboard and the popup interval menu, while
+            //  it doesn't close the recipe editor dialog.
 
             device.setOrientationNatural();
             device.wait(Until.hasObject(By.pkg(PACKAGE_NAME)), TIMEOUT);
