@@ -138,7 +138,7 @@ public class Notifier {
 
     /** Constructs a PendingIntent to use as a Notification Action. */
     private PendingIntent makeActionIntent(String action) {
-        return TimerAppWidgetProvider.makeActionIntent(context, action);
+        return TimerAppWidgetProvider.makeActionIntent(context, action, true);
     }
 
     /**

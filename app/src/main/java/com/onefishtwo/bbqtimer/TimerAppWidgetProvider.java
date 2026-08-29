@@ -38,16 +38,21 @@ import android.widget.RemoteViews;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.onefishtwo.bbqtimer.state.ApplicationState;
 
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * The BBQ Timer app widget for the home and lock screens.
  */
 public class TimerAppWidgetProvider extends AppWidgetProvider {
     private static final String TAG = "AppWidgetProvider";
+
+    private static final AtomicInteger requestCodeCounter =
+            new AtomicInteger((int) SystemClock.uptimeMillis());
 
     // --- R.id.viewFlipper child indexes.
     private static final int PAUSED_CHRONOMETER_CHILD  = 0;
@@ -110,8 +115,6 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
         }
     }
 
-    private static int workaroundCount = (int) SystemClock.uptimeMillis();
-
     @NonNull
     static ComponentName getComponentName(Context context) {
         return new ComponentName(context, TimerAppWidgetProvider.class);
@@ -119,9 +122,6 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
 
     /**
      * Updates all the given widget instances' layout and contents.
-     * <p/>
-     * TODO: API 31+ could reuse the same RemoteViews instances for all widget instances.
-     * TODO: onAppWidgetOptionsChanged() could pass in newOptions.
      */
     private static void updateWidgets(@NonNull Context context,
             @NonNull AppWidgetManager appWidgetManager,
@@ -175,19 +175,39 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
     private static void updateWidget(@NonNull Context context,
             @NonNull AppWidgetManager appWidgetManager,
             int appWidgetId, @NonNull ApplicationState state) {
+        Bundle widgetOptions = appWidgetManager.getAppWidgetOptions(appWidgetId);
+        RemoteViews views = buildRemoteViews(context, state, widgetOptions);
+
+        appWidgetManager.updateAppWidget(appWidgetId, views);
+    }
+
+    /**
+     * Builds a {@link RemoteViews} to update one or more widget instances.
+     *
+     * @param widgetOptions the widget's options (size, etc.), or null to use a responsive layout
+     *                      mapping on API 31+.
+     */
+    @NonNull
+    private static RemoteViews buildRemoteViews(@NonNull Context context,
+            @NonNull ApplicationState state, Bundle widgetOptions) {
         TimeCounter timer = state.getTimeCounter();
         long countUpBase = timer.getStartTime();
 
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.app_widget);
+
+        // Workaround: Set a unique contentDescription on the root background view to ensure the
+        // RemoteViews object looks "changed" by hosts like the lock screen to force a redraw.
+        views.setContentDescription(android.R.id.background, "Update " + SystemClock.uptimeMillis());
 
         PendingIntent runPauseIntent  = makeActionIntent(context, ACTION_RUN_PAUSE);
         PendingIntent cycleIntent     = makeActionIntent(context, ACTION_CYCLE);
         PendingIntent activityIntent  = MainActivity.makePendingIntent(context);
 
         boolean visibleCountdown = false;
-        Bundle widgetOptions = appWidgetManager.getAppWidgetOptions(appWidgetId);
-        int minWidth = widgetOptions.getInt(
-                AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH, 180);
+        int minWidth = 180;
+        if (widgetOptions != null) {
+            minWidth = widgetOptions.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH, 180);
+        }
         int child = timer.isRunning() ? RUNNING_CHRONOMETER_CHILD
                 : timer.isStopped() ? RESET_CHRONOMETER_CHILD
                 : PAUSED_CHRONOMETER_CHILD;
@@ -240,9 +260,9 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
         views.setImageViewResource(R.id.remoteStartStopButton, actionButton);
         views.setDisplayedChild(R.id.viewFlipper, extendedChildIndex);
 
-        views.setOnClickPendingIntent(R.id.remoteStartStopButton, runPauseIntent);
-        views.setOnClickPendingIntent(android.R.id.background, activityIntent);
-        views.setOnClickPendingIntent(extendedChildId, cycleIntent);
+        setOnClickHandler(views, R.id.remoteStartStopButton, runPauseIntent);
+        setOnClickHandler(views, android.R.id.background, activityIntent);
+        setOnClickHandler(views, extendedChildId, cycleIntent);
 
         // Make the widget layout responsive to ever-smaller sizes by first hiding the countdown
         // view, then shrinking the count-up view (if viable), then hiding the count-up view.
@@ -274,7 +294,20 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
             }
         }
 
-        appWidgetManager.updateAppWidget(appWidgetId, views);
+        return views;
+    }
+
+    private static void setOnClickHandler(@NonNull RemoteViews views, @IdRes int viewId,
+                                          @Nullable PendingIntent pendingIntent) {
+        if (pendingIntent != null) {
+            if (Build.VERSION.SDK_INT >= 31) {
+                // Use the newer RemoteResponse API for better feedback and transitions.
+                views.setOnClickResponse(viewId,
+                        RemoteViews.RemoteResponse.fromPendingIntent(pendingIntent));
+            } else {
+                views.setOnClickPendingIntent(viewId, pendingIntent);
+            }
+        }
     }
 
     /** Hide the countdown from the remote views for a smaller layout. */
@@ -299,7 +332,7 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
     /**
      * Updates the given app widgets' contents. Called when an app widget instance was added to a
      * widget host (e.g. home screen) (including after onRestored(), when widgets get restored from
-     * backup) and periodically at updatePeriodMillis (if it's not 0).
+     * backup) and periodically at updatePeriodMillis (if it's not 0; every 30 minutes or longer).
      */
     @Override
     public void onUpdate(@NonNull Context context, @NonNull AppWidgetManager appWidgetManager,
@@ -314,13 +347,30 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
         ComponentName componentName = getComponentName(context);
         AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
 
-        // Get the array of widget IDs, and if it's not empty, call updateWidgets() to update them.
-        if (appWidgetManager != null) {
-            int[] appWidgetIds = appWidgetManager.getAppWidgetIds(componentName);
+        if (appWidgetManager == null) {
+            return;
+        }
 
-            if (appWidgetIds.length > 0) {
-                updateWidgets(context, appWidgetManager, appWidgetIds, state);
-            }
+        int[] appWidgetIds = appWidgetManager.getAppWidgetIds(componentName);
+
+        if (appWidgetIds == null || appWidgetIds.length == 0) {
+            return;
+        }
+
+        if (Build.VERSION.SDK_INT >= 31) {
+            // API 31+: Build one responsive RemoteViews instance for all widgets.
+            RemoteViews views = buildRemoteViews(context, state, null);
+
+            // Update by IDs rather than componentName since within AppWidgetServiceImpl, targeting
+            // by IDs triggers a full state replacement of their cached RemoteViews. In contrast,
+            // blasting to the ComponentName is historically handled by the framework as a
+            // partial/template update that can append actions to cached state instead of cleanly
+            // replacing it. Furthermore, targeting by ID addresses Home Screen launcher vs.
+            // Lock Screen host without relying on provider-level broadcasting.
+            appWidgetManager.updateAppWidget(appWidgetIds, views);
+        } else {
+            // Update each widget with a custom size RemoteViews instance.
+            updateWidgets(context, appWidgetManager, appWidgetIds, state);
         }
     }
 
@@ -350,31 +400,41 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
         }
     }
 
+    @NonNull
+    static PendingIntent makeActionIntent(Context context, String action) {
+        return makeActionIntent(context, action, false);
+    }
+
     /**
      * Constructs a PendingIntent for the widget to send an action event to this Receiver.
-     * <br/>
-     * Workaround: A unique requestCode value makes the PendingIntent != previous Intents, to work
-     * around a bug on Wear OS 4.0, Android 13.0 Tiramisu API 33.
-     * The bug does not appear on Wear OS 6.0, Android 16.0 Baklava API 36.0.
-     * <br/>
-     * Test case: In the Watch display of a BBQ Timer notification, tap Pause, Reset, then Run.
-     * Repeated taps on Pause and Run work fine, the Reset and Stop buttons work fine, yet the
+     * <p>
+     * @param useWorkaround If true, use a unique requestCode value to make the PendingIntent !=
+     *                      previous Intents, to work around a bug on Wear OS 4.0, Android 13.0
+     *                      Tiramisu API 33. The bug does not appear on Wear OS 6.0, Android 16.0
+     *                      Baklava API 36.0.
+     *                      If false, use a stable requestCode (the hash of the action) for
+     *                      stability on the Lock Screen. This gives the OS fewer PendingIntents
+     *                      to manage than a counter.
+     * <p>
+     * Test case: In the Watch display of a BBQ Timer notification, tap Pause, Reset, then Run. The
      * Pause -> Reset -> Run sequence fails to deliver the second ACTION_RUN Intent to
-     * TimerAppWidgetProvider. Then onReceive() doesn't log an Intent or start the timer.
-     * <br/>
+     * TimerAppWidgetProvider. Then onReceive() doesn't log an Intent or start the timer. But
+     * repeated taps on Pause and Run work fine, and the Reset and Stop buttons work fine.
+     * <p>
      * Unsuccessful workarounds: Change the Intent's action, add Intent flags or extras, reorder or
      * rename the action buttons in the Wear notification, ...
-     * <br/>
-     * NOTE: After installing the Pixel Watch app on Android, go into Setting and turn on the app's
+     * <p>
+     * NOTE: After installing Pixel Watch app on a phone, go into Settings and turn on that app's
      * ability to send notifications and its special app access permission for notification access.
      */
     @NonNull
-    static PendingIntent makeActionIntent(Context context, String action) {
+    static PendingIntent makeActionIntent(Context context, String action, boolean useWorkaround) {
         Intent intent = new Intent(context, TimerAppWidgetProvider.class);
+        int requestCode = useWorkaround ? requestCodeCounter.incrementAndGet() : action.hashCode();
 
         intent.setAction(action).addFlags(Intent.FLAG_RECEIVER_FOREGROUND);
-        return PendingIntent.getBroadcast(context, ++workaroundCount, intent,
-                PendingIntent.FLAG_IMMUTABLE);
+        return PendingIntent.getBroadcast(context, requestCode, intent,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
     }
 
     /**
