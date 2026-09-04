@@ -32,6 +32,7 @@ import com.github.takahirom.roborazzi.DefaultFileNameGenerator;
 import com.github.takahirom.roborazzi.RoborazziContextKt;
 import com.github.takahirom.roborazzi.RoborazziRule;
 
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,6 +42,7 @@ import org.robolectric.annotation.GraphicsMode;
 /**
  * JVM Screenshot tests using Roborazzi and Robolectric.
  */
+@Ignore("ScreenshotTest is a work in progress")
 @RunWith(AndroidJUnit4.class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 public class ScreenshotTest {

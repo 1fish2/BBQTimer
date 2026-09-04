@@ -78,6 +78,11 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
             R.id.smallResetChronometerText,
     };
 
+    // Widget viewMapping sizes.
+    private static final SizeF SIZE_SMALL = new SizeF(40, 40);
+    private static final SizeF SIZE_MEDIUM = new SizeF(180, 40);
+    private static final SizeF SIZE_LARGE = new SizeF(274, 40);
+
     // Actions for internal, explicit Intents. They should not be listed in an intent-filter.
     static final String ACTION_RUN_PAUSE  = "com.onefishtwo.bbqtimer.ACTION_RUN_PAUSE";
     static final String ACTION_RUN        = "com.onefishtwo.bbqtimer.ACTION_RUN";
@@ -101,7 +106,7 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
      */
     @androidx.annotation.VisibleForTesting
     @SuppressLint("ApplySharedPref")
-    public static void saveActionForTesting(@NonNull Context context, String action) {
+    public static void saveActionForTesting(@NonNull Context context, @Nullable String action) {
         context.getSharedPreferences(PREFS_TESTING, Context.MODE_PRIVATE).edit()
                 .putString(PREF_LAST_ACTION, action).commit();
     }
@@ -132,8 +137,8 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
     /**
      * Updates the contents of all of this provider's app widgets, for the cases where the widgets
      * exist and the content changed, e.g. start/pause/stop. It does partial updates on lock screen
-     * widgets for efficiency and to try to avoid the lock screen widget refresh bug, and full
-     * updates on home screen widgets to use responsive layouts.
+     * widgets for efficiency and to try to avoid the lock screen widget refresh bug; full updates
+     * on home screen widgets to use responsive layouts.
      */
     static void updateAllWidgets(@NonNull Context context, @NonNull ApplicationState state) {
         AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
@@ -159,6 +164,8 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
                     Log.d(TAG, "Partially updating LOCK_SCREEN widget id=" + id);
                     appWidgetManager.partiallyUpdateAppWidget(id, partialViews);
                 } else {
+                    // TODO: Accumulate an array of these IDs, then update them all at once for
+                    //  speed, but it might rarely help.
                     Log.d(TAG, "Fully updating HOME_SCREEN widget id=" + id);
                     appWidgetManager.updateAppWidget(id, responsiveViews);
                 }
@@ -239,6 +246,9 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
 
     /**
      * Builds a full, flat {@link RemoteViews} with all click handlers and dynamic states.
+     * <p>
+     * TODO: Use Kotlin's `apply { ... }` or `also { ... }` scoping functions for fluent builder
+     * patterns when configuring RemoteViews, sharing more code with buildPartialRemoteViews().
      */
     @NonNull
     private static RemoteViews buildFlatRemoteViews(@NonNull Context context,
@@ -256,9 +266,7 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
                 ? options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH, 180)
                 : 180;
 
-        int childIndex = timer.isRunning() ? RUNNING_CHRONOMETER_CHILD
-                : timer.isStopped() ? RESET_CHRONOMETER_CHILD
-                : PAUSED_CHRONOMETER_CHILD;
+        int childIndex = getFlipperChildIndex(timer);
         int bankOffset = Build.VERSION.SDK_INT < 31 && minWidth >= 117 && minWidth < 184 ? 3 : 0;
         int extendedChildIndex = childIndex + bankOffset;
         @IdRes int extendedChildId = CHILD_IDS[extendedChildIndex];
@@ -335,10 +343,10 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
             RemoteViews smallViews = new RemoteViews(mediumViews);
             hideTheCountUp(smallViews);
 
-            Map<SizeF, RemoteViews> viewMapping = new ArrayMap<>();
-            viewMapping.put(new SizeF( 40, 40), smallViews);
-            viewMapping.put(new SizeF(180, 40), mediumViews);
-            viewMapping.put(new SizeF(274, 40), views);
+            Map<SizeF, RemoteViews> viewMapping = new ArrayMap<>(3);
+            viewMapping.put(SIZE_SMALL, smallViews);
+            viewMapping.put(SIZE_MEDIUM, mediumViews);
+            viewMapping.put(SIZE_LARGE, views);
 
             views = new RemoteViews(viewMapping);
         }
@@ -359,9 +367,7 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
 
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.app_widget);
 
-        int childIndex = timer.isRunning() ? RUNNING_CHRONOMETER_CHILD
-                : timer.isStopped() ? RESET_CHRONOMETER_CHILD
-                : PAUSED_CHRONOMETER_CHILD;
+        int childIndex = getFlipperChildIndex(timer);
         @IdRes int extendedChildId = CHILD_IDS[childIndex];
         @DrawableRes int actionButton = childIndex == PAUSED_CHRONOMETER_CHILD
                 ? R.drawable.ic_action_play
@@ -405,6 +411,16 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
         views.setDisplayedChild(R.id.viewFlipper, childIndex);
 
         return views;
+    }
+
+    /**
+     * Returns R.id.viewFlipper's childIndex per run/stopped/paused timer. Smallish widgets on
+     * API < 31 use a second bank (see extendedChildIndex) to select smaller text.
+     */
+    private static int getFlipperChildIndex(TimeCounter timer) {
+        return timer.isRunning() ? RUNNING_CHRONOMETER_CHILD
+                : timer.isStopped() ? RESET_CHRONOMETER_CHILD
+                : PAUSED_CHRONOMETER_CHILD;
     }
 
     private static void setOnClickHandler(@NonNull RemoteViews views, @IdRes int viewId,
@@ -497,11 +513,11 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
      * <p>
      * @param useWorkaround If true, use a unique requestCode value to make the PendingIntent !=
      *                      previous Intents, to work around a bug on Wear OS 4.0, Android 13.0
-     *                      Tiramisu API 33. The bug does not appear on Wear OS 6.0, Android 16.0
-     *                      Baklava API 36.0.
-     *                      If false, use a stable requestCode (the hash of the action) for
-     *                      stability on the Lock Screen. This gives the OS fewer PendingIntents
-     *                      to manage than the unique requestCode.
+     *                      Tiramisu API 33 where notifications don't update the smartwatch. That
+     *                      bug does not appear on Wear OS 6.0, Android 16.0 Baklava API 36.0.
+     *                      If false, use a stable requestCode (action hashCode) for stability on
+     *                      the Lock Screen. This gives the OS fewer PendingIntents to manage than
+     *                      the unique requestCode, hoping to reduce the missed widget updates.
      * <p>
      * Test case: In the Watch display of a BBQ Timer notification, tap Pause, Reset, then Run. The
      * Pause -> Reset -> Run sequence fails to deliver the second ACTION_RUN Intent to
@@ -537,28 +553,24 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
 
         super.onReceive(context, intent);
 
+        if (action == null) {
+            return;
+        }
+
         ApplicationState state = ApplicationState.sharedInstance(context);
         TimeCounter timer      = state.getTimeCounter();
 
-        if (ACTION_RUN_PAUSE.equals(action)) { // Run/Pause button
-            timer.togglePauseRun();
-            saveStateAndUpdateUI(context, state);
-        } else if (ACTION_RUN.equals(action)) { // Run (Play) button
-            timer.start();
-            saveStateAndUpdateUI(context, state);
-        } else if (ACTION_PAUSE.equals(action)) { // Pause button
-            timer.pause();
-            saveStateAndUpdateUI(context, state);
-        } else if (ACTION_RESET.equals(action)) { // Reset button
-            timer.reset();
-            saveStateAndUpdateUI(context, state);
-        } else if (ACTION_STOP.equals(action)) { // Stop button or swiped the notification
-            timer.stop();
-            saveStateAndUpdateUI(context, state);
-        } else if (ACTION_CYCLE.equals(action)) { // tapped the time text
-            timer.cycle();
-            saveStateAndUpdateUI(context, state);
+        switch (action) {
+            case ACTION_RUN_PAUSE -> timer.togglePauseRun();
+            case ACTION_RUN       -> timer.start();
+            case ACTION_PAUSE     -> timer.pause();
+            case ACTION_RESET     -> timer.reset();
+            case ACTION_STOP      -> timer.stop(); // Stop button or swiped the notification
+            case ACTION_CYCLE     -> timer.cycle(); // tapped the time text
+            default               -> { return; }
         }
+
+        saveStateAndUpdateUI(context, state);
     }
 
     /** Saves app state then updates the Notifications and Widgets. */

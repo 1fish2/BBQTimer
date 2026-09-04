@@ -66,43 +66,52 @@ public class ResumeReceiver extends BroadcastReceiver {
         String action = intent.getAction();
 
         TimerAppWidgetProvider.saveIntentActionForTesting(context, intent);
-
         Log.i(TAG, "Broadcast intent: " + action);
 
-        if (Intent.ACTION_MY_PACKAGE_REPLACED.equals(action)) {
-            ApplicationState state = ApplicationState.sharedInstance(context);
+        if (action == null) {
+            return;
+        }
 
+        switch (action) {
+            case Intent.ACTION_MY_PACKAGE_REPLACED -> handlePackageReplaced(context);
+            case Intent.ACTION_TIME_CHANGED,  // "android.intent.action.TIME_SET"
+                 Intent.ACTION_TIMEZONE_CHANGED -> AlarmReceiver.handleClockAdjustment(context);
+            case Intent.ACTION_LOCALE_CHANGED -> handleLocaleChanged(context);
+            case Intent.ACTION_BOOT_COMPLETED -> handleBootCompleted(context);
+        }
+    }
+
+    private void handlePackageReplaced(@NonNull Context context) {
+        ApplicationState state = ApplicationState.sharedInstance(context);
+
+        AlarmReceiver.updateNotifications(context);
+        TimerAppWidgetProvider.updateAllWidgets(context, state);
+    }
+
+    private void handleLocaleChanged(@NonNull Context context) {
+        Notifier notifier = new Notifier(context);
+
+        notifier.onLocaleChange();
+        AlarmReceiver.updateNotifications(context);
+    }
+
+    private void handleBootCompleted(@NonNull Context context) {
+        // BOOT_COMPLETED: Reboot then login or Android 15+ Force Stop then user interaction.
+        // Force Stop cancels the app's PendingIntents and grays out its widgets.
+        // NOTE: Usually after Reboot, ApplicationState.sharedInstance() already stopped the
+        // timer due to a future startTime, and in that case Notifications will be clear and
+        // APPWIDGET_UPDATE Intents will reset the widgets.
+        // This code stops the timer after the remaining Reboot case and resets everything after
+        // the Force Stop case.
+        ApplicationState state = ApplicationState.sharedInstance(context);
+        TimeCounter timer = state.getTimeCounter();
+
+        if (!timer.isStopped()) {
+            timer.stop();
+            state.save(context);
+            Log.i(TAG, "*** Stopped and saved the timer after BOOT_COMPLETED");
             AlarmReceiver.updateNotifications(context);
             TimerAppWidgetProvider.updateAllWidgets(context, state);
-
-        } else if (Intent.ACTION_TIME_CHANGED.equals(action) // "android.intent.action.TIME_SET"
-                || Intent.ACTION_TIMEZONE_CHANGED.equals(action)) {
-            AlarmReceiver.handleClockAdjustment(context);
-
-        } else if (Intent.ACTION_LOCALE_CHANGED.equals(action)) {
-            Notifier notifier = new Notifier(context);
-
-            notifier.onLocaleChange();
-            AlarmReceiver.updateNotifications(context);
-
-        } else if (Intent.ACTION_BOOT_COMPLETED.equals(action)) {
-            // BOOT_COMPLETED: Reboot then login or Android 15+ Force Stop then user interaction.
-            // Force Stop cancels the app's PendingIntents and grays out its widgets.
-            // NOTE: Usually after Reboot, ApplicationState.sharedInstance() already stopped the
-            // timer due to a future startTime, and in that case Notifications will be clear and
-            // APPWIDGET_UPDATE Intents will reset the widgets.
-            // This code stops the timer after the remaining Reboot case and resets everything after
-            // the Force Stop case.
-            ApplicationState state = ApplicationState.sharedInstance(context);
-            TimeCounter timer = state.getTimeCounter();
-
-            if (!timer.isStopped()) {
-                timer.stop();
-                state.save(context);
-                Log.i(TAG, "*** Stopped and saved the timer after BOOT_COMPLETED");
-                AlarmReceiver.updateNotifications(context);
-                TimerAppWidgetProvider.updateAllWidgets(context, state);
-            }
         }
     }
 }
