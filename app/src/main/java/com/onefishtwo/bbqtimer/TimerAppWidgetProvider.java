@@ -161,12 +161,12 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
                 Bundle options = appWidgetManager.getAppWidgetOptions(id);
 
                 if (isLockScreenWidget(options)) {
-                    Log.d(TAG, "Partially updating LOCK_SCREEN widget id=" + id);
+                    // Log.d(TAG, "Partially updating LOCK_SCREEN widget id=" + id);
                     appWidgetManager.partiallyUpdateAppWidget(id, partialViews);
                 } else {
                     // TODO: Accumulate an array of these IDs, then update them all at once for
                     //  speed, but it might rarely help.
-                    Log.d(TAG, "Fully updating HOME_SCREEN widget id=" + id);
+                    // Log.d(TAG, "Fully updating HOME_SCREEN widget id=" + id);
                     appWidgetManager.updateAppWidget(id, responsiveViews);
                 }
             }
