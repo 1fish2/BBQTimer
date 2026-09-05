@@ -19,9 +19,9 @@ import com.onefishtwo.bbqtimer.state.ApplicationState;
 
 /**
  * A Dialog to edit the recipe list.
- * </p>
+ * <p>
  * The FragmentActivity that instantiates a RecipeEditorDialogFragment must implement
- * RecipeEditorDialogFragmentListener.
+ * {@link RecipeEditorDialogFragmentListener}.
  */
 public class RecipeEditorDialogFragment extends DialogFragment {
     public static final String TAG = "RecipeEditor";
@@ -30,32 +30,27 @@ public class RecipeEditorDialogFragment extends DialogFragment {
 
     /**
      * The FragmentActivity that instantiates a RecipeEditorDialogFragment must implement this
-     * Listener interface so it can get the edited results. */
-    @SuppressWarnings("unused")
+     * Listener interface so it can get the edited results.
+     */
     public interface RecipeEditorDialogFragmentListener {
         /** The user changed (edited or reset) the recipes. */
-        void onEditorDialogPositiveClick(DialogInterface dialog, @NonNull String text);
+        void onEditorDialogPositiveClick(@NonNull String text);
         /** The user canceled the dialog; no change to the recipes. */
         @SuppressWarnings("EmptyMethod")
-        void onEditorDialogNegativeClick(DialogInterface dialog);
-        // Override onDismiss() to notice all dismissal cases? onDismiss() calling hideKeyboard()
-        // doesn't work. Maybe it gets called too late.
+        void onEditorDialogNegativeClick();
     }
 
     private RecipeEditorDialogFragmentListener listener;
     private EditText textField;
 
     /** Creates and initializes a recipe list editor dialog. */
-    public static RecipeEditorDialogFragment newInstance(String text) {
+    @NonNull
+    public static RecipeEditorDialogFragment newInstance(@Nullable String text) {
         RecipeEditorDialogFragment dialog = new RecipeEditorDialogFragment();
         Bundle bundle = new Bundle();
+        String contents = (text == null || text.trim().isEmpty()) ? FALLBACK_CONTENTS : text;
 
-        // Store the text in the Arguments Bundle so it's available on re-Create.
-        // TODO: Save contents in onPause() or onDestroy()?
-        if (text.trim().isEmpty()) {
-            text = FALLBACK_CONTENTS;
-        }
-        bundle.putString(KEY_TEXT_CONTENTS, text);
+        bundle.putString(KEY_TEXT_CONTENTS, contents);
         dialog.setArguments(bundle);
         return dialog;
     }
@@ -83,7 +78,7 @@ public class RecipeEditorDialogFragment extends DialogFragment {
      * To avoid the delay and potential ANR, just bypass the irrelevant TextClassifier. (This
      * problem might not occur on API 28 - 29, but it's safer to do this uniformly.)
      */
-    public static void workaroundTextClassifier(EditText editText) {
+    public static void workaroundTextClassifier(@NonNull EditText editText) {
         if (Build.VERSION.SDK_INT >= 27) {
             editText.setTextClassifier(TextClassifier.NO_OP);
         }
@@ -93,28 +88,43 @@ public class RecipeEditorDialogFragment extends DialogFragment {
     public String getInitContents() {
         Bundle bundle = getArguments();
 
-        if (bundle == null) {
-            return FALLBACK_CONTENTS;
-        } else {
+        if (bundle != null) {
             String string = bundle.getString(KEY_TEXT_CONTENTS);
-            return string == null ? FALLBACK_CONTENTS : string;
+
+            if (string != null) {
+                return string;
+            }
         }
+
+        return FALLBACK_CONTENTS;
     }
 
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-        try {
+
+        if (context instanceof RecipeEditorDialogFragmentListener) {
             listener = (RecipeEditorDialogFragmentListener) context;
-        } catch (ClassCastException e) {
+        } else {
             throw new ClassCastException(
                     context + " expected to implement RecipeEditorDialogFragmentListener");
         }
     }
 
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        listener = null;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        textField = null;
+    }
+
     private void hideKeyboard(@Nullable View v) {
         MainActivity.hideKeyboard(requireActivity(), v);
-        // TODO: v.clearFocus() to avoid showing keyboard again if you open the app from the background?
     }
 
     /**
@@ -130,15 +140,10 @@ public class RecipeEditorDialogFragment extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
-        // This theme shows a floating dialog. (Another theme can cover the Activity, which goes
-        // edge-to-edge on API 35+ and *might* require applying edge-to-edge insets here to respond
-        // well to the soft keyboard.)
         MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(requireActivity(),
                 R.style.AppThemeOverlay_Material3_MaterialAlertDialog);
         LayoutInflater inflater = requireActivity().getLayoutInflater();
         View content = inflater.inflate(R.layout.dialog_edit_recipes, null);
-        // "To ensure consistent styling, the custom view should be inflated or constructed using
-        // the alert dialog's themed context obtained via getContext()."
 
         builder.setView(content);
 
@@ -153,46 +158,55 @@ public class RecipeEditorDialogFragment extends DialogFragment {
             textField.setHorizontalScrollBarEnabled(true);
             textField.setScrollbarFadingEnabled(false);
 
-            textField.setText(getInitContents());
+            // Set initial text only on fresh creation to preserve user edits on rotation. Actually,
+            // change listeners will restore some state unless disabled via setSaveEnabled(false).
+            //noinspection VariableNotUsedInsideIf
+            if (savedInstanceState == null) {
+                textField.setText(getInitContents());
+            } else {
+                // Workaround: Get the cursor/caret rendered after rotation.
+                textField.post(() -> {
+                    if (textField != null) {
+                        textField.requestFocus();
+                        textField.invalidate();
+                    }
+                });
+            }
         }
 
-        builder.setPositiveButton(R.string.save_edits, this::saveEdits)
-                .setNeutralButton(R.string.reset, this::resetEdits)
-                .setNegativeButton(R.string.cancel_edits, this::cancelEdits);
+        builder.setPositiveButton(R.string.save_edits, (dialog, which) -> {
+                    String text = textField != null ? textField.getText().toString() : "";
+                    saveText(text);
+                })
+                .setNeutralButton(R.string.reset, (dialog, which) -> saveText(""))
+                .setNegativeButton(R.string.cancel_edits, (dialog, which) -> cancelEdits(dialog));
 
         return builder.create();
     }
 
     /**
-     * <li>Hides the soft keyboard.
-     * <li>Passes the given recipes (or if blank, the default recipes) to the listener.
+     * Hides the soft keyboard and passes the given recipes (or if blank, the default recipes)
+     * to the listener.
      */
-    private void saveText(@NonNull DialogInterface dialog, @NonNull String recipes) {
+    private void saveText(@NonNull String recipes) {
         hideKeyboard(textField);
 
-        if (recipes.trim().isEmpty()) {
-            recipes = ApplicationState.getDefaultRecipes(textField.getContext());
+        String resolvedRecipes = recipes.trim().isEmpty()
+                ? ApplicationState.getDefaultRecipes(requireContext())
+                : recipes;
+
+        if (listener != null) {
+            listener.onEditorDialogPositiveClick(resolvedRecipes);
         }
-        listener.onEditorDialogPositiveClick(dialog, recipes);
     }
 
-    /** DialogInterface.OnClickListener for the "Save" button. */
-    @SuppressWarnings("unused")
-    private void saveEdits(@NonNull DialogInterface dialog, int which) {
-        saveText(dialog, textField.getText().toString());
-    }
-
-    /** DialogInterface.OnClickListener for the "Reset" button. */
-    @SuppressWarnings("unused")
-    private void resetEdits(@NonNull DialogInterface dialog, int which) {
-        saveText(dialog, "");
-    }
-
-    /** DialogInterface.OnClickListener for the "Cancel" button. */
-    @SuppressWarnings("unused")
-    private void cancelEdits(@NonNull DialogInterface dialog, int which) {
+    private void cancelEdits(DialogInterface dialog) {
         hideKeyboard(textField);
-        listener.onEditorDialogNegativeClick(dialog);
+
+        if (listener != null) {
+            listener.onEditorDialogNegativeClick();
+        }
+
         dialog.cancel();
     }
 }

@@ -39,6 +39,7 @@ import androidx.annotation.DrawableRes;
 import androidx.annotation.IdRes;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.RawRes;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.RestrictTo;
@@ -88,12 +89,13 @@ public class Notifier {
         void onNotificationPosted();
     }
 
+    @Nullable
     private static NotificationListener notificationListener = null;
 
-    private static boolean builtNotificationChannels = false;
+    private static volatile boolean builtNotificationChannels = false;
 
-    private static boolean checkedForGooglePlayServices = false;
-    private static boolean hasWearOSCompanionApp = false;
+    private static volatile boolean checkedForGooglePlayServices = false;
+    private static volatile boolean hasWearOSCompanionApp = false;
 
     @NonNull
     private final Context context;
@@ -110,7 +112,7 @@ public class Notifier {
      */
     @SuppressWarnings("unused")
     @RestrictTo(RestrictTo.Scope.TESTS)
-    public static void setNotificationListener(NotificationListener listener) {
+    public static void setNotificationListener(@Nullable NotificationListener listener) {
         notificationListener = listener;
     }
 
@@ -132,11 +134,13 @@ public class Notifier {
     }
 
     /** @noinspection SameParameterValue */
+    @NonNull
     private Uri getSoundUri(@RawRes int soundId) {
         return Uri.parse("android.resource://" + context.getPackageName() + "/" + soundId);
     }
 
     /** Constructs a PendingIntent to use as a Notification Action. */
+    @NonNull
     private PendingIntent makeActionIntent(String action) {
         return TimerAppWidgetProvider.makeActionIntent(context, action, true);
     }
@@ -457,8 +461,6 @@ public class Notifier {
             return;
         }
 
-        // TODO: Skip if getNotificationChannel(ALARM_NOTIFICATION_CHANNEL_ID) != null?
-
         createNotificationChannelV26();
         builtNotificationChannels = true;
     }
@@ -540,37 +542,21 @@ public class Notifier {
         }
 
         // Configure custom buttons logic
-        // TODO: Refactor to share code with WearableExtender addActions.
+        // TODO: Refactor to share code with WearableExtender addAction().
         PendingIntent resetIntent = makeActionIntent(TimerAppWidgetProvider.ACTION_RESET);
         remoteViews.setOnClickPendingIntent(R.id.btnReset, resetIntent);
-        if (timer.isPaused() && !timer.isPausedAt0()) {
-            remoteViews.setViewVisibility(R.id.btnReset, View.VISIBLE);
-        } else {
-            remoteViews.setViewVisibility(R.id.btnReset, View.INVISIBLE);
-        }
+        remoteViews.setViewVisibility(R.id.btnReset,
+                timer.isPaused() && !timer.isPausedAt0() ? View.VISIBLE : View.INVISIBLE);
 
         PendingIntent runPauseIntent = makeActionIntent(TimerAppWidgetProvider.ACTION_RUN_PAUSE);
         remoteViews.setOnClickPendingIntent(R.id.btnStart, runPauseIntent);
         remoteViews.setOnClickPendingIntent(R.id.btnPause, runPauseIntent);
-        if (!isRunning) {
-            remoteViews.setViewVisibility(R.id.btnStart, View.VISIBLE);
-        } else {
-            remoteViews.setViewVisibility(R.id.btnStart, View.GONE);
-        }
-
-        if (!timer.isPaused()) {
-            remoteViews.setViewVisibility(R.id.btnPause, View.VISIBLE);
-        } else {
-            remoteViews.setViewVisibility(R.id.btnPause, View.GONE);
-        }
+        remoteViews.setViewVisibility(R.id.btnStart, isRunning ? View.GONE : View.VISIBLE);
+        remoteViews.setViewVisibility(R.id.btnPause, timer.isPaused() ? View.GONE : View.VISIBLE);
 
         PendingIntent stopIntent = makeActionIntent(TimerAppWidgetProvider.ACTION_STOP);
         remoteViews.setOnClickPendingIntent(R.id.btnStop, stopIntent);
-        if (!timer.isStopped()) {
-            remoteViews.setViewVisibility(R.id.btnStop, View.VISIBLE);
-        } else {
-            remoteViews.setViewVisibility(R.id.btnStop, View.INVISIBLE);
-        }
+        remoteViews.setViewVisibility(R.id.btnStop, timer.isStopped() ? View.INVISIBLE : View.VISIBLE);
 
         return remoteViews;
     }
@@ -719,11 +705,13 @@ public class Notifier {
         builder.extend(wearableExtender);
 
         if (soundAlarm) {
-            builder.setSound(getSoundUri(R.raw.cowbell4), REMINDER_STREAM);
-            builder.setVibrate(VIBRATE_PATTERN);
-            builder.setLights(notificationLightColor, 1000, 2000);
+            if (Build.VERSION.SDK_INT < 26) {
+                builder.setSound(getSoundUri(R.raw.cowbell4), REMINDER_STREAM);
+                builder.setVibrate(VIBRATE_PATTERN);
+                builder.setLights(notificationLightColor, 1000, 2000);
+            }
         } else {
-            builder.setSilent(true);
+            builder.setSilent(true); // for phone and wearable
         }
 
         return builder.build();

@@ -27,7 +27,6 @@ import android.app.KeyguardManager;
 import android.app.PendingIntent;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
@@ -806,7 +805,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     @UiThread
-    public void onEditorDialogPositiveClick(DialogInterface dialog, @NonNull String text) {
+    public void onEditorDialogPositiveClick(@NonNull String text) {
         if (!text.equals(state.getRecipes())) { // optimize the no-change case
             state.setRecipes(text);
             state.save(this);
@@ -815,7 +814,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     @UiThread
-    public void onEditorDialogNegativeClick(DialogInterface dialog) {
+    public void onEditorDialogNegativeClick() {
     }
 
     /** Dismiss any popup menu.
