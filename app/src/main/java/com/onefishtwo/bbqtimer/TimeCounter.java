@@ -29,25 +29,22 @@ import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import java.math.RoundingMode;
-import java.text.FieldPosition;
 import java.text.NumberFormat;
-import java.util.Formatter;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
  * A stopwatch time counter (data model).
- * <p/>
+ * <p>
  * The run states are {Running, Paused, Stopped}, where Paused is like Stopped with a
  * Notification that can be viewed and resumed on the Android lock screen.
  */
-@SuppressWarnings("SynchronizationOnStaticField")
 public class TimeCounter {
 
     /**
      * Separator pattern to split hh:mm:ss string into fields: a ":".
-     * <p/>
+     * <p>
      * This needn't handle spaces since the EditText with inputType="time" rejects spaces even from
      * a physical keyboard, restricting typed or pasted characters to [0-9:apm] (maybe more).
      */
@@ -66,13 +63,14 @@ public class TimeCounter {
      */
     @VisibleForTesting
     static class InjectForTesting {
-        String formatElapsedTime(@SuppressWarnings("SameParameterValue") StringBuilder recycle,
-                long elapsedSeconds) {
-            return DateUtils.formatElapsedTime(recycle, elapsedSeconds);
+        @NonNull
+        String formatElapsedTime(@SuppressWarnings("SameParameterValue") StringBuilder recycle, long elapsedSeconds) {
+            return DateUtils.formatElapsedTime(recycle, elapsedSeconds); // "never returns null"
         }
 
+        @NonNull
         Spanned fromHtml(String source) {
-            return Html.fromHtml(source, Html.FROM_HTML_MODE_COMPACT);
+            return Html.fromHtml(source, Html.FROM_HTML_MODE_COMPACT); // "never returns null"
         }
     }
 
@@ -89,50 +87,26 @@ public class TimeCounter {
     private static final String PREF_PAUSE_TIME = "Timer_pauseTime";
 
     /**
-     * The default format string for assembling and HTML-styling a timer duration.<p/>
-     *
+     * The default format string for assembling and HTML-styling a timer duration.
+     * <p>
      * Format arg %1$s is a placeholder for the already-localized HH:MM:SS string from
-     * DateUtils.formatElapsedTime(), e.g. "00:00" or "0:00:00".<p/>
-     *
+     * DateUtils.formatElapsedTime(), e.g. "00:00" or "0:00:00".
+     * <p>
      * Format arg %2$s is a placeholder for the already-localized fractional seconds string, e.g.
      * ".0". The code uses a NumberFormat to format that string instead of an inline format %.1d to
      * suppress the integer part and disable rounding. It's wrapped in &lt;small&gt; HTML tags to
      * make the rapidly changing fractional part less distracting and to make it fit better on
      * screen. This way, "12:34:56.7" fits on a Galaxy Nexus screen.
-     *<p/>
+     * <p>
      * NOTE: This used to use &lt;small&gt;&lt;small&gt; but the fraction digit ".8" would display
      * wider than other digits when the time string got wide enough to need to auto-size down.
      */
     private static final String DEFAULT_TIME_STYLE = "%1$s<small>%2$s</small>";
 
-    // Synchronized on recycledStringBuilder.
-    // The buffer is big enough for hhh:mm:ss.f + HTML markup = 11 + 30, and rounded up.
-    private static final StringBuilder recycledStringBuilder = new StringBuilder(44);
-    private static final Formatter recycledFormatter = new Formatter(recycledStringBuilder);
-
-    // Also synchronized on recycledStringBuilder.
+    // --- Synchronized on FORMAT_LOCK.
+    private static final Object FORMAT_LOCK = new Object();
     private static Locale lastLocale;
     private static NumberFormat fractionFormatter; // constructed on demand and on locale changes
-    private static final StringBuffer recycledStringBuffer = new StringBuffer(2);
-    private static final FieldPosition fractionFieldPosition =
-            new FieldPosition(NumberFormat.FRACTION_FIELD);
-
-    /** Makes locale-specific text formatters if needed, including a locale change. */
-    private static void makeLocaleFormatters() {
-        synchronized (recycledStringBuilder) {
-            Locale locale = Locale.getDefault();
-
-            if (!locale.equals(lastLocale)) {
-                lastLocale = locale;
-                fractionFormatter = NumberFormat.getNumberInstance();
-                fractionFormatter.setMinimumIntegerDigits(0);
-                fractionFormatter.setMaximumIntegerDigits(0);
-                fractionFormatter.setMinimumFractionDigits(1);
-                fractionFormatter.setMaximumFractionDigits(1);
-                fractionFormatter.setRoundingMode(RoundingMode.DOWN);
-            }
-        }
-    }
 
     private boolean isRunning;
     private boolean isPaused;  // distinguishes Paused from Stopped (if !isRunning)
@@ -339,50 +313,66 @@ public class TimeCounter {
     }
 
     /** Formats a millisecond duration in [hh:]mm:ss format like Chronometer does. */
+    @NonNull
     public static String formatHhMmSs(long elapsedMilliseconds) {
         long elapsedSeconds = elapsedMilliseconds / 1000;
-        InjectForTesting injected1 = injected;
+        StringBuilder sb = new StringBuilder(16);
 
-        synchronized (recycledStringBuilder) {
-            return injected1.formatElapsedTime(recycledStringBuilder, elapsedSeconds);
-        }
+        return injected.formatElapsedTime(sb, elapsedSeconds);
     }
 
     /**
      * Formats a millisecond duration in localized [hh:]mm:ss.f format <em>with attached
-     * styles</em>.<p/>
-     *
+     * styles</em>.
+     * <p>
      * QUESTION: Does {@link #DEFAULT_TIME_STYLE} need to be localized for any locale? Do RTL
      * locales need to put the fractional part before the HHMMSS part? If so, make the caller get it
      * from a string resource.
      */
+    @NonNull
     public static Spanned formatHhMmSsFraction(long elapsedMilliseconds) {
         String hhmmss = formatHhMmSs(elapsedMilliseconds);
         double seconds = elapsedMilliseconds / 1000.0;
-        String f;
-        String html;
-
-        makeLocaleFormatters();
-
-        synchronized (recycledStringBuilder) {
-            recycledStringBuffer.setLength(0);
-            f = fractionFormatter.format(seconds, recycledStringBuffer, fractionFieldPosition)
-                    .toString();
-
-            recycledStringBuilder.setLength(0);
-            html = recycledFormatter.format(DEFAULT_TIME_STYLE, hhmmss, f).toString();
-        }
+        String f = formatFraction(seconds);
+        String html = String.format(DEFAULT_TIME_STYLE, hhmmss, f);
 
         return injected.fromHtml(html);
+    }
+
+    /**
+     * Formats fractional seconds using a cached NumberFormat,
+     * updating the formatter only when the system Locale changes.
+     */
+    @NonNull
+    private static String formatFraction(double seconds) {
+        //noinspection SynchronizationOnStaticField
+        synchronized (FORMAT_LOCK) {
+            Locale locale = Locale.getDefault();
+
+            if (!locale.equals(lastLocale) || fractionFormatter == null) {
+                NumberFormat fmt = NumberFormat.getNumberInstance();
+
+                lastLocale = locale;
+                fmt.setMinimumIntegerDigits(0);
+                fmt.setMaximumIntegerDigits(0);
+                fmt.setMinimumFractionDigits(1);
+                fmt.setMaximumFractionDigits(1);
+                fmt.setRoundingMode(RoundingMode.DOWN);
+                fractionFormatter = fmt;
+            }
+
+            return fractionFormatter.format(seconds);
+        }
     }
 
     /**
      * Formats a millisecond duration in the compact format that parseHhMmSs supports, that is,
      * h:mm:ss or m:ss or m, e.g. "7" rather than "07:00".
      * Format 60 minutes as "60" instead of "1:00:00".
-     * <p/>
+     * <p>
      * Derived from {@link DateUtils#formatElapsedTime(long)}.
      */
+    @NonNull
     public static String formatHhMmSsCompact(long elapsedMilliseconds) {
         long elapsedSeconds = elapsedMilliseconds / 1000;
 
@@ -399,15 +389,8 @@ public class TimeCounter {
 
         long seconds = elapsedSeconds;
 
-        synchronized (recycledStringBuilder) {
-            recycledStringBuilder.setLength(0);
-
-            try (Formatter f = new Formatter(recycledStringBuilder, Locale.getDefault())) {
-                String format = seconds == 0 ? "%1$d" : "%1$d:%2$02d";
-
-                return f.format(format, minutes, seconds).toString();
-            }
-        }
+        String format = seconds == 0 ? "%d" : "%d:%02d";
+        return String.format(Locale.getDefault(), format, minutes, seconds);
     }
 
     /**
@@ -430,10 +413,10 @@ public class TimeCounter {
      * Parses a time duration in the form: h:m:s|m:s|m. Each field has zero or more digits,
      * but commonly two digits, dd[:dd[:dd]]. This is forgiving, but it returns -1 if the input
      * isn't in a recognized format. All spaces get squeezed out. The field separator is ":".
-     * <p/>
+     * <p>
      * Returns the parsed number of seconds, or -1 if the input is not in the right format.
      */
-    public static int parseHhMmSs(String duration) {
+    public static int parseHhMmSs(@NonNull String duration) {
         String[] fields = HMS_SEPARATOR.split(duration.replace(" ", ""), 4);
         int result = 0;
 
@@ -469,7 +452,7 @@ public class TimeCounter {
      * The token includes any leading spaces so the match length indicates where the following text
      * (the notes) begin, so they can get italicized.
      */
-    public static int lengthOfLeadingIntervalTime(CharSequence recipe) {
+    public static int lengthOfLeadingIntervalTime(@NonNull CharSequence recipe) {
         Matcher matcher = INTERVAL_TIME_IN_RECIPE.matcher(recipe);
         boolean matched = matcher.lookingAt();
 

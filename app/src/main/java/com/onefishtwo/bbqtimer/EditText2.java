@@ -23,10 +23,10 @@ import android.content.Context;
 import android.graphics.Rect;
 import android.util.AttributeSet;
 
-import com.google.android.material.textfield.TextInputEditText;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import com.google.android.material.textfield.TextInputEditText;
 
 /**
  * Workaround: A subclass of Material Design TextInputEditText with a working OnFocusChangeListener,
@@ -53,12 +53,12 @@ public class EditText2 extends TextInputEditText {
      * Sets a working OnFocusChangeListener without disturbing the inherited mechanism (that doesn't
      * call its OnFocusChangeListener).
      */
-    public void setOnFocusChangeListener2(OnFocusChangeListener listener2) {
+    public void setOnFocusChangeListener2(@Nullable OnFocusChangeListener listener2) {
         focusChangeListener2 = listener2;
     }
 
     @Override
-    protected void onFocusChanged(boolean focused, int direction, Rect previouslyFocusedRect) {
+    protected void onFocusChanged(boolean focused, int direction, @Nullable Rect previouslyFocusedRect) {
         super.onFocusChanged(focused, direction, previouslyFocusedRect);
 
         if (focusChangeListener2 != null) {

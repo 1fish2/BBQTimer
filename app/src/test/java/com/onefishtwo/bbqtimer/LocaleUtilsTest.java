@@ -82,4 +82,10 @@ public class LocaleUtilsTest {
         assertEquals("101°C", formatTemperatureFromFahrenheit(212.9)); // 100.5°C
     }
 
+    @Test
+    public void testFormatTemperatureFromFahrenheitWithExplicitLocale() {
+        assertEquals("32°F", formatTemperatureFromFahrenheit(32.0, Locale.US));
+        assertEquals("0°C", formatTemperatureFromFahrenheit(32.0, Locale.GERMANY));
+    }
+
 }

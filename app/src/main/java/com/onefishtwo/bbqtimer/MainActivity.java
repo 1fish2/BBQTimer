@@ -60,7 +60,6 @@ import android.widget.TextView;
 import androidx.activity.EdgeToEdge;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.core.splashscreen.SplashScreen;
 import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.IdRes;
@@ -78,6 +77,7 @@ import androidx.core.app.NotificationManagerCompat;
 import androidx.core.app.TaskStackBuilder;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
+import androidx.core.splashscreen.SplashScreen;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.core.widget.NestedScrollView;
@@ -94,7 +94,7 @@ import com.onefishtwo.bbqtimer.state.ApplicationState;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.ref.WeakReference;
-import java.util.Vector;
+import java.util.ArrayList;
 
 /**
  * The BBQ Timer's main activity.
@@ -104,7 +104,8 @@ public class MainActivity extends AppCompatActivity
         implements RecipeEditorDialogFragment.RecipeEditorDialogFragmentListener {
     private static final String TAG = "Main";
 
-    /** Enable edge-to-edge display? It's required on API 35+. */
+    /** Enable edge-to-edge display? It's required on API 35+. Its problems on API < 29 might be
+     *  fixed now but there's no strong need to test and debug it thoroughly on Android < Pie. */
     private static final boolean EDGE_TO_EDGE = Build.VERSION.SDK_INT >= 29;
     public static final int REMINDER_STREAM = AudioManager.STREAM_ALARM;
 
@@ -199,7 +200,7 @@ public class MainActivity extends AppCompatActivity
     private ApplicationState state;
     private TimeCounter timer;
     private String lastRecipes; // the last input to styleTheRecipes()
-    private Vector<SpannableString> styledRecipes; // the output from styleTheRecipes()
+    private ArrayList<SpannableString> styledRecipes; // the output from styleTheRecipes()
     private PopupMenu popupMenu;
     private MenuItem lockStatusItem; // the "phone is locked" action bar item
     private int notificationRequestCount;
@@ -247,7 +248,7 @@ public class MainActivity extends AppCompatActivity
         viewConfiguration = -1;
         notifier = new Notifier(this);
         lastRecipes = "";
-        styledRecipes = new Vector<>(20);
+        styledRecipes = new ArrayList<>(20);
         popupMenu = null;
         notificationRequestCount = 0;
 
@@ -343,6 +344,7 @@ public class MainActivity extends AppCompatActivity
      * @param rootView The layout's root {@link View}.
      */
     static void setEdgeToEdgeWindowInsetsListener(@NonNull View rootView) {
+        // EdgeToEdge.enable(this) is already called in onCreate()
         if (EDGE_TO_EDGE) {
             ViewCompat.setOnApplyWindowInsetsListener(rootView,
                     MainActivity::mainWindowInsetsListener);
@@ -415,7 +417,7 @@ public class MainActivity extends AppCompatActivity
      * This is idempotent and fast if the input hasn't changed.
      * <p/>
      * INPUTS: state.getRecipes().<p/>
-     * OUTPUTS: the styledRecipes Vector.
+     * OUTPUTS: the styledRecipes List.
      */
     void styleTheRecipes() {
         String recipes = state.getRecipes();
@@ -436,7 +438,8 @@ public class MainActivity extends AppCompatActivity
             int tokenLength = TimeCounter.lengthOfLeadingIntervalTime(recipe);
             SpannableString ss = new SpannableString(recipe);
 
-            ss.setSpan(new StyleSpan(Typeface.ITALIC), tokenLength, recipeLength, 0);
+            ss.setSpan(new StyleSpan(Typeface.ITALIC), tokenLength, recipeLength,
+                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             styledRecipes.add(ss);
         }
     }
@@ -1148,6 +1151,10 @@ public class MainActivity extends AppCompatActivity
         if (springY != null) {
             springY.cancel();
         }
+
+        // Ensure button scale is restored if animation was interrupted mid-flight
+        pauseResumeButton.setScaleX(1.0f);
+        pauseResumeButton.setScaleY(1.0f);
     }
 
     /**

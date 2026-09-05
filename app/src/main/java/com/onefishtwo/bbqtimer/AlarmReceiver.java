@@ -25,6 +25,7 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
@@ -43,16 +44,10 @@ import com.onefishtwo.bbqtimer.state.ApplicationState;
 public class AlarmReceiver extends BroadcastReceiver {
     private static final String TAG = "AlarmReceiver";
 
-    // Some docs on alarms and doze mode:
-    // https://developer.android.com/preview/features/power-mgmt.html
+    // Some docs on alarms and doze mode that haven't gone offline:
     // https://developer.android.com/reference/android/app/AlarmManager#setAlarmClock(android.app.AlarmManager.AlarmClockInfo,%20android.app.PendingIntent)
-    // https://developer.android.com/preview/testing/guide.html#doze-standby
-    //
-    // See also:
+    // https://developer.android.com/about/versions/14/changes/schedule-exact-alarms#migration
     // https://code.google.com/p/android-developer-preview/issues/detail?id=2225#c11
-    // https://plus.google.com/u/0/+AndroidDevelopers/posts/GdNrQciPwqo
-    // https://plus.google.com/+AndroidDevelopers/posts/94jCkmG4jff
-    // https://newcircle.com/s/post/1739/2015/06/12/diving-into-android-m-doze
     // https://commonsware.com/blog/2015/06/03/random-musing-m-developer-preview-ugly-part-one.html
     // http://stackoverflow.com/search?q=%5Bandroid%5D+doze
     // http://stackoverflow.com/questions/32492770
@@ -105,7 +100,7 @@ public class AlarmReceiver extends BroadcastReceiver {
                 .setAction(Intent.ACTION_EDIT); // distinguish from Launcher & Notifier intents
 
         return PendingIntent.getActivity(context, 0, activityIntent,
-                PendingIntent.FLAG_ONE_SHOT + PendingIntent.FLAG_IMMUTABLE);
+                PendingIntent.FLAG_ONE_SHOT | PendingIntent.FLAG_IMMUTABLE);
     }
 
     /** Get a string description of an Intent, including extras, for debugging. */
@@ -128,6 +123,12 @@ public class AlarmReceiver extends BroadcastReceiver {
         TimeCounter timer = state.getTimeCounter();
         long periodMs     = state.getMillisecondsPerReminder();
         long now          = timer.elapsedRealtimeClock();
+
+        if (periodMs <= 0) { // prevent divide-by-zero
+            Log.w(TAG, "Invalid reminder interval: " + periodMs);
+            return now;
+        }
+
         long timed        = timer.getElapsedTime();
         long untilNextReminder = periodMs - (timed % periodMs);
 
@@ -153,7 +154,7 @@ public class AlarmReceiver extends BroadcastReceiver {
      */
     private static void scheduleNextReminder(@NonNull Context context,
             @NonNull ApplicationState state) {
-        AlarmManager alarmMgr = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
+        AlarmManager alarmMgr = context.getSystemService(AlarmManager.class);
         long nextReminder = nextReminderTime(state);
         PendingIntent pendingIntent = makeAlarmPendingIntent(context, nextReminder);
 
@@ -162,21 +163,40 @@ public class AlarmReceiver extends BroadcastReceiver {
             return;
         }
 
-        setAlarmClockV21(context, alarmMgr, state, nextReminder, pendingIntent);
+        setAlarmClock(context, alarmMgr, state, nextReminder, pendingIntent);
     }
 
     /**
      * Converts the elapsed time value to a wall clock time value and calls setAlarmClock().
-     * setAlarmClock() alarms should wake the device if dozing in v23, unlike set().
+     * setAlarmClock() is supposed to be exact and wake the device even if dozing.
+     * <p>
+     * setAlarmClock() displays a user-visible alarm clock icon in the notification bar, with
+     * further alarm info in the system notification widgets.
+     * <p>
+     * API 31 - 32: setAlarmClock() needs revocable SCHEDULE_EXACT_ALARM. The app could ask the user
+     * to grant the SCHEDULE_EXACT_ALARM permission via a dialog then invoke an intent that includes
+     * the ACTION_REQUEST_SCHEDULE_EXACT_ALARM intent action.
+     * <p>
+     * API 33+: non-revocable USE_EXACT_ALARM for calendar and alarm clock apps.
+     * <p>
+     * TODO: Ask the user for permission? Degrade to setExactAndAllowWhileIdle() or an inexact
+     *  alarm? Is that useful enough?
      *
      * @param nextReminder the SystemClock.elapsedRealtime() for the next reminder notification
      * @param pendingIntent the PendingIntent to wake this receiver in nextReminder msec
      */
     @RequiresPermission(anyOf = {
+            android.Manifest.permission.USE_EXACT_ALARM,
             android.Manifest.permission.SCHEDULE_EXACT_ALARM,
             android.Manifest.permission.SET_ALARM})
-    private static void setAlarmClockV21(Context context, @NonNull AlarmManager alarmMgr,
+    private static void setAlarmClock(Context context, @NonNull AlarmManager alarmMgr,
             @NonNull ApplicationState state, long nextReminder, PendingIntent pendingIntent) {
+        if (Build.VERSION.SDK_INT >= 31 && !alarmMgr.canScheduleExactAlarms()) {
+            Log.e(TAG, "Cannot schedule exact alarm: missing permission");
+            Toast.makeText(context, R.string.need_alarm_access, Toast.LENGTH_LONG).show();
+            return;
+        }
+
         PendingIntent activityPI = makeActivityPendingIntent(context);
         TimeCounter timer        = state.getTimeCounter();
         long reminderWallTime    = timer.elapsedTimeToWallTime(nextReminder);
@@ -184,22 +204,10 @@ public class AlarmReceiver extends BroadcastReceiver {
                 new AlarmManager.AlarmClockInfo(reminderWallTime, activityPI);
 
         try {
-            // This alarm type is supposed to be exact even in doze mode, and it displays a
-            // user-visible alarm clock icon in the notification bar, with further alarm info in the
-            // system notification widgets.
             alarmMgr.setAlarmClock(info, pendingIntent);
         } catch (SecurityException e) {
-            // API 31 - 32: setAlarmClock() needs revocable SCHEDULE_EXACT_ALARM. In this
-            // case, could ask the user to grant the SCHEDULE_EXACT_ALARM permission via a dialog
-            // then invoke an intent that includes the ACTION_REQUEST_SCHEDULE_EXACT_ALARM intent
-            // action.
-            // API 33+: non-revocable USE_EXACT_ALARM for calendar and alarm clock apps.
-            Log.e(TAG, "Need SCHEDULE_EXACT_ALARM permission", e);
-            // NOTE: Use a Toast so this shows up even for a home screen widget. It doesn't show up
-            // when using a notification's Play button.
-            // TODO: Ask the user for permission? Degrade to setExactAndAllowWhileIdle() or an
-            // inexact alarm? Is that useful enough?
-            // https://developer.android.com/about/versions/14/changes/schedule-exact-alarms#migration
+            Log.e(TAG, "Need SCHEDULE_EXACT_ALARM / USE_EXACT_ALARM permission", e);
+            // NOTE: A Toast appears for a home screen widget but not for a notification button.
             Toast.makeText(context, R.string.need_alarm_access, Toast.LENGTH_LONG).show();
         }
     }
@@ -243,7 +251,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 
     /** Cancels any outstanding reminders by canceling the AlarmManager Intents. */
     public static void cancelReminders(@NonNull Context context) {
-        AlarmManager alarmMgr = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
+        AlarmManager alarmMgr = context.getSystemService(AlarmManager.class);
         PendingIntent pendingIntent = makeAlarmPendingIntent(context, 0);
         PendingIntent activityPI = makeActivityPendingIntent(context);
 

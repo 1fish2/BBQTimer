@@ -6,17 +6,26 @@ import androidx.core.text.util.LocalePreferences;
 
 import java.util.Locale;
 
-public class LocaleUtils {
+/**
+ * Utility methods for locale-aware formatting and preferences.
+ */
+public final class LocaleUtils {
+
+    private LocaleUtils() {
+        // Private constructor to prevent instantiation of utility class
+    }
 
     /** Returns the default Locale intended for formatting dates, numbers, and/or currencies. */
+    @NonNull
     public static Locale getDefaultFormatLocale() {
         return Locale.getDefault(Locale.Category.FORMAT);
     }
 
-    /** Indicates whether the given locale should format temperatures in Fahrenheit °F rather
+    /**
+     * Indicates whether the given locale should format temperatures in Fahrenheit °F rather
      * than Celsius °C.
-     * </p>
-     * To clarify <code>LocalePreferences.getTemperatureUnit(Locale locale, boolean resolved)</code>:
+     * <p>
+     * To clarify {@link LocalePreferences#getTemperatureUnit(Locale)}:
      * <p style="margin-left: 30px">
      *   Returns any user regional preference temperature unit (from the Locale's extension value)
      *   on Android 14+, else optionally "resolves" a fallback from the Locale, else returns "".
@@ -40,12 +49,18 @@ public class LocaleUtils {
     /** Format a temperature in Fahrenheit °F or Celsius °C, rounded to an integer. */
     @NonNull
     public static String formatTemperatureFromFahrenheit(double fahrenheit) {
-        Locale locale = getDefaultFormatLocale();
+        return formatTemperatureFromFahrenheit(fahrenheit, getDefaultFormatLocale());
+    }
 
+    /**
+     * Format a temperature in Fahrenheit °F or Celsius °C for a specified locale, rounded to an integer.
+     */
+    @NonNull
+    public static String formatTemperatureFromFahrenheit(double fahrenheit, @NonNull Locale locale) {
         if (useFahrenheit(locale)) {
             return String.format(locale, "%.0f°F", fahrenheit);
         } else {
-            double celsius = (fahrenheit - 32.0) * 5 / 9;
+            double celsius = (fahrenheit - 32.0) * 5.0 / 9.0;
             return String.format(locale, "%.0f°C", celsius);
         }
     }
