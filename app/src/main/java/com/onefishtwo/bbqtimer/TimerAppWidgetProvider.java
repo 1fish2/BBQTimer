@@ -418,9 +418,11 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
      * API < 31 use a second bank (see extendedChildIndex) to select smaller text.
      */
     private static int getFlipperChildIndex(TimeCounter timer) {
-        return timer.isRunning() ? RUNNING_CHRONOMETER_CHILD
-                : timer.isStopped() ? RESET_CHRONOMETER_CHILD
-                : PAUSED_CHRONOMETER_CHILD;
+        return switch (timer.getState()) {
+            case RUNNING -> RUNNING_CHRONOMETER_CHILD;
+            case STOPPED -> RESET_CHRONOMETER_CHILD;
+            default -> PAUSED_CHRONOMETER_CHILD;
+        };
     }
 
     private static void setOnClickHandler(@NonNull RemoteViews views, @IdRes int viewId,

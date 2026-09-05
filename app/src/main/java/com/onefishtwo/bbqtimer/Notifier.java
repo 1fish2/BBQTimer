@@ -215,13 +215,11 @@ public class Notifier {
      */
     @NonNull
     String timerRunState(@NonNull TimeCounter timer) {
-        if (timer.isRunning()) {
-            return context.getString(R.string.timer_running);
-        } else if (timer.isPaused()) {
-            return context.getString(R.string.timer_paused);
-        } else {
-            return context.getString(R.string.timer_stopped);
-        }
+        return switch (timer.getState()) {
+            case RUNNING -> context.getString(R.string.timer_running);
+            case PAUSED -> context.getString(R.string.timer_paused);
+            default -> context.getString(R.string.timer_stopped);
+        };
     }
 
     /**
@@ -235,15 +233,17 @@ public class Notifier {
      */
     @NonNull
     String timerRunStateValue(@NonNull TimeCounter timer) {
-        if (timer.isRunning()) {
-            String timerHhMmSs = timer.formatHhMmSs();
-            return context.getString(R.string.running_up_at, timerHhMmSs);
-        } else if (timer.isPaused()) {
-            Spanned pauseTime = timer.formatHhMmSsFraction();
-            return context.getString(R.string.timer_paused_at, pauseTime);
-        } else {
-            return context.getString(R.string.timer_stopped);
-        }
+        return switch (timer.getState()) {
+            case RUNNING -> {
+                String timerHhMmSs = timer.formatHhMmSs();
+                yield context.getString(R.string.running_up_at, timerHhMmSs);
+            }
+            case PAUSED -> {
+                Spanned pauseTime = timer.formatHhMmSsFraction();
+                yield context.getString(R.string.timer_paused_at, pauseTime);
+            }
+            default -> context.getString(R.string.timer_stopped);
+        };
     }
 
     /**

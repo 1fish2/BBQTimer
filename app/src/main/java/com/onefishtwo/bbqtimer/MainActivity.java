@@ -1017,11 +1017,12 @@ public class MainActivity extends AppCompatActivity
     /** Updates the count-up (elapsed) time and alarm count-down time displays. */
     @UiThread
     private void displayTime() {
-        Spanned formatted         = timer.formatHhMmSsFraction();
-        @ColorRes int textColorsId =
-                timer.isRunning() ? R.color.running_timer_colors
-                : timer.isPaused() ? pausedTimerColors()
-                : R.color.reset_timer_colors;
+        Spanned formatted = timer.formatHhMmSsFraction();
+        @ColorRes int textColorsId = switch (timer.getState()) {
+            case RUNNING -> R.color.running_timer_colors;
+            case PAUSED -> pausedTimerColors();
+            default -> R.color.reset_timer_colors;
+        };
         ColorStateList textColors = ContextCompat.getColorStateList(this, textColorsId);
         long countdownToNextAlarm = state.getMillisecondsToNextAlarm();
 

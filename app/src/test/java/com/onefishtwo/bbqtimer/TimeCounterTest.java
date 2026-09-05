@@ -219,4 +219,133 @@ public class TimeCounterTest {
         assertEquals( 3, lengthOfLeadingIntervalTime("\r\n7\r\n"));
         assertEquals( 1, lengthOfLeadingIntervalTime("7.5"));
     }
+
+    static class FakeClock implements TimeCounter.Clock {
+        long timeMsec = 1_000_000;
+
+        @Override
+        public long elapsedRealtime() {
+            return timeMsec;
+        }
+    }
+
+    @Test
+    public void testStateAndClockTransitions() {
+        FakeClock fakeClock = new FakeClock();
+        TimeCounter counter = new TimeCounter(fakeClock);
+
+        assertEquals(TimeCounter.State.STOPPED, counter.getState());
+        assertEquals(0, counter.getElapsedTime());
+
+        counter.start();
+        assertEquals(TimeCounter.State.RUNNING, counter.getState());
+
+        fakeClock.timeMsec += 5000;
+        assertEquals(5000, counter.getElapsedTime());
+
+        counter.pause();
+        assertEquals(TimeCounter.State.PAUSED, counter.getState());
+
+        fakeClock.timeMsec += 3000;
+        assertEquals(5000, counter.getElapsedTime());
+
+        counter.start();
+        assertEquals(TimeCounter.State.RUNNING, counter.getState());
+
+        fakeClock.timeMsec += 2000;
+        assertEquals(7000, counter.getElapsedTime());
+
+        counter.stop();
+        assertEquals(TimeCounter.State.STOPPED, counter.getState());
+        assertEquals(0, counter.getElapsedTime());
+    }
+
+    /** toggleRunPause(): Stopped or Paused -> Running -> Paused. */
+    @Test
+    public void testToggleRunPause() {
+        FakeClock fakeClock = new FakeClock();
+        TimeCounter counter = new TimeCounter(fakeClock);
+
+        assertEquals(TimeCounter.State.STOPPED, counter.getState());
+        assertEquals(0, counter.getElapsedTime());
+
+        counter.toggleRunPause();
+        assertEquals(TimeCounter.State.RUNNING, counter.getState());
+        assertEquals(0, counter.getElapsedTime());
+
+        fakeClock.timeMsec += 5000;
+        assertEquals(TimeCounter.State.RUNNING, counter.getState());
+        assertEquals(5000, counter.getElapsedTime());
+
+        counter.toggleRunPause();
+        assertEquals(TimeCounter.State.PAUSED, counter.getState());
+        assertEquals(5000, counter.getElapsedTime());
+
+        fakeClock.timeMsec += 3000;
+        assertEquals(TimeCounter.State.PAUSED, counter.getState());
+        assertEquals(5000, counter.getElapsedTime());
+
+        counter.toggleRunPause();
+        assertEquals(TimeCounter.State.RUNNING, counter.getState());
+        assertEquals(5000, counter.getElapsedTime());
+
+        fakeClock.timeMsec += 2000;
+        assertEquals(TimeCounter.State.RUNNING, counter.getState());
+        assertEquals(7000, counter.getElapsedTime());
+
+        counter.stop();
+        assertEquals(TimeCounter.State.STOPPED, counter.getState());
+        assertEquals(0, counter.getElapsedTime());
+    }
+
+    /** togglePauseRun(): Stopped or Running -> Paused -> Running. */
+    @Test
+    public void testTogglePauseRun() {
+        FakeClock fakeClock = new FakeClock();
+        TimeCounter counter = new TimeCounter(fakeClock);
+
+        assertEquals(TimeCounter.State.STOPPED, counter.getState());
+        assertEquals(0, counter.getElapsedTime());
+
+        counter.togglePauseRun();
+        assertEquals(TimeCounter.State.PAUSED, counter.getState());
+        assertEquals(0, counter.getElapsedTime());
+
+        fakeClock.timeMsec += 2000;
+        assertEquals(TimeCounter.State.PAUSED, counter.getState());
+        assertEquals(0, counter.getElapsedTime());
+
+        counter.togglePauseRun();
+        assertEquals(TimeCounter.State.RUNNING, counter.getState());
+        assertEquals(0, counter.getElapsedTime());
+
+        fakeClock.timeMsec += 3000;
+        assertEquals(TimeCounter.State.RUNNING, counter.getState());
+        assertEquals(3000, counter.getElapsedTime());
+
+        fakeClock.timeMsec += 1000;
+        counter.togglePauseRun();
+        assertEquals(TimeCounter.State.PAUSED, counter.getState());
+        assertEquals(4000, counter.getElapsedTime());
+
+        fakeClock.timeMsec += 3000;
+        assertEquals(TimeCounter.State.PAUSED, counter.getState());
+        assertEquals(4000, counter.getElapsedTime());
+
+        fakeClock.timeMsec += 7000;
+        assertEquals(TimeCounter.State.PAUSED, counter.getState());
+        assertEquals(4000, counter.getElapsedTime());
+
+        counter.togglePauseRun();
+        assertEquals(TimeCounter.State.RUNNING, counter.getState());
+        assertEquals(4000, counter.getElapsedTime());
+
+        fakeClock.timeMsec += 2000;
+        assertEquals(TimeCounter.State.RUNNING, counter.getState());
+        assertEquals(6000, counter.getElapsedTime());
+
+        counter.stop();
+        assertEquals(TimeCounter.State.STOPPED, counter.getState());
+        assertEquals(0, counter.getElapsedTime());
+    }
 }

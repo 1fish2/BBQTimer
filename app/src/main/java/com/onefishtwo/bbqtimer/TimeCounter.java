@@ -108,18 +108,37 @@ public class TimeCounter {
     private static Locale lastLocale;
     private static NumberFormat fractionFormatter; // constructed on demand and on locale changes
 
-    private boolean isRunning;
-    private boolean isPaused;  // distinguishes Paused from Stopped (if !isRunning)
+    /** Timer state machine enum. */
+    public enum State {
+        STOPPED,
+        PAUSED,
+        RUNNING
+    }
+
+    /** Clock interface for injectable time sourcing in unit tests. */
+    @FunctionalInterface
+    public interface Clock {
+        long elapsedRealtime();
+    }
+
+    @NonNull private final Clock clock;
+    @NonNull private State state = State.STOPPED;
     private long startTime; // elapsedRealtimeClock() when the timer was started
     private long pauseTime; // elapsedRealtimeClock() when the timer was paused
 
     public TimeCounter() {
+        this(SystemClock::elapsedRealtime);
+    }
+
+    @VisibleForTesting
+    public TimeCounter(@NonNull Clock clockSource) {
+        this.clock = clockSource;
     }
 
     /** Saves state to a preferences editor. */
     public void save(@NonNull SharedPreferences.Editor prefsEditor) {
-        prefsEditor.putBoolean(PREF_IS_RUNNING, isRunning);
-        prefsEditor.putBoolean(PREF_IS_PAUSED, isPaused);
+        prefsEditor.putBoolean(PREF_IS_RUNNING, isRunning());
+        prefsEditor.putBoolean(PREF_IS_PAUSED, isPaused());
         prefsEditor.putLong(PREF_START_TIME, startTime);
         prefsEditor.putLong(PREF_PAUSE_TIME, pauseTime);
     }
@@ -133,21 +152,28 @@ public class TimeCounter {
      * reboot, so it's best to save the normalized state soon.
      */
     public boolean load(@NonNull SharedPreferences prefs) {
-        isRunning = prefs.getBoolean(PREF_IS_RUNNING, false);
-        isPaused  = prefs.getBoolean(PREF_IS_PAUSED, false);  // absent in older data
+        boolean isRunning = prefs.getBoolean(PREF_IS_RUNNING, false);
+        boolean isPaused  = prefs.getBoolean(PREF_IS_PAUSED, false);  // absent in older data
         startTime = prefs.getLong(PREF_START_TIME, 0);
         pauseTime = prefs.getLong(PREF_PAUSE_TIME, 0);
+
+        if (isRunning) {
+            state = State.RUNNING;
+        } else if (isPaused) {
+            state = State.PAUSED;
+        } else {
+            state = State.STOPPED;
+        }
 
         boolean needToSave = false;
 
         // Enforce invariants and normalize the state.
-        if (isRunning) {
-            isPaused = false;
+        if (state == State.RUNNING) {
             if (startTime > elapsedRealtimeClock()) { // Must've rebooted.
                 stop();
                 needToSave = true;
             }
-        } else if (isPaused) {
+        } else if (state == State.PAUSED) {
             if (startTime > pauseTime || startTime > elapsedRealtimeClock()) {
                 stop();
                 needToSave = true;
@@ -169,9 +195,8 @@ public class TimeCounter {
     }
 
     /** Returns the underlying clock time, in milliseconds since boot. */
-    // TODO: Inject the clock for testability.
     public long elapsedRealtimeClock() {
-        return SystemClock.elapsedRealtime();
+        return clock.elapsedRealtime();
     }
 
     /** Converts from the elapsed realtime clock (ELAPSED) to the realtime wall clock (RTC). */
@@ -179,19 +204,25 @@ public class TimeCounter {
         return elapsed - elapsedRealtimeClock() + System.currentTimeMillis();
     }
 
+    /** Returns the current timer state enum. */
+    @NonNull
+    public State getState() {
+        return state;
+    }
+
     /** Returns true if the timer is Running (not Stopped/Paused). */
     public boolean isRunning() {
-        return isRunning;
+        return state == State.RUNNING;
     }
 
     /** Returns true if the timer is Paused (not Stopped/Running). */
     public boolean isPaused() {
-        return !isRunning && isPaused;
+        return state == State.PAUSED;
     }
 
     /** Returns true if the timer is Stopped (not Running/Paused). */
     public boolean isStopped() {
-        return !isRunning && !isPaused;
+        return state == State.STOPPED;
     }
 
     /**
@@ -210,43 +241,38 @@ public class TimeCounter {
      */
     @NonNull
     String runState() {
-        if (isRunning) {
-            return "Running";
-        } else if (isPaused) {
-            return "Paused";
-        } else {
-            return "Stopped";
-        }
+        return switch (state) {
+            case RUNNING -> "Running";
+            case PAUSED -> "Paused";
+            default -> "Stopped";
+        };
     }
 
     /** Returns the timer's (Stopped/Paused/Running) elapsed time, in milliseconds. */
     public long getElapsedTime() {
-        return (isRunning ? elapsedRealtimeClock() : pauseTime) - startTime;
+        return (isRunning() ? elapsedRealtimeClock() : pauseTime) - startTime;
     }
 
     /** Stops and clears the timer to 0:00. */
     public void stop() {
         startTime = pauseTime = 0;
-        isRunning = false;
-        isPaused  = false;
+        state = State.STOPPED;
     }
 
     /** Starts or resumes the timer. */
     public void start() {
-        if (!isRunning) {
+        if (state != State.RUNNING) {
             startTime = elapsedRealtimeClock() - (pauseTime - startTime);
-            isRunning = true;
-            isPaused  = false;
+            state = State.RUNNING;
         }
     }
 
     /** Pauses the timer. */
     public void pause() {
-        if (isRunning) {
+        if (state == State.RUNNING) {
             pauseTime = elapsedRealtimeClock();
-            isRunning = false;
         }
-        isPaused = true;
+        state = State.PAUSED;
     }
 
     /**
@@ -257,12 +283,12 @@ public class TimeCounter {
      */
     @SuppressWarnings("UnusedReturnValue")
     public boolean toggleRunPause() {
-        if (isRunning) {
+        if (isRunning()) {
             pause();
         } else {
             start();
         }
-        return isRunning;
+        return isRunning();
     }
 
     /**
@@ -273,12 +299,12 @@ public class TimeCounter {
      */
     @SuppressWarnings("UnusedReturnValue")
     public boolean togglePauseRun() {
-        if (isPaused) {
+        if (isPaused()) {
             start();
         } else {
             pause();
         }
-        return isRunning;
+        return isRunning();
     }
 
     /** Cycles the state: Paused at 0:00 or Stopped -> Running -> Paused -> Stopped. */
@@ -295,8 +321,7 @@ public class TimeCounter {
     /** Resets the timer to Paused at 0:00. */
     public void reset() {
         startTime = pauseTime = 0;
-        isRunning = false;
-        isPaused  = true;
+        state = State.PAUSED;
     }
 
     /** Formats this TimeCounter's millisecond duration in localized [hh:]mm:ss format. */
