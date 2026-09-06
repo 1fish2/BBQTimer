@@ -21,22 +21,24 @@ package com.onefishtwo.bbqtimer.state;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.res.Resources;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 
 import com.onefishtwo.bbqtimer.LocaleUtils;
 import com.onefishtwo.bbqtimer.R;
+import com.onefishtwo.bbqtimer.ResumeReceiver;
 import com.onefishtwo.bbqtimer.TimeCounter;
 
 /**
  * Saves the application's state persistently in SharedPreferences and caches it in a static
- * variable while the process is in memory.<p/>
- *
- * This does not currently provide listener notifications.<p/>
- *
+ * variable while the process is in memory.
+ * <p>
+ * This does not currently provide listener notifications.
+ * <p>
  * The setters only update the state in memory. Call {@link #save} to persist the changes.
+ * <p>
+ * TODO: Migrate to Kotlin async I/O to fix the StrictMode disk I/O policy violations.
  */
 public class ApplicationState {
     private static final String TAG = "ApplicationState";
@@ -50,8 +52,8 @@ public class ApplicationState {
     /** PERSISTENT STATE filename. */
     private static final String APPLICATION_PREF_FILE = "BBQ_Timer_Prefs";
 
-    /** PERSISTENT STATE IDs. */
-    // psf String PREF_MAIN_ACTIVITY_IS_VISIBLE = "App_mainActivityIsVisible"; // Deleted ID
+    /** PERSISTENT STATE IDs. DO NOT reuse deleted IDs to maintain persistent state compatibility. */
+    // Deleted: PREF_MAIN_ACTIVITY_IS_VISIBLE = "App_mainActivityIsVisible";
     private static final String PREF_ENABLE_REMINDERS = "App_enableReminders";
     private static final String PREF_SECONDS_PER_REMINDER = "App_secondsPerReminder";
     private static final String PREF_RECIPES = "App_recipes";
@@ -59,15 +61,15 @@ public class ApplicationState {
     private static volatile ApplicationState sharedInstance;
 
     private final TimeCounter timeCounter = new TimeCounter();
-    private boolean enableReminders;
-    private int secondsPerReminder;
-    private String recipes = FALLBACK_RECIPES;
+    private volatile boolean enableReminders;
+    private volatile int secondsPerReminder;
+    private volatile String recipes = FALLBACK_RECIPES;
 
     /**
      * Returns the shared instance, using context to load the persistent state if needed and to save
      * the normalized-loaded state if needed. (See {@link TimeCounter#load} and
-     * {@link com.onefishtwo.bbqtimer.ResumeReceiver}.)
-     *<p/>
+     * {@link ResumeReceiver}.)
+     * <p>
      * NOTE: After updating the shared instance, call {@link #save} to save it persistently.
      */
     @NonNull
@@ -76,11 +78,12 @@ public class ApplicationState {
             //noinspection SynchronizeOnThis
             synchronized (ApplicationState.class) {
                 if (sharedInstance == null) {
+                    Context appContext = context.getApplicationContext();
                     ApplicationState state = new ApplicationState();
-                    boolean needToSave = state.load(context);
+                    boolean needToSave = state.load(appContext);
 
                     if (needToSave) {
-                        state.save(context);
+                        state.save(appContext);
                         Log.i(TAG, "*** Stopped and saved the timer");
                     }
 
@@ -114,15 +117,16 @@ public class ApplicationState {
      * results when {@link TimeCounter#load(SharedPreferences)} had to reset the timer.
      */
     boolean load(@NonNull Context context) {
+        Context appContext = context.getApplicationContext();
         SharedPreferences prefs =
-                context.getSharedPreferences(APPLICATION_PREF_FILE, Context.MODE_PRIVATE);
+                appContext.getSharedPreferences(APPLICATION_PREF_FILE, Context.MODE_PRIVATE);
 
         boolean needToSave    = timeCounter.load(prefs);
         enableReminders       = prefs.getBoolean(PREF_ENABLE_REMINDERS, true);
         int secs              = prefs.getInt(PREF_SECONDS_PER_REMINDER, 5 * 60);
         secondsPerReminder    = boundIntervalTimeSeconds(secs);
 
-        String defaultRecipes = getDefaultRecipes(context);
+        String defaultRecipes = getDefaultRecipes(appContext);
         recipes               = prefs.getString(PREF_RECIPES, defaultRecipes);
 
         return needToSave;
@@ -135,27 +139,28 @@ public class ApplicationState {
             return context.getString(R.string.recipes,
                     LocaleUtils.formatTemperatureFromFahrenheit(145),  // done temp for fish
                     LocaleUtils.formatTemperatureFromFahrenheit(165)); // done temp for burgers
-        } catch (Resources.NotFoundException e) {
+        } catch (Exception e) { // resource not found; string formatting exception
             return FALLBACK_RECIPES;
         }
     }
 
     /** Saves persistent state using context. */
     public void save(@NonNull Context context) {
+        Context appContext = context.getApplicationContext();
         SharedPreferences prefs =
-                context.getSharedPreferences(APPLICATION_PREF_FILE, Context.MODE_PRIVATE);
+                appContext.getSharedPreferences(APPLICATION_PREF_FILE, Context.MODE_PRIVATE);
         SharedPreferences.Editor prefsEditor = prefs.edit();
 
         timeCounter.save(prefsEditor);
-        prefsEditor.putBoolean(PREF_ENABLE_REMINDERS, enableReminders);
-        prefsEditor.putInt(PREF_SECONDS_PER_REMINDER, secondsPerReminder);
-        prefsEditor.putString(PREF_RECIPES, recipes);
-        prefsEditor.apply();
+        prefsEditor.putBoolean(PREF_ENABLE_REMINDERS, enableReminders)
+                .putInt(PREF_SECONDS_PER_REMINDER, secondsPerReminder)
+                .putString(PREF_RECIPES, recipes)
+                .apply();
     }
 
     /**
-     * Returns the shared TimeCounter instance.<p/>
-     *
+     * Returns the shared TimeCounter instance.
+     * <p>
      * NOTE: The TimeCounter is a shared, mutable object. After updating it, call {@link #save} to
      * save it persistently.
      */
@@ -173,8 +178,8 @@ public class ApplicationState {
      * Sets a boolean indicating whether periodic reminder alarms are enabled. Call {@link #save} to
      * save it.
      */
-    public void setEnableReminders(boolean _enableReminders) {
-        this.enableReminders = _enableReminders;
+    public void setEnableReminders(boolean enabled) {
+        this.enableReminders = enabled;
     }
 
     /** Returns the number of seconds between periodic reminder alarms. */
@@ -198,11 +203,11 @@ public class ApplicationState {
 
     /**
      * Sets the number of seconds between periodic reminder alarms, within limits.
-     * </p>
+     * <p>
      * Call {@link #save} to save the updated state.
      */
-    public void setSecondsPerReminder(int _secondsPerReminder) {
-        this.secondsPerReminder = boundIntervalTimeSeconds(_secondsPerReminder);
+    public void setSecondsPerReminder(int seconds) {
+        this.secondsPerReminder = boundIntervalTimeSeconds(seconds);
     }
 
     /** Formats the reminder interval time like h:mm:ss. */
