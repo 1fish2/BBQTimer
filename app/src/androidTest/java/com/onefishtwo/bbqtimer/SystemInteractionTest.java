@@ -23,35 +23,46 @@ package com.onefishtwo.bbqtimer;
 
 import static android.Manifest.permission.POST_NOTIFICATIONS;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.Color;
+import android.graphics.Rect;
 import android.os.Build;
 import android.os.RemoteException;
-import android.view.Surface;
+import android.os.SystemClock;
+import android.util.Log;
+import android.util.TypedValue;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SdkSuppress;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.rule.GrantPermissionRule;
+import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry;
+import androidx.test.runner.lifecycle.Stage;
 import androidx.test.uiautomator.By;
+import androidx.test.uiautomator.Configurator;
 import androidx.test.uiautomator.UiDevice;
 import androidx.test.uiautomator.UiObject2;
 import androidx.test.uiautomator.Until;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExternalResource;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.Locale;
 import java.util.regex.Pattern;
 
 /**
@@ -59,10 +70,8 @@ import java.util.regex.Pattern;
  * Verifies behavior beyond the app's internal GUI, such as Notifications and App Shortcuts.
  * Requires an unlocked Android emulator or device.
  * <p>
- * TODO: Check that the app display changes properly with rotation, text scaling, etc.; also with
- *  the popup menu open and with the recipe editor open.
- * <p>
- * TODO: Speed up some of the delays.
+ * TODO: Also test with the popup menu open and with the recipe editor open. Test more features in
+ *  portrait and landscape modes.
  */
 @RunWith(AndroidJUnit4.class)
 public class SystemInteractionTest {
@@ -71,15 +80,153 @@ public class SystemInteractionTest {
     private static final String PACKAGE_NAME = "com.onefishtwo.bbqtimer";
     private static final int TIMEOUT = 5000;
 
+    @SuppressWarnings("NewClassNamingConvention")
+    enum NightDayMode {
+        NIGHT,
+        DAY,
+        UNDEFINED;
+
+        static NightDayMode fromUiModeBits(int mode) {
+            return switch (mode & Configuration.UI_MODE_NIGHT_MASK) {
+                case Configuration.UI_MODE_NIGHT_YES -> NIGHT;
+                case Configuration.UI_MODE_NIGHT_NO -> DAY;
+                default -> UNDEFINED;
+            };
+        }
+
+        static NightDayMode fromContext(Context context) {
+            return fromUiModeBits(context.getResources().getConfiguration().uiMode);
+        }
+    }
+
+    interface CheckExpectation {
+        boolean check();
+    }
+
+    static boolean pollForExpectation(CheckExpectation checker) {
+        long deadline = SystemClock.uptimeMillis() + TIMEOUT;
+
+        while (SystemClock.uptimeMillis() < deadline) {
+            if (checker.check()) {
+                return true;
+            }
+            SystemClock.sleep(100);
+        }
+
+        return false;
+    }
+
+    /** Waits up to TIMEOUT for the Context's configuration to reflect expectedNightMode. */
+    private boolean waitForNightMode(@NonNull Context ctx, @NonNull NightDayMode expectedNightMode) {
+        return pollForExpectation(() -> NightDayMode.fromContext(ctx) == expectedNightMode);
+    }
+
     /**
-     * Since `testInstrumentationRunnerArguments clearPackageData: 'true'` resets the app's state,
-     * grant POST_NOTIFICATIONS permission before the test starts (on API levels that require
+     * Rule that saves device settings (Day/Night mode, font scale, rotation) before each test
+     * and restores them afterward.
+     */
+    @SuppressWarnings({"JUnitTestCaseWithNoTests", "NewClassNamingConvention"})
+    private static class RestoreSystemSettings extends ExternalResource {
+        private String originalNightMode = "no";
+        private String originalFontScale = "1.0";
+        private String originalAccelRotation = "1";
+        private long automatorIdleTimeout;
+
+        @Override
+        protected void before() {
+            UiDevice dev = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+            Context ctx = ApplicationProvider.getApplicationContext();
+
+            automatorIdleTimeout = Configurator.getInstance().getWaitForIdleTimeout();
+            originalNightMode = readNightMode(dev, ctx);
+            originalFontScale = readFontScale(dev);
+            originalAccelRotation = readAccelRotation(dev);
+        }
+
+        @NonNull
+        private String readNightMode(@NonNull UiDevice dev, @NonNull Context ctx) {
+            try {
+                String nightOutput = dev.executeShellCommand("cmd uimode night").toLowerCase(Locale.US);
+
+                if (nightOutput.contains("yes")) {
+                    return "yes";
+                } else if (nightOutput.contains("auto")) {
+                    return "auto";
+                } else {
+                    return "no";
+                }
+            } catch (Exception ignored) {
+                return NightDayMode.fromContext(ctx) == NightDayMode.NIGHT ? "yes" : "no";
+            }
+        }
+
+        @NonNull
+        private String readFontScale(@NonNull UiDevice dev) {
+            try {
+                String scale = dev.executeShellCommand("settings get system font_scale").trim();
+
+                return (scale.isEmpty() || scale.contains("null")) ? "1.0" : scale;
+            } catch (Exception ignored) {
+                return "1.0";
+            }
+        }
+
+        @NonNull
+        private String readAccelRotation(@NonNull UiDevice dev) {
+            try {
+                String accel = dev.executeShellCommand("settings get system accelerometer_rotation").trim();
+
+                return (accel.isEmpty() || accel.contains("null")) ? "1" : accel;
+            } catch (Exception ignored) {
+                return "1";
+            }
+        }
+
+        @Override
+        protected void after() {
+            UiDevice dev = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+
+            // Try to dismiss remaining popups/menus
+            try {
+                dev.pressBack();
+                dev.pressHome();
+            } catch (Exception ignored) {}
+
+            // Restore Night Mode
+            try {
+                dev.executeShellCommand("cmd uimode night " + originalNightMode);
+            } catch (Exception ignored) {}
+
+            // Restore Font Scale
+            try {
+                dev.executeShellCommand("settings put system font_scale " + originalFontScale);
+            } catch (Exception ignored) {}
+
+            // Restore Orientation & Accelerometer Rotation via high-level UiDevice methods
+            try {
+                dev.setOrientationNatural();
+                if ("0".equals(originalAccelRotation)) {
+                    dev.freezeRotation();
+                } else {
+                    dev.unfreezeRotation();
+                }
+            } catch (Exception ignored) {}
+
+            Configurator.getInstance().setWaitForIdleTimeout(automatorIdleTimeout);
+        }
+    }
+
+    /**
+     * Grant POST_NOTIFICATIONS permission before a test starts (on API levels that require
      * notifications permission) so it won't wait for a user to grant permissions.
      */
     @Rule
     public final GrantPermissionRule permissionRule =
             Build.VERSION.SDK_INT >= 33 ? GrantPermissionRule.grant(POST_NOTIFICATIONS)
             : null;
+
+    @Rule
+    public final TestRule settingsRule = new RestoreSystemSettings();
 
     @Before
     public void setUp() throws RemoteException {
@@ -89,24 +236,11 @@ public class SystemInteractionTest {
         if (!device.isScreenOn()) {
             device.wakeUp();
         }
-        device.pressHome();
+
+        device.pressHome(); // these tests begin on the Home screen
     }
 
-    @After
-    public void tearDown() throws IOException, RemoteException {
-        // Try to dismiss any remaining popups/menus
-        device.pressBack();
-        device.pressHome();
-
-        // Restore system settings
-        device.executeShellCommand("cmd uimode night no");
-        device.executeShellCommand("settings put system accelerometer_rotation 1");
-        device.setOrientationNatural();
-
-        // Ensure system UI settles before the next test (or Orchestrator) starts
-        device.waitForIdle();
-    }
-
+    /** Gets an app string resource. */
     @NonNull
     private String getString(int resId) {
         return context.getString(resId);
@@ -130,6 +264,24 @@ public class SystemInteractionTest {
     private void launchApp() {
         launchApp(null);
     }
+
+    /** Returns the Activity that is in the foreground. */
+    @Nullable
+    private Activity getResumedActivity() {
+        final Activity[] activityHolder = new Activity[1];
+
+        InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
+            Collection<Activity> resumedActivities =
+                    ActivityLifecycleMonitorRegistry.getInstance().getActivitiesInStage(Stage.RESUMED);
+            if (!resumedActivities.isEmpty()) {
+                activityHolder[0] = resumedActivities.iterator().next();
+            }
+        });
+
+        return activityHolder[0];
+    }
+
+    // --- Tests --------------------------------------------------------------
 
     @Test
     public void testNotificationDrawer() {
@@ -165,131 +317,174 @@ public class SystemInteractionTest {
     @Test
     @SdkSuppress(minSdkVersion = 25)
     public void testAppShortcuts() {
-        device.pressHome();
+        int width = device.getDisplayWidth();
+        int height = device.getDisplayHeight();
 
         // Find the app icon in the Pixel launcher's app drawer.
         // Note: If the icon is on the Home screen after the test infrastructure installed a test
-        // app, it's a temporary icon added by the Predicted app icon feature. On Android 37.1 its
-        // long-press menu has a non-standard toggle between "Actions" like "App info" and
-        // "Shortcuts" defined by the app. Workaround: Use the app drawer, not the Home screen.
-        device.pressHome();
-        device.swipe(device.getDisplayWidth() / 2, device.getDisplayHeight() - 100,
-                device.getDisplayWidth() / 2, 100, 10);
-        
+        // app, that's a "Predicted app" temporary icon, and on Android 37.1 its long-press menu has
+        // a non-standard toggle between "Actions" (like "App info") and app "Shortcuts".
+        // Workaround: Use the app drawer, not the Home screen.
+        device.swipe(width / 2, height - 300, width / 2, 100, 10);
+
         String appName = getString(R.string.app_name);
         UiObject2 appIcon = device.wait(Until.findObject(By.text(appName)), TIMEOUT);
 
         assertNotNull("BBQ Timer app icon should be in the App Drawer", appIcon);
 
-        // Long press (click with duration)
-        appIcon.click(1500);
+        // Long press to open the menu
+        appIcon.click(800);
 
-        // Use a Pattern to match either the short or long label
+        // Use a Pattern to match either the short or long menu item label
         String shortLabel = getString(R.string.start_at_0_short);
         String longLabel = getString(R.string.start_at_0_long);
         Pattern labelPattern = Pattern.compile(
                 Pattern.quote(shortLabel) + "|" + Pattern.quote(longLabel));
         UiObject2 startShortcut = device.wait(Until.findObject(By.text(labelPattern)), TIMEOUT);
-        assertNotNull("Start shortcut should be visible (short or long label)", startShortcut);
+        assertNotNull("\"Start\" shortcut should be visible (short or long label)", startShortcut);
 
         startShortcut.click();
-        assertTrue("App should be in foreground after shortcut click",
+        Log.i("DEBUG", "1");
+
+        // NOTE: The app's RUNNING timer updates the UI every 100ms when running, which prevents
+        // UIAutomator's waitForIdle() from detecting an idle state, so it'd time out, log, and
+        // return after 10s by default. Set a short idle timeout for quick queries.
+        Configurator.getInstance().setWaitForIdleTimeout(100);
+
+        assertTrue("App should be in the foreground after the shortcut click",
                 device.wait(Until.hasObject(By.pkg(PACKAGE_NAME)), TIMEOUT));
+        Log.i("DEBUG", "2");
 
-        // Check that the timer is running: the 'Run' button description should be gone.
-        // Using Until.gone() with exact By.desc() is fast when the description changes.
-        String runStr = getString(R.string.start);
-        boolean runButtonGone = device.wait(Until.gone(By.desc(runStr)), TIMEOUT);
-        assertTrue("Timer should be running (Run button should change to Pause)", runButtonGone);
-
-        String pauseStr = getString(R.string.pause);
-        UiObject2 pauseButton = device.wait(Until.findObject(By.desc(pauseStr)), TIMEOUT);
-        assertNotNull("Timer should be running (Pause button visible)", pauseButton);
-
-        // TODO: Why does this test take 40 seconds?
+        // The "Stop" button should be visible.
+        String stopStr = getString(R.string.stop);
+        UiObject2 stopButton = device.wait(Until.findObject(By.desc(stopStr)), TIMEOUT);
+        Log.i("DEBUG", "3");
+        assertNotNull("Timer should be running (\"Stop\" button visible)", stopButton);
+        Log.i("DEBUG", "4");
     }
 
     @Test
     @SdkSuppress(minSdkVersion = 29)
     public void testThemeToggle() throws IOException {
         device.executeShellCommand("cmd uimode night yes");
-        try {
-            launchApp();
-            UiObject2 container = device.wait(
-                    Until.findObject(By.res(PACKAGE_NAME, "main_container")), TIMEOUT);
-            assertNotNull("App should be visible in Dark Mode", container);
 
-            int nightMode = context.getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
-            assertEquals("Resources should reflect Night Mode", Configuration.UI_MODE_NIGHT_YES, nightMode);
-        } finally {
-            device.executeShellCommand("cmd uimode night no");
-            int nightMode = context.getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
-            assertEquals("Resources should reflect Light Mode", Configuration.UI_MODE_NIGHT_NO, nightMode);
+        launchApp();
+        UiObject2 container = device.wait(
+                Until.findObject(By.res(PACKAGE_NAME, "main_container")), TIMEOUT);
+        assertNotNull("App should be visible", container);
+
+        // Wait for system configuration to reflect Night Mode
+        assertTrue("System configuration should reflect Night Mode within timeout",
+                waitForNightMode(context, NightDayMode.NIGHT));
+
+        // Verify the running Activity reflects Night Mode and has a dark background
+        Activity activity = getResumedActivity();
+        assertNotNull("MainActivity should be resumed", activity);
+        NightDayMode nightDayMode = NightDayMode.fromContext(activity);
+        assertEquals("Activity resources should reflect Night Mode", NightDayMode.NIGHT, nightDayMode);
+
+        TypedValue typedValue = new TypedValue();
+        assertTrue("Theme should resolve colorBackground",
+                activity.getTheme().resolveAttribute(android.R.attr.colorBackground, typedValue, true));
+        int darkBgColor = typedValue.data;
+        if (Build.VERSION.SDK_INT >= 26) {
+            assertTrue("Night mode background color should have low luminance",
+                    Color.luminance(darkBgColor) < 0.5f);
+        }
+
+        // Switch to Light Mode
+        device.executeShellCommand("cmd uimode night no");
+
+        // Wait for system configuration to reflect Light Mode
+        assertTrue("System configuration should reflect Day Mode within timeout",
+                waitForNightMode(context, NightDayMode.DAY));
+
+        // Poll for the running Activity to update its resources to Day Mode
+        Activity resumed = getResumedActivity();
+        assertTrue("Activity resources should reflect Day Mode within timeout",
+                waitForNightMode(resumed, NightDayMode.DAY));
+
+        // Verify the theme background color is light
+        assertTrue("Theme should resolve colorBackground",
+                resumed.getTheme().resolveAttribute(android.R.attr.colorBackground, typedValue, true));
+        int lightBgColor = typedValue.data;
+        if (Build.VERSION.SDK_INT >= 26) {
+            assertTrue("Light mode background color should have high luminance",
+                    Color.luminance(lightBgColor) >= 0.5f);
         }
     }
 
     @Test
     public void testFontScale() throws IOException {
-        String scale = device.executeShellCommand("settings get system font_scale").trim();
-        final String originalScale = (scale.isEmpty() || scale.contains("null")) ? "1.0" : scale;
+        launchApp();
 
-        try {
-            launchApp();
+        device.executeShellCommand("settings put system font_scale 1.5");
 
-            device.executeShellCommand("settings put system font_scale 1.5");
+        // Wait for the configuration change to propagate to the test process.
+        boolean applied = pollForExpectation(() ->
+                Math.abs(context.getResources().getConfiguration().fontScale - 1.5f) < 0.01f);
+        assertTrue("Font scale 1.5 should be applied to system configuration", applied);
 
-            // Wait for the configuration change to propagate to the test process.
-            boolean applied = false;
-            for (int i = 0; i < 20; i++) {
-                float currentScale = context.getResources().getConfiguration().fontScale;
-                if (Math.abs(currentScale - 1.5f) < 0.01f) {
-                    applied = true;
-                    break;
-                }
-                try { Thread.sleep(200); } catch (InterruptedException ignored) {}
-            }
-            assertTrue("Font scale 1.5 should be applied to system configuration", applied);
+        device.waitForIdle();
 
-            device.waitForIdle();
+        UiObject2 container = device.wait(
+                Until.findObject(By.res(PACKAGE_NAME, "main_container")), TIMEOUT);
+        assertNotNull("App should be visible", container);
 
-            UiObject2 container = device.wait(
-                    Until.findObject(By.res(PACKAGE_NAME, "main_container")), TIMEOUT);
-            assertNotNull("App should be visible with 1.5x font scale", container);
-
-            float currentScale = context.getResources().getConfiguration().fontScale;
-            assertEquals("App should have 1.5x font scale", 1.5f, currentScale, 0.01f);
-        } finally {
-            // Restore original font scale
-            device.executeShellCommand("settings put system font_scale " + originalScale);
-            device.waitForIdle();
-        }
+        float currentScale = context.getResources().getConfiguration().fontScale;
+        assertEquals("App should have 1.5x font scale", 1.5f, currentScale, 0.01f);
     }
 
     @Test
-    public void testRotation() throws IOException, RemoteException {
-        device.executeShellCommand("settings put system accelerometer_rotation 0");
-        try {
-            launchApp();
+    public void testRotation() throws RemoteException {
+        device.freezeRotation(); // for a more controlled test
 
-            device.setOrientationLeft();
-            // Wait for rotation to finish
-            boolean rotated = device.wait(Until.hasObject(By.pkg(PACKAGE_NAME)), TIMEOUT);
-            assertTrue("App should still be visible after rotation", rotated);
-            assertFalse("App should not be in natural orientation (landscape/portrait)",
-                    device.isNaturalOrientation());
+        launchApp();
 
-            int rotation = device.getDisplayRotation();
-            assertTrue("Display should be rotated (landscape/portrait)",
-                    rotation == Surface.ROTATION_90 || rotation == Surface.ROTATION_270);
+        UiObject2 container = device.wait(
+                Until.findObject(By.res(PACKAGE_NAME, "main_container")), TIMEOUT);
+        assertNotNull("App container should be visible", container);
 
-            // TODO: Test that rotation closes the soft keyboard and the popup interval menu, while
-            //  it doesn't close the recipe editor dialog.
+        // Explicitly set to Landscape mode (works on both phones and tablets)
+        device.setOrientationLandscape();
 
-            device.setOrientationNatural();
-            device.wait(Until.hasObject(By.pkg(PACKAGE_NAME)), TIMEOUT);
-        } finally {
-            device.executeShellCommand("settings put system accelerometer_rotation 1");
-            device.setOrientationNatural();
-        }
+        // Wait for the app's Activity configuration to reflect landscape orientation
+        assertTrue("App Activity should reflect landscape orientation",
+                pollForExpectation(() -> {
+                    Activity activity = getResumedActivity();
+                    return activity != null && activity.getResources().getConfiguration().orientation
+                            == Configuration.ORIENTATION_LANDSCAPE;
+                }));
+
+        // Verify the app's container layout bounds are wider than tall in landscape
+        UiObject2 landscapeContainer = device.wait(
+                Until.findObject(By.res(PACKAGE_NAME, "main_container")), TIMEOUT);
+        assertNotNull("App container should be visible in landscape", landscapeContainer);
+        Rect landscapeBounds = landscapeContainer.getVisibleBounds();
+        assertTrue("App layout bounds should be wider than tall in landscape ("
+                + landscapeBounds.width() + " x " + landscapeBounds.height() + ")",
+                landscapeBounds.width() > landscapeBounds.height());
+
+        // TODO: Test that rotation closes the soft keyboard and the popup interval menu, while
+        //  it doesn't close the recipe editor dialog.
+
+        // Explicitly set to Portrait mode (works on both phones and tablets)
+        device.setOrientationPortrait();
+
+        // Wait for the app's Activity configuration to reflect portrait orientation
+        assertTrue("App Activity should reflect portrait orientation",
+                pollForExpectation(() -> {
+                    Activity activity = getResumedActivity();
+                    return activity != null && activity.getResources().getConfiguration().orientation
+                            == Configuration.ORIENTATION_PORTRAIT;
+                }));
+
+        UiObject2 portraitContainer = device.wait(
+                Until.findObject(By.res(PACKAGE_NAME, "main_container")), TIMEOUT);
+        assertNotNull("App container should be visible in portrait", portraitContainer);
+        Rect portraitBounds = portraitContainer.getVisibleBounds();
+        assertTrue("App layout bounds should be taller than wide in portrait ("
+                + portraitBounds.width() + " x " + portraitBounds.height() + ")",
+                portraitBounds.height() > portraitBounds.width());
     }
 }

@@ -88,8 +88,10 @@
               <option name="preferredColumnWidths">
                 <map>
                   <entry key="25_7.1.1_N.1_Nexus_5_xxhdpi_1080x1920" value="120" />
+                  <entry key="36.1_16.0_B_16K_Pixel_Tablet_2560x1600" value="120" />
                   <entry key="37.1_17.0_C_16K_Pixel_10_Pro_1280x2856" value="120" />
                   <entry key="Duration" value="90" />
+                  <entry key="Google Pixel 10 Pro" value="120" />
                   <entry key="Tests" value="360" />
                 </map>
               </option>
@@ -132,6 +134,7 @@
             <AndroidTestResultsTableState>
               <option name="preferredColumnWidths">
                 <map>
+                  <entry key="36.1_16.0_B_16K_Pixel_Tablet_2560x1600" value="120" />
                   <entry key="37.1_17.0_C_16K_Pixel_10_Pro_1280x2856" value="120" />
                   <entry key="Duration" value="90" />
                   <entry key="Tests" value="360" />
@@ -186,6 +189,7 @@
               <option name="preferredColumnWidths">
                 <map>
                   <entry key="25_7.1.1_N.1_Nexus_5_xxhdpi_1080x1920" value="120" />
+                  <entry key="36.1_16.0_B_16K_Pixel_Tablet_2560x1600" value="120" />
                   <entry key="37.1_17.0_C_16K_Pixel_10_Pro_1280x2856" value="120" />
                   <entry key="Duration" value="90" />
                   <entry key="Tests" value="360" />
@@ -241,6 +245,7 @@
               <option name="preferredColumnWidths">
                 <map>
                   <entry key="24_7.0_N_3.2-inch_HVGA_slider_320x480_160dpi" value="120" />
+                  <entry key="36.1_16.0_B_16K_Pixel_Tablet_2560x1600" value="120" />
                   <entry key="37.1_17.0_C_16K_Pixel_10_Pro_1280x2856" value="120" />
                   <entry key="Duration" value="90" />
                   <entry key="Tests" value="360" />
@@ -298,6 +303,7 @@
             <AndroidTestResultsTableState>
               <option name="preferredColumnWidths">
                 <map>
+                  <entry key="36.1_16.0_B_16K_Pixel_Tablet_2560x1600" value="120" />
                   <entry key="37.1_17.0_C_16K_Pixel_10_Pro_1280x2856" value="120" />
                   <entry key="Duration" value="90" />
                   <entry key="Tests" value="360" />
@@ -402,6 +408,7 @@
             <AndroidTestResultsTableState>
               <option name="preferredColumnWidths">
                 <map>
+                  <entry key="36.1_16.0_B_16K_Pixel_Tablet_2560x1600" value="120" />
                   <entry key="37.1_17.0_C_16K_Pixel_10_Pro_1280x2856" value="120" />
                   <entry key="Duration" value="90" />
                   <entry key="Tests" value="360" />
