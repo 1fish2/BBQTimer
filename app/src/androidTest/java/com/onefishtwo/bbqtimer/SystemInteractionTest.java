@@ -71,7 +71,7 @@ import java.util.regex.Pattern;
  * Requires an unlocked Android emulator or device.
  * <p>
  * TODO: Also test with the popup menu open and with the recipe editor open. Test more features in
- *  portrait and landscape modes.
+ *  portrait and landscape modes. Check some Notification contents. Test the home screen widget.
  */
 @RunWith(AndroidJUnit4.class)
 public class SystemInteractionTest {

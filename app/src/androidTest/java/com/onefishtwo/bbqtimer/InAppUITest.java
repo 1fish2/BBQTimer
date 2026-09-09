@@ -90,8 +90,6 @@ import org.junit.runner.RunWith;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /** Within-app Espresso UI tests. */
-// TODO: Test the app's home screen widget.
-// TODO: Add a multi-app UIAutomation test of the app's notifications.
 @LargeTest
 @RunWith(AndroidJUnit4.class)
 public class InAppUITest implements Notifier.NotificationListener {
