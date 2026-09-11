@@ -73,14 +73,21 @@ public class DialogIdlingResource implements IdlingResource {
 
     @Override
     public boolean isIdleNow() {
-        // Espresso calls isIdleNow() on a background worker thread (the Instrumentation test runner
-        // thread), so block waiting to safely inspect the FragmentManager in the UI thread.
-        AtomicBoolean isIdle = new AtomicBoolean(false);
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(() ->
-                isIdle.set(fragmentManager.findFragmentByTag(tag) == null)
-        );
+        boolean idle;
 
-        boolean idle = isIdle.get();
+        if (Looper.myLooper() == Looper.getMainLooper()) {
+            idle = fragmentManager.findFragmentByTag(tag) == null;
+        } else {
+            // Espresso called isIdleNow() on a background worker thread, so block waiting to safely
+            // inspect the FragmentManager on the UI thread.
+            AtomicBoolean isIdle = new AtomicBoolean(false);
+
+            InstrumentationRegistry.getInstrumentation().runOnMainSync(() ->
+                    isIdle.set(fragmentManager.findFragmentByTag(tag) == null)
+            );
+            idle = isIdle.get();
+        }
+
         Log.d(TAG, (idle ? "isIdleNow " : "not isIdleNow ") + tag);
 
         if (idle) {
