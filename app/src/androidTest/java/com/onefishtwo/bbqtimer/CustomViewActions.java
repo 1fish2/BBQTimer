@@ -22,8 +22,7 @@
 package com.onefishtwo.bbqtimer;
 
 import static androidx.test.espresso.action.ViewActions.click;
-import static org.hamcrest.Matchers.any;
-import static org.hamcrest.Matchers.isA;
+import static androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom;
 
 import android.view.InputDevice;
 import android.view.MotionEvent;
@@ -42,7 +41,9 @@ import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 
-class CustomViewActions {
+final class CustomViewActions {
+
+    private CustomViewActions() {}
 
     /**
      * Returns a {@code ViewAction} that waits for {@code msec} milliseconds. This should get a
@@ -59,7 +60,7 @@ class CustomViewActions {
             @NonNull
             @Override
             public Matcher<View> getConstraints() {
-                return any(View.class);
+                return isAssignableFrom(View.class);
             }
 
             @NonNull
@@ -69,7 +70,7 @@ class CustomViewActions {
             }
 
             @Override
-            public void perform(@NonNull UiController uiController, View view) {
+            public void perform(@NonNull UiController uiController, @NonNull View view) {
                 uiController.loopMainThreadForAtLeast(msec);
             }
         };
@@ -82,29 +83,28 @@ class CustomViewActions {
         return new ViewAction() {
             @NonNull
             @Override
-            public BaseMatcher<View> getConstraints() {
+            public Matcher<View> getConstraints() {
                 return new BaseMatcher<>() {
                     @Override
                     public boolean matches(Object item) {
-                        return isA(Checkable.class).matches(item);
+                        return item instanceof Checkable;
                     }
 
                     @Override
-                    public void describeMismatch(Object item, Description mismatchDescription) {}
-
-                    @Override
-                    public void describeTo(Description description) {}
+                    public void describeTo(Description description) {
+                        description.appendText("is an instance of android.widget.Checkable");
+                    }
                 };
             }
 
             @NonNull
             @Override
             public String getDescription() {
-                return "click if needed to check";
+                return "set checked to " + checked;
             }
 
             @Override
-            public void perform(UiController uiController, View view) {
+            public void perform(@NonNull UiController uiController, @NonNull View view) {
                 Checkable checkableView = (Checkable) view;
 
                 if (checkableView.isChecked() != checked) {
@@ -119,10 +119,11 @@ class CustomViewActions {
      *
      * @return a ViewAction that performs the click.
      */
+    @NonNull
     public static ViewAction clickAtCenterLeft() {
         return new GeneralClickAction(
                 Tap.SINGLE,
-                GeneralLocation.CENTER_LEFT, // (There's also GeneralLocation.VISIBLE_CENTER, etc.)
+                GeneralLocation.CENTER_LEFT,
                 Press.PINPOINT,
                 InputDevice.SOURCE_UNKNOWN,
                 MotionEvent.BUTTON_PRIMARY);
