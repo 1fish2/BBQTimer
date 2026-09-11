@@ -34,13 +34,13 @@ import com.onefishtwo.bbqtimer.state.ApplicationState;
  * upgrade, clock adjustment, timezone adjustment, locale change, or ACTION_BOOT_COMPLETED.
  * ACTION_BOOT_COMPLETED happens when the system reboots then the user logs in, also when the user
  * interacts with the app after Force Stop on Android 15+.
- *<p/>
+ * <p>
  * NOTE: With Android 7.0 (API 24) and 8.0 (API 26) Broadcast Intent limitations, apps can register
  * for a subset of the original implicit broadcast actions, including:
  *   ACTION_TIME_CHANGED, ACTION_TIMEZONE_CHANGED, ACTION_LOCALE_CHANGED.
  * This intent is explicit to a specific package, so it still works:
  *   ACTION_MY_PACKAGE_REPLACED.
- *<p/>
+ * <p>
  * BTW the OS doesn't send broadcasts to "stopped" applications. See
  * <a href="http://developer.android.com/about/versions/android-3.1.html#launchcontrols">Launch
  * Controls</a> and <a href="https://code.google.com/p/android/issues/detail?id=18225">Issue

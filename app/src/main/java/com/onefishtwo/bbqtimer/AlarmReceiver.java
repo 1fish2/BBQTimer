@@ -62,7 +62,7 @@ public class AlarmReceiver extends BroadcastReceiver {
      */
     private static final String EXTRA_ELAPSED_REALTIME_TARGET =
             "com.onefishtwo.bbqtimer.ElapsedRealtimeTarget";
-    static final String ACTION_ALARM = "com.onefishtwo.bbqtimer.ACTION_ALARM";
+    public static final String ACTION_ALARM = "com.onefishtwo.bbqtimer.ACTION_ALARM";
 
     /** Tolerance value for an early alarm. */
     private static final long ALARM_TOLERANCE_MS = 10L;
@@ -76,7 +76,8 @@ public class AlarmReceiver extends BroadcastReceiver {
      *                              Intent to cancel the alarm since Extras don't affect Intent
      *                              retrieval.
      */
-    private static PendingIntent makeAlarmPendingIntent(Context context,
+    @NonNull
+    private static PendingIntent makeAlarmPendingIntent(@NonNull Context context,
             long elapsedRealtimeTarget) {
         Intent intent = new Intent(context, AlarmReceiver.class);
 
@@ -94,13 +95,14 @@ public class AlarmReceiver extends BroadcastReceiver {
     }
 
     /** Constructs a PendingIntent for AlarmManager.AlarmClockInfo() to show/edit the timer. */
-    private static PendingIntent makeActivityPendingIntent(Context context) {
+    @NonNull
+    private static PendingIntent makeActivityPendingIntent(@NonNull Context context) {
         Intent activityIntent = new Intent(context, MainActivity.class)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 .setAction(Intent.ACTION_EDIT); // distinguish from Launcher & Notifier intents
 
         return PendingIntent.getActivity(context, 0, activityIntent,
-                PendingIntent.FLAG_ONE_SHOT | PendingIntent.FLAG_IMMUTABLE);
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE); // was FLAG_ONE_SHOT
     }
 
     /** Get a string description of an Intent, including extras, for debugging. */
@@ -129,7 +131,7 @@ public class AlarmReceiver extends BroadcastReceiver {
             return now;
         }
 
-        long timed        = timer.getElapsedTime();
+        long timed = Math.max(0, timer.getElapsedTime());
         long untilNextReminder = periodMs - (timed % periodMs);
 
         // Don't (re)schedule within a small window. That'd double-alarm if the notification
@@ -166,6 +168,20 @@ public class AlarmReceiver extends BroadcastReceiver {
         setAlarmClock(context, alarmMgr, state, nextReminder, pendingIntent);
     }
 
+    static boolean canScheduleAlarms(@NonNull AlarmManager alarmMgr) {
+        return Build.VERSION.SDK_INT < 31 || alarmMgr.canScheduleExactAlarms();
+    }
+
+    private static void warnAboutMissingAlarmPermission(@NonNull Context context) {
+        try {
+            Toast.makeText(context, R.string.need_alarm_access, Toast.LENGTH_LONG).show();
+        } catch (Exception e) {
+            // e.g. CalledFromWrongThreadException or NullPointerException when on a receiver,
+            // background, or worker thread
+            Log.e(TAG, "Couldn't show MissingAlarmPermission Toast", e);
+        }
+    }
+
     /**
      * Converts the elapsed time value to a wall clock time value and calls setAlarmClock().
      * setAlarmClock() is supposed to be exact and wake the device even if dozing.
@@ -174,8 +190,12 @@ public class AlarmReceiver extends BroadcastReceiver {
      * further alarm info in the system notification widgets.
      * <p>
      * API 31 - 32: setAlarmClock() needs revocable SCHEDULE_EXACT_ALARM. The app could ask the user
-     * to grant the SCHEDULE_EXACT_ALARM permission via a dialog then invoke an intent that includes
-     * the ACTION_REQUEST_SCHEDULE_EXACT_ALARM intent action.
+     * to re-grant the SCHEDULE_EXACT_ALARM permission via a dialog then invoke an intent with the
+     * ACTION_REQUEST_SCHEDULE_EXACT_ALARM intent action. SCHEDULE_EXACT_ALARM is a Special App
+     * Access permission, not a runtime permission. The OS never auto-revokes special app access
+     * permissions due to inactivity. So it would get revoked only if the user digs into that system
+     * settings screen, which should be too rare to mess with code to open a Snackbar to open that
+     * settings screen, monitor the settings change, etc.
      * <p>
      * API 33+: non-revocable USE_EXACT_ALARM for calendar and alarm clock apps.
      * <p>
@@ -189,11 +209,11 @@ public class AlarmReceiver extends BroadcastReceiver {
             android.Manifest.permission.USE_EXACT_ALARM,
             android.Manifest.permission.SCHEDULE_EXACT_ALARM,
             android.Manifest.permission.SET_ALARM})
-    private static void setAlarmClock(Context context, @NonNull AlarmManager alarmMgr,
-            @NonNull ApplicationState state, long nextReminder, PendingIntent pendingIntent) {
-        if (Build.VERSION.SDK_INT >= 31 && !alarmMgr.canScheduleExactAlarms()) {
+    private static void setAlarmClock(@NonNull Context context, @NonNull AlarmManager alarmMgr,
+            @NonNull ApplicationState state, long nextReminder, @NonNull PendingIntent pendingIntent) {
+        if (!canScheduleAlarms(alarmMgr)) {
             Log.e(TAG, "Cannot schedule exact alarm: missing permission");
-            Toast.makeText(context, R.string.need_alarm_access, Toast.LENGTH_LONG).show();
+            warnAboutMissingAlarmPermission(context);
             return;
         }
 
@@ -205,10 +225,10 @@ public class AlarmReceiver extends BroadcastReceiver {
 
         try {
             alarmMgr.setAlarmClock(info, pendingIntent);
-        } catch (SecurityException e) {
+        } catch (SecurityException | IllegalStateException e) {
             Log.e(TAG, "Need SCHEDULE_EXACT_ALARM / USE_EXACT_ALARM permission", e);
             // NOTE: A Toast appears for a home screen widget but not for a notification button.
-            Toast.makeText(context, R.string.need_alarm_access, Toast.LENGTH_LONG).show();
+            warnAboutMissingAlarmPermission(context);
         }
     }
 
@@ -274,10 +294,10 @@ public class AlarmReceiver extends BroadcastReceiver {
         long howLate = now - target;
 
         if (howLate < -ALARM_TOLERANCE_MS) {
-            Log.w(TAG, "ALARM EARLY " + (-howLate) + " msec " + intent);
+            Log.i(TAG, "ALARM EARLY " + (-howLate) + " msec " + intent);
             return true;
         } else if (howLate > ALARM_TOLERANCE_MS) {
-            Log.w(TAG, "ALARM LATE " + howLate + " msec " + intent);
+            Log.i(TAG, "ALARM LATE " + howLate + " msec " + intent);
         }
         return false;
     }

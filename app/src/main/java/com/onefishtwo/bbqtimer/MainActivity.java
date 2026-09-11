@@ -1179,8 +1179,7 @@ public class MainActivity extends AppCompatActivity
     /**
      * Saves app state then updates the UI.
      * </p>
-     * TODO: Do all the load()/save() work in a background thread. Meanwhile, update the display
-     * first since save() might take a couple hundred ms.
+     * TODO: Do all the load()/save() work in a background thread.
      */
     @UiThread
     private void saveStateAndUpdateUI() {
