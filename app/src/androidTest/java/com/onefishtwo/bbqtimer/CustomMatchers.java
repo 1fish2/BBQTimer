@@ -26,25 +26,33 @@ import android.view.ViewGroup;
 import android.view.ViewParent;
 
 import androidx.annotation.NonNull;
-import androidx.test.espresso.ViewInteraction;
-import androidx.test.espresso.matcher.BoundedMatcher;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 
-class CustomMatchers {
+@SuppressWarnings("unused")
+final class CustomMatchers {
+    private CustomMatchers() {}
+
     /** Matches a child View at the given position in a parent View. From Espresso Test Recorder. */
     @SuppressWarnings("unused")
     @NonNull
     static Matcher<View> childAtPosition(
             @NonNull final Matcher<View> parentMatcher, final int position) {
 
+        //noinspection OverlyComplexAnonymousInnerClass
         return new TypeSafeMatcher<>() {
             @Override
             public void describeTo(@NonNull Description description) {
                 description.appendText("Child at position " + position + " in parent ");
                 parentMatcher.describeTo(description);
+            }
+
+            @Override
+            protected void describeMismatchSafely(@NonNull View view,
+                                                  @NonNull Description mismatchDescription) {
+                mismatchDescription.appendText("was ").appendValue(view.getTag());
             }
 
             @Override
@@ -54,38 +62,6 @@ class CustomMatchers {
                         && view.equals(((ViewGroup) parent).getChildAt(position));
             }
         };
-    }
-
-    /**
-     * Matches a View that has the given tag, as saved by MainActivity#setDrawableRes when setting
-     * its icon resource ID.
-     */
-    @NonNull
-    static Matcher<View> withTag(@NonNull final Object tag) {
-        return new BoundedMatcher<>(View.class) {
-            @Override
-            public void describeTo(@NonNull Description description) {
-                description.appendText("has tag (drawable icon resource ID) " + tag);
-            }
-
-            @Override
-            public boolean matchesSafely(@NonNull View view) {
-                return tag.equals(view.getTag());
-            }
-        };
-    }
-
-    /**
-     * <b>Modifies the given ViewInteraction</b> to have a no-op FailureHandler. Use this, e.g.,
-     * to perform an action on a View if it's visible and not complain if it isn't.
-     *
-     * @return the modified ViewInteraction
-     */
-    @SuppressWarnings("unused")
-    @NonNull
-    static ViewInteraction ignoringFailures(@NonNull ViewInteraction interaction) {
-        return interaction.withFailureHandler((error, viewMatcher) -> {
-        });
     }
 
 }

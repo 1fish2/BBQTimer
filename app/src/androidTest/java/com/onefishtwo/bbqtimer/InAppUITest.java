@@ -45,8 +45,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
 import static androidx.test.espresso.matcher.ViewMatchers.isNotChecked;
 import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withTagValue;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
-import static com.onefishtwo.bbqtimer.CustomMatchers.withTag;
 import static com.onefishtwo.bbqtimer.CustomViewActions.waitMsec;
 import static com.onefishtwo.bbqtimer.TimeIntervalMatcher.inTimeInterval;
 import static com.onefishtwo.bbqtimer.TimeIntervalMatcher.inWholeTimeInterval;
@@ -54,6 +54,7 @@ import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.anyOf;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.startsWith;
 import static org.hamcrest.object.HasToString.hasToString;
@@ -302,8 +303,8 @@ public class InAppUITest implements Notifier.NotificationListener {
         stopButton.check(matches(not(isDisplayed())));
         timeView.check(matches(withText(TIME_ZERO)));
 
-        playPauseButton.check(matches(withTag(R.drawable.ic_play)));
-        resetButton.check(matches(withTag(R.drawable.ic_pause)));
+        playPauseButton.check(matches(withTagValue(is(R.drawable.ic_play))));
+        resetButton.check(matches(withTagValue(is(R.drawable.ic_pause))));
 
         checkReminder(true);
 
@@ -317,8 +318,8 @@ public class InAppUITest implements Notifier.NotificationListener {
         stopButton.check(matches(isCompletelyDisplayed()));
         timeView.check(matches(withText(TIME_ZERO)));
 
-        playPauseButton.check(matches(withTag(R.drawable.ic_play)));
-        stopButton.check(matches(withTag(R.drawable.ic_stop)));
+        playPauseButton.check(matches(withTagValue(is(R.drawable.ic_play))));
+        stopButton.check(matches(withTagValue(is(R.drawable.ic_stop))));
 
         checkReminder(true);
 
@@ -331,8 +332,8 @@ public class InAppUITest implements Notifier.NotificationListener {
         resetButton.check(matches(not(isDisplayed())));
         stopButton.check(matches(isCompletelyDisplayed()));
 
-        playPauseButton.check(matches(withTag(R.drawable.ic_pause)));
-        stopButton.check(matches(withTag(R.drawable.ic_stop)));
+        playPauseButton.check(matches(withTagValue(is(R.drawable.ic_pause))));
+        stopButton.check(matches(withTagValue(is(R.drawable.ic_stop))));
 
         checkReminder(true);
 
@@ -351,9 +352,9 @@ public class InAppUITest implements Notifier.NotificationListener {
         resetButton.check(matches(isCompletelyDisplayed()));
         stopButton.check(matches(isCompletelyDisplayed()));
 
-        playPauseButton.check(matches(withTag(R.drawable.ic_play)));
-        resetButton.check(matches(withTag(R.drawable.ic_replay)));
-        stopButton.check(matches(withTag(R.drawable.ic_stop)));
+        playPauseButton.check(matches(withTagValue(is(R.drawable.ic_play))));
+        resetButton.check(matches(withTagValue(is(R.drawable.ic_replay))));
+        stopButton.check(matches(withTagValue(is(R.drawable.ic_stop))));
         timeView.check(matches(withText(time)));
 
         checkReminder(true);
