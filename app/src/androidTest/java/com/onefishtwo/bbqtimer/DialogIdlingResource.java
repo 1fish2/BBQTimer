@@ -21,11 +21,18 @@
 
 package com.onefishtwo.bbqtimer;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
 import androidx.test.espresso.IdlingRegistry;
 import androidx.test.espresso.IdlingResource;
+import androidx.test.platform.app.InstrumentationRegistry;
+
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * An Espresso {@link IdlingResource} that monitors the presence of the tagged DialogFragment so an
@@ -34,8 +41,12 @@ import androidx.test.espresso.IdlingResource;
  */
 public class DialogIdlingResource implements IdlingResource {
     public static final String TAG = "DialogIdlingResource";
+    @NonNull
     private final FragmentManager fragmentManager;
+    @NonNull
     private final String tag;
+    @Nullable
+    @SuppressWarnings("unused")
     private volatile ResourceCallback resourceCallback;
 
     /**
@@ -44,15 +55,15 @@ public class DialogIdlingResource implements IdlingResource {
      * wait until the dialog closes.
      * The DialogIdlingResource will unregister itself when it becomes idle.
      */
-    static void registerNewIdlingResource(FragmentManager fm, String dialogTag) {
+    static void registerNewIdlingResource(@NonNull FragmentManager fm, @NonNull String dialogTag) {
         IdlingResource idlingResource = new DialogIdlingResource(fm, dialogTag);
         IdlingRegistry.getInstance().register(idlingResource);
-        Log.d(TAG, "registered");
+        Log.d(TAG, "registered " + dialogTag);
     }
 
-    public DialogIdlingResource(FragmentManager _fragmentManager, String _tag) {
-        fragmentManager = _fragmentManager;
-        tag = _tag;
+    public DialogIdlingResource(@NonNull FragmentManager fragmentMgr, @NonNull String fragmentTag) {
+        fragmentManager = fragmentMgr;
+        tag = fragmentTag;
     }
 
     @Override
@@ -62,19 +73,27 @@ public class DialogIdlingResource implements IdlingResource {
 
     @Override
     public boolean isIdleNow() {
-        boolean idle = fragmentManager.findFragmentByTag(tag) == null;
-        Log.d(TAG, idle ? "isIdleNow" : "not isIdleNow");
+        // Espresso calls isIdleNow() on a background worker thread (the Instrumentation test runner
+        // thread), so block waiting to safely inspect the FragmentManager in the UI thread.
+        AtomicBoolean isIdle = new AtomicBoolean(false);
+        InstrumentationRegistry.getInstrumentation().runOnMainSync(() ->
+                isIdle.set(fragmentManager.findFragmentByTag(tag) == null)
+        );
+
+        boolean idle = isIdle.get();
+        Log.d(TAG, (idle ? "isIdleNow " : "not isIdleNow ") + tag);
+
         if (idle) {
-            if (resourceCallback != null) {
-                resourceCallback.onTransitionToIdle();
-            }
-            IdlingRegistry.getInstance().unregister(this);
+            // Unregister from IdlingRegistry after Espresso finishes its polling loop over it.
+            new Handler(Looper.getMainLooper()).post(() ->
+                    IdlingRegistry.getInstance().unregister(this)
+            );
         }
         return idle;
     }
 
     @Override
-    public void registerIdleTransitionCallback(ResourceCallback _resourceCallback) {
-        resourceCallback = _resourceCallback;
+    public void registerIdleTransitionCallback(@Nullable ResourceCallback callback) {
+        resourceCallback = callback;
     }
 }
