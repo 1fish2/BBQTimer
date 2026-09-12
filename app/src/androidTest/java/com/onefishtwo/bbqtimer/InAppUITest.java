@@ -171,7 +171,7 @@ public class InAppUITest implements Notifier.NotificationListener {
 
     @NonNull
     private static ViewAction recipeDismissClick() {
-        return new DismissClickViewAction(RecipeEditorDialogFragment.TAG);
+        return DismissClickViewAction.dismissClick(RecipeEditorDialogFragment.TAG);
     }
 
 // MainActivity's FSM:

@@ -26,6 +26,7 @@ import android.content.Context;
 import android.content.ContextWrapper;
 import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.test.espresso.UiController;
@@ -39,17 +40,29 @@ import org.hamcrest.Matcher;
  * before performing more actions.
  */
 public class DismissClickViewAction implements ViewAction {
-    private final static boolean WORKAROUND = true;
+    private static final boolean WORKAROUND = true;
+
+    @NonNull
     private final String dialogTag;
+    @NonNull
     private final ViewAction click = WORKAROUND ? new LowLevelClick() : ViewActions.click();
 
+    /**
+     * Factory method to construct a ViewAction to: click on a dialog button that's intended to
+     * close it ("Save", "Cancel", ...), then make Espresso wait until it's closed before performing
+     * more actions.
+     */
+    @NonNull
+    public static ViewAction dismissClick(@NonNull String dialogTag) {
+        return new DismissClickViewAction(dialogTag);
+    }
 
     /**
      * Construct a ViewAction to click on a dialog button that's intended to close it ("Save",
      * "Cancel", ...), then make Espresso wait until it's closed before performing more actions.
      */
-    public DismissClickViewAction(String _dialogTag) {
-        dialogTag = _dialogTag;
+    public DismissClickViewAction(@NonNull String tag) {
+        dialogTag = tag;
     }
 
     @Override
@@ -57,13 +70,14 @@ public class DismissClickViewAction implements ViewAction {
         return click.getConstraints();
     }
 
+    @NonNull
     @Override
     public String getDescription() {
-        return "click to dismiss a dialog and declare 'busy' until it closes";
+        return "click to dismiss dialog '" + dialogTag + "' and wait until it closes";
     }
 
     @Override
-    public void perform(UiController uiController, View view) {
+    public void perform(@NonNull UiController uiController, @NonNull View view) {
         FragmentActivity activity = getFragmentActivity(view.getContext());
         FragmentManager fm = activity.getSupportFragmentManager();
 
@@ -75,14 +89,21 @@ public class DismissClickViewAction implements ViewAction {
         DialogIdlingResource.registerNewIdlingResource(fm, dialogTag);
     }
 
-    /** Gets the FragmentManager from the view's context. */
-    private static FragmentActivity getFragmentActivity(Context context) {
-        while (!(context instanceof Activity) && context instanceof ContextWrapper) {
-            context = ((ContextWrapper) context).getBaseContext();
+    /** Gets the FragmentActivity from the view's context. */
+    @NonNull
+    private static FragmentActivity getFragmentActivity(@NonNull Context context) {
+        Context current = context;
+
+        while (!(current instanceof Activity) && current instanceof ContextWrapper) {
+            current = ((ContextWrapper) current).getBaseContext();
         }
 
-        // This could throw ClassCastException if the Activity isn't a FragmentActivity.
-        //noinspection DataFlowIssue
-        return (FragmentActivity) context;
+        if (current instanceof FragmentActivity) {
+            return (FragmentActivity) current;
+        }
+
+        throw new IllegalStateException(
+                "Expected a FragmentActivity context to dismiss dialog, but found: "
+                        + (current != null ? current.getClass().getName() : "null"));
     }
 }
