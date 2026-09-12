@@ -27,6 +27,7 @@ import static org.junit.Assert.assertTrue;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ResolveInfo;
+import android.os.ParcelFileDescriptor;
 import android.os.SystemClock;
 import android.util.Log;
 
@@ -88,7 +89,7 @@ public class IntentMatchingTest {
     /** Returns the last Intent Action saved by an app Intent receiver for testing. */
     private String getLastAction() {
         return context.getSharedPreferences(
-                TimerAppWidgetProvider.PREFS_TESTING, Context.MODE_PRIVATE)
+                        TimerAppWidgetProvider.PREFS_TESTING, Context.MODE_PRIVATE)
                 .getString(TimerAppWidgetProvider.PREF_LAST_ACTION, null);
     }
 
@@ -150,10 +151,10 @@ public class IntentMatchingTest {
         String cmd = "am start -n " + pkg + "/.MainActivity -f 0x8";
         try {
             Log.d(TAG, "Running shell command: " + cmd);
-            android.os.ParcelFileDescriptor pfd = InstrumentationRegistry.getInstrumentation().getUiAutomation()
+            ParcelFileDescriptor pfd = InstrumentationRegistry.getInstrumentation().getUiAutomation()
                     .executeShellCommand(cmd);
             try (BufferedReader reader = new BufferedReader(
-                    new InputStreamReader(new android.os.ParcelFileDescriptor.AutoCloseInputStream(pfd)))) {
+                    new InputStreamReader(new ParcelFileDescriptor.AutoCloseInputStream(pfd)))) {
                 String line;
                 while ((line = reader.readLine()) != null) {
                     Log.d(TAG, "Shell: " + line);
