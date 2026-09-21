@@ -22,6 +22,7 @@
 package com.onefishtwo.bbqtimer;
 
 import static android.Manifest.permission.POST_NOTIFICATIONS;
+import static com.onefishtwo.bbqtimer.TestUtils.pollForExpectation;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -34,7 +35,6 @@ import android.graphics.Color;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.RemoteException;
-import android.os.SystemClock;
 import android.util.Log;
 import android.util.TypedValue;
 
@@ -97,23 +97,6 @@ public class SystemInteractionTest {
         static NightDayMode fromContext(Context context) {
             return fromUiModeBits(context.getResources().getConfiguration().uiMode);
         }
-    }
-
-    interface CheckExpectation {
-        boolean check();
-    }
-
-    static boolean pollForExpectation(CheckExpectation checker) {
-        long deadline = SystemClock.uptimeMillis() + TIMEOUT;
-
-        while (SystemClock.uptimeMillis() < deadline) {
-            if (checker.check()) {
-                return true;
-            }
-            SystemClock.sleep(100);
-        }
-
-        return false;
     }
 
     /** Waits up to TIMEOUT for the Context's configuration to reflect expectedNightMode. */

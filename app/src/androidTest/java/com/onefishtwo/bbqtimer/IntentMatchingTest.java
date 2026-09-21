@@ -21,16 +21,18 @@
 
 package com.onefishtwo.bbqtimer;
 
+import static com.onefishtwo.bbqtimer.TestUtils.pollForExpectation;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ResolveInfo;
 import android.os.ParcelFileDescriptor;
-import android.os.SystemClock;
 import android.util.Log;
 
+import androidx.annotation.Nullable;
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -39,7 +41,6 @@ import androidx.test.platform.app.InstrumentationRegistry;
 import com.onefishtwo.bbqtimer.state.ApplicationState;
 
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -48,8 +49,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
-
-import javax.annotation.Nullable;
 
 /**
  * Android tests to verify that all expected Intents still get received by MainActivity,
@@ -82,8 +81,9 @@ public class IntentMatchingTest {
         context = null;
     }
 
-    private void waitForBroadcast() {
-        SystemClock.sleep(500);
+    private void waitForAction(String expectedAction) {
+        assertTrue("Timed out waiting for action: " + expectedAction,
+                pollForExpectation(() -> expectedAction.equals(getLastAction())));
     }
 
     /** Returns the last Intent Action saved by an app Intent receiver for testing. */
@@ -112,7 +112,7 @@ public class IntentMatchingTest {
     private Intent makeMainActivityIntent(@Nullable String action) {
         // Use an implicit intent with package name to force Intent Filter matching.
         Intent intent = makeImplicitIntent(action);
-        // intent.addCategory(Intent.CATEGORY_LAUNCHER);
+        // Might need intent.addCategory(Intent.CATEGORY_LAUNCHER) to simulate a launcher intent.
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         return intent;
     }
@@ -121,13 +121,8 @@ public class IntentMatchingTest {
     private void verifyReceiverFilterExists(String action, @SuppressWarnings("SameParameterValue") Class<?> receiverClass) {
         List<ResolveInfo> receivers = context.getPackageManager()
                 .queryBroadcastReceivers(makeImplicitIntent(action), 0);
-        boolean found = false;
-        for (ResolveInfo info : receivers) {
-            if (info.activityInfo.name.equals(receiverClass.getName())) {
-                found = true;
-                break;
-            }
-        }
+        boolean found = receivers.stream()
+                .anyMatch(info -> receiverClass.getName().equals(info.activityInfo.name));
         assertTrue("Manifest should have a filter for action: " + action + " in "
                 + receiverClass.getSimpleName(), found);
     }
@@ -140,7 +135,7 @@ public class IntentMatchingTest {
         intent.setAction(null);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_DEBUG_LOG_RESOLUTION);
         try (ActivityScenario<MainActivity> scenario = ActivityScenario.launch(intent)) {
-            scenario.onActivity(Assert::assertNotNull); // activity
+            scenario.onActivity(activity -> assertFalse(activity.isFinishing()));
         }
     }
 
@@ -163,7 +158,6 @@ public class IntentMatchingTest {
                     }
                 }
             }
-            pfd.close();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -173,7 +167,7 @@ public class IntentMatchingTest {
     public void testMainActivityActionMain() {
         Intent intent = makeMainActivityIntent(Intent.ACTION_MAIN);
         try (ActivityScenario<MainActivity> scenario = ActivityScenario.launch(intent)) {
-            scenario.onActivity(Assert::assertNotNull); // activity
+            scenario.onActivity(activity -> assertFalse(activity.isFinishing()));
         }
     }
 
@@ -181,7 +175,7 @@ public class IntentMatchingTest {
     public void testMainActivityActionEdit() {
         Intent intent = makeMainActivityIntent(Intent.ACTION_EDIT);
         try (ActivityScenario<MainActivity> scenario = ActivityScenario.launch(intent)) {
-            scenario.onActivity(Assert::assertNotNull); // activity
+            scenario.onActivity(activity -> assertFalse(activity.isFinishing()));
         }
     }
 
@@ -240,17 +234,16 @@ public class IntentMatchingTest {
 
             TimerAppWidgetProvider.saveActionForTesting(context, null);
             context.sendBroadcast(makeImplicitIntent(action));
-            waitForBroadcast();
-            assertEquals("Failed for action: " + action, action, getLastAction());
+            waitForAction(action);
         }
     }
 
     @Test
     public void testAlarmReceiverIntent() {
         String action = AlarmReceiver.ACTION_ALARM;
+
         context.sendBroadcast(makeImplicitIntent(action));
-        waitForBroadcast();
-        assertEquals(action, getLastAction());
+        waitForAction(action);
     }
 
     @Test
@@ -264,8 +257,8 @@ public class IntentMatchingTest {
 
         // Test receipt via implicit broadcast (using a non-protected action added for testing).
         String action = Intent.ACTION_RUN;
+
         context.sendBroadcast(makeImplicitIntent(action));
-        waitForBroadcast();
-        assertEquals(action, getLastAction());
+        waitForAction(action);
     }
 }
