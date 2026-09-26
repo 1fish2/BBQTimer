@@ -83,7 +83,7 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
     private static final SizeF SIZE_MEDIUM = new SizeF(180, 40);
     private static final SizeF SIZE_LARGE = new SizeF(274, 40);
 
-    // Actions for internal, explicit Intents. They should not be listed in an intent-filter.
+    // Actions for internal, explicit Intents.
     static final String ACTION_RUN_PAUSE  = "com.onefishtwo.bbqtimer.ACTION_RUN_PAUSE";
     static final String ACTION_RUN        = "com.onefishtwo.bbqtimer.ACTION_RUN";
     static final String ACTION_PAUSE      = "com.onefishtwo.bbqtimer.ACTION_PAUSE";
@@ -97,11 +97,11 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
     public static final String PREF_LAST_ACTION = "lastActionForTesting";
 
     /**
-     * Saves the given Intent action (or null for none) in persistent storage so a test can check
-     * that the Intent was received.
+     * Saves the given action (or null for none) in persistent storage so a test can check that the
+     * Intent was received -- in debug builds ONLY.
      * <p>
-     * NOTE: This commits the storage update synchronously so it's reliably accessible to a test in
-     * another process, but that delays the main thread and causes StrictMode disk I/O policy
+     * NOTE: This commits the storage update synchronously so the test can reliably retrieve it from
+     * another process, but that delays the main thread, causing StrictMode disk I/O policy
      * violations, so don't call this for production Intents.
      */
     @androidx.annotation.VisibleForTesting
@@ -112,13 +112,14 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
     }
 
     /**
-     * If the given Intent has FLAG_DEBUG_LOG_RESOLUTION, saves its action in persistent storage so
-     * a test can check that the Intent was received. Only test code should set
-     * FLAG_DEBUG_LOG_RESOLUTION, so ordinary production Intents won't cause StrictMode disk I/O
-     * policy violations.
+     * Saves the Intent's action in persistent storage <i>if</i> the Intent has
+     * FLAG_DEBUG_LOG_RESOLUTION, so a test can check that its Intent was received -- but in debug
+     * builds ONLY. Only tests should set FLAG_DEBUG_LOG_RESOLUTION to avoid StrictMode disk I/O
+     * policy violations for ordinary Intents.
      * <p>
      * NOTE: This commits the storage update synchronously so the test can reliably retrieve it from
-     * another process, but that delays the main thread, so don't call this for production Intents.
+     * another process, but that delays the main thread, causing StrictMode disk I/O policy
+     * violations, so don't call this for production Intents.
      */
     @androidx.annotation.VisibleForTesting
     public static void saveIntentActionForTesting(@NonNull Context context, @NonNull Intent intent) {
