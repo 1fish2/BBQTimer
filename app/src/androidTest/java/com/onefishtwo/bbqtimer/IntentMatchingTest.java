@@ -39,6 +39,7 @@ import androidx.annotation.Nullable;
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.filters.SdkSuppress;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import com.onefishtwo.bbqtimer.state.ApplicationState;
@@ -141,7 +142,7 @@ public class IntentMatchingTest {
      * <p>
      * TODO: This needs a better way to check that the Intent was received. Changing the system
      *  time or timezone doesn't set the FLAG_DEBUG_LOG_RESOLUTION flag. We could drop the flag
-     *  if saveIntentActionForTesting() used a background thread to write SharedPrefernces. Or
+     *  if saveIntentActionForTesting() used a background thread to write SharedPreferences. Or
      *  have the test set a listener? Or send info via another Intent, or a java.util.concurrent
      *  object?
      */
@@ -371,6 +372,7 @@ public class IntentMatchingTest {
         checkActionViaImplicitIntent(Intent.ACTION_RUN); // "android.intent.action.RUN", not TimerAppWidgetProvider.ACTION_RUN
     }
 
+    @SdkSuppress(minSdkVersion = 28) // timeout on API 24 - 27; try a setprop or settings cmd?
     @Test
     public void testResumeReceiverProtectedSetTimeIntent() {
         // Test a protected action via a specialized shell command, where broadcasting the Intent
@@ -382,6 +384,7 @@ public class IntentMatchingTest {
         waitForAction(Intent.ACTION_TIME_CHANGED);
     }
 
+    @SdkSuppress(minSdkVersion = 30) // timeout on API 24 - 27
     @Test
     public void testResumeReceiverProtectedSetTimezoneIntent() {
         // Test a protected action via a specialized shell command, where broadcasting the Intent
