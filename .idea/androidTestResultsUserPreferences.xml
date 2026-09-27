@@ -287,8 +287,11 @@
               <option name="preferredColumnWidths">
                 <map>
                   <entry key="23_6.0_M_3.2_HVGA_slider_mdpi_320x480" value="120" />
+                  <entry key="24_7.0_N_3.2-inch_HVGA_slider_320x480_160dpi" value="120" />
                   <entry key="24_7.0_N_Nexus_4_xhdpi_768x1280" value="120" />
+                  <entry key="31_12.0_S_Nexus_S_hdpi_480x800_AOSP" value="120" />
                   <entry key="35_15.0_V_Pixel_9_Pro_XL_1344x2992_xxhdpi" value="120" />
+                  <entry key="37.2_17.0_C_16K_Pixel_10a_1080x2424" value="120" />
                   <entry key="Duration" value="90" />
                   <entry key="Tests" value="360" />
                 </map>
