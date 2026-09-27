@@ -19,7 +19,6 @@
 
 package com.onefishtwo.bbqtimer;
 
-import android.annotation.SuppressLint;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
@@ -90,45 +89,6 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
     static final String ACTION_RESET      = "com.onefishtwo.bbqtimer.ACTION_RESET";
     static final String ACTION_STOP       = "com.onefishtwo.bbqtimer.ACTION_STOP";
     static final String ACTION_CYCLE      = "com.onefishtwo.bbqtimer.ACTION_CYCLE";
-
-    @androidx.annotation.VisibleForTesting
-    public static final String PREFS_TESTING = "Testing_Prefs";
-    @androidx.annotation.VisibleForTesting
-    public static final String PREF_LAST_ACTION = "lastActionForTesting";
-
-    /**
-     * Saves the given action (or null for none) in persistent storage so a test can check that the
-     * Intent was received -- in debug builds ONLY.
-     * <p>
-     * NOTE: This commits the storage update synchronously so the test can reliably retrieve it from
-     * another process, but that delays the main thread, causing StrictMode disk I/O policy
-     * violations, so don't call this for production Intents.
-     */
-    @androidx.annotation.VisibleForTesting
-    @SuppressLint("ApplySharedPref")
-    public static void saveActionForTesting(@NonNull Context context, @Nullable String action) {
-        context.getSharedPreferences(PREFS_TESTING, Context.MODE_PRIVATE).edit()
-                .putString(PREF_LAST_ACTION, action).commit();
-    }
-
-    /**
-     * Saves the Intent's action in persistent storage <i>if</i> the Intent has
-     * FLAG_DEBUG_LOG_RESOLUTION, so a test can check that its Intent was received -- but in debug
-     * builds ONLY. Only tests should set FLAG_DEBUG_LOG_RESOLUTION to avoid StrictMode disk I/O
-     * policy violations for ordinary Intents.
-     * <p>
-     * NOTE: This commits the storage update synchronously so the test can reliably retrieve it from
-     * another process, but that delays the main thread, causing StrictMode disk I/O policy
-     * violations, so don't call this for production Intents.
-     */
-    @androidx.annotation.VisibleForTesting
-    public static void saveIntentActionForTesting(@NonNull Context context, @NonNull Intent intent) {
-        int flags = intent.getFlags();
-
-        if ((flags & Intent.FLAG_DEBUG_LOG_RESOLUTION) != 0) {
-            saveActionForTesting(context, intent.getAction());
-        }
-    }
 
     @NonNull
     static ComponentName getComponentName(Context context) {
@@ -552,7 +512,7 @@ public class TimerAppWidgetProvider extends AppWidgetProvider {
         String action          = intent.getAction();
 
         Log.i(TAG, "Intent: " + action);
-        saveIntentActionForTesting(context, intent);
+        ListenerRegistry.notifyIntentForTesting(intent);
 
         super.onReceive(context, intent);
 

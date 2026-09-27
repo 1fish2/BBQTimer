@@ -309,7 +309,7 @@ public class AlarmReceiver extends BroadcastReceiver {
     @SuppressLint("VisibleForTests")
     @Override
     public final void onReceive(@NonNull Context context, @NonNull Intent intent) {
-        TimerAppWidgetProvider.saveIntentActionForTesting(context, intent);
+        ListenerRegistry.notifyIntentForTesting(intent);
 
         if (!ACTION_ALARM.equals(intent.getAction())) {
             return;

@@ -65,8 +65,8 @@ public class ResumeReceiver extends BroadcastReceiver {
     public void onReceive(@NonNull Context context, @NonNull Intent intent) {
         String action = intent.getAction();
 
-        TimerAppWidgetProvider.saveIntentActionForTesting(context, intent);
         Log.i(TAG, "Broadcast intent: " + action);
+        ListenerRegistry.notifyIntentForTesting(intent);
 
         if (action == null) {
             return;

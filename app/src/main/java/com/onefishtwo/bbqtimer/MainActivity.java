@@ -302,17 +302,21 @@ public class MainActivity extends AppCompatActivity
         shortcutAction = SHORTCUT_NONE;
         if (savedInstanceState == null) {
             Intent callingIntent = getIntent();
+
             if (callingIntent != null) {
                 String action = callingIntent.getAction(); // null action occurred in multi-window testing
+
                 if (Intent.ACTION_QUICK_CLOCK.equals(action)) { // App Shortcut: Pause @ 00:00
                     shortcutAction = SHORTCUT_PAUSE;
                 } else if (Intent.ACTION_RUN.equals(action)) { // App Shortcut: Start @ 00:00
                     shortcutAction = SHORTCUT_START;
                 }
+
                 Log.i(TAG, "Shortcut Action " + shortcutAction + ", Intent: " + callingIntent);
                 // ACTION_MAIN from a Widget or Notification
                 // ACTION_EDIT from AlarmManager.AlarmClockInfo()
                 // whatever with category.LAUNCHER
+                ListenerRegistry.notifyIntentForTesting(callingIntent);
             }
         }
 

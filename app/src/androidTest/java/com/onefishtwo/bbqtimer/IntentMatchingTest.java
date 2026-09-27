@@ -21,10 +21,11 @@
 
 package com.onefishtwo.bbqtimer;
 
-import static com.onefishtwo.bbqtimer.TestUtils.pollForExpectation;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import android.app.UiAutomation;
 import android.content.Context;
@@ -57,6 +58,8 @@ import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.TimeZone;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
@@ -66,9 +69,9 @@ import java.util.regex.Pattern;
  * android:intentMatchingFlags="enforceIntentFilter" and "allowNullAction" enabled in the
  * AndroidManifest.xml for Android 16+, and additional restrictions to come.
  * <p>
- * TODO: Initiate APPWIDGET_* via UiAutomation on the Home screen?
+ * TODO: Test APPWIDGET_* via UiAutomation on the Home screen?
  * <p>
- * TODO: Initiate ACTION_LOCALE_CHANGED via the Settings app?
+ * TODO: Test ACTION_LOCALE_CHANGED via the Settings app?
  * <p>
  * No luck sending ACTION_BOOT_COMPLETED or ACTION_MY_PACKAGE_REPLACED.
  */
@@ -80,6 +83,7 @@ public class IntentMatchingTest {
     private Context context;
     private String originalTimezone;
     private TimeCounter timer;
+    private final BlockingQueue<String> receivedActions = new LinkedBlockingQueue<>();
 
     @Before
     public void setUp() {
@@ -94,12 +98,21 @@ public class IntentMatchingTest {
         // Disable automatic time zone so network updates don't stomp on a test
         executeShellCommand("settings put global auto_time_zone 0");
 
-        // Reset the test data saved in SharedPreferences
-        TimerAppWidgetProvider.saveActionForTesting(context, null);
+        // ... then register a listener to queue received Intent actions.
+        receivedActions.clear();
+        ListenerRegistry.setIntentListenerForTesting(intent -> {
+            String action = intent.getAction();
+
+            boolean queuedOk = receivedActions.offer(action != null ? action : "null");
+            assertTrue("Expected room to enqueue an Intent action: ", queuedOk);
+        });
     }
 
     @After
     public void tearDown() {
+        ListenerRegistry.setIntentListenerForTesting(null);
+        receivedActions.clear();
+
         if (!TimeZone.getDefault().getID().equals(originalTimezone)) {
             setTimezone(originalTimezone);
         }
@@ -119,42 +132,40 @@ public class IntentMatchingTest {
         }
     }
 
-    private void waitForAction(String expectedAction) {
-        assertTrue("Timed out waiting for action: " + expectedAction,
-                pollForExpectation(() -> expectedAction.equals(getLastAction())));
+    private void waitForAction(@Nullable String expectedAction) {
+        String expected = expectedAction != null ? expectedAction : "null";
+        long deadline = System.currentTimeMillis() + 5000;
+
+        while (System.currentTimeMillis() < deadline) {
+            long remaining = Math.max(1, deadline - System.currentTimeMillis());
+
+            try {
+                String action = receivedActions.poll(remaining, TimeUnit.MILLISECONDS);
+
+                assertNotNull("Timeout waiting for action: " + expected, action);
+                if (expected.equals(action)) {
+                    return;
+                }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt(); // Restore the interrupt status flag cleared by poll()
+                throw new AssertionError(
+                        "Interrupted waiting for Intent action: " + expected, e);
+            }
+
+            // Drain any other Intents that arrived in the meantime and continue waiting.
+        }
+
+        fail("Did not receive Intent action: " + expectedAction);
     }
 
-    /** Returns the last Intent Action saved by an app Intent receiver for testing. */
-    private String getLastAction() {
-        return context.getSharedPreferences(
-                        TimerAppWidgetProvider.PREFS_TESTING, Context.MODE_PRIVATE)
-                .getString(TimerAppWidgetProvider.PREF_LAST_ACTION, null);
-    }
-
-    /**
-     * Constructs an implicit Intent for testing BBQTimer.
-     * <p>
-     * This sets FLAG_DEBUG_LOG_RESOLUTION which:<br>
-     *   (1) logs the Intent resolution [filter LogCat for "IntentResolver" to see it], and<br>
-     *   (2) triggers most of the app's receivers to call
-     *       {@link TimerAppWidgetProvider#saveIntentActionForTesting} to store the Intent's action
-     *       in SharedPreferences for test assertions.
-     * <p>
-     * TODO: This needs a better way to check that the Intent was received. Changing the system
-     *  time or timezone doesn't set the FLAG_DEBUG_LOG_RESOLUTION flag. We could drop the flag
-     *  if saveIntentActionForTesting() used a background thread to write SharedPreferences. Or
-     *  have the test set a listener? Or send info via another Intent, or a java.util.concurrent
-     *  object?
-     */
+    /** Constructs an implicit Intent for testing BBQTimer. */
     private Intent makeImplicitIntent(@Nullable String action) {
         Intent intent = new Intent(action);
         intent.setPackage(context.getPackageName());
-        intent.addFlags(Intent.FLAG_DEBUG_LOG_RESOLUTION);
         return intent;
     }
 
     private Intent makeMainActivityIntent(@Nullable String action) {
-        // Use an implicit intent with package name to force Intent Filter matching.
         Intent intent = makeImplicitIntent(action);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         return intent;
@@ -180,9 +191,6 @@ public class IntentMatchingTest {
     * <p>
     * ASSUMES: The output is shorter than 64KB to fit in standard pipe buffers. Longer output
     * would require forking a thread to read output before closing stdin.
-    * <p>
-    * The caller can add "-f 0x8" or "--debug-log-resolution" to "am broadcast" for
-    * FLAG_DEBUG_LOG_RESOLUTION, like {@link #makeImplicitIntent}.
     * <p>
     * NOTE: `uiAutomation.executeShellCommand("sh -c 'am broadcast FOO 2>&1'")` DOES NOT WORK! Java
     * tokenizes it as ['am, broadcast, FOO, 2>&1'], can't find `'am`, and doesn't redirect. Other
@@ -251,62 +259,70 @@ public class IntentMatchingTest {
        return sb.toString();
    }
 
-    @Test
-    public void testMainActivityNullAction() {
-        // With allowNullAction, an implicit intent with no action should match the filter.
-        Intent intent = new Intent(context, MainActivity.class);
-
-        intent.setAction(null);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_DEBUG_LOG_RESOLUTION);
+    private void launchMainAndVerifyAction(@NonNull Intent intent) {
         try (ActivityScenario<MainActivity> scenario = ActivityScenario.launch(intent)) {
-            scenario.onActivity(activity -> assertFalse(activity.isFinishing()));
+            scenario.onActivity(activity -> {
+                waitForAction(intent.getAction());
+                assertFalse(activity.isFinishing());
+            });
         }
     }
 
     @Test
-    public void testMainActivityNullActionViaShell() {
-        String pkg = context.getPackageName();
-        String cmd = "am start -n " + pkg + "/.MainActivity";
+    public void testMainActivityNullAction() {
+        // An Intent with no action should match the filter that has allowNullAction.
+        Intent intent = new Intent(context, MainActivity.class);
 
-        executeShellCommand(cmd); // + a non-Intent way to check that the Activity launched?
+        intent.setAction(null);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        launchMainAndVerifyAction(intent);
+    }
+
+    @Test
+    public void testMainActivityImplicitNullAction() {
+        Intent intent = new Intent();
+
+        intent.setPackage(context.getPackageName());
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        launchMainAndVerifyAction(intent);
     }
 
     @Test
     public void testMainActivityActionMain() {
         Intent intent = makeMainActivityIntent(Intent.ACTION_MAIN);
-        try (ActivityScenario<MainActivity> scenario = ActivityScenario.launch(intent)) {
-            scenario.onActivity(activity -> assertFalse(activity.isFinishing()));
-        }
+
+        launchMainAndVerifyAction(intent);
     }
 
     @Test
     public void testMainActivityActionEdit() {
         Intent intent = makeMainActivityIntent(Intent.ACTION_EDIT);
-        try (ActivityScenario<MainActivity> scenario = ActivityScenario.launch(intent)) {
-            scenario.onActivity(activity -> assertFalse(activity.isFinishing()));
-        }
+
+        launchMainAndVerifyAction(intent);
     }
 
     @Test
     public void testMainActivityActionRun() {
         Intent intent = makeMainActivityIntent(Intent.ACTION_RUN);
-        try (ActivityScenario<MainActivity> scenario = ActivityScenario.launch(intent)) {
-            scenario.onActivity(activity ->
-                    assertTrue("Timer should be running after MainActivity ACTION_RUN",
-                            timer.isRunning()));
-        }
+
+        launchMainAndVerifyAction(intent);
+        assertTrue("Timer should be running after MainActivity ACTION_RUN",
+                timer.isRunning());
     }
 
     @Test
     public void testMainActivityActionQuickClock() {
         Intent intent = makeMainActivityIntent(Intent.ACTION_QUICK_CLOCK);
-        try (ActivityScenario<MainActivity> scenario = ActivityScenario.launch(intent)) {
-            scenario.onActivity(activity -> {
-                assertTrue("Timer should be paused after MainActivity ACTION_QUICK_CLOCK",
-                        timer.isPaused());
-                assertEquals(0, timer.getElapsedTime());
-            });
-        }
+
+        launchMainAndVerifyAction(intent);
+        assertTrue("Timer should be paused after MainActivity ACTION_QUICK_CLOCK",
+                timer.isPaused());
+        assertEquals(0, timer.getElapsedTime());
+    }
+
+    private void checkActionViaImplicitIntent(String action) {
+        context.sendBroadcast(makeImplicitIntent(action));
+        waitForAction(action);
     }
 
     @Test
@@ -324,9 +340,13 @@ public class IntentMatchingTest {
         for (String action : appActions) {
             verifyReceiverFilterExists(action, TimerAppWidgetProvider.class);
 
-            TimerAppWidgetProvider.saveActionForTesting(context, null);
             checkActionViaImplicitIntent(action);
         }
+    }
+
+    @Test
+    public void testAlarmReceiverIntent() {
+        checkActionViaImplicitIntent(AlarmReceiver.ACTION_ALARM);
     }
 
     @Test
@@ -346,16 +366,6 @@ public class IntentMatchingTest {
         for (String action : protectedActions) {
             verifyReceiverFilterExists(action, TimerAppWidgetProvider.class);
         }
-    }
-
-    private void checkActionViaImplicitIntent(String action) {
-        context.sendBroadcast(makeImplicitIntent(action));
-        waitForAction(action);
-    }
-
-    @Test
-    public void testAlarmReceiverIntent() {
-        checkActionViaImplicitIntent(AlarmReceiver.ACTION_ALARM);
     }
 
     @Test
@@ -379,7 +389,6 @@ public class IntentMatchingTest {
         // gets a SecurityException.
         long backup = System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(1);
 
-        TimerAppWidgetProvider.saveActionForTesting(context, null);
         executeShellCommand("cmd alarm set-time " + backup);
         waitForAction(Intent.ACTION_TIME_CHANGED);
     }
@@ -391,7 +400,6 @@ public class IntentMatchingTest {
         // gets a SecurityException.
         String tz = originalTimezone.equals("America/New_York") ? "Europe/London" : "America/New_York";
 
-        TimerAppWidgetProvider.saveActionForTesting(context, null);
         setTimezone(tz);
         waitForAction(Intent.ACTION_TIMEZONE_CHANGED);
     }
