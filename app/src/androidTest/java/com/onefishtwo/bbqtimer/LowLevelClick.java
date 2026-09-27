@@ -21,64 +21,54 @@
 
 package com.onefishtwo.bbqtimer;
 
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
 
-import android.app.Activity;
-import android.content.Context;
-import android.content.ContextWrapper;
+import static org.hamcrest.Matchers.allOf;
+
 import android.view.View;
 
-import androidx.annotation.Nullable;
+import androidx.annotation.NonNull;
 import androidx.test.espresso.UiController;
 import androidx.test.espresso.ViewAction;
 
 import org.hamcrest.Matcher;
 
 /**
- * A ViewAction that bypasses bunch of Espresso work to call View#performClick() from the UI thread.
- * WORKAROUND for a bug on API levels (29, 35, 36) where a normal click() on a dialog button
- * (BUTTON_POSITIVE, BUTTON_NEGATIVE, or BUTTON_NEUTRAL) fails to dismiss the dialog. Espresso
- * times out waiting (DialogIdlingResource) for the dialog to close.
+ * A ViewAction that directly calls {@link View#performClick()} on the UI thread.
+ * WORKAROUND for an Android framework / Espresso event injection issue on API levels 29, 35,
+ * and 36 where MotionEvents from ViewActions#click() fail to reach dialog buttons
+ * (BUTTON_POSITIVE, BUTTON_NEGATIVE, or BUTTON_NEUTRAL), fail to dismiss the dialog, and then
+ * Espresso times out waiting (DialogIdlingResource) for the dialog to close.
  * Manually clicking the button would resume the test.
  * Experiments showed that it's not a race condition. The click just doesn't get through.
- *<p>
- * Gemini 2.5 Pro generated the first cut.
+ * <p>
+ * LowLevelClick calls view.performClick(), which directly invokes the view's registered
+ * OnClickListener in JVM code synchronously, thus bypassing all motion event injection, input
+ * dispatchers, window layering, hit-testing, and coordinate math.
+ * <p>
+ * Note: If somehow the dialog dismissal issue requires posting the click event to the end of the
+ * main looper queue (so the current event loop iteration completes first), replace
+ * `view.performClick()` with `view.post(view::performClick)`.
  */
 public class LowLevelClick implements ViewAction {
+    @NonNull
     @Override
     public Matcher<View> getConstraints() {
-        return isEnabled();
+        return allOf(isDisplayed(), isEnabled());
     }
 
+    @NonNull
     @Override
     public String getDescription() {
         return "a low-level click";
     }
 
     @Override
-    public void perform(UiController uiController, View view) {
-        Activity activity = getActivity(view);
-
-        if (activity != null) {
-            activity.runOnUiThread(view::performClick);
-        } else {
-            // Fallback for non-Activity contexts. This might cause a 5 sec delay.
-            view.performClick();
-        }
+    public void perform(@NonNull UiController uiController, @NonNull View view) {
+        view.performClick();
 
         // Loop to let the main thread process the click event.
         uiController.loopMainThreadForAtLeast(50);
-    }
-
-    @Nullable
-    private static Activity getActivity(View view) {
-        Context context = view.getContext();
-        while (context instanceof ContextWrapper) {
-            if (context instanceof Activity) {
-                return (Activity) context;
-            }
-            context = ((ContextWrapper) context).getBaseContext();
-        }
-        return null;
     }
 }
