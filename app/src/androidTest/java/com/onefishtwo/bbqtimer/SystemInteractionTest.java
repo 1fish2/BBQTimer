@@ -35,7 +35,6 @@ import android.graphics.Color;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.RemoteException;
-import android.util.Log;
 import android.util.TypedValue;
 
 import androidx.annotation.NonNull;
@@ -296,6 +295,29 @@ public class SystemInteractionTest {
         device.pressBack(); // Close drawer
     }
 
+    /**
+     * Finds and returns the UI element for an app shortcut, expanding Pixel Launcher's "Shortcuts"
+     * submenu if required (API 37.1+ launcher and 37.2+ app drawer workaround).
+     */
+    @NonNull
+    private UiObject2 findAppShortcut(@NonNull String shortLabel, @NonNull String longLabel) {
+        Pattern shortcutPattern = Pattern.compile(Pattern.quote(shortLabel) + "|" + Pattern.quote(longLabel));
+        Pattern shortcutOrSubmenuPattern = Pattern.compile(shortcutPattern.pattern() + "|Shortcuts");
+
+        UiObject2 element = device.wait(Until.findObject(By.text(shortcutOrSubmenuPattern)), TIMEOUT);
+        assertNotNull("The \"" + shortLabel + "\" shortcut"
+                + " or Shortcuts submenu should be visible", element);
+
+        if ("Shortcuts".equals(element.getText())) {
+            element.click();
+            element = device.wait(Until.findObject(By.text(shortcutPattern)), TIMEOUT);
+            assertNotNull("The \"" + shortLabel + "\" shortcut"
+                    + " should be visible in the Shortcuts submenu", element);
+        }
+
+        return element;
+    }
+
     @Test
     @SdkSuppress(minSdkVersion = 25)
     public void testAppShortcuts() {
@@ -317,16 +339,10 @@ public class SystemInteractionTest {
         // Long press to open the menu
         appIcon.click(800);
 
-        // Use a Pattern to match either the short or long menu item label
-        String shortLabel = getString(R.string.start_at_0_short);
-        String longLabel = getString(R.string.start_at_0_long);
-        Pattern labelPattern = Pattern.compile(
-                Pattern.quote(shortLabel) + "|" + Pattern.quote(longLabel));
-        UiObject2 startShortcut = device.wait(Until.findObject(By.text(labelPattern)), TIMEOUT);
-        assertNotNull("\"Start\" shortcut should be visible (short or long label)", startShortcut);
-
+        UiObject2 startShortcut = findAppShortcut(
+                getString(R.string.start_at_0_short),
+                getString(R.string.start_at_0_long));
         startShortcut.click();
-        Log.i("DEBUG", "1");
 
         // NOTE: The app's RUNNING timer updates the UI every 100ms when running, which prevents
         // UIAutomator's waitForIdle() from detecting an idle state, so it'd time out, log, and
@@ -335,14 +351,11 @@ public class SystemInteractionTest {
 
         assertTrue("App should be in the foreground after the shortcut click",
                 device.wait(Until.hasObject(By.pkg(PACKAGE_NAME)), TIMEOUT));
-        Log.i("DEBUG", "2");
 
         // The "Stop" button should be visible.
         String stopStr = getString(R.string.stop);
         UiObject2 stopButton = device.wait(Until.findObject(By.desc(stopStr)), TIMEOUT);
-        Log.i("DEBUG", "3");
         assertNotNull("Timer should be running (\"Stop\" button visible)", stopButton);
-        Log.i("DEBUG", "4");
     }
 
     @Test
