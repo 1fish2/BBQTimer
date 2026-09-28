@@ -22,7 +22,7 @@
 package com.onefishtwo.bbqtimer;
 
 import static android.Manifest.permission.POST_NOTIFICATIONS;
-import static com.onefishtwo.bbqtimer.TestUtils.pollForExpectation;
+import static com.onefishtwo.bbqtimer.TestUtils.assertPollForExpectation;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -99,9 +99,8 @@ public class SystemInteractionTest {
         }
     }
 
-    /** Waits up to TIMEOUT for the Context's configuration to reflect expectedNightMode. */
-    private boolean waitForNightMode(@NonNull Context ctx, @NonNull NightDayMode expectedNightMode) {
-        return pollForExpectation(() -> NightDayMode.fromContext(ctx) == expectedNightMode);
+    private boolean compareNightMode(@NonNull NightDayMode expectedNightMode) {
+        return NightDayMode.fromContext(context) == expectedNightMode;
     }
 
     /**
@@ -113,14 +112,14 @@ public class SystemInteractionTest {
         private String originalNightMode = "no";
         private String originalFontScale = "1.0";
         private String originalAccelRotation = "1";
-        private long automatorIdleTimeout;
+        private long originalAutomatorIdleTimeout = TIMEOUT;
 
         @Override
         protected void before() {
             UiDevice dev = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
             Context ctx = ApplicationProvider.getApplicationContext();
 
-            automatorIdleTimeout = Configurator.getInstance().getWaitForIdleTimeout();
+            originalAutomatorIdleTimeout = Configurator.getInstance().getWaitForIdleTimeout();
             originalNightMode = readNightMode(dev, ctx);
             originalFontScale = readFontScale(dev);
             originalAccelRotation = readAccelRotation(dev);
@@ -195,7 +194,7 @@ public class SystemInteractionTest {
                 }
             } catch (Exception ignored) {}
 
-            Configurator.getInstance().setWaitForIdleTimeout(automatorIdleTimeout);
+            Configurator.getInstance().setWaitForIdleTimeout(originalAutomatorIdleTimeout);
         }
     }
 
@@ -357,8 +356,8 @@ public class SystemInteractionTest {
         assertNotNull("App should be visible", container);
 
         // Wait for system configuration to reflect Night Mode
-        assertTrue("System configuration should reflect Night Mode within timeout",
-                waitForNightMode(context, NightDayMode.NIGHT));
+        assertPollForExpectation("System configuration should reflect Night Mode",
+                () -> compareNightMode(NightDayMode.NIGHT));
 
         // Verify the running Activity reflects Night Mode and has a dark background
         Activity activity = getResumedActivity();
@@ -379,13 +378,13 @@ public class SystemInteractionTest {
         device.executeShellCommand("cmd uimode night no");
 
         // Wait for system configuration to reflect Light Mode
-        assertTrue("System configuration should reflect Day Mode within timeout",
-                waitForNightMode(context, NightDayMode.DAY));
+        assertPollForExpectation("System configuration should reflect Day Mode",
+                () -> compareNightMode(NightDayMode.DAY));
 
         // Poll for the running Activity to update its resources to Day Mode
         Activity resumed = getResumedActivity();
-        assertTrue("Activity resources should reflect Day Mode within timeout",
-                waitForNightMode(resumed, NightDayMode.DAY));
+        assertPollForExpectation("Activity resources should reflect Day Mode",
+                () -> NightDayMode.fromContext(resumed) == NightDayMode.DAY);
 
         // Verify the theme background color is light
         assertTrue("Theme should resolve colorBackground",
@@ -404,9 +403,8 @@ public class SystemInteractionTest {
         device.executeShellCommand("settings put system font_scale 1.5");
 
         // Wait for the configuration change to propagate to the test process.
-        boolean applied = pollForExpectation(() ->
-                Math.abs(context.getResources().getConfiguration().fontScale - 1.5f) < 0.01f);
-        assertTrue("Font scale 1.5 should be applied to system configuration", applied);
+        assertPollForExpectation("System configuration should reflect font scale 1.5",
+                () -> Math.abs(context.getResources().getConfiguration().fontScale - 1.5f) < 0.01f);
 
         device.waitForIdle();
 
@@ -432,12 +430,12 @@ public class SystemInteractionTest {
         device.setOrientationLandscape();
 
         // Wait for the app's Activity configuration to reflect landscape orientation
-        assertTrue("App Activity should reflect landscape orientation",
-                pollForExpectation(() -> {
+        assertPollForExpectation("App Activity should reflect landscape orientation",
+                () -> {
                     Activity activity = getResumedActivity();
                     return activity != null && activity.getResources().getConfiguration().orientation
                             == Configuration.ORIENTATION_LANDSCAPE;
-                }));
+                });
 
         // Verify the app's container layout bounds are wider than tall in landscape
         UiObject2 landscapeContainer = device.wait(
@@ -455,12 +453,12 @@ public class SystemInteractionTest {
         device.setOrientationPortrait();
 
         // Wait for the app's Activity configuration to reflect portrait orientation
-        assertTrue("App Activity should reflect portrait orientation",
-                pollForExpectation(() -> {
+        assertPollForExpectation("App Activity should reflect portrait orientation",
+                () -> {
                     Activity activity = getResumedActivity();
                     return activity != null && activity.getResources().getConfiguration().orientation
                             == Configuration.ORIENTATION_PORTRAIT;
-                }));
+                });
 
         UiObject2 portraitContainer = device.wait(
                 Until.findObject(By.res(PACKAGE_NAME, "main_container")), TIMEOUT);

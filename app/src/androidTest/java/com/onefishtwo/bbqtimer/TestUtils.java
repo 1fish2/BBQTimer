@@ -21,46 +21,62 @@
 
 package com.onefishtwo.bbqtimer;
 
+import static org.junit.Assert.assertTrue;
+
 import android.os.SystemClock;
 
 import androidx.annotation.NonNull;
+
+import java.util.Objects;
+import java.util.function.BooleanSupplier;
 
 /** Test utility methods for Android UI and interaction tests. */
 public class TestUtils {
     public static final long DEFAULT_TIMEOUT_MS = 5000;
     public static final long DEFAULT_POLL_INTERVAL_MS = 20;
 
-    @FunctionalInterface
-    public interface CheckExpectation {
-        boolean check();
-    }
+    private TestUtils() {}
 
     /**
-     * Polls the given {@link CheckExpectation} until it returns true or timeoutMs has elapsed.
+     * Polls the given {@link BooleanSupplier} until it returns true or timeoutMs has elapsed.
      *
      * @param timeoutMs      maximum time to poll in milliseconds
      * @param pollIntervalMs time to sleep between checks in milliseconds
      * @param checker        condition to verify
      * @return true if the condition was met before timing out; false otherwise
      */
-    public static boolean pollForExpectation(long timeoutMs, long pollIntervalMs, @NonNull CheckExpectation checker) {
+    public static boolean pollForExpectation(long timeoutMs, long pollIntervalMs, @NonNull BooleanSupplier checker) {
+        long intervalMs = Math.max(2, pollIntervalMs);
         long deadline = SystemClock.uptimeMillis() + timeoutMs;
 
-        while (SystemClock.uptimeMillis() < deadline) {
-            if (checker.check()) {
+        Objects.requireNonNull(checker, "checker must not be null");
+
+        while (true) {
+            if (checker.getAsBoolean()) {
                 return true;
             }
-            SystemClock.sleep(pollIntervalMs);
+            if (SystemClock.uptimeMillis() >= deadline) {
+                return false;
+            }
+            SystemClock.sleep(intervalMs);
         }
-
-        return false;
     }
 
     /**
-     * Polls the given {@link CheckExpectation} using {@link #DEFAULT_TIMEOUT_MS} and
+     * Polls the given {@link BooleanSupplier} using {@link #DEFAULT_TIMEOUT_MS} and
      * {@link #DEFAULT_POLL_INTERVAL_MS} until it returns true or timing out.
      */
-    public static boolean pollForExpectation(@NonNull CheckExpectation checker) {
+    public static boolean pollForExpectation(@NonNull BooleanSupplier checker) {
         return pollForExpectation(DEFAULT_TIMEOUT_MS, DEFAULT_POLL_INTERVAL_MS, checker);
+    }
+
+    /**
+     * Asserts that the checker returns true within DEFAULT_TIMEOUT_MS.
+     *
+     * @throws AssertionError if checker doesn't return true within DEFAULT_TIMEOUT_MS
+     */
+    public static void assertPollForExpectation(@NonNull String message, @NonNull BooleanSupplier checker) {
+        assertTrue(message + " (timed out after " + DEFAULT_TIMEOUT_MS + " ms)",
+                pollForExpectation(checker));
     }
 }
