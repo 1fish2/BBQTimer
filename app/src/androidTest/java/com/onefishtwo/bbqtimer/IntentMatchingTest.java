@@ -77,7 +77,7 @@ import java.util.regex.Pattern;
  */
 @RunWith(AndroidJUnit4.class)
 public class IntentMatchingTest {
-    public static final String TAG = "IntentMatchingTest";
+    private static final String TAG = "IntentMatchingTest";
     private static final Pattern EXCEPTION_PATTERN = Pattern.compile("Error|Exception");
 
     private Context context;

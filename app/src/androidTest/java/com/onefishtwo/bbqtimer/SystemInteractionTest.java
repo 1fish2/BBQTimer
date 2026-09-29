@@ -35,6 +35,8 @@ import android.graphics.Color;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.RemoteException;
+import android.os.SystemClock;
+import android.util.Log;
 import android.util.TypedValue;
 
 import androidx.annotation.NonNull;
@@ -51,6 +53,8 @@ import androidx.test.uiautomator.Configurator;
 import androidx.test.uiautomator.UiDevice;
 import androidx.test.uiautomator.UiObject2;
 import androidx.test.uiautomator.Until;
+
+import com.onefishtwo.bbqtimer.state.ApplicationState;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -74,6 +78,7 @@ import java.util.regex.Pattern;
  */
 @RunWith(AndroidJUnit4.class)
 public class SystemInteractionTest {
+    private static final String TAG = "SystemInteractionTest";
     private UiDevice device;
     private Context context;
     private static final String PACKAGE_NAME = "com.onefishtwo.bbqtimer";
@@ -231,15 +236,18 @@ public class SystemInteractionTest {
     private void launchApp(String action) {
         Intent intent = context.getPackageManager().getLaunchIntentForPackage(PACKAGE_NAME);
 
-        if (intent != null) {
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            if (action != null) {
-                intent.setAction(action);
-            }
+        assertNotNull("Launch Intent for " + PACKAGE_NAME + " should not be null", intent);
 
-            context.startActivity(intent);
-            device.wait(Until.hasObject(By.pkg(PACKAGE_NAME)), TIMEOUT);
+        // FLAG_ACTIVITY_CLEAR_TOP ensures a clean launch Intent if an Activity instance is already
+        // running from a previous test.
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        if (action != null) {
+            intent.setAction(action);
         }
+
+        context.startActivity(intent);
+        assertTrue("App should be visible after launch",
+            device.wait(Until.hasObject(By.pkg(PACKAGE_NAME)), TIMEOUT));
     }
 
     private void launchApp() {
@@ -267,32 +275,47 @@ public class SystemInteractionTest {
     @Test
     public void testNotificationDrawer() {
         // Open the app with the "Paused at 00:00" shortcut to show a paused notification.
+        // This launch Intent should work even on API < 25 which lacks Home screen app shortcuts.
         launchApp(Intent.ACTION_QUICK_CLOCK);
 
-        // Open notification drawer
+        // Open the notification shade
         device.openNotification();
+        try {
+            Activity resumed = getResumedActivity();
+            assertNotNull("The Activity should be resumed", resumed);
 
-        // Wait for the BBQ Timer notification by package name
-        boolean found = device.wait(Until.hasObject(By.pkg(PACKAGE_NAME)), TIMEOUT);
-        assertTrue("BBQ Timer notification (by package) should be visible", found);
+            ApplicationState state = ApplicationState.sharedInstance(context);
+            TimeCounter timer = state.getTimeCounter();
+            assertTrue(timer.isPaused());
+            assertEquals(0, timer.getElapsedTime());
+            Log.d(TAG, "Paused at " + timer.getElapsedTime());
 
-        // BBQ Timer uses custom RemoteViews.
-        // Find a button by its content description or text.
-        String pauseStr = getString(R.string.pause);
-        UiObject2 initialPauseButton = device.findObject(By.descContains(pauseStr));
-        UiObject2 pauseButton = initialPauseButton != null ? initialPauseButton
-                : device.findObject(By.textContains(pauseStr));
+            boolean updated = device.wait(Until.hasObject(By.res(PACKAGE_NAME, "btnStart")), TIMEOUT);
+            assertTrue("Notification should be visible with a Run button", updated);
+            UiObject2 runButton = device.findObject(By.res(PACKAGE_NAME, "btnStart"));
+            assertNotNull("Found the Run button", runButton);
 
-        assertNotNull("Pause button should be visible", pauseButton);
+            UiObject2 stopButton = device.findObject(By.res(PACKAGE_NAME, "btnStop"));
+            assertNotNull("Found the Stop button", stopButton);
 
-        pauseButton.click();
-        // Verify it changed state.
-        String runStr = getString(R.string.start);
-        boolean updated = device.wait(Until.hasObject(By.descContains(runStr)), TIMEOUT)
-                || device.wait(Until.hasObject(By.textContains(runStr)), TIMEOUT);
-        assertTrue("Notification should update after clicking pause", updated);
+            // Click the Run button.
+            runButton.click();
+            assertPollForExpectation("Timer should be running after clicking Run", timer::isRunning);
+            assertPollForExpectation("Time should elapse after starting", () -> timer.getElapsedTime() > 0);
+            Log.d(TAG, "Running at " + timer.getElapsedTime());
 
-        device.pressBack(); // Close drawer
+            UiObject2 pauseButton = device.wait(Until.findObject(By.res(PACKAGE_NAME, "btnPause")), TIMEOUT);
+            assertNotNull("Pause button should be visible in the Notification", pauseButton);
+
+            // Click the Pause button.
+            pauseButton.click();
+            assertPollForExpectation("Timer should be paused after clicking Pause", timer::isPaused);
+            Log.d(TAG, "Paused at " + timer.getElapsedTime());
+
+            SystemClock.sleep(10); // Short delay so the button click is visible during visual test runs
+        } finally {
+            device.pressBack(); // Close drawer
+        }
     }
 
     /**
@@ -310,9 +333,10 @@ public class SystemInteractionTest {
 
         if ("Shortcuts".equals(element.getText())) {
             element.click();
-            element = device.wait(Until.findObject(By.text(shortcutPattern)), TIMEOUT);
+            UiObject2 shortcutElement = device.wait(Until.findObject(By.text(shortcutPattern)), TIMEOUT);
             assertNotNull("The \"" + shortLabel + "\" shortcut"
-                    + " should be visible in the Shortcuts submenu", element);
+                    + " should be visible in the Shortcuts submenu", shortcutElement);
+            return shortcutElement;
         }
 
         return element;
@@ -329,7 +353,7 @@ public class SystemInteractionTest {
         // app, that's a "Predicted app" temporary icon, and on Android 37.1 its long-press menu has
         // a non-standard toggle between "Actions" (like "App info") and app "Shortcuts".
         // Workaround: Use the app drawer, not the Home screen.
-        device.swipe(width / 2, height - 300, width / 2, 100, 10);
+        device.swipe(width / 2, height * 3 / 4, width / 2, height / 4, 10);
 
         String appName = getString(R.string.app_name);
         UiObject2 appIcon = device.wait(Until.findObject(By.text(appName)), TIMEOUT);
@@ -337,7 +361,7 @@ public class SystemInteractionTest {
         assertNotNull("BBQ Timer app icon should be in the App Drawer", appIcon);
 
         // Long press to open the menu
-        appIcon.click(800);
+        appIcon.longClick();
 
         UiObject2 startShortcut = findAppShortcut(
                 getString(R.string.start_at_0_short),
@@ -394,12 +418,16 @@ public class SystemInteractionTest {
         assertPollForExpectation("System configuration should reflect Day Mode",
                 () -> compareNightMode(NightDayMode.DAY));
 
-        // Poll for the running Activity to update its resources to Day Mode
-        Activity resumed = getResumedActivity();
+        // Poll for a recreated Activity with updated resources to Day Mode
         assertPollForExpectation("Activity resources should reflect Day Mode",
-                () -> NightDayMode.fromContext(resumed) == NightDayMode.DAY);
+                () -> {
+                    Activity act = getResumedActivity();
+                    return act != null && NightDayMode.fromContext(act) == NightDayMode.DAY;
+                });
 
         // Verify the theme background color is light
+        Activity resumed = getResumedActivity();
+        assertNotNull("MainActivity should be resumed in Day Mode", resumed);
         assertTrue("Theme should resolve colorBackground",
                 resumed.getTheme().resolveAttribute(android.R.attr.colorBackground, typedValue, true));
         int lightBgColor = typedValue.data;
@@ -415,18 +443,15 @@ public class SystemInteractionTest {
 
         device.executeShellCommand("settings put system font_scale 1.5");
 
-        // Wait for the configuration change to propagate to the test process.
-        assertPollForExpectation("System configuration should reflect font scale 1.5",
-                () -> Math.abs(context.getResources().getConfiguration().fontScale - 1.5f) < 0.01f);
-
-        device.waitForIdle();
+        assertPollForExpectation("Activity should reflect font scale 1.5", () -> {
+            Activity activity = getResumedActivity();
+            return activity != null
+                && Math.abs(activity.getResources().getConfiguration().fontScale - 1.5f) < 0.01f;
+        });
 
         UiObject2 container = device.wait(
                 Until.findObject(By.res(PACKAGE_NAME, "main_container")), TIMEOUT);
-        assertNotNull("App should be visible", container);
-
-        float currentScale = context.getResources().getConfiguration().fontScale;
-        assertEquals("App should have 1.5x font scale", 1.5f, currentScale, 0.01f);
+        assertNotNull("Activity should be visible", container);
     }
 
     @Test
