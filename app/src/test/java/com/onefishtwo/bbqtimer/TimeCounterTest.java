@@ -36,10 +36,21 @@ import android.text.Spanned;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Locale;
+
 public class TimeCounterTest {
-    static class MockSpanned implements Spanned {
+
+    @Before
+    @After
+    public void resetInjected() {
+        TimeCounter.injected = new TimeCounter.InjectForTesting();
+    }
+
+    private static class MockSpanned implements Spanned {
         @Nullable
         @Override
         public <T> T[] getSpans(int start, int end, Class<T> type) { return null; }
@@ -74,7 +85,7 @@ public class TimeCounterTest {
         }
     }
 
-    static class MockFormatHook extends TimeCounter.InjectForTesting {
+    private static class MockFormatHook extends TimeCounter.InjectForTesting {
         long inputMsec =
                 987 * HOUR_IN_MILLIS + 45 * MINUTE_IN_MILLIS + 23 * SECOND_IN_MILLIS + 600;
         String hhmmssText = "987:45:23";
@@ -94,6 +105,15 @@ public class TimeCounterTest {
         Spanned fromHtml(String source) {
             assertEquals(htmlText, source);
             return mockSpanned;
+        }
+    }
+
+    private static class FakeClock implements TimeCounter.Clock {
+        long timeMsec = 1_000_000;
+
+        @Override
+        public long elapsedRealtime() {
+            return timeMsec;
         }
     }
 
@@ -161,7 +181,6 @@ public class TimeCounterTest {
         assertEquals(-1, parseHhMmSs("2pm"));
         assertEquals(-1, parseHhMmSs("10:15 am"));
         assertEquals(-1, parseHhMmSs("-15"));
-        assertEquals(-1, parseHhMmSs("-15"));
         assertEquals(-1, parseHhMmSs("-15:"));
         assertEquals(-1, parseHhMmSs(": -15 :"));
         assertEquals(-1, parseHhMmSs("10.20.2000"));
@@ -171,7 +190,7 @@ public class TimeCounterTest {
     /**
      * Make a test call to formatHhMmSsCompact(). When hours > 0, that calls
      * DateUtils.formatElapsedTime(), in which case this must mock out the underlying Formatter.
-     * Otherwise it doesn't, so the mock returns the wrong string result there, thus testing that
+     * Otherwise, it doesn't, so the mock returns the wrong string result there, thus testing that
      * formatHhMmSsCompact() doesn't use it.
      */
     private static String fc(long hours, long minutes, long seconds) {
@@ -179,7 +198,7 @@ public class TimeCounterTest {
         MockFormatHook hook = new MockFormatHook();
 
         hook.inputMsec = totalSeconds * 1000L;
-        hook.hhmmssText = String.format("%d:%02d:%02d", hours, minutes, seconds);
+        hook.hhmmssText = String.format(Locale.US, "%d:%02d:%02d", hours, minutes, seconds);
         hook.htmlText = hook.hhmmssText;
 
         TimeCounter.injected = hook;
@@ -218,5 +237,125 @@ public class TimeCounterTest {
         assertEquals( 0, lengthOfLeadingIntervalTime("x15"));
         assertEquals( 3, lengthOfLeadingIntervalTime("\r\n7\r\n"));
         assertEquals( 1, lengthOfLeadingIntervalTime("7.5"));
+    }
+
+    @Test
+    public void testStateAndClockTransitions() {
+        FakeClock fakeClock = new FakeClock();
+        TimeCounter counter = new TimeCounter(fakeClock);
+
+        assertEquals(TimeCounter.State.STOPPED, counter.getState());
+        assertEquals(0, counter.getElapsedTime());
+
+        counter.start();
+        assertEquals(TimeCounter.State.RUNNING, counter.getState());
+
+        fakeClock.timeMsec += 5000;
+        assertEquals(5000, counter.getElapsedTime());
+
+        counter.pause();
+        assertEquals(TimeCounter.State.PAUSED, counter.getState());
+
+        fakeClock.timeMsec += 3000;
+        assertEquals(5000, counter.getElapsedTime());
+
+        counter.start();
+        assertEquals(TimeCounter.State.RUNNING, counter.getState());
+
+        fakeClock.timeMsec += 2000;
+        assertEquals(7000, counter.getElapsedTime());
+
+        counter.stop();
+        assertEquals(TimeCounter.State.STOPPED, counter.getState());
+        assertEquals(0, counter.getElapsedTime());
+    }
+
+    /** toggleRunPause(): Stopped or Paused -> Running -> Paused. */
+    @Test
+    public void testToggleRunPause() {
+        FakeClock fakeClock = new FakeClock();
+        TimeCounter counter = new TimeCounter(fakeClock);
+
+        assertEquals(TimeCounter.State.STOPPED, counter.getState());
+        assertEquals(0, counter.getElapsedTime());
+
+        counter.toggleRunPause();
+        assertEquals(TimeCounter.State.RUNNING, counter.getState());
+        assertEquals(0, counter.getElapsedTime());
+
+        fakeClock.timeMsec += 5000;
+        assertEquals(TimeCounter.State.RUNNING, counter.getState());
+        assertEquals(5000, counter.getElapsedTime());
+
+        counter.toggleRunPause();
+        assertEquals(TimeCounter.State.PAUSED, counter.getState());
+        assertEquals(5000, counter.getElapsedTime());
+
+        fakeClock.timeMsec += 3000;
+        assertEquals(TimeCounter.State.PAUSED, counter.getState());
+        assertEquals(5000, counter.getElapsedTime());
+
+        counter.toggleRunPause();
+        assertEquals(TimeCounter.State.RUNNING, counter.getState());
+        assertEquals(5000, counter.getElapsedTime());
+
+        fakeClock.timeMsec += 2000;
+        assertEquals(TimeCounter.State.RUNNING, counter.getState());
+        assertEquals(7000, counter.getElapsedTime());
+
+        counter.stop();
+        assertEquals(TimeCounter.State.STOPPED, counter.getState());
+        assertEquals(0, counter.getElapsedTime());
+    }
+
+    /** togglePauseRun(): Stopped or Running -> Paused -> Running. */
+    @Test
+    public void testTogglePauseRun() {
+        FakeClock fakeClock = new FakeClock();
+        TimeCounter counter = new TimeCounter(fakeClock);
+
+        assertEquals(TimeCounter.State.STOPPED, counter.getState());
+        assertEquals(0, counter.getElapsedTime());
+
+        counter.togglePauseRun();
+        assertEquals(TimeCounter.State.PAUSED, counter.getState());
+        assertEquals(0, counter.getElapsedTime());
+
+        fakeClock.timeMsec += 2000;
+        assertEquals(TimeCounter.State.PAUSED, counter.getState());
+        assertEquals(0, counter.getElapsedTime());
+
+        counter.togglePauseRun();
+        assertEquals(TimeCounter.State.RUNNING, counter.getState());
+        assertEquals(0, counter.getElapsedTime());
+
+        fakeClock.timeMsec += 3000;
+        assertEquals(TimeCounter.State.RUNNING, counter.getState());
+        assertEquals(3000, counter.getElapsedTime());
+
+        fakeClock.timeMsec += 1000;
+        counter.togglePauseRun();
+        assertEquals(TimeCounter.State.PAUSED, counter.getState());
+        assertEquals(4000, counter.getElapsedTime());
+
+        fakeClock.timeMsec += 3000;
+        assertEquals(TimeCounter.State.PAUSED, counter.getState());
+        assertEquals(4000, counter.getElapsedTime());
+
+        fakeClock.timeMsec += 7000;
+        assertEquals(TimeCounter.State.PAUSED, counter.getState());
+        assertEquals(4000, counter.getElapsedTime());
+
+        counter.togglePauseRun();
+        assertEquals(TimeCounter.State.RUNNING, counter.getState());
+        assertEquals(4000, counter.getElapsedTime());
+
+        fakeClock.timeMsec += 2000;
+        assertEquals(TimeCounter.State.RUNNING, counter.getState());
+        assertEquals(6000, counter.getElapsedTime());
+
+        counter.stop();
+        assertEquals(TimeCounter.State.STOPPED, counter.getState());
+        assertEquals(0, counter.getElapsedTime());
     }
 }

@@ -1,121 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- The negative margins squeeze it a little so the heads-up notification
+<!-- This layout is used in RemoteViews so it can't reliably access theme attributes `?attr/`.
+     The negative margins squeeze it a little so the heads-up notification
      doesn't clip the Pause & Play action buttons. -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="-2sp"
     android:layout_marginTop="-2sp"
     android:orientation="vertical"
-    android:theme="@style/AppTheme"
-    tools:viewBindingIgnore="true"
-    xmlns:tools="http://schemas.android.com/tools">
+    tools:viewBindingIgnore="true">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
 
-        <!-- Notifier.java relies on the child views being #0 (Chronometer) and #1 (TextView) in
-             both of these ViewFlippers. -->
-        <ViewFlipper
-            android:id="@+id/countUpViewFlipper"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|left"
-            android:paddingRight="@dimen/notification_spacer"
-            android:measureAllChildren="false">
+        <include layout="@layout/custom_notification_countdown" />
 
-            <Chronometer
-                android:id="@+id/countUpChronometer"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:ellipsize="end"
-                android:gravity="bottom|left"
-                android:layout_gravity="bottom|left"
-                android:maxLines="1"
-                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-                android:textColor="@color/notification_text"
-                android:textStyle="bold"
-                android:typeface="sans" />
+        <include layout="@layout/custom_notification_elapsed" />
 
-            <TextView
-                android:id="@+id/pausedCountUp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:ellipsize="end"
-                android:gravity="bottom|left"
-                android:layout_gravity="bottom|left"
-                android:maxLines="1"
-                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-                android:textColor="@color/notification_text"
-                android:textStyle="bold"
-                android:typeface="sans" />
-        </ViewFlipper>
-
-        <TextView
-            android:id="@+id/countUpMessage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="bottom|left"
-            android:layout_gravity="bottom|left"
-            android:maxLines="1"
-            android:ellipsize="end"
-            android:hyphenationFrequency="full"
-            android:textAppearance="@style/TextAppearance.AppCompat.Small"
-            android:textColor="@color/notification_text" />
     </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:orientation="horizontal">
+    <include layout="@layout/custom_notification_buttons" />
 
-        <ViewFlipper
-            android:id="@+id/countdownViewFlipper"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|left"
-            android:paddingRight="@dimen/notification_spacer"
-            android:measureAllChildren="false">
-
-            <Chronometer
-                android:id="@+id/countdownChronometer"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:countDown="true"
-                android:ellipsize="end"
-                android:gravity="bottom|left"
-                android:layout_gravity="bottom|left"
-                android:maxLines="1"
-                android:textAppearance="@style/TextAppearance.AppCompat.Small"
-                android:textColor="@color/notification_text"
-                android:typeface="sans" />
-
-            <TextView
-                android:id="@+id/pausedCountdown"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:ellipsize="end"
-                android:gravity="bottom|left"
-                android:layout_gravity="bottom|left"
-                android:maxLines="1"
-                android:textAppearance="@style/TextAppearance.AppCompat.Small"
-                android:textColor="@color/notification_text"
-                android:typeface="sans" />
-        </ViewFlipper>
-
-        <TextView
-            android:id="@+id/countdownMessage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:gravity="bottom|left"
-            android:hyphenationFrequency="full"
-            android:maxLines="1"
-            android:textAppearance="@style/TextAppearance.AppCompat.Small"
-            android:textColor="@color/notification_text" />
-    </LinearLayout>
 </LinearLayout>

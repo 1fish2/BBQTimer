@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- This background id enables a smoother transition launching the app from the widget.
+<!-- This layout is used in RemoteViews so it can't reliably access theme attributes `?attr/`.
+     This background id enables a smoother transition launching the app from the widget.
      The widget provider also references this View by id. -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
@@ -21,16 +22,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
-        android:layout_marginLeft="@dimen/widget_button_margin"
-        android:layout_marginTop="@dimen/widget_button_margin"
-        android:layout_marginBottom="@dimen/widget_button_margin"
+        android:layout_margin="@dimen/widget_button_margin"
         android:layout_weight="0"
-        android:backgroundTint="@color/widget_button_background"
+        android:background="@drawable/widget_button_rounded_background"
         android:contentDescription="@string/start_pause"
-        android:paddingLeft="@dimen/small_button_padding"
-        android:paddingRight="@dimen/small_button_padding"
+        android:padding="2dp"
         android:src="@drawable/ic_action_play"
-        tools:ignore="UnusedAttribute" />
+        android:tint="@color/button_tint_color_unstyled"
+        tools:ignore="UnusedAttribute,UseAppTint" />
 
     <!-- Note: The code needs child indexes that match the order of children. -->
     <ViewFlipper
@@ -52,6 +51,7 @@
             android:textColor="@color/widget_countdown_text"
             android:textSize="@dimen/widget_countdown_text_size"
             android:typeface="sans"
+            android:fontFeatureSettings="tnum"
             tools:ignore="SpUsage" />
 
         <Chronometer
@@ -63,6 +63,7 @@
             android:textColor="@color/widget_countdown_text"
             android:textSize="@dimen/widget_countdown_text_size"
             android:typeface="sans"
+            android:fontFeatureSettings="tnum"
             tools:ignore="SpUsage" />
 
         <TextView
@@ -71,9 +72,10 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical|right"
             android:maxLines="1"
-            android:textColor="@color/reset_timer_colors"
+            android:textColor="@color/reset_timer_unstyled_colors"
             android:textSize="@dimen/widget_countdown_text_size"
             android:typeface="sans"
+            android:fontFeatureSettings="tnum"
             tools:ignore="SpUsage" />
     </ViewFlipper>
 
@@ -94,9 +96,10 @@
             android:layout_gravity="center_vertical|right"
             android:maxLines="1"
             android:text="@string/widget_preview_time"
-            android:textColor="@color/paused_timer_colors"
+            android:textColor="@color/paused_alternate_timer_unstyled_colors"
             android:textSize="@dimen/widget_text_size"
             android:typeface="sans"
+            android:fontFeatureSettings="tnum"
             tools:ignore="SpUsage" />
 
         <Chronometer
@@ -105,9 +108,10 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical|right"
             android:maxLines="1"
-            android:textColor="@color/running_timer_colors"
+            android:textColor="@color/running_timer_unstyled_colors"
             android:textSize="@dimen/widget_text_size"
             android:typeface="sans"
+            android:fontFeatureSettings="tnum"
             tools:ignore="SpUsage" />
 
         <TextView
@@ -116,9 +120,10 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical|right"
             android:maxLines="1"
-            android:textColor="@color/reset_timer_colors"
+            android:textColor="@color/reset_timer_unstyled_colors"
             android:textSize="@dimen/widget_text_size"
             android:typeface="sans"
+            android:fontFeatureSettings="tnum"
             tools:ignore="SpUsage" />
 
 
@@ -129,9 +134,10 @@
             android:layout_gravity="center_vertical|right"
             android:maxLines="1"
             android:text=""
-            android:textColor="@color/paused_timer_colors"
+            android:textColor="@color/paused_alternate_timer_unstyled_colors"
             android:textSize="@dimen/widget_shrunken_text_size"
             android:typeface="sans"
+            android:fontFeatureSettings="tnum"
             tools:ignore="SpUsage" />
 
         <Chronometer
@@ -140,9 +146,10 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical|right"
             android:maxLines="1"
-            android:textColor="@color/running_timer_colors"
+            android:textColor="@color/running_timer_unstyled_colors"
             android:textSize="@dimen/widget_shrunken_text_size"
             android:typeface="sans"
+            android:fontFeatureSettings="tnum"
             tools:ignore="SpUsage" />
 
         <TextView
@@ -151,9 +158,10 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical|right"
             android:maxLines="1"
-            android:textColor="@color/reset_timer_colors"
+            android:textColor="@color/reset_timer_unstyled_colors"
             android:textSize="@dimen/widget_shrunken_text_size"
             android:typeface="sans"
+            android:fontFeatureSettings="tnum"
             tools:ignore="SpUsage" />
     </ViewFlipper>
 

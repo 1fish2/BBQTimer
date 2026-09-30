@@ -26,6 +26,7 @@
         android:ellipsize="end"
         android:focusable="true"
         android:fontFamily="@font/roboto"
+        android:fontFeatureSettings="tnum"
         android:gravity="right|bottom"
         android:includeFontPadding="false"
         android:maxLines="1"
@@ -45,6 +46,7 @@
         android:background="?attr/selectableItemBackground"
         android:focusable="true"
         android:fontFamily="@font/roboto"
+        android:fontFeatureSettings="tnum"
         android:gravity="right|center_vertical"
         android:maxLines="1"
         android:minHeight="@dimen/countdown_text_size"
@@ -139,6 +141,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/fold_margin"
+        android:minWidth="88dp"
+        android:maxWidth="488dp"
         style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense"
         android:hint="@string/interval_hint"
         app:hintTextAppearance="@style/HintTextAppearance"
@@ -151,6 +155,7 @@
 
         <com.onefishtwo.bbqtimer.EditText2
             android:id="@+id/alarmPeriod"
+            style="@style/Widget.App.EditText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/roboto"
@@ -163,7 +168,6 @@
             android:minWidth="@dimen/alarm_period_min_width"
             android:paddingLeft="0dp"
             android:text="@string/widget_preview_countdown"
-            android:textColor="?android:attr/textColorPrimary"
             android:textSize="@dimen/controls_text_size" />
 
     </com.google.android.material.textfield.TextInputLayout>

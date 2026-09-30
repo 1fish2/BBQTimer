@@ -13,7 +13,7 @@
     <string name="app_name">BBQ Timer</string>
 
     <!-- The application's description. This goes into the AndroidManifest. -->
-    <string name="app_description">A stopwatch that you can use on the lock-screen.</string>
+    <string name="app_description">A stopwatch and interval timer that you can use on the lock-screen.</string>
 
     <!-- Name for the Alarm notification channel. Recommended maximum 40 chars. -->
     <string name="notification_alarm_channel_name">Alarm</string>
@@ -47,21 +47,22 @@
     <!-- The "configure" Snackbar action (hence all upper-case) for the notifications_misconfigured. -->
     <string name="notifications_configure">CONFIGURE</string>
 
-    <!-- Label for the button that resets the timer to be stopped at 00:00. -->
+    <!-- Label for the notification button that resets the timer to be stopped at 00:00,
+       ALSO for the recipe editor button that resets the recipe list. -->
     <string name="reset">Reset</string>
 
-    <!-- Label for the button that starts or resumes the stopped timer. -->
-    <string name="start">Start</string>
+    <!-- Label for the notification button that runs (i.e. starts or resumes) the stopped timer. -->
+    <string name="start">Run</string>
 
-    <!-- App shortcut that Resets the timer to 00:00 then Starts it. The long label appears in the
-       menu of app shortcuts, which is "limited to about 25 characters." Call this "Start",
-       "Start at 00:00", "Restart", "Reset + Start", or what? -->
+    <!-- App shortcut that Starts the timer running at 00:00. The long label appears in the
+       menu of app shortcuts, which is "limited to about 25 characters." Call this "Start" or
+       "Start at 00:00". -->
     <string name="start_at_0_long">Start</string>
-    <!-- App shortcut that Resets the timer to 00:00 then Starts it. The short label is used in
+    <!-- App shortcut that Resets the timer to 00:00 then Starts it Running. This short label is used in
        places like pinned shortcut icons. It's "limited to about 10 characters." -->
     <string name="start_at_0_short">Start</string>
 
-    <!-- Label for the button that pauses the running timer. This doesn't reset the timer nor hide
+    <!-- Label for the notification button that pauses the running timer. This doesn't reset the timer nor hide
       its notification. -->
     <string name="pause">Pause</string>
 
@@ -73,12 +74,12 @@
        places like pinned shortcut icons. It's "limited to about 10 characters." -->
     <string name="pause_at_0_short">Pause 00:00</string>
 
-    <!-- Label for the button that stops and resets the timer and hides its notification. -->
+    <!-- Label for the activity and notification button that stops and resets the timer and hides its notification. -->
     <string name="stop">Stop</string>
 
-    <!-- Accessibility description for the button that starts or resumes a timer or else
-      pauses a running timer. -->
-    <string name="start_pause">Start/Pause</string>
+    <!-- Label for the activity and widget button that runs (i.e. starts or resumes) a timer or else pauses a running timer.
+        In German user interfaces for timers and stopwatches, "Start" is the standard term used to begin or resume the timer. -->
+    <string name="start_pause">Run/Pause</string>
 
     <!-- The checkbox that turns periodic reminder interval alarms on/off; this checkbox ALSO acts
       as the label for the adjacent text field used to enter the interval time period. -->
@@ -95,34 +96,43 @@
       "%1$s" is placeholder #1 for the number of hours:minutes:seconds or minutes:seconds.
       Examples: "Alarm every 00:30", "Alarm every 05:30", and "Alarm every 2:10:30".
       This needs to be very short to fit in one line in a pull-down notification, esp. on narrow
-      screens.
+      screens and screens with the Font or Display Size turned up by the user.
       This could be in command form, meaning "Sound an alarm every...", or a noun phrase, meaning
       "(There will be an) alarm every...". -->
-    <string name="notification_body">Alarm every %1$s</string>
+    <string name="notification_body">Every %1$s</string>
 
     <!-- Notification body message: The timer is running with no reminder alarms. This message must
        be short enough to fit in one line of the notification drawer area. -->
     <string name="timer_running">Running</string>
 
-    <!-- Notification body message: The timer is paused with <elapsed_time>. This message must be
-       short enough to fit in one line of the notification shade.
+    <!-- Notification body message for Wear OS: The timer is running at {elapsed_time} and counting.
+       [Evaluating ">1:30", "≥1:30", and "1:30➚︎".] -->
+    <string name="running_up_at">Running &gt;%1$s</string>
+
+    <!-- Notification body message: The timer is paused. -->
+    <string name="timer_paused">Paused</string>
+
+    <!-- Notification body message for Wear OS: The timer is paused at {elapsed_time}.
+       This message must be short enough to fit in one line of the notification shade.
 
        "%1$s" is placeholder #1 for the timer's string value such as "10:23" ("s" for string).
 
+       The arrows convey that the time value gets stale. The emoji makes it more glanceable.
+
        NOTE: The <elapsed_time> is the accumulated timer duration, not the time of day when the
-       pause occurred. In English, "Paused at 10:23" is ambiguous; it could mean either one. -->
-    <string name="timer_paused">Paused %1$s</string>
+       pause occurred. In English, "Paused at 10:23" is ambiguous. -->
+    <string name="timer_paused_at">Paused %1$s</string>
+
+    <!-- Notification body message for Wear OS: The next alarm is in {time} and counting down.
+       [Evaluating "<1:30", "≤1:30", and "1:30➘".] -->
+    <string name="counting_down_at">Next ♫ in &lt;%1$s</string>
+
+    <!-- Notification body message for Wear OS: The next alarm is in {time}. -->
+    <string name="count_down_at">Next ♫ in %1$s</string>
 
     <!-- Notification body message: The timer is stopped. This message must be short enough to fit
        in one line of the notification drawer area. -->
     <string name="timer_stopped">Stopped</string>
-
-    <!-- Notification body subtext (third line): A tip that swiping will dismiss the notification.
-       This message must be short enough to fit in one line of the notification drawer area.
-
-       NOTE: This message is not important. An empty string would be OK. Fitting into about 18
-       characters is more important than the parentheses. -->
-    <string name="dismiss_tip">(Swipe to stop)</string>
 
     <!-- Notification body subtext (third line): Indicates that periodic reminder alarms are turned
       off. This message must be short enough to fit in one line of the notification drawer area. -->
@@ -149,9 +159,9 @@
     <string name="need_alarm_access">BBQ Timer needs “Special app access” “Alarms &amp; reminders” to set alarms</string>
 
     <!-- The initial "recipes" of alarm intervals with optional notes.
-         The placeholder %1$s is for fish temperature-done in either °C or °F.
+         The placeholder %1$s is for fish fillets temperature-done in either °C or °F.
          The placeholder %2$s is for burgers temperature-done in either °C or °F. -->
-    <string name="recipes">6 thin fish, cook to %1$s\n7 burgers, cook to %2$s\n:30\n1\n1:30\n2\n3\n4\n5\n6\n7\n8\n9\n10\n15\n1:30:00</string>
+    <string name="recipes">6 thin fish fillets, cook to %1$s\n7 burgers, cook to %2$s\n:30\n1\n1:30\n2\n3\n4\n5\n6\n7\n8\n9\n10\n15\n1:30:00</string>
 
     <!-- Content description for the icon button that opens the menu of alarm intervals. -->
     <string name="intervals_menu">Intervals menu</string>
@@ -159,16 +169,21 @@
     <!-- Menu command to edit the pop-up list of "recipes" of alarm intervals with optional notes. -->
     <string name="edit_this_list">Edit these intervals…</string>
 
-    <!-- Title for the the dialog to edit "recipes" of alarm intervals with optional notes. -->
+    <!-- Title for the dialog to edit "recipes" of alarm intervals with optional notes. -->
     <string name="edit_list_title">Alarm intervals</string>
 
     <!-- Hint for what to type into the recipe editor. -->
-    <string name="edit_list_hint">minutes\nminutes:seconds or\nhours:minutes:seconds\nwith optional notes</string>
+    <string name="edit_list_hint">m, m:s, or h:m:s with optional notes</string>
 
-    <!-- Save edits in the recipe editor. -->
+    <!-- "Save edits" button in the recipe editor. -->
     <string name="save_edits">Save</string>
 
-    <!-- Cancel edits in the recipe editor. -->
+    <!-- "Cancel edits" button in the recipe editor. -->
     <string name="cancel_edits">Cancel</string>
 
+    <!-- ActionBar's "Device is locked" menu item.
+      The menu item has showAsAction="always", i.e. always display as an icon in the app bar.
+      Long-pressing the item shows this item name string in a popup hint. It might also appear to a
+      screen reader. -->
+    <string name="action_locked">Device is locked</string>
 </resources>

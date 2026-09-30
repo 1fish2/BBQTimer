@@ -25,9 +25,10 @@
         android:appCategory="productivity"
         android:description="@string/app_description"
         android:icon="@mipmap/ic_launcher"
+        android:intentMatchingFlags="enforceIntentFilter"
         android:label="@string/app_name"
         android:name=".BBQTimerApplication"
-        android:theme="@style/AppTheme"
+        android:theme="@style/Theme.App"
         android:enableOnBackInvokedCallback="true"
         android:supportsRtl="false"
         android:localeConfig="@xml/locales_config"
@@ -38,13 +39,19 @@
 
         <activity
             android:name=".MainActivity"
+            android:theme="@style/Theme.App.Starting"
             android:configChanges="keyboard|keyboardHidden|screenSize|mcc|mnc"
             android:windowSoftInputMode="adjustResize"
-            android:exported="true">
+            android:showWhenLocked="true"
+            android:exported="true"
+            android:intentMatchingFlags="allowNullAction">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.intent.action.EDIT" />
+                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.QUICK_CLOCK" />
+                <action android:name="android.intent.action.RUN" />
 
+                <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
             <meta-data android:name="android.app.shortcuts"
@@ -57,9 +64,23 @@
 
         <receiver android:name=".TimerAppWidgetProvider"
                   android:label="@string/app_name"
-                  android:exported="false">
+                  android:exported="false"
+                  android:intentMatchingFlags="none"> <!-- Opt out of strict matching so future or
+                    manufacturer-specific Intents will get through to super.onReceive(). -->
             <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_DELETED" />
+                <action android:name="android.appwidget.action.APPWIDGET_DISABLED" />
+                <action android:name="android.appwidget.action.APPWIDGET_ENABLED" />
+                <action android:name="android.appwidget.action.APPWIDGET_ENABLE_AND_UPDATE" />
+                <action android:name="android.appwidget.action.APPWIDGET_RESTORED" />
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE_OPTIONS" />
+                <action android:name="com.onefishtwo.bbqtimer.ACTION_CYCLE" />
+                <action android:name="com.onefishtwo.bbqtimer.ACTION_PAUSE" />
+                <action android:name="com.onefishtwo.bbqtimer.ACTION_RESET" />
+                <action android:name="com.onefishtwo.bbqtimer.ACTION_RUN" />
+                <action android:name="com.onefishtwo.bbqtimer.ACTION_RUN_PAUSE" />
+                <action android:name="com.onefishtwo.bbqtimer.ACTION_STOP" />
             </intent-filter>
 
             <meta-data
@@ -71,6 +92,9 @@
             android:name=".AlarmReceiver"
             android:enabled="true"
             android:exported="false" >
+            <intent-filter>
+                <action android:name="com.onefishtwo.bbqtimer.ACTION_ALARM" />
+            </intent-filter>
         </receiver>
 
         <receiver
@@ -83,7 +107,8 @@
                 <action android:name="android.intent.action.TIME_SET" />
                 <action android:name="android.intent.action.TIMEZONE_CHANGED" />
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
-                <!-- TODO: ACTION_LOCKED_BOOT_COMPLETED? -->
+                <action android:name="android.intent.action.RUN" />
+                <!-- TODO: QUICKBOOT_POWERON? ACTION_LOCKED_BOOT_COMPLETED? -->
             </intent-filter>
         </receiver>
     </application>

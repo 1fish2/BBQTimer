@@ -21,14 +21,12 @@
 
 package com.onefishtwo.bbqtimer;
 
-
 import static com.onefishtwo.bbqtimer.LocaleUtils.getDefaultFormatLocale;
 import static com.onefishtwo.bbqtimer.LocaleUtils.useFahrenheit;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import android.os.Build;
 import android.util.Log;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -44,33 +42,24 @@ import java.util.Locale;
 public class LocaleUtilsAndroidTest {
     private static final String TAG = "LocaleUtilsAndroidTest";
 
-    /** @noinspection RedundantSuppression*/ // for Android Studio's code inspector
-    @SuppressWarnings("deprecation") // for Gradle
-    private static final Locale BAHAMAS = new Locale("en", "BS");
-    /** @noinspection RedundantSuppression*/
-    @SuppressWarnings("deprecation")
-    private static final Locale SPAIN = new Locale("es", "ES");
+    private static final Locale BAHAMAS = Locale.forLanguageTag("en-BS");
+    private static final Locale SPAIN = Locale.forLanguageTag("es-ES");
 
-    private Locale initialLocale, initialFormatLocale;
+    private Locale initialLocale;
+    private Locale initialFormatLocale;
 
     @Before
     public void setUp() {
         initialLocale = Locale.getDefault();
-
-        if (Build.VERSION.SDK_INT >= 24) {
-            initialFormatLocale = Locale.getDefault(Locale.Category.FORMAT);
-            Log.i(TAG, "Locale " + initialLocale
-                    + ", Format Locale " + initialFormatLocale);
-        }
+        initialFormatLocale = Locale.getDefault(Locale.Category.FORMAT);
+        Log.i(TAG, "Locale " + initialLocale
+                + ", Format Locale " + initialFormatLocale);
     }
 
     @After
     public void tearDown() {
         Locale.setDefault(initialLocale);
-
-        if (Build.VERSION.SDK_INT >= 24) {
-            Locale.setDefault(Locale.Category.FORMAT, initialFormatLocale);
-        }
+        Locale.setDefault(Locale.Category.FORMAT, initialFormatLocale);
     }
 
     @Test
@@ -78,42 +67,46 @@ public class LocaleUtilsAndroidTest {
         // Going in, the Locale and the temperature units user pref are unknown.
 
         Locale.setDefault(Locale.GERMANY);
-        assertEquals(Locale.GERMANY, getDefaultFormatLocale());
+        assertEquals("Default locale should match GERMANY", Locale.GERMANY, getDefaultFormatLocale());
 
-        if (Build.VERSION.SDK_INT >= 24) {
-            Locale.setDefault(Locale.UK);
-            Locale.setDefault(Locale.Category.FORMAT, Locale.ITALY);
-            assertEquals(Locale.ITALY, getDefaultFormatLocale());
+        Locale.setDefault(Locale.UK);
+        Locale.setDefault(Locale.Category.FORMAT, Locale.ITALY);
+        assertEquals("FORMAT category locale should match ITALY", Locale.ITALY, getDefaultFormatLocale());
 
-            Locale.setDefault(Locale.Category.FORMAT, Locale.US);
-            assertEquals(Locale.US, getDefaultFormatLocale());
-        }
+        Locale.setDefault(Locale.Category.FORMAT, Locale.US);
+        assertEquals("FORMAT category locale should match US", Locale.US, getDefaultFormatLocale());
     }
 
     @Test
     public void testUseFahrenheit() {
         // Going in, the Locale and the temperature units user pref are unknown.
 
-        assertTrue(useFahrenheit(Locale.US));
-        assertTrue(useFahrenheit(BAHAMAS));
+        assertTrue("US should use Fahrenheit", useFahrenheit(Locale.US));
+        assertTrue("Bahamas should use Fahrenheit", useFahrenheit(BAHAMAS));
 
-        assertFalse(useFahrenheit(Locale.GERMANY));
-        assertFalse(useFahrenheit(SPAIN));
+        assertFalse("Germany should use Celsius", useFahrenheit(Locale.GERMANY));
+        assertFalse("Spain should use Celsius", useFahrenheit(SPAIN));
 
         Locale.setDefault(Locale.UK);
-        assertFalse(useFahrenheit());
+        assertFalse("Default UK locale should use Celsius", useFahrenheit());
 
-        if (Build.VERSION.SDK_INT >= 24) //noinspection SpellCheckingInspection
-        {
-            Locale.setDefault(BAHAMAS);
-            assertTrue(useFahrenheit());
+        Locale.setDefault(BAHAMAS);
+        assertTrue("Default Bahamas locale should use Fahrenheit", useFahrenheit());
 
-            Locale.setDefault(Locale.Category.FORMAT, Locale.UK);
-            assertFalse(useFahrenheit());
+        Locale.setDefault(Locale.Category.FORMAT, Locale.UK);
+        assertFalse("FORMAT category UK locale should use Celsius", useFahrenheit());
+    }
 
-            // TODO: Simulate a user's Regional preference by setting the format locale with
-            //  extension tag, e.g. to en_US_#u-mu-fahrenhe.
-        }
+    @Test
+    public void testUseFahrenheit_withRegionalPreferences() {
+        // Test Unicode BCP 47 measurement unit overrides (-u-mu-fahrenhe / -u-mu-celsius)
+        Locale usCelsiusOverride = Locale.forLanguageTag("en-US-u-mu-celsius");
+        Locale ukFahrenheitOverride = Locale.forLanguageTag("en-GB-u-mu-fahrenhe");
+
+        assertFalse("US locale with explicit Celsius extension should use Celsius",
+                useFahrenheit(usCelsiusOverride));
+        assertTrue("UK locale with explicit Fahrenheit extension should use Fahrenheit",
+                useFahrenheit(ukFahrenheitOverride));
     }
 
 }

@@ -1,6 +1,7 @@
 *.iml
 /build/
 .gradle
+/.artifacts/
 /local.properties
 /.idea/caches
 /.idea/csv-plugin.xml
@@ -8,6 +9,7 @@
 /.idea/libraries
 /.idea/modules.xml
 /.idea/misc.xml
+/.idea/planningMode.xml
 /.idea/workspace.xml
 /.idea/navEditor.xml
 /.idea/assetWizardSettings.xml
@@ -21,3 +23,8 @@
 local.properties
 /tmp
 /bin/__pycache__/
+
+# Don't ignore the wrapper/daemon configuration
+!gradle/gradle-wrapper.properties
+!gradle/wrapper/gradle-wrapper.jar
+!gradle/gradle-daemon-jvm.properties

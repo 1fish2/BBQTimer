@@ -23,10 +23,10 @@ import static android.Manifest.permission.POST_NOTIFICATIONS;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.KeyguardManager;
 import android.app.PendingIntent;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
@@ -54,7 +54,6 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
@@ -62,6 +61,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
+import androidx.annotation.IdRes;
 import androidx.annotation.IntDef;
 import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
@@ -70,14 +70,20 @@ import androidx.annotation.RequiresApi;
 import androidx.annotation.StringRes;
 import androidx.annotation.UiThread;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.PopupMenu;
+import androidx.appcompat.widget.TooltipCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.app.TaskStackBuilder;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
+import androidx.core.splashscreen.SplashScreen;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.core.widget.NestedScrollView;
 import androidx.core.widget.TextViewCompat;
+import androidx.dynamicanimation.animation.DynamicAnimation;
+import androidx.dynamicanimation.animation.SpringAnimation;
+import androidx.dynamicanimation.animation.SpringForce;
 
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
@@ -87,7 +93,7 @@ import com.onefishtwo.bbqtimer.state.ApplicationState;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.ref.WeakReference;
-import java.util.Vector;
+import java.util.ArrayList;
 
 /**
  * The BBQ Timer's main activity.
@@ -97,12 +103,10 @@ public class MainActivity extends AppCompatActivity
         implements RecipeEditorDialogFragment.RecipeEditorDialogFragmentListener {
     private static final String TAG = "Main";
 
-    /**
-     * Enable edge-to-edge display? Required on API 35+ (with a temporary deferment option).
-     * On API < 29, it breaks the system bar contrast. On API < 35 the system bar is ugly above the
-     * title bar (fixable). The PopupMenu insets need investigation. No advantages for this app.
-     */
-    private static final boolean EDGE_TO_EDGE = Build.VERSION.SDK_INT >= 35;
+    /** Enable edge-to-edge display? It's required on API 35+. Its problems on API < 29 might be
+     *  fixed now but there's no strong need to test and debug it thoroughly on Android < Pie. */
+    private static final boolean EDGE_TO_EDGE = Build.VERSION.SDK_INT >= 29;
+    public static final int REMINDER_STREAM = AudioManager.STREAM_ALARM;
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({SHORTCUT_NONE, SHORTCUT_PAUSE, SHORTCUT_START})
@@ -195,8 +199,9 @@ public class MainActivity extends AppCompatActivity
     private ApplicationState state;
     private TimeCounter timer;
     private String lastRecipes; // the last input to styleTheRecipes()
-    private Vector<SpannableString> styledRecipes; // the output from styleTheRecipes()
+    private ArrayList<SpannableString> styledRecipes; // the output from styleTheRecipes()
     private PopupMenu popupMenu;
+    private MenuItem lockStatusItem; // the "phone is locked" action bar item
     private int notificationRequestCount;
 
     private NestedScrollView mainContainer;
@@ -206,6 +211,7 @@ public class MainActivity extends AppCompatActivity
     private TextView countUpDisplay, countdownDisplay;
     private EditText2 alarmPeriod;
     private CheckBox enableReminders;
+    private SpringAnimation springX, springY;
 
     // This callback handles the user's response to the system permissions dialog.
     private final ActivityResultLauncher<String> requestPermissionLauncher =
@@ -227,6 +233,12 @@ public class MainActivity extends AppCompatActivity
     @MainThread
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // Implement the (backward-compatible) Splash Screen, and keep it open until the
+        // ApplicationState finishes loading.
+        // ASSUMES: BBQTimerApplication initiated loading the ApplicationState.
+        SplashScreen splashScreen = SplashScreen.installSplashScreen(this);
+        splashScreen.setKeepOnScreenCondition(() -> !ApplicationState.isLoaded());
+
         if (EDGE_TO_EDGE) {
             EdgeToEdge.enable(this);
         }
@@ -235,11 +247,11 @@ public class MainActivity extends AppCompatActivity
         viewConfiguration = -1;
         notifier = new Notifier(this);
         lastRecipes = "";
-        styledRecipes = new Vector<>(20);
+        styledRecipes = new ArrayList<>(20);
         popupMenu = null;
         notificationRequestCount = 0;
 
-        // View Binding has potential but it makes project inspections create a lot of spurious
+        // View Binding has potential, but it makes project inspections create a lot of spurious
         // warnings about unused resource IDs, methods, and method arguments.
         //ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater())
         //mainContainer = binding.getRoot()
@@ -247,9 +259,9 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         mainContainer = findViewById(R.id.main_container);
 
-        resetButton = findViewById(R.id.resetButton);
-        pauseResumeButton = findViewById(R.id.pauseResumeButton);
-        stopButton = findViewById(R.id.stopButton);
+        resetButton = findViewByIdAndSetTooltip(R.id.resetButton);
+        pauseResumeButton = findViewByIdAndSetTooltip(R.id.pauseResumeButton);
+        stopButton = findViewByIdAndSetTooltip(R.id.stopButton);
         countUpDisplay = findViewById(R.id.countUpDisplay);
         countdownDisplay = findViewById(R.id.countdownDisplay);
         alarmPeriod = findViewById(R.id.alarmPeriod);
@@ -283,27 +295,49 @@ public class MainActivity extends AppCompatActivity
         TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(countdownDisplay, 14,
                 56, 1, TypedValue.COMPLEX_UNIT_DIP);
 
-        setVolumeControlStream(AudioManager.STREAM_ALARM);
+        setVolumeControlStream(REMINDER_STREAM);
 
+        // Trigger any App Shortcut action but only in the initial launch, not after screen
+        // rotation, a theme change, enter/exit multi-window mode, etc.
         shortcutAction = SHORTCUT_NONE;
-        Intent callingIntent = getIntent();
-        if (callingIntent != null) {
-            String action = callingIntent.getAction(); // null action occurred in multi-window testing
-            if (Intent.ACTION_QUICK_CLOCK.equals(action)) { // App Shortcut: Pause @ 00:00
-                shortcutAction = SHORTCUT_PAUSE;
-                // Modify the Intent so a configuration change like enter/exit multi-window mode
-                // won't repeat the shortcut action when it re-creates the Activity.
-                callingIntent.setAction(Intent.ACTION_MAIN);
-            } else if (Intent.ACTION_RUN.equals(action)) { // App Shortcut: Start @ 00:00
-                shortcutAction = SHORTCUT_START;
-                callingIntent.setAction(Intent.ACTION_MAIN);
+        if (savedInstanceState == null) {
+            Intent callingIntent = getIntent();
+
+            if (callingIntent != null) {
+                String action = callingIntent.getAction(); // null action occurred in multi-window testing
+
+                if (Intent.ACTION_QUICK_CLOCK.equals(action)) { // App Shortcut: Pause @ 00:00
+                    shortcutAction = SHORTCUT_PAUSE;
+                } else if (Intent.ACTION_RUN.equals(action)) { // App Shortcut: Start @ 00:00
+                    shortcutAction = SHORTCUT_START;
+                }
+
+                Log.i(TAG, "Shortcut Action " + shortcutAction + ", Intent: " + callingIntent);
+                // ACTION_MAIN from a Widget or Notification
+                // ACTION_EDIT from AlarmManager.AlarmClockInfo()
+                // whatever with category.LAUNCHER
+                ListenerRegistry.notifyIntentForTesting(callingIntent);
             }
-            // ACTION_MAIN from a Widget or Notification
-            // ACTION_EDIT from AlarmManager.AlarmClockInfo()
-            // whatever with category.LAUNCHER
         }
 
         logTheConfiguration(getResources().getConfiguration());
+    }
+
+    /** Finds a View and sets its Tooltip to match its ContentDescription. */
+    <T extends View> T findViewByIdAndSetTooltip(@IdRes int id) {
+        T view = super.findViewById(id);
+
+        if (view != null) {
+            TooltipCompat.setTooltipText(view, view.getContentDescription());
+        }
+        return view;
+    }
+
+    private void setContentDescriptionAndTooltip(View view, @StringRes int resId) {
+        CharSequence desc = getText(resId);
+
+        view.setContentDescription(desc);
+        TooltipCompat.setTooltipText(view, desc);
     }
 
     /**
@@ -313,6 +347,7 @@ public class MainActivity extends AppCompatActivity
      * @param rootView The layout's root {@link View}.
      */
     static void setEdgeToEdgeWindowInsetsListener(@NonNull View rootView) {
+        // EdgeToEdge.enable(this) is already called in onCreate()
         if (EDGE_TO_EDGE) {
             ViewCompat.setOnApplyWindowInsetsListener(rootView,
                     MainActivity::mainWindowInsetsListener);
@@ -356,10 +391,28 @@ public class MainActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(@NonNull Menu menu) {
         super.onCreateOptionsMenu(menu);
 
-        // Inflate the menu; this adds items to the action bar if it is present.
-        // TODO: Inflate the menu once it has useful items:
-        // getMenuInflater().inflate(R.menu.main, menu);
+        getMenuInflater().inflate(R.menu.main, menu);
+        lockStatusItem = menu.findItem(R.id.action_lock_status);
+        updateLockStatus();
         return true;
+    }
+
+    /**
+     * Shows/hides a "phone is (still) locked" icon in the action bar so the user doesn't worry
+     * about security. It's surprising that the app can open from the lock screen notification or
+     * widget without unlocking, and that turning the screen off then on shows the app without
+     * unlocking the phone. Android doesn't reveal that the app is now "on top of the lock screen."
+     */
+    @UiThread
+    private void updateLockStatus() {
+        if (lockStatusItem == null) {
+            return;
+        }
+
+        KeyguardManager myKM = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
+        boolean isLocked = myKM != null && myKM.isKeyguardLocked();
+
+        lockStatusItem.setVisible(isLocked);
     }
 
     /**
@@ -367,7 +420,7 @@ public class MainActivity extends AppCompatActivity
      * This is idempotent and fast if the input hasn't changed.
      * <p/>
      * INPUTS: state.getRecipes().<p/>
-     * OUTPUTS: the styledRecipes Vector.
+     * OUTPUTS: the styledRecipes List.
      */
     void styleTheRecipes() {
         String recipes = state.getRecipes();
@@ -388,7 +441,8 @@ public class MainActivity extends AppCompatActivity
             int tokenLength = TimeCounter.lengthOfLeadingIntervalTime(recipe);
             SpannableString ss = new SpannableString(recipe);
 
-            ss.setSpan(new StyleSpan(Typeface.ITALIC), tokenLength, recipeLength, 0);
+            ss.setSpan(new StyleSpan(Typeface.ITALIC), tokenLength, recipeLength,
+                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             styledRecipes.add(ss);
         }
     }
@@ -405,23 +459,25 @@ public class MainActivity extends AppCompatActivity
         timer = state.getTimeCounter();
 
         // Apply the app shortcut action, if any, once.
-        switch (shortcutAction) {
-            case SHORTCUT_PAUSE: // App Shortcut: Pause @ 00:00
-                timer.reset();
-                break;
-            case SHORTCUT_START: // App Shortcut: Start @ 00:00
-                timer.reset();
-                timer.start();
-                break;
-            case SHORTCUT_NONE:
-                break;
-        }
         if (shortcutAction != SHORTCUT_NONE) {
+            Log.i(TAG, "Applying App Shortcut Action " + shortcutAction);
+            switch (shortcutAction) {
+                case SHORTCUT_PAUSE: // App Shortcut: Pause @ 00:00
+                    timer.reset();
+                    break;
+                case SHORTCUT_START: // App Shortcut: Start @ 00:00
+                    timer.reset();
+                    timer.start();
+                    break;
+                case SHORTCUT_NONE:
+                    break;
+            }
             state.save(this);
+            shortcutAction = SHORTCUT_NONE;
         }
-        shortcutAction = SHORTCUT_NONE;
 
         updateUI();
+        updateLockStatus();
 
         updateHandler.beginScheduledUpdate();
     }
@@ -431,7 +487,9 @@ public class MainActivity extends AppCompatActivity
     protected void onResume() {
         super.onResume();
 
-        // WORKAROUND: On API ≤ 27, the alarmPeriod EditText auto-focuses when the Activity starts
+        updateLockStatus();
+
+        // WORKAROUND: On API ≤ 27, the alarmPeriod EditText autofocuses when the Activity starts
         // in landscape mode or is rotated to landscape. That's annoying.
         // (A previous workaround set android:focusable="true",  android:focusableInTouchMode="true"
         // on an empty or outer layout view, but the empty one no longer works in API 25-27 and the
@@ -453,6 +511,7 @@ public class MainActivity extends AppCompatActivity
         updateHandler.endScheduledUpdates();
 
         dismissPopupMenu();
+        cancelPauseResumeAnimations();
 
         super.onStop();
     }
@@ -474,7 +533,7 @@ public class MainActivity extends AppCompatActivity
      * open the OS UI straightaway, or give up and stop pestering.
      *<p/>
      * NOTE: Even w/o permission the app creates notifications, in which case they're hidden but
-     * might still needed if the app gets a Foreground Service.
+     * might still be needed if the app gets a Foreground Service.
      *<p/>
      * NOTE: If notifications are disabled, so are Toasts.
      */
@@ -531,9 +590,9 @@ public class MainActivity extends AppCompatActivity
 
     /**
      * Informs the user if the Alarm notification channel is muted or misconfigured and offers to
-     * help, BUT does nothing if the app needs Notifications permission (in which case the channel
-     * configuration doesn't matter and probably can't be fixed) or if periodic reminder alarms are
-     * turned off.
+     * help. BUT this does nothing if the app needs Notifications permission (in which case the
+     * channel configuration doesn't matter and probably can't be fixed) or if periodic reminder
+     * alarms are turned off.
      * <p/>
      * TODO: How to detect if the app's notifications are visible but "silenced"? Silencing kills
      * the audio and heads-up notification shades.
@@ -548,7 +607,7 @@ public class MainActivity extends AppCompatActivity
 
         final AudioManager am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         if (am != null) {
-            int volume = am.getStreamVolume(AudioManager.STREAM_ALARM);
+            int volume = am.getStreamVolume(REMINDER_STREAM);
 
             // Check for muted alarms.
             if (volume <= 0) {
@@ -556,8 +615,15 @@ public class MainActivity extends AppCompatActivity
 
                 Log.w(TAG, "App Notifications sounds are muted");
                 setSnackbarAction(snackbar, R.string.alarm_unmute,
-                        view -> am.adjustStreamVolume(AudioManager.STREAM_ALARM,
-                                    AudioManager.ADJUST_RAISE, 0));
+                        view -> {
+                            try {
+                                am.adjustStreamVolume(REMINDER_STREAM,
+                                        AudioManager.ADJUST_RAISE, AudioManager.FLAG_SHOW_UI);
+                            } catch (SecurityException e) {
+                                Log.w(TAG, "Couldn't unmute directly: " + e);
+                                openVolumeSettings();
+                            }
+                        });
                 snackbar.show();
                 return;
             }
@@ -568,12 +634,31 @@ public class MainActivity extends AppCompatActivity
             Snackbar snackbar = makeSnackbar(R.string.notifications_misconfigured);
 
             Log.w(TAG, "The app's Notifications channel is misconfigured");
-            if (Build.VERSION.SDK_INT >= 26) { // Where this Settings Intent works.
+            if (Build.VERSION.SDK_INT >= 26) { // Where this Intent works.
                 setSnackbarAction(snackbar, R.string.notifications_configure,
                         view -> openNotificationChannelSettings(
                                 Notifier.ALARM_NOTIFICATION_CHANNEL_ID));
             }
             snackbar.show();
+        }
+    }
+
+    /**
+     * Opens the Volume Settings panel (API 29+) or the system sound settings (API < 29).
+     */
+    private void openVolumeSettings() {
+        Intent intent = new Intent();
+
+        if (Build.VERSION.SDK_INT >= 29) {
+            intent.setAction(Settings.Panel.ACTION_VOLUME);
+        } else {
+            intent.setAction(Settings.ACTION_SOUND_SETTINGS);
+        }
+
+        try {
+            startActivity(intent);
+        } catch (ActivityNotFoundException e) {
+            Log.e(TAG, "Couldn't open volume/sound Settings: " + e);
         }
     }
 
@@ -589,7 +674,7 @@ public class MainActivity extends AppCompatActivity
      * </p>
      * NOTE: This used to set the action's text color but a custom background color gets overridden
      * now in day or night theme, so the custom text color became low-contrast. The two colors might
-     * be settable in AppTheme but why bother?
+     * be settable in Theme.App but why bother?
      */
     @UiThread
     private void setSnackbarAction(@NonNull Snackbar snackbar, @StringRes int resId,
@@ -602,6 +687,13 @@ public class MainActivity extends AppCompatActivity
     public void onConfigurationChanged(@NonNull Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         logTheConfiguration(newConfig);
+    }
+
+    /** Called when the Activity's Window gains or loses focus. */
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        updateLockStatus();
     }
 
     /** The user tapped a Run/Pause action. */
@@ -675,7 +767,10 @@ public class MainActivity extends AppCompatActivity
     /** The user clicked the button to open the "recipes" menu of alarm periods. */
     @UiThread
     public void onClickRecipeMenuButton(View v) {
-        popupMenu = new PopupMenu(this, v, Gravity.CENTER, 0, R.style.PopupMenu);
+        // Workaround: Gravity.END places the PopupMenu out of the right side system gesture and
+        // cutout areas. It might still extend into the left side system gesture area in
+        // portrait mode, but at least it won't be hidden by a cutout in landscape mode.
+        popupMenu = new PopupMenu(this, v, Gravity.END, 0, R.style.PopupMenu);
         Menu menu = popupMenu.getMenu();
 
         popupMenu.getMenuInflater().inflate(R.menu.recipe_menu, menu);
@@ -714,7 +809,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     @UiThread
-    public void onEditorDialogPositiveClick(DialogInterface dialog, @NonNull String text) {
+    public void onEditorDialogPositiveClick(@NonNull String text) {
         if (!text.equals(state.getRecipes())) { // optimize the no-change case
             state.setRecipes(text);
             state.save(this);
@@ -723,7 +818,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     @UiThread
-    public void onEditorDialogNegativeClick(DialogInterface dialog) {
+    public void onEditorDialogNegativeClick() {
     }
 
     /** Dismiss any popup menu.
@@ -766,7 +861,7 @@ public class MainActivity extends AppCompatActivity
 
         alarmPeriod.setText(token);
 
-        // Submit the input whether or not the text field has focus.
+        // Submit the input whether the text field has focus or not.
         processAlarmPeriodInput();
         return true;
     }
@@ -925,11 +1020,12 @@ public class MainActivity extends AppCompatActivity
     /** Updates the count-up (elapsed) time and alarm count-down time displays. */
     @UiThread
     private void displayTime() {
-        Spanned formatted         = timer.formatHhMmSsFraction();
-        @ColorRes int textColorsId =
-                timer.isRunning() ? R.color.running_timer_colors
-                : timer.isPaused() ? pausedTimerColors()
-                : R.color.reset_timer_colors;
+        Spanned formatted = timer.formatHhMmSsFraction();
+        @ColorRes int textColorsId = switch (timer.getState()) {
+            case RUNNING -> R.color.running_timer_colors;
+            case PAUSED -> pausedTimerColors();
+            default -> R.color.reset_timer_colors;
+        };
         ColorStateList textColors = ContextCompat.getColorStateList(this, textColorsId);
         long countdownToNextAlarm = state.getMillisecondsToNextAlarm();
 
@@ -952,11 +1048,30 @@ public class MainActivity extends AppCompatActivity
         displayTime();
 
         if (viewConfiguration != newConfiguration) { // optimize out the nearly-always no-op case
+            boolean isFirstConfiguration = viewConfiguration == -1;
             viewConfiguration = newConfiguration;
 
-            setDrawableRes(resetButton, isStopped ? R.drawable.ic_pause : R.drawable.ic_replay);
-            resetButton.setVisibility(isRunning || isPausedAt0 ? View.INVISIBLE : View.VISIBLE);
-            setDrawableRes(pauseResumeButton, isRunning ? R.drawable.ic_pause : R.drawable.ic_play);
+            if (isRunning || isPausedAt0) {
+                resetButton.setVisibility(View.INVISIBLE);
+            } else {
+                resetButton.setVisibility(View.VISIBLE);
+                setDrawableRes(resetButton, isStopped ? R.drawable.ic_pause : R.drawable.ic_replay);
+                setContentDescriptionAndTooltip(resetButton, isStopped ? R.string.pause : R.string.reset);
+            }
+
+            int pauseResumeIconId = isRunning ? R.drawable.ic_pause : R.drawable.ic_play;
+            int pauseResumeDescId = isRunning ? R.string.pause : R.string.start;
+            // NOTE: This changes the ContentDescription, leaving the Tooltip = "Run/Pause", which
+            // should be more helpful with a stable description but changes on screen readers.
+            // TODO: Reconsider. The Pause/Reset button is handled differently, above.
+            pauseResumeButton.setContentDescription(getString(pauseResumeDescId));
+
+            if (isFirstConfiguration) {
+                setDrawableRes(pauseResumeButton, pauseResumeIconId);
+            } else {
+                animatePauseResumeIcon(pauseResumeIconId);
+            }
+
             setDrawableRes(stopButton, R.drawable.ic_stop);
             stopButton.setVisibility(isStopped ? View.INVISIBLE : View.VISIBLE);
             countdownDisplay.setVisibility(areRemindersEnabled ? View.VISIBLE : View.INVISIBLE);
@@ -965,7 +1080,91 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    /** Set the left drawable of a Button (or any TextView); tag it with the resId for testing. */
+    /**
+     * Checks if "Reduced Motion" is enabled in system settings.
+     */
+    private boolean isReducedMotionEnabled() {
+        try {
+            float animatorScale = Settings.Global.getFloat(
+                    getContentResolver(),
+                    Settings.Global.ANIMATOR_DURATION_SCALE,
+                    1.0f);
+            return animatorScale <= 0.0f;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    /**
+     * Animates the pause/resume button icon change using a SpringAnimation.
+     */
+    private void animatePauseResumeIcon(@DrawableRes int resId) {
+        Object currentTag = pauseResumeButton.getTag();
+        boolean sameIcon = currentTag instanceof Integer && (Integer) currentTag == resId;
+
+        if (sameIcon) {
+            return;
+        }
+
+        cancelPauseResumeAnimations();
+
+        // Fallback to static change if reduced motion is enabled.
+        if (isReducedMotionEnabled()) {
+            setDrawableRes(pauseResumeButton, resId);
+            return;
+        }
+
+        // Expressive animation: Scale down slightly, change icon, then spring back with overshoot.
+        pauseResumeButton.animate()
+                .scaleX(0.7f)
+                .scaleY(0.7f)
+                .setDuration(80)
+                .withEndAction(() -> {
+                    setDrawableRes(pauseResumeButton, resId);
+
+                    springX = new SpringAnimation(pauseResumeButton,
+                            DynamicAnimation.SCALE_X, 1.0f);
+                    springY = new SpringAnimation(pauseResumeButton,
+                            DynamicAnimation.SCALE_Y, 1.0f);
+
+                    SpringForce springForce = new SpringForce(1.0f)
+                            .setDampingRatio(SpringForce.DAMPING_RATIO_MEDIUM_BOUNCY)
+                            .setStiffness(SpringForce.STIFFNESS_MEDIUM);
+
+                    springX.setSpring(springForce);
+                    springY.setSpring(springForce);
+
+                    // Prevent sub-pixel background frame updates.
+                    springX.setMinimumVisibleChange(DynamicAnimation.MIN_VISIBLE_CHANGE_SCALE);
+                    springY.setMinimumVisibleChange(DynamicAnimation.MIN_VISIBLE_CHANGE_SCALE);
+
+                    springX.start();
+                    springY.start();
+                })
+                .start();
+    }
+
+    /**
+     * Cancels any running pause/resume button animations to prevent leaks and glitches.
+     */
+    private void cancelPauseResumeAnimations() {
+        pauseResumeButton.animate().cancel();
+        if (springX != null) {
+            springX.cancel();
+        }
+        if (springY != null) {
+            springY.cancel();
+        }
+
+        // Ensure button scale is restored if animation was interrupted mid-flight
+        pauseResumeButton.setScaleX(1.0f);
+        pauseResumeButton.setScaleY(1.0f);
+    }
+
+    /**
+     * Set the left drawable of a Button (or any TextView); tag it with the resId for testing and to
+     * avoid redundant animations.
+     */
     private static void setDrawableRes(@NonNull TextView view, @DrawableRes int resId) {
         view.setCompoundDrawablesWithIntrinsicBounds(resId, 0, 0, 0);
         view.setTag(resId);
@@ -984,8 +1183,7 @@ public class MainActivity extends AppCompatActivity
     /**
      * Saves app state then updates the UI.
      * </p>
-     * TODO: Do all the load()/save() work in a background thread. Meanwhile, update the display
-     * first since save() might take a couple hundred ms.
+     * TODO: Do all the load()/save() work in a background thread.
      */
     @UiThread
     private void saveStateAndUpdateUI() {

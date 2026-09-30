@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- The timer blinks paused_timer_colors / paused_alternate_timer_colors to show that it's paused -->
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:color="@color/to_reset_text"
           android:state_pressed="true" />
