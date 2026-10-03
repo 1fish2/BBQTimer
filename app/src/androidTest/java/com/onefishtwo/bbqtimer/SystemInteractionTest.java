@@ -41,6 +41,7 @@ import android.util.TypedValue;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SdkSuppress;
@@ -65,7 +66,6 @@ import org.junit.runner.RunWith;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Locale;
 import java.util.regex.Pattern;
 
 /**
@@ -84,11 +84,17 @@ public class SystemInteractionTest {
     private static final String PACKAGE_NAME = "com.onefishtwo.bbqtimer";
     private static final int TIMEOUT = 5000;
 
-    @SuppressWarnings("NewClassNamingConvention")
+    @SuppressWarnings({"NewClassNamingConvention", "JUnitTestCaseWithNonTrivialConstructors"})
     enum NightDayMode {
-        NIGHT,
-        DAY,
-        UNDEFINED;
+        NIGHT(AppCompatDelegate.MODE_NIGHT_YES),
+        DAY(AppCompatDelegate.MODE_NIGHT_NO),
+        UNDEFINED(AppCompatDelegate.MODE_NIGHT_UNSPECIFIED);
+
+        final int compatMode;
+
+        NightDayMode(int mode) {
+            this.compatMode = mode;
+        }
 
         static NightDayMode fromUiModeBits(int mode) {
             return switch (mode & Configuration.UI_MODE_NIGHT_MASK) {
@@ -103,17 +109,20 @@ public class SystemInteractionTest {
         }
     }
 
-    private boolean compareNightMode(@NonNull NightDayMode expectedNightMode) {
-        return NightDayMode.fromContext(context) == expectedNightMode;
+    private static void setAppNightMode(int mode) {
+        InstrumentationRegistry.getInstrumentation().runOnMainSync(() ->
+                AppCompatDelegate.setDefaultNightMode(mode));
+    }
+
+    private static void setAppNightMode(NightDayMode mode) {
+        setAppNightMode(mode.compatMode);
     }
 
     /**
-     * Rule that saves device settings (Day/Night mode, font scale, rotation) before each test
-     * and restores them afterward.
+     * Rule that saves & restores device settings: font scale, rotation.
      */
     @SuppressWarnings({"JUnitTestCaseWithNoTests", "NewClassNamingConvention"})
     private static class RestoreSystemSettings extends ExternalResource {
-        private String originalNightMode = "no";
         private String originalFontScale = "1.0";
         private String originalAccelRotation = "1";
         private long originalAutomatorIdleTimeout = TIMEOUT;
@@ -121,29 +130,10 @@ public class SystemInteractionTest {
         @Override
         protected void before() {
             UiDevice dev = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
-            Context ctx = ApplicationProvider.getApplicationContext();
 
             originalAutomatorIdleTimeout = Configurator.getInstance().getWaitForIdleTimeout();
-            originalNightMode = readNightMode(dev, ctx);
             originalFontScale = readFontScale(dev);
             originalAccelRotation = readAccelRotation(dev);
-        }
-
-        @NonNull
-        private String readNightMode(@NonNull UiDevice dev, @NonNull Context ctx) {
-            try {
-                String nightOutput = dev.executeShellCommand("cmd uimode night").toLowerCase(Locale.US);
-
-                if (nightOutput.contains("yes")) {
-                    return "yes";
-                } else if (nightOutput.contains("auto")) {
-                    return "auto";
-                } else {
-                    return "no";
-                }
-            } catch (Exception ignored) {
-                return NightDayMode.fromContext(ctx) == NightDayMode.NIGHT ? "yes" : "no";
-            }
         }
 
         @NonNull
@@ -176,11 +166,6 @@ public class SystemInteractionTest {
             try {
                 dev.pressBack();
                 dev.pressHome();
-            } catch (Exception ignored) {}
-
-            // Restore Night Mode
-            try {
-                dev.executeShellCommand("cmd uimode night " + originalNightMode);
             } catch (Exception ignored) {}
 
             // Restore Font Scale
@@ -382,59 +367,54 @@ public class SystemInteractionTest {
         assertNotNull("Timer should be running (\"Stop\" button visible)", stopButton);
     }
 
+    private boolean isActivityInMode(@NonNull NightDayMode mode) {
+        Activity act = getResumedActivity();
+
+        return act != null && NightDayMode.fromContext(act) == mode;
+    }
+
+    /**
+     * Test Night/Day theme at the app process level.
+     * (shell `cmd uimode night no` works on API 30+ but this doesn't need to test at the OS level,
+     * and testing at the app level is faster.)
+     */
     @Test
     @SdkSuppress(minSdkVersion = 29)
-    public void testThemeToggle() throws IOException {
-        device.executeShellCommand("cmd uimode night yes");
-
+    public void testThemeToggleAppLevel() {
         launchApp();
-        UiObject2 container = device.wait(
-                Until.findObject(By.res(PACKAGE_NAME, "main_container")), TIMEOUT);
-        assertNotNull("App should be visible", container);
 
-        // Wait for system configuration to reflect Night Mode
-        assertPollForExpectation("System configuration should reflect Night Mode",
-                () -> compareNightMode(NightDayMode.NIGHT));
+        // Switch the app to Night Mode
+        setAppNightMode(NightDayMode.NIGHT);
 
-        // Verify the running Activity reflects Night Mode and has a dark background
+        assertPollForExpectation("Activity resources should reflect Night Mode",
+                () -> isActivityInMode(NightDayMode.NIGHT));
+
         Activity activity = getResumedActivity();
         assertNotNull("MainActivity should be resumed", activity);
-        NightDayMode nightDayMode = NightDayMode.fromContext(activity);
-        assertEquals("Activity resources should reflect Night Mode", NightDayMode.NIGHT, nightDayMode);
 
         TypedValue typedValue = new TypedValue();
         assertTrue("Theme should resolve colorBackground",
                 activity.getTheme().resolveAttribute(android.R.attr.colorBackground, typedValue, true));
         int darkBgColor = typedValue.data;
-        if (Build.VERSION.SDK_INT >= 26) {
-            assertTrue("Night mode background color should have low luminance",
-                    Color.luminance(darkBgColor) < 0.5f);
-        }
+        assertTrue("Night mode background color should have low luminance",
+                Color.luminance(darkBgColor) < 0.5f);
 
         // Switch to Light Mode
-        device.executeShellCommand("cmd uimode night no");
-
-        // Wait for system configuration to reflect Light Mode
-        assertPollForExpectation("System configuration should reflect Day Mode",
-                () -> compareNightMode(NightDayMode.DAY));
+        setAppNightMode(NightDayMode.DAY);
 
         // Poll for a recreated Activity with updated resources to Day Mode
         assertPollForExpectation("Activity resources should reflect Day Mode",
-                () -> {
-                    Activity act = getResumedActivity();
-                    return act != null && NightDayMode.fromContext(act) == NightDayMode.DAY;
-                });
+                () -> isActivityInMode(NightDayMode.DAY));
 
         // Verify the theme background color is light
         Activity resumed = getResumedActivity();
-        assertNotNull("MainActivity should be resumed in Day Mode", resumed);
+        assertNotNull("MainActivity should be resumed", resumed);
+
         assertTrue("Theme should resolve colorBackground",
                 resumed.getTheme().resolveAttribute(android.R.attr.colorBackground, typedValue, true));
         int lightBgColor = typedValue.data;
-        if (Build.VERSION.SDK_INT >= 26) {
-            assertTrue("Light mode background color should have high luminance",
-                    Color.luminance(lightBgColor) >= 0.5f);
-        }
+        assertTrue("Light mode background color should have high luminance",
+                Color.luminance(lightBgColor) >= 0.5f);
     }
 
     @Test

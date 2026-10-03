@@ -3,9 +3,11 @@
 .gradle
 /.artifacts/
 /local.properties
+/.idea/androidTestResultsUserPreferences.xml
 /.idea/caches
 /.idea/csv-plugin.xml
 /.idea/deploymentTargetDropDown.xml
+/.idea/deviceHardwareInput.xml
 /.idea/libraries
 /.idea/modules.xml
 /.idea/misc.xml
