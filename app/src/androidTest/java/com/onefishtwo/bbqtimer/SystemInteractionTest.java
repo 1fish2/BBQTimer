@@ -338,7 +338,7 @@ public class SystemInteractionTest {
         // app, that's a "Predicted app" temporary icon, and on Android 37.1 its long-press menu has
         // a non-standard toggle between "Actions" (like "App info") and app "Shortcuts".
         // Workaround: Use the app drawer, not the Home screen.
-        device.swipe(width / 2, height * 3 / 4, width / 2, height / 4, 10);
+        device.swipe(width / 2, height * 3 / 4, width / 2, height / 8, 10);
 
         String appName = getString(R.string.app_name);
         UiObject2 appIcon = device.wait(Until.findObject(By.text(appName)), TIMEOUT);
