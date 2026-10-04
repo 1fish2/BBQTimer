@@ -22,7 +22,9 @@
 package com.onefishtwo.bbqtimer;
 
 import static android.Manifest.permission.POST_NOTIFICATIONS;
+import static com.onefishtwo.bbqtimer.TestUtils.assertPollForActivity;
 import static com.onefishtwo.bbqtimer.TestUtils.assertPollForExpectation;
+import static com.onefishtwo.bbqtimer.TestUtils.getResumedActivity;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -40,15 +42,12 @@ import android.util.Log;
 import android.util.TypedValue;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SdkSuppress;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.rule.GrantPermissionRule;
-import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry;
-import androidx.test.runner.lifecycle.Stage;
 import androidx.test.uiautomator.By;
 import androidx.test.uiautomator.Configurator;
 import androidx.test.uiautomator.UiDevice;
@@ -65,7 +64,6 @@ import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.util.regex.Pattern;
 
 /**
@@ -239,22 +237,6 @@ public class SystemInteractionTest {
         launchApp(null);
     }
 
-    /** Returns the Activity that is in the foreground. */
-    @Nullable
-    private Activity getResumedActivity() {
-        final Activity[] activityHolder = new Activity[1];
-
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
-            Collection<Activity> resumedActivities =
-                    ActivityLifecycleMonitorRegistry.getInstance().getActivitiesInStage(Stage.RESUMED);
-            if (!resumedActivities.isEmpty()) {
-                activityHolder[0] = resumedActivities.iterator().next();
-            }
-        });
-
-        return activityHolder[0];
-    }
-
     // --- Tests --------------------------------------------------------------
 
     @Test
@@ -367,12 +349,6 @@ public class SystemInteractionTest {
         assertNotNull("Timer should be running (\"Stop\" button visible)", stopButton);
     }
 
-    private boolean isActivityInMode(@NonNull NightDayMode mode) {
-        Activity act = getResumedActivity();
-
-        return act != null && NightDayMode.fromContext(act) == mode;
-    }
-
     /**
      * Test Night/Day theme at the app process level.
      * (shell `cmd uimode night no` works on API 30+ but this doesn't need to test at the OS level,
@@ -386,8 +362,8 @@ public class SystemInteractionTest {
         // Switch the app to Night Mode
         setAppNightMode(NightDayMode.NIGHT);
 
-        assertPollForExpectation("Activity resources should reflect Night Mode",
-                () -> isActivityInMode(NightDayMode.NIGHT));
+        assertPollForActivity("Activity resources should reflect Night Mode",
+                (act) -> NightDayMode.fromContext(act) == NightDayMode.NIGHT);
 
         Activity activity = getResumedActivity();
         assertNotNull("MainActivity should be resumed", activity);
@@ -403,8 +379,8 @@ public class SystemInteractionTest {
         setAppNightMode(NightDayMode.DAY);
 
         // Poll for a recreated Activity with updated resources to Day Mode
-        assertPollForExpectation("Activity resources should reflect Day Mode",
-                () -> isActivityInMode(NightDayMode.DAY));
+        assertPollForActivity("Activity resources should reflect Day Mode",
+                (act) -> NightDayMode.fromContext(act) == NightDayMode.DAY);
 
         // Verify the theme background color is light
         Activity resumed = getResumedActivity();
@@ -423,11 +399,8 @@ public class SystemInteractionTest {
 
         device.executeShellCommand("settings put system font_scale 1.5");
 
-        assertPollForExpectation("Activity should reflect font scale 1.5", () -> {
-            Activity activity = getResumedActivity();
-            return activity != null
-                && Math.abs(activity.getResources().getConfiguration().fontScale - 1.5f) < 0.01f;
-        });
+        assertPollForActivity("Activity should reflect font scale 1.5", (act) ->
+                Math.abs(act.getResources().getConfiguration().fontScale - 1.5f) < 0.01f);
 
         UiObject2 container = device.wait(
                 Until.findObject(By.res(PACKAGE_NAME, "main_container")), TIMEOUT);
@@ -448,12 +421,9 @@ public class SystemInteractionTest {
         device.setOrientationLandscape();
 
         // Wait for the app's Activity configuration to reflect landscape orientation
-        assertPollForExpectation("App Activity should reflect landscape orientation",
-                () -> {
-                    Activity activity = getResumedActivity();
-                    return activity != null && activity.getResources().getConfiguration().orientation
-                            == Configuration.ORIENTATION_LANDSCAPE;
-                });
+        assertPollForActivity("App Activity should reflect landscape orientation",
+                (act) -> act.getResources().getConfiguration().orientation
+                        == Configuration.ORIENTATION_LANDSCAPE);
 
         // Verify the app's container layout bounds are wider than tall in landscape
         UiObject2 landscapeContainer = device.wait(
@@ -471,19 +441,23 @@ public class SystemInteractionTest {
         device.setOrientationPortrait();
 
         // Wait for the app's Activity configuration to reflect portrait orientation
-        assertPollForExpectation("App Activity should reflect portrait orientation",
-                () -> {
-                    Activity activity = getResumedActivity();
-                    return activity != null && activity.getResources().getConfiguration().orientation
-                            == Configuration.ORIENTATION_PORTRAIT;
-                });
+        assertPollForActivity("App Activity should reflect portrait orientation",
+                (act) -> act.getResources().getConfiguration().orientation
+                        == Configuration.ORIENTATION_PORTRAIT);
 
         UiObject2 portraitContainer = device.wait(
                 Until.findObject(By.res(PACKAGE_NAME, "main_container")), TIMEOUT);
         assertNotNull("App container should be visible in portrait", portraitContainer);
         Rect portraitBounds = portraitContainer.getVisibleBounds();
-        assertTrue("App layout bounds should be taller than wide in portrait ("
-                + portraitBounds.width() + " x " + portraitBounds.height() + ")",
-                portraitBounds.height() > portraitBounds.width());
+
+        // Verify bounds relative to landscape rather than absolute ratio, since the portrait mode
+        // container size on near-square screens (like 720x748 cover screens) can be wider than tall
+        // after system bar insets.
+        assertTrue("Portrait width (" + portraitBounds.width() + ") "
+                        + "should be narrower than landscape width (" + landscapeBounds.width() + ")",
+                landscapeBounds.width() > portraitBounds.width());
+        assertTrue("Portrait height (" + portraitBounds.height() + ") "
+                        + "should be taller than landscape height (" + landscapeBounds.height() + ")",
+                portraitBounds.height() > landscapeBounds.height());
     }
 }

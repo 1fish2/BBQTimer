@@ -379,11 +379,16 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void logTheConfiguration(@NonNull Configuration config) {
+        String orientation = switch (config.orientation) {
+            case Configuration.ORIENTATION_PORTRAIT -> "portrait";
+            case Configuration.ORIENTATION_LANDSCAPE -> "landscape";
+            default -> "undefined orientation";
+        };
         Log.i(TAG,
-            String.format("Config densityDpi: %d, size DPI: %dx%d, orientation: %d",
-                    config.densityDpi,
+            String.format("Screen config: %dx%d dp, %d DPI, %s",
                     config.screenWidthDp, config.screenHeightDp, // Android 15+ includes system bars
-                    config.orientation));
+                    config.densityDpi,
+                    orientation));
     }
 
     @UiThread

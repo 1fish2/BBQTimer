@@ -23,12 +23,19 @@ package com.onefishtwo.bbqtimer;
 
 import static org.junit.Assert.assertTrue;
 
+import android.app.Activity;
 import android.os.SystemClock;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.test.platform.app.InstrumentationRegistry;
+import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry;
+import androidx.test.runner.lifecycle.Stage;
 
+import java.util.Collection;
 import java.util.Objects;
 import java.util.function.BooleanSupplier;
+import java.util.function.Predicate;
 
 /** Test utility methods for Android UI and interaction tests. */
 public class TestUtils {
@@ -78,5 +85,31 @@ public class TestUtils {
     public static void assertPollForExpectation(@NonNull String message, @NonNull BooleanSupplier checker) {
         assertTrue(message + " (timed out after " + DEFAULT_TIMEOUT_MS + " ms)",
                 pollForExpectation(checker));
+    }
+
+    /** Asserts that an Activity is in the foreground, and it passes the predicate. */
+    public static void assertPollForActivity(@NonNull String message,
+                                             @NonNull final Predicate<Activity> predicate) {
+        assertPollForExpectation(message, () -> {
+            Activity act = getResumedActivity();
+
+            return act != null && predicate.test(act);
+        });
+    }
+
+    /** Returns the Activity that is in the foreground. */
+    @Nullable
+    public static Activity getResumedActivity() {
+        final Activity[] activityHolder = new Activity[1];
+
+        InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
+            Collection<Activity> resumedActivities =
+                    ActivityLifecycleMonitorRegistry.getInstance().getActivitiesInStage(Stage.RESUMED);
+            if (!resumedActivities.isEmpty()) {
+                activityHolder[0] = resumedActivities.iterator().next();
+            }
+        });
+
+        return activityHolder[0];
     }
 }
