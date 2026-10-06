@@ -19,13 +19,14 @@
 
 package com.onefishtwo.bbqtimer;
 
+import static com.onefishtwo.bbqtimer.BaseActivity.REMINDER_STREAM;
+
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.media.AudioAttributes;
-import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.SystemClock;
@@ -81,7 +82,6 @@ public class Notifier {
     // --- R.id.countUpViewFlipper and R.id.countdownViewFlipper child indexes.
     private static final int RUNNING_FLIPPER_CHILD = 0;
     private static final int PAUSED_FLIPPER_CHILD = 1;
-    public static final int REMINDER_STREAM = AudioManager.STREAM_ALARM;
 
     /** A listener for UI notifications posted, for testing. */
     @SuppressWarnings("unused")

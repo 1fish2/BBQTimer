@@ -21,8 +21,6 @@ package com.onefishtwo.bbqtimer;
 
 import static android.Manifest.permission.POST_NOTIFICATIONS;
 
-import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.KeyguardManager;
 import android.app.PendingIntent;
 import android.content.ActivityNotFoundException;
@@ -49,19 +47,14 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.EditText;
 import android.widget.TextView;
 
-import androidx.activity.EdgeToEdge;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
-import androidx.annotation.IdRes;
 import androidx.annotation.IntDef;
 import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
@@ -69,16 +62,11 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.StringRes;
 import androidx.annotation.UiThread;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.PopupMenu;
-import androidx.appcompat.widget.TooltipCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.app.TaskStackBuilder;
 import androidx.core.content.ContextCompat;
-import androidx.core.graphics.Insets;
 import androidx.core.splashscreen.SplashScreen;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.core.widget.NestedScrollView;
 import androidx.core.widget.TextViewCompat;
 import androidx.dynamicanimation.animation.DynamicAnimation;
@@ -98,15 +86,10 @@ import java.util.ArrayList;
 /**
  * The BBQ Timer's main activity.
  */
-@SuppressWarnings("OverlyComplexClass")
-public class MainActivity extends AppCompatActivity
+@SuppressWarnings({"OverlyComplexClass", "ClassWithTooManyFields"})
+public class MainActivity extends BaseActivity
         implements RecipeEditorDialogFragment.RecipeEditorDialogFragmentListener {
-    private static final String TAG = "Main";
-
-    /** Enable edge-to-edge display? It's required on API 35+. Its problems on API < 29 might be
-     *  fixed now but there's no strong need to test and debug it thoroughly on Android < Pie. */
-    private static final boolean EDGE_TO_EDGE = Build.VERSION.SDK_INT >= 29;
-    public static final int REMINDER_STREAM = AudioManager.STREAM_ALARM;
+    private static final String TAG = "MainActivity";
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({SHORTCUT_NONE, SHORTCUT_PAUSE, SHORTCUT_START})
@@ -124,7 +107,7 @@ public class MainActivity extends AppCompatActivity
 
     /**
      * Make a PendingIntent to launch the Activity, e.g. from the notification.
-     * <p/>
+     * <p>
      * Use TaskStackBuilder so navigating back from the Activity goes to the Home screen.
      *
      * @return a PendingIntent; "May return null only if PendingIntent.FLAG_NO_CREATE has been
@@ -235,13 +218,11 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         // Implement the (backward-compatible) Splash Screen, and keep it open until the
         // ApplicationState finishes loading.
-        // ASSUMES: BBQTimerApplication initiated loading the ApplicationState.
+        // ASSUMES: BBQTimerApplication already initiated loading the ApplicationState.
         SplashScreen splashScreen = SplashScreen.installSplashScreen(this);
         splashScreen.setKeepOnScreenCondition(() -> !ApplicationState.isLoaded());
 
-        if (EDGE_TO_EDGE) {
-            EdgeToEdge.enable(this);
-        }
+        enableEdgeToEdge();
         super.onCreate(savedInstanceState);
 
         viewConfiguration = -1;
@@ -323,72 +304,8 @@ public class MainActivity extends AppCompatActivity
         logTheConfiguration(getResources().getConfiguration());
     }
 
-    /** Finds a View and sets its Tooltip to match its ContentDescription. */
-    <T extends View> T findViewByIdAndSetTooltip(@IdRes int id) {
-        T view = super.findViewById(id);
-
-        if (view != null) {
-            TooltipCompat.setTooltipText(view, view.getContentDescription());
-        }
-        return view;
-    }
-
-    private void setContentDescriptionAndTooltip(View view, @StringRes int resId) {
-        CharSequence desc = getText(resId);
-
-        view.setContentDescription(desc);
-        TooltipCompat.setTooltipText(view, desc);
-    }
-
-    /**
-     * Sets a WindowInsetsListener on the root View when in edge-to-edge mode to adjust its margins
-     * to accommodate system bars, display cutouts, and the IME.
-     *
-     * @param rootView The layout's root {@link View}.
-     */
-    static void setEdgeToEdgeWindowInsetsListener(@NonNull View rootView) {
-        // EdgeToEdge.enable(this) is already called in onCreate()
-        if (EDGE_TO_EDGE) {
-            ViewCompat.setOnApplyWindowInsetsListener(rootView,
-                    MainActivity::mainWindowInsetsListener);
-        }
-    }
-
-    /**
-     * Set the window insets policy for edge-to-edge display, as done in
-     * developer.android.com/develop/ui/views/layout/edge-to-edge#system-bars-insets
-     * </p>
-     * @noinspection SameReturnValue
-     */
-    static @NonNull WindowInsetsCompat mainWindowInsetsListener(
-            @NonNull View view, @NonNull WindowInsetsCompat windowInsets) {
-        @NonNull Insets insets = windowInsets.getInsets(
-                WindowInsetsCompat.Type.systemBars() // status, caption, & nav bars
-                        | WindowInsetsCompat.Type.displayCutout()
-                        | WindowInsetsCompat.Type.ime());
-        ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
-
-        if (layoutParams != null) {
-            ViewGroup.MarginLayoutParams mlp = (ViewGroup.MarginLayoutParams) layoutParams;
-
-            mlp.setMargins(insets.left, insets.top, insets.right, insets.bottom);
-            view.setLayoutParams(mlp);
-        }
-
-        return WindowInsetsCompat.CONSUMED; // don't pass windowInsets to nested Views
-    }
-
     private void logTheConfiguration(@NonNull Configuration config) {
-        String orientation = switch (config.orientation) {
-            case Configuration.ORIENTATION_PORTRAIT -> "portrait";
-            case Configuration.ORIENTATION_LANDSCAPE -> "landscape";
-            default -> "undefined orientation";
-        };
-        Log.i(TAG,
-            String.format("Screen config: %dx%d dp, %d DPI, %s",
-                    config.screenWidthDp, config.screenHeightDp, // Android 15+ includes system bars
-                    config.densityDpi,
-                    orientation));
+        logTheConfiguration(TAG, config);
     }
 
     @UiThread
@@ -422,12 +339,12 @@ public class MainActivity extends AppCompatActivity
 
     /**
      * For the pop-up menu, convert state.getRecipes() into SpannableStrings in styledRecipes.
-     * This is idempotent and fast if the input hasn't changed.
-     * <p/>
-     * INPUTS: state.getRecipes().<p/>
+     * This is idempotent and caches the last output.
+     * <p>
+     * INPUTS: state.getRecipes().<p>
      * OUTPUTS: the styledRecipes List.
      */
-    void styleTheRecipes() {
+    private void styleTheRecipes() {
         String recipes = state.getRecipes();
 
         if (recipes.equals(lastRecipes)) {
@@ -500,7 +417,7 @@ public class MainActivity extends AppCompatActivity
         // on an empty or outer layout view, but the empty one no longer works in API 25-27 and the
         // outer one no longer works in API 25 and 27.)
         if (Build.VERSION.SDK_INT <= 27) {
-            defocusTextField(alarmPeriod);
+            defocusAlarmPeriodField();
         }
 
         // Warn if the Alarm is now muted. Don't check Notifications permission because (1) the
@@ -536,10 +453,10 @@ public class MainActivity extends AppCompatActivity
      * Requests permission to post pull-down notifications to the user. Either show rationale of why
      * notifications are needed and offer to help, or show a short message and offer to help, or
      * open the OS UI straightaway, or give up and stop pestering.
-     *<p/>
+     * <p>
      * NOTE: Even w/o permission the app creates notifications, in which case they're hidden but
      * might still be needed if the app gets a Foreground Service.
-     *<p/>
+     * <p>
      * NOTE: If notifications are disabled, so are Toasts.
      */
     @UiThread
@@ -598,7 +515,7 @@ public class MainActivity extends AppCompatActivity
      * help. BUT this does nothing if the app needs Notifications permission (in which case the
      * channel configuration doesn't matter and probably can't be fixed) or if periodic reminder
      * alarms are turned off.
-     * <p/>
+     * <p>
      * TODO: How to detect if the app's notifications are visible but "silenced"? Silencing kills
      * the audio and heads-up notification shades.
      */
@@ -670,21 +587,8 @@ public class MainActivity extends AppCompatActivity
     /** Constructs a Snackbar. */
     @UiThread
     @NonNull
-    private Snackbar makeSnackbar(@StringRes int stringResId) {
+    Snackbar makeSnackbar(@StringRes int stringResId) {
         return Snackbar.make(mainContainer, stringResId, BaseTransientBottomBar.LENGTH_LONG);
-    }
-
-    /**
-     * Sets the Snackbar's action.
-     * </p>
-     * NOTE: This used to set the action's text color but a custom background color gets overridden
-     * now in day or night theme, so the custom text color became low-contrast. The two colors might
-     * be settable in Theme.App but why bother?
-     */
-    @UiThread
-    private void setSnackbarAction(@NonNull Snackbar snackbar, @StringRes int resId,
-            View.OnClickListener listener) {
-        snackbar.setAction(resId, listener);
     }
 
     @UiThread
@@ -705,7 +609,7 @@ public class MainActivity extends AppCompatActivity
     @UiThread
     @SuppressWarnings("UnusedParameters")
     public void onClickPauseResume(View v) {
-        defocusTextField(alarmPeriod);
+        defocusAlarmPeriodField();
 
         timer.toggleRunPause();
         updateHandler.beginScheduledUpdate();
@@ -720,7 +624,7 @@ public class MainActivity extends AppCompatActivity
     @UiThread
     @SuppressWarnings("UnusedParameters")
     public void onClickReset(View v) {
-        defocusTextField(alarmPeriod);
+        defocusAlarmPeriodField();
 
         timer.reset();
         updateHandler.beginScheduledUpdate();
@@ -733,7 +637,7 @@ public class MainActivity extends AppCompatActivity
     @UiThread
     @SuppressWarnings("UnusedParameters")
     public void onClickStop(View v) {
-        defocusTextField(alarmPeriod);
+        defocusAlarmPeriodField();
 
         timer.stop();
         updateHandler.endScheduledUpdates();
@@ -744,7 +648,7 @@ public class MainActivity extends AppCompatActivity
     @UiThread
     @SuppressWarnings("UnusedParameters")
     public void onClickTimerText(View v) {
-        defocusTextField(alarmPeriod);
+        defocusAlarmPeriodField();
 
         timer.cycle();
         updateHandler.beginScheduledUpdate();
@@ -759,7 +663,7 @@ public class MainActivity extends AppCompatActivity
     @UiThread
     @SuppressWarnings("UnusedParameters")
     public void onClickEnableRemindersToggle(View v) {
-        defocusTextField(alarmPeriod);
+        defocusAlarmPeriodField();
 
         state.setEnableReminders(enableReminders.isChecked());
         saveStateAndUpdateUI();
@@ -808,7 +712,7 @@ public class MainActivity extends AppCompatActivity
 
         alarmPeriod.setSelection(0); // workaround unedited EditText w/a selection somehow getting
             // focus & selection when the dialog closes
-        defocusTextField(alarmPeriod); // remove the caret
+        defocusAlarmPeriodField(); // remove the caret
         dialog.show(getSupportFragmentManager(), RecipeEditorDialogFragment.TAG);
     }
 
@@ -827,7 +731,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     /** Dismiss any popup menu.
-     * </p>
+     * <p>
      * ISSUE: Rotating the screen with a popup menu open throws
      * "android.view.WindowLeaked leaked window android.widget.PopupWindow$PopupDecorView".
      * It doesn't seem fixable short of reimplementing PopupMenu or handling screen rotations
@@ -872,66 +776,24 @@ public class MainActivity extends AppCompatActivity
     }
 
     /** Hides the soft keyboard -- best efforts. */
-    // https://stackoverflow.com/a/17789187/1682419
-    public static void hideKeyboard(@NonNull Activity activity, @Nullable View v) {
-        InputMethodManager imm = (InputMethodManager) activity.getSystemService(INPUT_METHOD_SERVICE);
-
-        if (v != null) {
-            imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
-        }
-
-        View focussed = activity.getCurrentFocus();
-        // TODO: Another fallback: if (focussed == null) focussed = new View(activity);
-        if (focussed != null) {
-            imm.hideSoftInputFromWindow(focussed.getWindowToken(), 0);
-        }
-    }
-
-    /** Hides the soft keyboard, if we're lucky. */
-    // https://stackoverflow.com/a/17789187/1682419
-    public void hideKeyboard(@Nullable View v) {
+    void hideKeyboard(@Nullable View v) {
         hideKeyboard(this, v);
     }
 
     /**
-     * Remove focus from the text field.
-     * <p/>
+     * Remove focus from the alarmPeriod text field.
+     * <p>
      * NOTE: The alarmPeriod text field has an OnFocusChangeListener. Defocus will trigger the
      * listener to (re)set the field's contents from the current state and close the soft keyboard.
-     * <p/>
-     * Workaround: Older Android versions grab and hold focus or immediately refocus. So force the
-     * text field to defocus by temporarily making it not-focusable.
-     * <a href="https://stackoverflow.com/a/11044709/1682419">Stack Overflow</a>
-     * <p/>
-     * Re-enable focusability after another short delay rather than via `setOnTouchListener()` [in
-     * the stackoverflow post] so TAB & arrow keys can still enter/exit the text field.
-     * <p/>
-     * Setting a caret in the text field, then using the popup menu to set & confirm new contents
-     * might make Android log warnings such as:
-     *    `W/IInputConnectionWrapper: requestCursorAnchorInfo on inactive InputConnection`
-     * Delaying setFocusable(false) by 50ms would reduce those. Is it a net win?
-     * <p/>
-     * NOTE: The UI test method delayForDefocusTextFieldWorkaround() must wait for this delay.
      */
-    @UiThread
-    @SuppressLint("ClickableViewAccessibility")
-    private void defocusTextField(EditText textField) {
-        if (Build.VERSION.SDK_INT <= 27) {
-            textField.setFocusable(false);
-
-            textField.postDelayed(() -> {
-                textField.setFocusable(true);
-                textField.setFocusableInTouchMode(true);
-            }, 50);
-        } else {
-            textField.clearFocus();
-        }
+    private void defocusAlarmPeriodField() {
+        defocusTextField(alarmPeriod);
     }
 
     /**
      * Sets the alarmPeriod EditText contents, skipping the no-op case to maintain any selection and
      * minimize log warnings from InputConnectionWrapper.
-     * <p/>
+     * <p>
      * Also for reducing those log warnings, it might help to hideKeyboard() before setText(), but
      * that means passing a ResultReceiver to hideSoftInputFromWindow() to do the setText() after it
      * finishes animating away.
@@ -964,7 +826,7 @@ public class MainActivity extends AppCompatActivity
         // [updateUI() does this only if the configuration changed.]
         displayAlarmPeriod();
 
-        defocusTextField(alarmPeriod);
+        defocusAlarmPeriodField();
     }
 
     /** The user tapped the background => Accept pending alarmPeriod text input. */
@@ -982,10 +844,10 @@ public class MainActivity extends AppCompatActivity
     /**
      * The TextEdit field's focus changed, e.g. by TAB, arrow keys, or a call to view.clearFocus().
      * If it lost focus, cancel any pending edits and hide the soft keyboard.
-     * <p/>
+     * <p>
      * NOTE: Without this code, tapping any other widget will reset the input text as part of taking
      * an action, but just moving focus wouldn't accept or cancel the input nor hide the keyboard.
-     * <p/>
+     * <p>
      * TODO: Is this UI intuitive? How else to support cancel (revert)?
      */
     @UiThread
@@ -1086,21 +948,6 @@ public class MainActivity extends AppCompatActivity
     }
 
     /**
-     * Checks if "Reduced Motion" is enabled in system settings.
-     */
-    private boolean isReducedMotionEnabled() {
-        try {
-            float animatorScale = Settings.Global.getFloat(
-                    getContentResolver(),
-                    Settings.Global.ANIMATOR_DURATION_SCALE,
-                    1.0f);
-            return animatorScale <= 0.0f;
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
-    /**
      * Animates the pause/resume button icon change using a SpringAnimation.
      */
     private void animatePauseResumeIcon(@DrawableRes int resId) {
@@ -1166,15 +1013,6 @@ public class MainActivity extends AppCompatActivity
         pauseResumeButton.setScaleY(1.0f);
     }
 
-    /**
-     * Set the left drawable of a Button (or any TextView); tag it with the resId for testing and to
-     * avoid redundant animations.
-     */
-    private static void setDrawableRes(@NonNull TextView view, @DrawableRes int resId) {
-        view.setCompoundDrawablesWithIntrinsicBounds(resId, 0, 0, 0);
-        view.setTag(resId);
-    }
-
     /** Updates the whole UI for the current state: Notifications, alarms, and widgets. */
     @UiThread
     private void updateUI() {
@@ -1187,7 +1025,7 @@ public class MainActivity extends AppCompatActivity
 
     /**
      * Saves app state then updates the UI.
-     * </p>
+     * <p>
      * TODO: Do all the load()/save() work in a background thread.
      */
     @UiThread
@@ -1200,7 +1038,7 @@ public class MainActivity extends AppCompatActivity
      * Helper method for the SnackBar action: This opens the Settings screen where the user can
      * re-enable the application's notifications.
      * (From an example program for Android Wearable notifications.)
-     *<p/>
+     * <p>
      * NOTE: Call this only if the user asked to do it.
      */
     private void openNotificationSettingsForApp() {
@@ -1227,7 +1065,7 @@ public class MainActivity extends AppCompatActivity
     /**
      * Helper method for the SnackBar action: This opens the Settings screen where the user can
      * reconfigure one of the application's notification channels.
-     *<p/>
+     * <p>
      * NOTE: Call this only if the user asked to do it.
      */
     @RequiresApi(26)
