@@ -132,6 +132,14 @@ public class SystemInteractionTest {
             originalAutomatorIdleTimeout = Configurator.getInstance().getWaitForIdleTimeout();
             originalFontScale = readFontScale(dev);
             originalAccelRotation = readAccelRotation(dev);
+
+            // MainActivity.UpdateHandler updates the UI Views every 100ms while the timer is PAUSED
+            // or RUNNING. That sends accessibility events, which keep UIAutomator's waitForIdle()
+            // from detecting an idle state, so it (QueryController) times out after 10s and logs
+            // "Could not detect idle state." (UIAutomator waits for accessibility events to settle,
+            // vs. Espresso which waits for UIThread's message queue to empty.)
+            // Set a short idle timeout for quick queries.
+            Configurator.getInstance().setWaitForIdleTimeout(100);
         }
 
         @NonNull
@@ -255,7 +263,6 @@ public class SystemInteractionTest {
             TimeCounter timer = state.getTimeCounter();
             assertTrue(timer.isPaused());
             assertEquals(0, timer.getElapsedTime());
-            Log.d(TAG, "Paused at " + timer.getElapsedTime());
 
             boolean updated = device.wait(Until.hasObject(By.res(PACKAGE_NAME, "btnStart")), TIMEOUT);
             assertTrue("Notification should be visible with a Run button", updated);
@@ -334,11 +341,6 @@ public class SystemInteractionTest {
                 getString(R.string.start_at_0_short),
                 getString(R.string.start_at_0_long));
         startShortcut.click();
-
-        // NOTE: The app's RUNNING timer updates the UI every 100ms when running, which prevents
-        // UIAutomator's waitForIdle() from detecting an idle state, so it'd time out, log, and
-        // return after 10s by default. Set a short idle timeout for quick queries.
-        Configurator.getInstance().setWaitForIdleTimeout(100);
 
         assertTrue("App should be in the foreground after the shortcut click",
                 device.wait(Until.hasObject(By.pkg(PACKAGE_NAME)), TIMEOUT));

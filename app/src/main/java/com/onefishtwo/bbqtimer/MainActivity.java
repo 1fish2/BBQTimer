@@ -926,7 +926,9 @@ public class MainActivity extends BaseActivity
                 setContentDescriptionAndTooltip(resetButton, isStopped ? R.string.pause : R.string.reset);
             }
 
+            @DrawableRes
             int pauseResumeIconId = isRunning ? R.drawable.ic_pause : R.drawable.ic_play;
+            @StringRes
             int pauseResumeDescId = isRunning ? R.string.pause : R.string.start;
             // NOTE: This changes the ContentDescription, leaving the Tooltip = "Run/Pause", which
             // should be more helpful with a stable description but changes on screen readers.
@@ -949,6 +951,8 @@ public class MainActivity extends BaseActivity
 
     /**
      * Animates the pause/resume button icon change using a SpringAnimation.
+     * <p>
+     * TODO: Refactor out a button icon animation object.
      */
     private void animatePauseResumeIcon(@DrawableRes int resId) {
         Object currentTag = pauseResumeButton.getTag();
