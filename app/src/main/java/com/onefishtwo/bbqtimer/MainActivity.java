@@ -222,7 +222,6 @@ public class MainActivity extends BaseActivity
         SplashScreen splashScreen = SplashScreen.installSplashScreen(this);
         splashScreen.setKeepOnScreenCondition(() -> !ApplicationState.isLoaded());
 
-        enableEdgeToEdge();
         super.onCreate(savedInstanceState);
 
         viewConfiguration = -1;

@@ -23,6 +23,7 @@ import android.app.Activity;
 import android.content.res.Configuration;
 import android.media.AudioManager;
 import android.os.Build;
+import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
@@ -93,6 +94,16 @@ public class BaseActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Enables edge-to-edge mode on suitable OS versions, then calls super.
+     * @see #setEdgeToEdgeWindowInsetsListener(View)
+     */
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        enableEdgeToEdge();
+        super.onCreate(savedInstanceState);
+    }
+
     /** Enables edge-to-edge mode on suitable OS versions. */
     void enableEdgeToEdge() {
         if (EDGE_TO_EDGE) {
@@ -102,9 +113,9 @@ public class BaseActivity extends AppCompatActivity {
 
     /**
      * Sets a WindowInsetsListener on the root View when in edge-to-edge mode to adjust its margins
-     * to accommodate system bars, display cutouts, and the IME.
+     * to accommodate system bars, display cutouts, and the IME -- on suitable OS versions.
      * <p>
-     * ASSUMES: EdgeToEdge.enable(this) was already called in onCreate().
+     * ASSUMES: enableEdgeToEdge() was already called in onCreate().
      *
      * @param rootView The layout's root {@link View}.
      */
