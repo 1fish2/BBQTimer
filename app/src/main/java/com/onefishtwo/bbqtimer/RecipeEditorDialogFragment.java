@@ -31,6 +31,8 @@ import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StyleRes;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -60,7 +62,7 @@ public class RecipeEditorDialogFragment extends DialogFragment {
     }
 
     private RecipeEditorDialogFragmentListener listener;
-    private EditText textField;
+    private EditText2 textField;
 
     /** Creates and initializes a recipe list editor dialog. */
     @NonNull
@@ -148,21 +150,35 @@ public class RecipeEditorDialogFragment extends DialogFragment {
 
     /**
      * The TextEdit field's focus changed, e.g. by TAB, arrow keys, or view.clearFocus().
-     * If it lost focus, hide the soft keyboard to ensure it's not hiding the Save & Cancel buttons.
+     * If it lost focus, hide the soft keyboard to ensure it's not hiding the Save & Cancel buttons,
+     * BUT do that after the message queue has been processed to ensure it won't flash the soft
+     * keyboard open & closed immediately.
      */
     private void onEditTextFocusChange(View view, boolean nowHasFocus) {
         if (!nowHasFocus) {
-            hideKeyboard(view);
+            view.post(() -> {
+                if (textField != null && !textField.hasFocus()) {
+                    hideKeyboard(textField);
+                }
+            });
         }
     }
 
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
-        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(requireActivity(),
-                R.style.AppThemeOverlay_Material3_MaterialAlertDialog);
         LayoutInflater inflater = requireActivity().getLayoutInflater();
         View content = inflater.inflate(R.layout.dialog_edit_recipes, null);
+
+        // Workaround a bug on API 30 (Android 11) window insets/IME soft keyboard resizing bug
+        // that can shrink the text field to tiny or to nothing when it has the caret. The symptoms
+        // occur on Nexus S (480x800, 240 dpi), not on Pixel 5 (1080x2340, 440 dpi). This workaround
+        // gives up MD3 theme colors in the dialog.
+        @StyleRes int themeResId = R.style.AppThemeOverlay_Material3_MaterialAlertDialog;
+        AlertDialog.Builder builder =
+                Build.VERSION.SDK_INT == 30
+                        ? new AlertDialog.Builder(requireActivity(), themeResId)
+                        : new MaterialAlertDialogBuilder(requireActivity(), themeResId);
 
         builder.setView(content);
 
@@ -170,7 +186,7 @@ public class RecipeEditorDialogFragment extends DialogFragment {
 
         if (textField != null) {
             workaroundTextClassifier(textField);
-            textField.setOnFocusChangeListener(this::onEditTextFocusChange);
+            textField.setOnFocusChangeListener2(this::onEditTextFocusChange);
 
             // Workaround: The XML scrolling attributes don't work very well.
             textField.setHorizontallyScrolling(true);

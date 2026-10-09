@@ -1,42 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingStart="12dp"
+    android:paddingEnd="12dp"
+    android:paddingTop="8dp">
 
     <TextView
         android:id="@+id/recipes_title"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="12dp"
-        android:layout_marginEnd="12dp"
-        android:gravity="center_horizontal|top"
+        android:layout_marginBottom="8dp"
+        android:gravity="center_horizontal"
         android:maxLines="1"
         android:text="@string/edit_list_title"
         android:textColor="@color/md_theme_secondaryContainer"
         android:textSize="@dimen/controls_text_size"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:textStyle="bold" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/recipes_text_field_layout"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/recipe_horizontal_margin"
-        android:layout_marginEnd="@dimen/recipe_horizontal_margin"
+        android:layout_marginBottom="4dp"
         android:minWidth="88dp"
-        android:maxWidth="488dp"
-        android:hint="@string/edit_list_hint"
-        app:layout_constrainedHeight="true"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/recipes_title">
+        android:hint="@string/edit_list_hint">
 
-        <com.google.android.material.textfield.TextInputEditText
+        <com.onefishtwo.bbqtimer.EditText2
             android:id="@+id/recipes_text_field"
             style="@style/Widget.App.EditText"
             android:layout_width="match_parent"
@@ -46,12 +38,12 @@
             android:importantForAutofill="no"
             android:inputType="textMultiLine|textNoSuggestions"
             android:maxLength="2000"
-            android:minLines="2"
+            android:minLines="3"
             android:paddingStart="8dp"
-            android:paddingTop="10dp"
+            android:paddingTop="8dp"
             android:paddingEnd="8dp"
-            android:paddingBottom="4dp"
+            android:paddingBottom="8dp"
             android:scrollbars="vertical" />
     </com.google.android.material.textfield.TextInputLayout>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

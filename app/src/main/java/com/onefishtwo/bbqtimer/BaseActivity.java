@@ -103,11 +103,12 @@ public class BaseActivity extends AppCompatActivity {
     /**
      * Sets a WindowInsetsListener on the root View when in edge-to-edge mode to adjust its margins
      * to accommodate system bars, display cutouts, and the IME.
+     * <p>
+     * ASSUMES: EdgeToEdge.enable(this) was already called in onCreate().
      *
      * @param rootView The layout's root {@link View}.
      */
     static void setEdgeToEdgeWindowInsetsListener(@NonNull View rootView) {
-        // EdgeToEdge.enable(this) is already called in onCreate()
         if (EDGE_TO_EDGE) {
             ViewCompat.setOnApplyWindowInsetsListener(rootView,
                     BaseActivity::mainWindowInsetsListener);
