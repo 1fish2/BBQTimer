@@ -733,8 +733,9 @@ public class MainActivity extends BaseActivity
      * <p>
      * ISSUE: Rotating the screen with a popup menu open throws
      * "android.view.WindowLeaked leaked window android.widget.PopupWindow$PopupDecorView".
-     * It doesn't seem fixable short of reimplementing PopupMenu or handling screen rotations
-     * manually. But it doesn't seem to matter other than logging an error.
+     * This probably happens because the popup dismisses with a fade-out animation, and by then the
+     * Activity is destroyed. It doesn't seem to matter other than logging an error. Attempts to
+     * dismiss the popup immediately [in onPause() or always] didn't work.
      */
     @UiThread
     private void dismissPopupMenu() {
