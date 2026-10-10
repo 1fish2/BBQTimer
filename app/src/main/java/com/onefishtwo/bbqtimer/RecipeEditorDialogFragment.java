@@ -24,6 +24,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.Editable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.textclassifier.TextClassifier;
@@ -210,13 +211,17 @@ public class RecipeEditorDialogFragment extends DialogFragment {
         }
 
         builder.setPositiveButton(R.string.save_edits, (dialog, which) -> {
-                    String text = textField != null ? textField.getText().toString() : "";
+                    String text = textField != null ? stringify(textField.getText()) : "";
                     saveText(text);
                 })
                 .setNeutralButton(R.string.reset, (dialog, which) -> saveText(""))
                 .setNegativeButton(R.string.cancel_edits, (dialog, which) -> cancelEdits(dialog));
 
         return builder.create();
+    }
+
+    private @NonNull String stringify(@Nullable Editable editable) {
+        return editable != null ? editable.toString() : "";
     }
 
     /**
