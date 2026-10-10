@@ -25,6 +25,7 @@
 local.properties
 /tmp
 /bin/__pycache__/
+*.hprof
 
 # Don't ignore the wrapper/daemon configuration
 !gradle/gradle-wrapper.properties
