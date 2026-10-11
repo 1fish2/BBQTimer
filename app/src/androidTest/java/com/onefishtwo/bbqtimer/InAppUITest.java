@@ -403,12 +403,17 @@ public class InAppUITest implements Notifier.NotificationListener {
         delayForDefocusTextFieldWorkaround();
         onView(ALARM_PERIOD_TEXT_FIELD).check(matches(doesNotHaveFocus()));
 
+        // Get the keyboard out of the way and wait for the async IPC request and reply, which can
+        // update window insets, change focus, and invoke focus change listeners. Pixel Fold seems
+        // to need extra time.
+        onView(ALARM_PERIOD_TEXT_FIELD).perform(closeSoftKeyboard(), waitMsec(200));
         try {
             onView(ALARM_PERIOD_TEXT_FIELD).perform(click());
         } catch (PerformException e) {
             Log.w(TAG, "*** alarmPeriodTextField click failed (soft keyboard?): "
                     + e.getMessage());
-            onView(ALARM_PERIOD_TEXT_FIELD).perform(closeSoftKeyboard());
+            onView(ALARM_PERIOD_TEXT_FIELD).perform(closeSoftKeyboard(), waitMsec(200));
+            onView(ALARM_PERIOD_TEXT_FIELD).perform(click()); // retry
         }
         onView(ALARM_PERIOD_TEXT_FIELD).check(matches(hasFocus()));
         onView(ALARM_PERIOD_TEXT_FIELD).perform(clearText()); // WORKAROUND landscape mode soft keyboard
