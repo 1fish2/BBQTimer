@@ -24,13 +24,19 @@ package com.onefishtwo.bbqtimer;
 import static org.junit.Assert.assertTrue;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.SystemClock;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry;
 import androidx.test.runner.lifecycle.Stage;
+
+import com.onefishtwo.bbqtimer.state.ApplicationState;
+
+import org.junit.rules.ExternalResource;
 
 import java.util.Collection;
 import java.util.Objects;
@@ -43,6 +49,33 @@ public class TestUtils {
     public static final long DEFAULT_POLL_INTERVAL_MS = 20;
 
     private TestUtils() {}
+
+    /**
+     * Clears the app's shared preferences so each test will run with a clean slate.
+     * Call this within a @Before setUp method before the app starts, or as a ClearPrefsRule, or
+     * **before** ActivityScenarioRule<MainActivity> using a RuleChain.
+     * <p>
+     * This should avoid triggering a system_server deadlock / host GPU renderer crash in the
+     * emulator (which causes "adb: device offline"), and it's much faster than
+     * `testInstrumentationRunnerArguments clearPackageData: 'true'` +
+     * testOptions `execution = 'ANDROIDX_TEST_ORCHESTRATOR'` set in build.gradle.
+     */
+    public static void clearSharedPreferences() {
+        Context context = ApplicationProvider.getApplicationContext();
+
+        ApplicationState.resetForTests(context);
+    }
+
+    /**
+     * A TestRule class to clears the app's shared preferences so the test will run with a clean slate.
+     * Optionally use a RuleChain to ensure this runs before ActivityScenarioRule<MainActivity>.
+     */
+    public static class ClearPrefsRule extends ExternalResource {
+        @Override
+        protected void before() {
+            clearSharedPreferences();
+        }
+    }
 
     /**
      * Polls the given {@link BooleanSupplier} until it returns true or timeoutMs has elapsed.

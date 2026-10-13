@@ -22,10 +22,6 @@ android {
         resourceConfigurations += ['en', 'de']
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-
-        // The following argument makes ANDROIDX_TEST_ORCHESTRATOR run
-        // "adb shell pm clear <package>" before each test run, which resets the app's state.
-        testInstrumentationRunnerArguments clearPackageData: 'true'
     }
 
     viewBinding {
@@ -69,7 +65,6 @@ android {
     }
 
     testOptions {
-        execution = 'ANDROIDX_TEST_ORCHESTRATOR'
         unitTests {
             includeAndroidResources = true
         }

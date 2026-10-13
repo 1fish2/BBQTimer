@@ -84,6 +84,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.RuleChain;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
@@ -117,11 +118,18 @@ public class InAppUITest implements Notifier.NotificationListener {
     private FragmentManager fm; // for logging the dialog fragment status
     private final AtomicInteger notificationCount = new AtomicInteger(0);
 
+    private final TestRule clearPrefsRule = new TestUtils.ClearPrefsRule();
+
     /** Launch MainActivity before each test and close it after the test completes. */
     @NonNull
-    @Rule
-    public final ActivityScenarioRule<MainActivity> activityScenarioRule =
+    private final ActivityScenarioRule<MainActivity> activityScenarioRule =
             new ActivityScenarioRule<>(MainActivity.class);
+
+    /** Ensure preferences get cleared before launching MainActivity. */
+    @Rule
+    public final RuleChain ruleChain = RuleChain
+            .outerRule(clearPrefsRule)
+            .around(activityScenarioRule);
 
     /**
      * Since `testInstrumentationRunnerArguments clearPackageData: 'true'` resets the app's state,

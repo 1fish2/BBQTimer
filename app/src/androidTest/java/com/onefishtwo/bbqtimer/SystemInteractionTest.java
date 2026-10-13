@@ -207,11 +207,17 @@ public class SystemInteractionTest {
 
     @Before
     public void setUp() throws RemoteException {
+        TestUtils.clearSharedPreferences();
         device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
         context = ApplicationProvider.getApplicationContext();
 
         if (!device.isScreenOn()) {
             device.wakeUp();
+        }
+
+        if (device.getDisplayRotation() != android.view.Surface.ROTATION_0) {
+            device.setOrientationNatural();
+            SystemClock.sleep(300); // Allow screen rotation animation time to complete
         }
 
         device.pressHome(); // these tests begin on the Home screen
@@ -319,6 +325,9 @@ public class SystemInteractionTest {
     @Test
     @SdkSuppress(minSdkVersion = 25)
     public void testAppShortcuts() {
+        device.pressHome();
+        SystemClock.sleep(200); // Ensure launcher layout is completely settled
+
         int width = device.getDisplayWidth();
         int height = device.getDisplayHeight();
 
@@ -334,8 +343,9 @@ public class SystemInteractionTest {
 
         assertNotNull("BBQ Timer app icon should be in the App Drawer", appIcon);
 
-        // Long press to open the menu
-        appIcon.longClick();
+        // Long press to open the menu. Use click(1000) for zero-displacement touch hold,
+        // which avoids triggering icon-drag on tablet/high-DPI launcher grids.
+        appIcon.click(1000);
 
         UiObject2 startShortcut = findAppShortcut(
                 getString(R.string.start_at_0_short),
@@ -461,5 +471,11 @@ public class SystemInteractionTest {
         assertTrue("Portrait height (" + portraitBounds.height() + ") "
                         + "should be taller than landscape height (" + landscapeBounds.height() + ")",
                 portraitBounds.height() > landscapeBounds.height());
+
+        // Restore natural orientation and wait for the rotation animation to settle
+        device.setOrientationNatural();
+        assertPollForExpectation("Orientation should return to natural",
+                () -> device.getDisplayRotation() == android.view.Surface.ROTATION_0);
+        SystemClock.sleep(300); // Allow launcher layout to settle
     }
 }

@@ -19,11 +19,13 @@
 
 package com.onefishtwo.bbqtimer.state;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 
 import com.onefishtwo.bbqtimer.LocaleUtils;
 import com.onefishtwo.bbqtimer.R;
@@ -100,6 +102,41 @@ public class ApplicationState {
         return sharedInstance != null;
     }
 
+    /**
+     * Clears SharedPreferences on disk and resets the shared instance in memory for testing,
+     * re-initializing or reloading a fresh default state while synchronized on {@link ApplicationState}.
+     */
+    @SuppressWarnings("MethodMayBeSynchronized")
+    @SuppressLint("ApplySharedPref")
+    @VisibleForTesting
+    public static void resetForTests(@NonNull Context context) {
+        //noinspection SynchronizeOnThis
+        synchronized (ApplicationState.class) {
+            Context appContext = context.getApplicationContext();
+            SharedPreferences prefs =
+                    appContext.getSharedPreferences(APPLICATION_PREF_FILE, Context.MODE_PRIVATE);
+
+            prefs.edit().clear().commit();
+
+            if (sharedInstance == null) {
+                ApplicationState state = new ApplicationState();
+                boolean needToSave = state.load(appContext);
+
+                if (needToSave) {
+                    state.save(appContext);
+                }
+
+                sharedInstance = state;
+            } else {
+                boolean needToSave = sharedInstance.load(appContext);
+
+                if (needToSave) {
+                    sharedInstance.save(appContext);
+                }
+            }
+        }
+    }
+
     private ApplicationState() {
     }
 
@@ -146,16 +183,19 @@ public class ApplicationState {
 
     /** Saves persistent state using context. */
     public void save(@NonNull Context context) {
-        Context appContext = context.getApplicationContext();
-        SharedPreferences prefs =
-                appContext.getSharedPreferences(APPLICATION_PREF_FILE, Context.MODE_PRIVATE);
-        SharedPreferences.Editor prefsEditor = prefs.edit();
+        //noinspection SynchronizeOnThis
+        synchronized (ApplicationState.class) {
+            Context appContext = context.getApplicationContext();
+            SharedPreferences prefs =
+                    appContext.getSharedPreferences(APPLICATION_PREF_FILE, Context.MODE_PRIVATE);
+            SharedPreferences.Editor prefsEditor = prefs.edit();
 
-        timeCounter.save(prefsEditor);
-        prefsEditor.putBoolean(PREF_ENABLE_REMINDERS, enableReminders)
-                .putInt(PREF_SECONDS_PER_REMINDER, secondsPerReminder)
-                .putString(PREF_RECIPES, recipes)
-                .apply();
+            timeCounter.save(prefsEditor);
+            prefsEditor.putBoolean(PREF_ENABLE_REMINDERS, enableReminders)
+                    .putInt(PREF_SECONDS_PER_REMINDER, secondsPerReminder)
+                    .putString(PREF_RECIPES, recipes)
+                    .apply();
+        }
     }
 
     /**
