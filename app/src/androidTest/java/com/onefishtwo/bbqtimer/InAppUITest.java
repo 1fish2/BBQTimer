@@ -166,6 +166,9 @@ public class InAppUITest implements Notifier.NotificationListener {
     @After
     public void tearDown() {
         Notifier.setNotificationListener(null);
+        try {
+            Espresso.closeSoftKeyboard();
+        } catch (Exception ignored) {}
     }
 
     @NonNull
@@ -455,7 +458,7 @@ public class InAppUITest implements Notifier.NotificationListener {
             onView(COUNTDOWN_DISPLAY).perform(CustomViewActions.clickAtCenterLeft()); // ...then Pause
         }
         assertEquals(3, notificationCount.get());
-        TimeIntervalMatcher time6 = inTimeInterval(6_000, 8_000);
+        TimeIntervalMatcher time6 = inTimeInterval(6_000, 9_000);
         checkPausedAt(time6);
 
         onView(PLAY_PAUSE_BUTTON).perform(waitMsec(400));

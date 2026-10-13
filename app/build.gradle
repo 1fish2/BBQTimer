@@ -24,6 +24,10 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    adbOptions {
+        installOptions = ['-r', '-d']
+    }
+
     viewBinding {
         enabled = false
     }
@@ -65,6 +69,15 @@ android {
     }
 
     testOptions {
+        // Workaround: ANDROIDX_TEST_ORCHESTRATOR spawns a new OS process for each @Test method.
+        // This copes with leaks in InputMethodManager, GraphicBuffer, and SurfaceTexture handles
+        // and memory on older API versions (≤ API 30??; e.g. when dialog EditText fields open and
+        // close repeatedly), crashing the emulator, and taking logcat output with it.
+        //
+        // ANDROIDX_TEST_ORCHESTRATOR enables `clearPackageData: 'true'`, which clears the package
+        // state via `clearPackageData: 'true'` over ADB sockets before each test, flooding adbd and
+        // crashing system_server. So use ApplicationState.resetForTests() instead.
+        execution = 'ANDROIDX_TEST_ORCHESTRATOR'
         unitTests {
             includeAndroidResources = true
         }
