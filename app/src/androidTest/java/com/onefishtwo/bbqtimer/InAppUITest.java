@@ -444,13 +444,13 @@ public class InAppUITest implements Notifier.NotificationListener {
         checkStopped();
 
         onView(ALARM_PERIOD_TEXT_FIELD).perform(clearText());
-        onView(ALARM_PERIOD_TEXT_FIELD).perform(typeText(":5\n"));
-        onView(ALARM_PERIOD_TEXT_FIELD).check(matches(withText("0:05")));
+        onView(ALARM_PERIOD_TEXT_FIELD).perform(typeText(":7\n"));
+        onView(ALARM_PERIOD_TEXT_FIELD).check(matches(withText("0:07")));
 
         assertEquals(0, notificationCount.get());
         onView(PLAY_PAUSE_BUTTON).perform(click()); // Play...
         assertEquals(1, notificationCount.get());
-        onView(PLAY_PAUSE_BUTTON).perform(waitMsec(6_000)); // ...for 6 secs...
+        onView(PLAY_PAUSE_BUTTON).perform(waitMsec(8_000)); // ...for 8 secs...
         assertEquals(2, notificationCount.get()); // 5 second timed notification
         try {
             onView(PLAY_PAUSE_BUTTON).perform(CustomViewActions.clickAtCenterLeft()); // ...then Pause
@@ -458,8 +458,8 @@ public class InAppUITest implements Notifier.NotificationListener {
             onView(COUNTDOWN_DISPLAY).perform(CustomViewActions.clickAtCenterLeft()); // ...then Pause
         }
         assertEquals(3, notificationCount.get());
-        TimeIntervalMatcher time6 = inTimeInterval(6_000, 9_000);
-        checkPausedAt(time6);
+        TimeIntervalMatcher time8 = inTimeInterval(8_000, 11_000);
+        checkPausedAt(time8);
 
         onView(PLAY_PAUSE_BUTTON).perform(waitMsec(400));
         onView(STOP_BUTTON).perform(click());
