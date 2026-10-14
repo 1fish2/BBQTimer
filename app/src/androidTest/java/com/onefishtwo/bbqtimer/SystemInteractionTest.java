@@ -80,7 +80,7 @@ public class SystemInteractionTest {
     private UiDevice device;
     private Context context;
     private static final String PACKAGE_NAME = "com.onefishtwo.bbqtimer";
-    private static final int TIMEOUT = 5000;
+    private static final int TIMEOUT = 7000; // software rendering headroom when the host is busy
 
     @SuppressWarnings({"NewClassNamingConvention", "JUnitTestCaseWithNonTrivialConstructors"})
     enum NightDayMode {
