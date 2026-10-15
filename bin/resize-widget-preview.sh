@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 # Resizes a widget preview image to multiple dpis.
 #
 # Arguments:
@@ -17,8 +17,8 @@ INFILE=${1:-source-assets/widget_preview.png}
 DIR="app/src/main/res/drawable-"
 
 function export_image() {
-    echo convert ${INFILE}  -colorspace RGB  -resize ${1}%  -colorspace sRGB  ${DIR}${2}/widget_preview.png
-    convert      ${INFILE}  -colorspace RGB  -resize ${1}%  -colorspace sRGB  ${DIR}${2}/widget_preview.png
+    echo convert "${INFILE}"  -colorspace RGB  -resize "${1}%"  -colorspace sRGB  "${DIR}${2}/widget_preview.png"
+    convert      "${INFILE}"  -colorspace RGB  -resize "${1}%"  -colorspace sRGB  "${DIR}${2}/widget_preview.png"
 }
 
 export_image   75 ldpi
