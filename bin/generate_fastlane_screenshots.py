@@ -3,7 +3,7 @@
 # ASSUMES: ImageMagick is installed.
 
 import subprocess
-from typing import Optional, Sequence, Tuple
+from typing import Optional, Tuple
 import os
 
 TIMEOUT = 60  # seconds
@@ -13,7 +13,7 @@ DST="fastlane/metadata/android"
 
 
 def run_cmd2(tokens, trim=True, timeout=TIMEOUT, env=None, input_=None):
-    # type: (Sequence[str], bool, Optional[int], Optional[dict], Optional[str]) -> Tuple[str, str]
+    # type: (list[str], bool, Optional[int], Optional[dict], Optional[str]) -> Tuple[str, str]
     """Run a shell command-line (in token list form) and return a tuple
     containing its (stdout, stderr).
     This does not expand filename patterns or environment variables or do other
@@ -48,7 +48,7 @@ def run_cmd2(tokens, trim=True, timeout=TIMEOUT, env=None, input_=None):
 
 
 def run_cmd(tokens, trim=True, timeout=TIMEOUT, env=None, input_=None):
-    # type: (Sequence[str], bool, Optional[int], Optional[dict], Optional[str]) -> str
+    # type: (list[str], bool, Optional[int], Optional[dict], Optional[str]) -> str
     """Run a shell command-line (in token list form), print tokens and any stderr,
     then return the stdout.
     """
