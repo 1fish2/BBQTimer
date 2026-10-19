@@ -64,16 +64,12 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
 /**
- * Android tests to verify that all expected Intents still get received by MainActivity,
+ * Android tests to verify that expected Intents still get received by MainActivity,
  * TimerAppWidgetProvider, AlarmReceiver, and ResumeReceiver, especially with
- * android:intentMatchingFlags="enforceIntentFilter" and "allowNullAction" enabled in the
- * AndroidManifest.xml for Android 16+, and additional restrictions to come.
+ * android:intentMatchingFlags="enforceIntentFilter" and "allowNullAction" in AndroidManifest.xml
+ * for Android 16+, and <b>more restrictions to come.</b>
  * <p>
- * TODO: Test APPWIDGET_* via UiAutomation on the Home screen?
- * <p>
- * TODO: Test ACTION_LOCALE_CHANGED via the Settings app?
- * <p>
- * No luck sending ACTION_BOOT_COMPLETED or ACTION_MY_PACKAGE_REPLACED.
+ * TODO: Test Intent reception (not just Intent filters) for APPWIDGET_*.
  */
 @RunWith(AndroidJUnit4.class)
 public class IntentMatchingTest {
@@ -130,6 +126,16 @@ public class IntentMatchingTest {
             executeShellCommand("setprop persist.sys.timezone " + timezone);
             executeShellCommand("settings put global time_zone " + timezone);
         }
+    }
+
+    /**
+     * Sets the app-specific locale, e.g. "en", "en-US", "de", "de-DE", or "" (reset the app to the
+     * system locale)
+     */
+    private void setAppLocale(String locale) {
+        String pkg = context.getPackageName();
+
+        executeShellCommand(String.format("cmd locale set-app-locales %s --locales %s", pkg, locale));
     }
 
     private void waitForAction(@Nullable String expectedAction) {
@@ -402,5 +408,48 @@ public class IntentMatchingTest {
 
         setTimezone(tz);
         waitForAction(Intent.ACTION_TIMEZONE_CHANGED);
+    }
+
+    @SdkSuppress(minSdkVersion = 33) // "Can't find service: locale" on API < 33
+    @Test
+    public void testResumeReceiverProtectedSetLocaleIntent() {
+        // Test a protected action ACTION_LOCALE_CHANGED via a specialized shell command that just
+        // sets the app's locale, where broadcasting the system-wide Intent would get a
+        // SecurityException.
+        String[] locales = {"de", "en-AU", ""};
+
+        for (String locale : locales) {
+            setAppLocale(locale);
+            waitForAction(Intent.ACTION_LOCALE_CHANGED);
+        }
+    }
+
+    /**
+     * Test protected actions that the root UID can send <b>on Google APIs system images</b>.
+     * <p>
+     * {@code am broadcast} fails because SHELL UID lacks broadcast permissions for protected
+     * actions. On a Google APIs system image, adb can elevate to root to test these actions.
+     */
+    @SdkSuppress(minSdkVersion = 26) // API 24-25: Test instrumentation process crashed
+        // Cannot run program "su": error=13, Permission denied
+    @Test
+    public void testRootProtectedIntents() {
+        String pkg = context.getPackageName();
+        String[] actions = {
+                Intent.ACTION_BOOT_COMPLETED,
+                Intent.ACTION_MY_PACKAGE_REPLACED
+        };
+
+        for (String action : actions) {
+            String output = executeShellCommand(
+                    String.format("su root am broadcast -a %s %s", action, pkg));
+
+            if (output.contains("su: inaccessible or not found")) {
+                Log.i(TAG, "Can't use `su root` on this System Image (Google Play?)");
+                return;
+            }
+
+            waitForAction(action);
+        }
     }
 }
