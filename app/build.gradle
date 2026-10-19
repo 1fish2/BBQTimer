@@ -1,6 +1,6 @@
 plugins {
-    alias libs.plugins.android.application
-    alias libs.plugins.roborazzi
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.roborazzi)
 }
 
 java {
@@ -14,13 +14,13 @@ android {
     compileSdk = 37
 
     defaultConfig {
-        applicationId "com.onefishtwo.bbqtimer"
-        versionCode 25
-        versionName '5.0'
+        applicationId = "com.onefishtwo.bbqtimer"
+        versionCode = 25
+        versionName = '5.0'
         minSdk = 24
         targetSdk = 37
 
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     androidResources {
@@ -56,7 +56,8 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.txt'
             minifyEnabled true
             shrinkResources = true
-            signingConfig = (signingConfigs.release.storeFile != null) ? signingConfigs.release : signingConfigs.debug
+            def releaseSigning = signingConfigs.release
+            signingConfig = (releaseSigning.storeFile != null) ? releaseSigning : signingConfigs.debug
             // Disable StrictMode for release builds
             buildConfigField "boolean", "ENABLE_STRICT_MODE", "false"
         }
@@ -83,7 +84,7 @@ android {
 }
 
 tasks.withType(JavaCompile).configureEach {
-    options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
+    options.compilerArgs.addAll(["-Xlint:unchecked", "-Xlint:deprecation"])
 }
 
 dependencies {

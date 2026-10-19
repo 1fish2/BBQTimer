@@ -18,11 +18,10 @@ BBQTIMER_UPLOAD_ALIAS="${BBQTIMER_UPLOAD_ALIAS:-upload}"
 BBQTIMER_INSTALL_KEYSTORE="${BBQTIMER_INSTALL_KEYSTORE:-bbqtimer-release-keystore.jks}"
 BBQTIMER_INSTALL_ALIAS="${BBQTIMER_INSTALL_ALIAS:-BBQTimer}"
 
-mkdir -p app/release
 DEST_DIR="app/release"
+mkdir -p "${DEST_DIR}"
 AAB_DEST="${DEST_DIR}/app-release.aab"
 APK_DEST="${DEST_DIR}/app-release.apk"
-METADATA_DEST="${DEST_DIR}/output-metadata.json"
 
 echo "=== BBQTimer Dual Release Builder ==="
 
@@ -42,7 +41,7 @@ read -s -r -p "Enter Install Alias Password: " INSTALL_KEY_PASS; echo ""
 echo ""
 echo "Cleaning previous build outputs..."
 ./gradlew clean
-rm -f "$AAB_DEST" "$APK_DEST" "$METADATA_DEST"
+rm -f "${DEST_DIR}"/*
 
 # --- Step 2: Build Google Play AAB ---
 echo "Building signed App Bundle (.aab) with Play Upload Key..."
@@ -66,10 +65,9 @@ RELEASE_KEY_PASSWORD="$INSTALL_KEY_PASS" \
 AAB_SRC="app/build/outputs/bundle/release/app-release.aab"
 APK_SRC="app/build/outputs/apk/release/app-release.apk"
 METADATA_SRC="app/build/outputs/apk/release/output-metadata.json"
+APK_MAPPING_SRC="app/build/outputs/mapping/release/mapping.txt"
 
-cp -p "$AAB_SRC" "$AAB_DEST"
-cp -p "$APK_SRC" "$APK_DEST"
-cp -p "$METADATA_SRC" "$METADATA_DEST"
+cp -p "$AAB_SRC" "$APK_SRC" "$METADATA_SRC" "$APK_MAPPING_SRC" "${DEST_DIR}"
 
 # --- Step 5: Verification Gate ---
 echo ""
