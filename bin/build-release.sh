@@ -19,9 +19,10 @@ BBQTIMER_INSTALL_KEYSTORE="${BBQTIMER_INSTALL_KEYSTORE:-bbqtimer-release-keystor
 BBQTIMER_INSTALL_ALIAS="${BBQTIMER_INSTALL_ALIAS:-BBQTimer}"
 
 mkdir -p app/release
-AAB_DEST="app/release/app-release.aab"
-APK_DEST="app/release/app-release.apk"
-METADATA_DEST="app/release/output-metadata.json"
+DEST_DIR="app/release"
+AAB_DEST="${DEST_DIR}/app-release.aab"
+APK_DEST="${DEST_DIR}/app-release.apk"
+METADATA_DEST="${DEST_DIR}/output-metadata.json"
 
 echo "=== BBQTimer Dual Release Builder ==="
 
@@ -30,15 +31,13 @@ echo ""
 echo "--- 1. Google Play Upload Keystore (for AAB) ---"
 echo "Keystore: $BBQTIMER_UPLOAD_KEYSTORE"
 read -s -r -p "Enter Upload Keystore Password: " UPLOAD_STORE_PASS; echo ""
-read -s -r -p "Enter Upload Key Password (press Enter if same): " UPLOAD_KEY_PASS; echo ""
-UPLOAD_KEY_PASS="${UPLOAD_KEY_PASS:-$UPLOAD_STORE_PASS}"
+read -s -r -p "Enter Upload Alias Password: " UPLOAD_KEY_PASS; echo ""
 
 echo ""
 echo "--- 2. App Installation Keystore (for APK for IzzyOnDroid) ---"
 echo "Keystore: $BBQTIMER_INSTALL_KEYSTORE"
 read -s -r -p "Enter Install Keystore Password: " INSTALL_STORE_PASS; echo ""
-read -s -r -p "Enter Install Key Password (press Enter if same): " INSTALL_KEY_PASS; echo ""
-INSTALL_KEY_PASS="${INSTALL_KEY_PASS:-$INSTALL_STORE_PASS}"
+read -s -r -p "Enter Install Alias Password: " INSTALL_KEY_PASS; echo ""
 
 echo ""
 echo "Cleaning previous build outputs..."
@@ -47,19 +46,21 @@ rm -f "$AAB_DEST" "$APK_DEST" "$METADATA_DEST"
 
 # --- Step 2: Build Google Play AAB ---
 echo "Building signed App Bundle (.aab) with Play Upload Key..."
+( { set +x; } 2>/dev/null;
 RELEASE_STORE_FILE="$BBQTIMER_UPLOAD_KEYSTORE" \
 RELEASE_STORE_PASSWORD="$UPLOAD_STORE_PASS" \
 RELEASE_KEY_ALIAS="$BBQTIMER_UPLOAD_ALIAS" \
 RELEASE_KEY_PASSWORD="$UPLOAD_KEY_PASS" \
-./gradlew bundleRelease
+./gradlew bundleRelease )
 
 # --- Step 3: Build Standalone APK ---
 echo "Building signed APK (.apk) with App Installation Key..."
+( { set +x; } 2>/dev/null;
 RELEASE_STORE_FILE="$BBQTIMER_INSTALL_KEYSTORE" \
 RELEASE_STORE_PASSWORD="$INSTALL_STORE_PASS" \
 RELEASE_KEY_ALIAS="$BBQTIMER_INSTALL_ALIAS" \
 RELEASE_KEY_PASSWORD="$INSTALL_KEY_PASS" \
-./gradlew assembleRelease
+./gradlew assembleRelease )
 
 # --- Step 4: Stage Artifacts ---
 AAB_SRC="app/build/outputs/bundle/release/app-release.aab"
@@ -74,12 +75,12 @@ cp -p "$METADATA_SRC" "$METADATA_DEST"
 echo ""
 echo "Checking the generated release artifacts..."
 
-# Check that the file timestamps are within 5 minutes
+# Check that the file timestamps are within 1 minute
 AAB_MTIME=$(stat -f "%m" "$AAB_DEST")
 APK_MTIME=$(stat -f "%m" "$APK_DEST")
 TIME_DIFF=$(( AAB_MTIME > APK_MTIME ? AAB_MTIME - APK_MTIME : APK_MTIME - AAB_MTIME ))
 
-if [ "$TIME_DIFF" -gt 300 ]; then
+if [ "$TIME_DIFF" -gt 60 ]; then
     echo "ERROR: Artifact modification timestamps differ by more than 5 minutes ($TIME_DIFF seconds)." >&2
     exit 1
 fi
@@ -94,7 +95,7 @@ fi
 
 echo ""
 echo "SUCCESS: Both artifacts built, verified, and staged:"
-ls -lh "$AAB_DEST" "$APK_DEST"
+ls -lh "$DEST_DIR"
 
 CMD_LINE_TOOLS="$HOME/Library/Android/sdk/cmdline-tools/latest/bin"
 APKANALYZER="$CMD_LINE_TOOLS/apkanalyzer"
