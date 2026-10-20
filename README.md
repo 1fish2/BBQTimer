@@ -46,29 +46,30 @@ version, screen size, and problem details).
   * Long-press it then drag its handles to see more/less info.[](no-store)
   * To remove it: Long-press then drag it to or tap “× Remove”.[](/no-store)
 * While BBQ Timer is *running* or *paused*, it's **on the lock screen** and **in the pull-down notification**.
-  * To get the notification onto the lock screen: *Pause* or *Play* in the app or widget.
-  * Long-press the app’s home screen icon, then tap the “Pause at 00:00” shortcut to make it *pause* it.
+  * To get the notification onto the lock screen: tap ⏸️or ▶️in the app or widget.
+  * Long-press the app’s home screen icon, then tap the “Pause at 00:00” shortcut to *pause* it.
 * The app, home/lock screen widget, and pull-down notification show the countdown interval time and the total elapsed time.
-* Tap ▲ in the alarm interval field to pop up the menu of Alarm intervals.
-  * Tap “Edit these intervals…” in the menu (or long-press ▲) to customize the menu. Each line should have a duration in the form _HH:MM:SS_ or _MM:SS_ or _MM_, followed by optional notes. E.g. “6 thin fish, cook to 145°F” is a recipe to cook 6 minutes per side and check it for 145°F.
-  * When editing, tap the “Reset” command to reconstruct a fresh menu of alarm intervals using the current system Language or Temperature units (Android 14+).
-* In the app, the phone’s volume keys adjust the Alarm volume.
-* You can change BBQ Timer’s Alarm sound in Settings → Notifications. If you pick “None” it won’t play an alarm sound. To restore the app’s cowbell sound: Uninstall then reinstall the app.
+* Tap ▲ in the alarm interval field to open the menu of Alarm intervals.
+  * Tap “Edit these intervals…” in the menu (or long-press ▲) to edit the menu.
+  * Each line should have a duration in the form _HH:MM:SS_ or _MM:SS_ or _MM_, followed by optional notes. E.g. “6 thin fish, cook to 145°F” to cook 6 minutes/side and check it for 145°F.
+  * In the editor, tap the “Reset” command to build a fresh menu of intervals using the current Temperature units (Android 14+) or language/country.
+* In the app, the phone’s volume keys adjust the Alarm volume.[](no-store)
+* You can change the app’s Alarm sound in Settings → Notifications. If you pick “None” it won’t sound an alarm. To restore the app’s cowbell sound: Uninstall then reinstall the app.[](/no-store)
 * To add the BBQ Timer widget to the lock screen (available on some devices):
-  1. Settings → enable "Widgets on lock screen".
-  2. Turn the screen off, then on.
+  1. Settings → enable “Widgets on lock screen.”
+  2. Turn the screen off and on.
   3. Swipe left to reach the widget screen.
-  4. Long-press the screen or tap "+Add widgets", then unlock.
-  5. Tap "Browse" → BBQ Timer.
+  4. Long-press the screen or tap “+Add widgets,” then unlock.
+  5. Tap Browse → BBQ Timer.
   6. Tap BBQ Timer widget.
   7. Tap (+ Add), (✔︎ Done).
-  * To access the widget: Turn the screen on then swipe left to the widgets.
+  * To use the widget: Turn the screen on then swipe left to the widgets.
 
 ### System settings for reliable alarms
 * Alarm volume at an audible level.
 * Lock screen → Show non-private or all notifications.
 * Settings → Apps → Special app access → Alarms & reminders → Allowed.
-* Apps → BBQ Timer “Show notifications”, *not* Silent. (Optional: Override Do Not Disturb.)
+* Apps → BBQ Timer “Show notifications” *not* Silent. (Optional: Override Do Not Disturb.)
 * Apps → BBQ Timer “Alarm” notification category → “Show notifications”; *not* “Silent”; “Make sound and pop on screen”; sound choice *not* “None”; Importance “High” or higher to hear and see it on the lock screen and in the notification area.
 * Notifications → App notifications → BBQ Timer → On.
 

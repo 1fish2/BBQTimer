@@ -1,80 +1,76 @@
-# BBQ Timer Android-App
+# BBQTimer Android-App
 
 [<img alt='Jetzt bei Google Play' height="80" src='https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png'>](https://play.google.com/store/apps/details?id=com.onefishtwo.bbqtimer&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1)
 [<img alt="Erhältlich bei IzzyOnDroid" height="80" src="https://gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroid.png">](https://apt.izzysoft.de/fdroid/index/apk/com.onefishtwo.bbqtimer)
 
-* **Erinnert dich regelmäßig daran, das Essen zu wenden oder zu prüfen, während die gesamte Kochzeit mitläuft.**  
-  Intervall-Timer + Stoppuhr = regelmäßige Alarme + Anzeige der bereits vergangenen Zeit.
-* **Schneller Zugriff über Sperrbildschirm, Startbildschirm und Benachrichtigungen, ohne das Handy zu entsperren.**  
-  Einfach über die Benachrichtigungsleiste, Widgets auf dem Start- oder Sperrbildschirm oder direkt über dem Sperrbildschirm nutzen (auf unterstützten Geräten).
-* **Alarme einfach anpassen, während der Timer bereits läuft.**
-* **Erstelle ein Schnellzugriff-Menü mit deinen meistgenutzten Intervallzeiten und eigenen Notizen.**
-* **Werbefrei**
+* **Erinnert dich regelmäßig ans Prüfen/Wenden des Grillguts und misst die gesamte Garzeit.**  
+  Intervall-Timer + Stoppuhr = regelmäßige Alarme + verstrichene Zeit.
+* **Schnellzugriff über Sperrbildschirm, Startbildschirm und Benachrichtigungen ohne Entsperren.**  
+  Pulldown- und Sperrbildschirm-Benachrichtigung, Start- und Sperrbildschirm-Widget sowie App über dem Sperrbildschirm nutzen (auf unterstützten Geräten).
+* Alarme bei laufendem Timer anpassen.
+* Schnellzugriff-Menü mit häufigen Intervallzeiten und eigenen Notizen erstellen.
+* Werbefrei.
 
-### Beispiel-Intervalle:
+Beispiel-Intervalle:
 * `10` = 10 Minuten
 * `7:30` = 7 Minuten, 30 Sekunden
 * `3:15:00` = 3 Stunden, 15 Minuten
 
-### Praktische Kurzformen:
+Praktische Kurzformen:
 * `12:00` = `12:0` = `12:` = `12` = 12 Minuten
 * `0:09` = `:9` = 9 Sekunden
 * `2:00:00` = `2:0:0` = `2::` = `120` = 2 Stunden
 
-Gib das Zeitintervall ganz flexibel in `Minuten`, `Minuten:Sekunden` oder `Stunden:Minuten:Sekunden` ein.
+Gib die Intervallzeit in `Minuten`, `Minuten:Sekunden` oder `Stunden:Minuten:Sekunden` ein (MM, MM:SS, HH:MM:SS).
 
 <!--suppress CheckImageSize -->
 <img alt="Screenshot: Pausierter Zustand" height="540" src="Play-assets/Pixel 3 screenshots/screenshot paused.png">
 <img alt="Screenshot: Sperrbildschirm" height="540" src="Play-assets/Pixel 3 screenshots/screenshot lock screen.png">
 
-
 ## Systemanforderungen
 
-**BBQ Timer** unterstützt Smartphones und Tablets mit Android 7.0 oder neuer (Android N und höher).
+**BBQ Timer** ist für Smartphones und Tablets ab Android 7.0 (Android N und höher).
 
-Sollte es auf deinem Gerät zu Problemen kommen, sende mir bitte die Details per E-Mail (Gerätemodell, Android-Version, Displaygröße und Problembeschreibung).
+Falls auf deinem Android-Gerät Probleme auftreten, sende mir bitte die Details per E-Mail (Gerätemodell, Android-Version, Bildschirmgröße und Problembeschreibung).
 
 
 ## Tipps
-* **Erinnerungsalarme aktivieren/deaktivieren:** Tippe auf das Kontrollkästchen, um die periodischen Erinnerungen ein- oder auszuschalten.
-* **Timer steuern:** Tippe auf die Zeitanzeige, um zwischen *Gestoppt* → *Läuft* → *Pausiert* → *Gestoppt* zu wechseln.
-* **Nutzung der App über den Sperrbildschirm (Android 8.1+):** Während Sie die App-Aktivitäten ansehen, tippen Sie auf die Ein-/Aus-Taste, um den Bildschirm auszuschalten, und tippen Sie später erneut auf die Ein-/Aus-Taste, um den Bildschirm wieder zu aktivieren.
-* **BBQ Timer-Widget auf dem Startbildschirm hinzufügen:**
-  * **Hinzufügen:** Halte das App-Symbol gedrückt, tippe im Menü auf *Widgets* und ziehe das BBQ Timer-Widget an die gewünschte Stelle.
-  * Tippe auf die verstrichene Zeit (00:00) des Widgets, um zwischen _Start_ → _Pause_ → _Stopp_ zu wechseln.
-  * Tippe auf die Taste ⏸️/▶️, um den Timer direkt zu _pausieren_ oder zu _starten_.
-  * Tippe auf den Hintergrund oder die Countdown-Zeit, um sofort die App zu öffnen.
-  * **Größe anpassen:** Halte das Widget gedrückt und ziehe an den Begrenzungslinien, um mehr oder weniger Informationen einzublenden.
-  * **Entfernen:** Halte das Widget gedrückt und ziehe es auf „Entfernen“ bzw. tippe auf „× Entfernen“.
-* **Volle Kontrolle über Benachrichtigungen & Sperrbildschirm:** Während BBQ Timer *läuft* oder *pausiert* ist, wird er in der **Benachrichtigungsleiste** sowie auf dem **Sperrbildschirm** angezeigt und kann direkt dort bedient werden.
-  * **Auf den Sperrbildschirm bringen:** Setze den Timer einfach in den Modus *Pause* oder *Start* (in der App oder über das Widget).
-  * **Startbereit auf dem Sperrbildschirm:** Halte das App-Symbol auf dem Startbildschirm gedrückt und wähle die Verknüpfung „Pause bei 00:00“ (ab Android 7.1+), damit der Timer sofort pausiert und einsatzbereit auf dem Sperrbildschirm bereitsteht.
-* **Alles im Blick:** Die App, das Widget und die Benachrichtigungsleiste zeigen stets sowohl die verbleibende Intervallzeit als auch die gesamte verstrichene Zeit an.
-* **Intervall-Auswahl:** Tippe im Eingabefeld für das Alarm-Intervall auf ▲, um das Pop-up-Menü mit deinen Voreinstellungen zu öffnen.
-  * Tippe im Menü auf „Intervalle bearbeiten…“ (oder halte ▲ gedrückt), um eigene Einträge anzulegen. Jede Zeile beginnt mit einem Zeitintervall im Format _HH:MM:SS_, _MM:SS_ oder _MM_, gefolgt von optionalen Notizen (z. B. „6 Dünner Fisch, garen bis 63°C“).
-  * Tippe beim Bearbeiten auf „Zurücksetzen“, um das Menü basierend auf deiner aktuellen Systemsprache und (ab Android 14+) Temperatureinheit neu zu generieren.
-* **Lautstärke:** Innerhalb der App regeln die Lautstärketasten deines Telefons direkt die Wecker-/Alarmlautstärke.
-* **Alarmton ändern:** Der Alarmton von BBQ Timer kann unter *Einstellungen > Benachrichtigungen* angepasst werden. Bei Auswahl von „Kein Ton“ ertönt kein Signal. Um den originalen Kuhglocken-Sound wiederherzustellen: App deinstallieren und erneut installieren.
-* **Sperrbildschirm-Widget hinzufügen** (auf ausgewählten Geräten verfügbar):
-  1. In den *Einstellungen* die Option „Widgets auf dem Sperrbildschirm“ aktivieren.
-  2. Den Bildschirm aus- und wieder einschalten.
+* Kontrollkästchen antippen, um regelmäßige Erinnerungsalarme ein-/auszuschalten.
+* Zeitanzeige antippen, um zwischen *gestoppt* → *läuft* → *pausiert* → *gestoppt* zu wechseln.
+* App über dem Sperrbildschirm nutzen[](no-store) (Android 8.1+)[](/no-store): Bei geöffneter App die Ein-/Aus-Taste drücken, um den Bildschirm auszuschalten, und erneut drücken zum Aufwecken.
+* BBQ Timer Startbildschirm-Widget:
+  * Hinzufügen: App-Symbol gedrückt halten, im Menü auf Widgets tippen und das BBQ Timer-Widget antippen oder ziehen.
+  * Im Widget auf ⏸️/▶️ oder die verstrichene Zeit tippen, um den Timer zu _starten_/_pausieren_/_stoppen_.
+  * Auf Hintergrund oder Countdown tippen, um die App zu öffnen.
+  * Gedrückt halten und Rahmen ziehen, um mehr/weniger Infos zu sehen.[](no-store)
+  * Entfernen: Gedrückt halten und auf „× Entfernen“ ziehen oder tippen.[](/no-store)
+* Wenn BBQ Timer *läuft* oder *pausiert* ist, ist er **auf dem Sperrbildschirm** und **in der Pulldown-Benachrichtigung**.
+  * Für die Sperrbildschirm-Anzeige: In App oder Widget auf ⏸️ oder ▶️ tippen.
+  * App-Symbol auf dem Startbildschirm gedrückt halten und „Pause bei 00:00“ wählen, um ihn zu *pausieren*.
+* App, Start-/Sperrbildschirm-Widget und Pulldown-Benachrichtigung zeigen Countdown-Intervall und gesamte verstrichene Zeit.
+* Im Alarmintervall-Feld auf ▲ tippen, um das Menü der Alarmintervalle zu öffnen.
+  * Im Menü auf „Diese Intervalle bearbeiten…“ tippen (oder ▲ gedrückt halten), um es anzupassen.
+  * Jede Zeile hat eine Dauer im Format _HH:MM:SS_, _MM:SS_ oder _MM_ plus optionale Notizen. Z. B. „6 dünne Fischfilets, bis 63°C“ für 6 Min./Seite und Prüfung auf 63°C.
+  * Im Editor auf „Zurücksetzen“ tippen, um das Menü anhand der aktuellen Temperatureinheit (Android 14+) oder Sprache/Region neu zu erstellen.
+* In der App regeln die Lautstärketasten des Geräts die Alarmlautstärke.[](no-store)
+* Den Alarmton der App kannst du unter Einstellungen → Benachrichtigungen ändern. Bei „Keiner“ ertönt kein Alarm. Um den Kuhglocken-Ton wiederherzustellen: App deinstallieren und neu installieren.[](/no-store)
+* BBQ Timer-Widget zum Sperrbildschirm hinzufügen (auf einigen Geräten verfügbar):
+  1. Einstellungen → „Widgets auf dem Sperrbildschirm“ aktivieren.
+  2. Bildschirm aus- und einschalten.
   3. Nach links zum Widget-Bildschirm wischen.
-  4. Auf „+ Widgets hinzufügen“ tippen (oder den Bildschirm gedrückt halten) und entsperren.
-  5. Auf „Durchsuchen“ tippen.
-  6. Den Bereich *BBQ Timer* aufklappen.
-  7. Das BBQ Timer-Widget auswählen.
-  8. Auf die Schaltfläche [+ Hinzufügen] tippen.
-  9. Mit (✔︎ Fertig) bestätigen.
-  * **Zugriff auf das Widget:** Gerät entsperren und nach links zum Widget-Bildschirm wischen.
+  4. Bildschirm gedrückt halten oder „+ Widgets hinzufügen“ tippen, dann entsperren.
+  5. Durchsuchen → BBQ Timer tippen.
+  6. BBQ Timer-Widget tippen.
+  7. (+ Hinzufügen), (✔︎ Fertig) tippen.
+  * Widget nutzen: Bildschirm einschalten und nach links zu den Widgets wischen.
 
-### Wichtige Systemeinstellungen für zuverlässige Alarme
-Damit Alarme stets zuverlässig signalisiert werden:
-* **Wecker-Lautstärke:** Auf eine gut hörbare Lautstärke einstellen.
-* **Sperrbildschirm:** „Alle Benachrichtigungen anzeigen“ bzw. Benachrichtigungsinhalte nicht ausblenden.
-* **Einstellungen > Apps > Spezieller App-Zugriff > Alarme & Erinnerungen:** Auf *Zugelassen* setzen.
-* **Apps > BBQ Timer:** „Benachrichtigungen anzeigen“ aktivieren (*nicht* stummschalten; optional: „Bitte nicht stören überschreiben“ aktivieren).
-* **Apps > BBQ Timer > Benachrichtigungskategorie „Alarm“:** „Benachrichtigungen anzeigen“; **nicht** auf „Stumm“; „Ton abspielen und auf dem Bildschirm anzeigen“; Tonwahl **nicht** auf „Keiner“; Wichtigkeit auf „Hoch“ oder höher, damit der Alarm auf dem Sperrbildschirm und im Benachrichtigungsbereich zu sehen und zu hören ist.
-* **Benachrichtigungen > App-Benachrichtigungen > BBQ Timer:** Auf *Ein* schalten.
+### Systemeinstellungen für zuverlässige Alarme
+* Alarmlautstärke auf hörbarer Stufe.
+* Sperrbildschirm → Nicht-private oder alle Benachrichtigungen anzeigen.
+* Einstellungen → Apps → Spezieller App-Zugriff → Wecker & Erinnerungen → Zugelassen.
+* Apps → BBQ Timer „Benachrichtigungen anzeigen“ *nicht* Lautlos. (Optional: „Bitte nicht stören“ überschreiben.)
+* Apps → BBQ Timer Benachrichtigungskategorie „Alarm“ → „Benachrichtigungen anzeigen“; *nicht* „Lautlos“; „Ton abspielen und auf dem Bildschirm einblenden“; Ton *nicht* „Keiner“; Wichtigkeit „Hoch“ oder höher, um ihn auf Sperrbildschirm und im Benachrichtigungsbereich zu hören und zu sehen.
+* Benachrichtigungen → App-Benachrichtigungen → BBQ Timer → Ein.
 
 
 ## Lizenz
@@ -85,28 +81,30 @@ Google Play und das Google Play-Logo sind Marken von Google LLC.
 
 
 ## Hinweise
-* Zwischen den Widgets und dem Benachrichtigungsbereich kann es zu minimalen zeitlichen Verzögerungen (Sekundentakt) kommen. Für die absolut exakte Zeit öffne einfach die App.
-* Bei Schriftgröße **Sehr groß** in Kombination mit Standard-Anzeigegröße kann der Text im Startbildschirm-Widget am unteren Rand leicht abgeschnitten werden.
+* Zwischen den Widgets und dem Benachrichtigungsbereich kann es zu einem leichten Zeitversatz kommen. Öffne die App für genauere Zeiten.
+* Bei Schriftgröße **Am größten** und **Anzeigegröße Standard** in den Einstellungen kann der Text im Startbildschirm-Widget unten abgeschnitten werden.
 
-
-## Aus dem Quellcode kompilieren
+## Aus dem Quellcode erstellen
 Verwende [Android Studio](http://developer.android.com/sdk/installing/studio.html) (ein hervorragendes Werkzeug!).
 
 
 ## Widmung
-Allen Open-Source-Entwicklern gewidmet.
+Den Entwicklern von Open-Source-Software gewidmet.
 
-Für dieses Projekt genutzte Open-Source-Software umfasst: Android, Android Studio, ART, Audacity, Chrome, Dalvik, GIMP, Git, Gradle, Inkscape, MinGW, ProGuard und vieles mehr, das wir täglich selbstverständlich nutzen (wie libpng und zlib).
+Zu der für dieses Projekt verwendeten Open-Source-Software gehören: Android, Android Studio, ART, Audacity, Chrome,
+Dalvik, Gimp, git, Gradle, Inkscape, MinGW, Proguard und vieles mehr, das wir selbstverständlich nutzen,
+wie libpng und zlib.
 
-Nicht falsch verstehen – kommerzielle Software ist natürlich auch klasse!
-
-
-## Medien- und Soundquellen
-Der Benachrichtigungston der App besteht aus gesampelten Kuhglocken-Klängen, die mit freundlicher Genehmigung von Phil Burk verwendet werden (Copyright © 2014 Mobileer Inc.).
+Nicht falsch verstehen – kommerzielle Software ist ebenfalls großartig!
 
 
-## Suchbegriffe (Keywords)
-BBQ, Grillen, Kochen, Intervall-Timer, Startbildschirm-Widget, Erinnerungsalarm, Stoppuhr, Garzeiten.
+## Medienquellen
+Der Benachrichtigungston der App besteht aus gesampelten Kuhglocken-Klängen, verwendet mit freundlicher Genehmigung von Phil Burk,
+Copyright © 2014 Mobileer Inc.
+
+
+## Suchbegriffe
+BBQ, Grillen, Kochen, Intervall-Timer, Startbildschirm-Widget, Erinnerungsalarm, Stoppuhr.
 
 
 [Datenschutzerklärung](Privacy-Policy-for-the-BBQTimer-app.md).
