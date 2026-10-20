@@ -35,20 +35,47 @@ android {
         buildConfig = true
     }
 
+    flavorDimensions = ["store"]
+
     signingConfigs {
-        release {
-            def storeFilePath = System.getenv('RELEASE_STORE_FILE')
+        playRelease {
+            def storeFilePath = System.getenv('PLAY_RELEASE_STORE_FILE')
             if (storeFilePath) {
                 storeFile file(storeFilePath)
-                storePassword System.getenv('RELEASE_STORE_PASSWORD')
-                keyAlias System.getenv('RELEASE_KEY_ALIAS')
-                keyPassword System.getenv('RELEASE_KEY_PASSWORD')
+                storePassword System.getenv('PLAY_RELEASE_STORE_PASSWORD')
+                keyAlias System.getenv('PLAY_RELEASE_KEY_ALIAS')
+                keyPassword System.getenv('PLAY_RELEASE_KEY_PASSWORD')
             }
+        }
+        izzyRelease {
+            def storeFilePath = System.getenv('IZZY_RELEASE_STORE_FILE')
+            if (storeFilePath) {
+                storeFile file(storeFilePath)
+                storePassword System.getenv('IZZY_RELEASE_STORE_PASSWORD')
+                keyAlias System.getenv('IZZY_RELEASE_KEY_ALIAS')
+                keyPassword System.getenv('IZZY_RELEASE_KEY_PASSWORD')
+            }
+        }
+    }
+
+    productFlavors {
+        play {
+            dimension "store"
+            isDefault = true
+            def playSigning = signingConfigs.playRelease
+            signingConfig = (playSigning.storeFile != null) ? playSigning : signingConfigs.debug
+        }
+        izzy {
+            dimension "store"
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.txt', 'proguard-izzy.txt'
+            def izzySigning = signingConfigs.izzyRelease
+            signingConfig = (izzySigning.storeFile != null) ? izzySigning : signingConfigs.debug
         }
     }
 
     buildTypes {
         debug {
+            isDefault = true
             // Enable StrictMode for debug builds
             buildConfigField "boolean", "ENABLE_STRICT_MODE", "true"
         }
@@ -56,8 +83,6 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.txt'
             minifyEnabled true
             shrinkResources = true
-            def releaseSigning = signingConfigs.release
-            signingConfig = (releaseSigning.storeFile != null) ? releaseSigning : signingConfigs.debug
             // Disable StrictMode for release builds
             buildConfigField "boolean", "ENABLE_STRICT_MODE", "false"
         }

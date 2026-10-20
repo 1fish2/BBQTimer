@@ -1,0 +1,4 @@
+# Extra ProGuard/R8 rules for the IzzyOnDroid flavor.
+# Preserve symbol names for IzzyOnDroid open-source compliance while retaining
+# shrinking and optimization benefits.
+-dontobfuscate

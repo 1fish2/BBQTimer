@@ -20,8 +20,8 @@ BBQTIMER_INSTALL_ALIAS="${BBQTIMER_INSTALL_ALIAS:-BBQTimer}"
 
 DEST_DIR="app/release"
 mkdir -p "${DEST_DIR}"
-AAB_DEST="${DEST_DIR}/app-release.aab"
-APK_DEST="${DEST_DIR}/app-release.apk"
+AAB_DEST="${DEST_DIR}/app-play-release.aab"
+APK_DEST="${DEST_DIR}/app-izzy-release.apk"
 
 echo "=== BBQTimer Dual Release Builder ==="
 
@@ -43,33 +43,31 @@ echo "Cleaning previous build outputs..."
 ./gradlew clean
 rm -f "${DEST_DIR}"/*
 
-# --- Step 2: Build Google Play AAB ---
-echo "Building signed App Bundle (.aab) with Play Upload Key..."
+# --- Step 2: Build Google Play AAB and IzzyOnDroid APK ---
+echo "Building signed App Bundle (.aab) and signed APK (.apk)..."
 ( { set +x; } 2>/dev/null;
-RELEASE_STORE_FILE="$BBQTIMER_UPLOAD_KEYSTORE" \
-RELEASE_STORE_PASSWORD="$UPLOAD_STORE_PASS" \
-RELEASE_KEY_ALIAS="$BBQTIMER_UPLOAD_ALIAS" \
-RELEASE_KEY_PASSWORD="$UPLOAD_KEY_PASS" \
-./gradlew bundleRelease )
+PLAY_RELEASE_STORE_FILE="$BBQTIMER_UPLOAD_KEYSTORE" \
+PLAY_RELEASE_STORE_PASSWORD="$UPLOAD_STORE_PASS" \
+PLAY_RELEASE_KEY_ALIAS="$BBQTIMER_UPLOAD_ALIAS" \
+PLAY_RELEASE_KEY_PASSWORD="$UPLOAD_KEY_PASS" \
+IZZY_RELEASE_STORE_FILE="$BBQTIMER_INSTALL_KEYSTORE" \
+IZZY_RELEASE_STORE_PASSWORD="$INSTALL_STORE_PASS" \
+IZZY_RELEASE_KEY_ALIAS="$BBQTIMER_INSTALL_ALIAS" \
+IZZY_RELEASE_KEY_PASSWORD="$INSTALL_KEY_PASS" \
+./gradlew bundlePlayRelease assembleIzzyRelease )
 
-# --- Step 3: Build Standalone APK ---
-echo "Building signed APK (.apk) with App Installation Key..."
-( { set +x; } 2>/dev/null;
-RELEASE_STORE_FILE="$BBQTIMER_INSTALL_KEYSTORE" \
-RELEASE_STORE_PASSWORD="$INSTALL_STORE_PASS" \
-RELEASE_KEY_ALIAS="$BBQTIMER_INSTALL_ALIAS" \
-RELEASE_KEY_PASSWORD="$INSTALL_KEY_PASS" \
-./gradlew assembleRelease )
+# --- Step 3: Stage Artifacts ---
+AAB_SRC="app/build/outputs/bundle/playRelease/app-play-release.aab"
+APK_SRC="app/build/outputs/apk/izzy/release/app-izzy-release.apk"
+METADATA_SRC="app/build/outputs/apk/izzy/release/output-metadata.json"
+AAB_MAPPING_SRC="app/build/outputs/mapping/playRelease/mapping.txt"
+APK_MAPPING_SRC="app/build/outputs/mapping/izzyRelease/mapping.txt"
 
-# --- Step 4: Stage Artifacts ---
-AAB_SRC="app/build/outputs/bundle/release/app-release.aab"
-APK_SRC="app/build/outputs/apk/release/app-release.apk"
-METADATA_SRC="app/build/outputs/apk/release/output-metadata.json"
-APK_MAPPING_SRC="app/build/outputs/mapping/release/mapping.txt"
+cp -p "$AAB_SRC" "$APK_SRC" "$METADATA_SRC" "${DEST_DIR}/"
+cp -p "$AAB_MAPPING_SRC" "${DEST_DIR}/mapping-play.txt"
+cp -p "$APK_MAPPING_SRC" "${DEST_DIR}/mapping-izzy.txt"
 
-cp -p "$AAB_SRC" "$APK_SRC" "$METADATA_SRC" "$APK_MAPPING_SRC" "${DEST_DIR}"
-
-# --- Step 5: Verification Gate ---
+# --- Step 4: Verification Gate ---
 echo ""
 echo "Checking the generated release artifacts..."
 
