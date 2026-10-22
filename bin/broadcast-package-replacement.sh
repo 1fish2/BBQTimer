@@ -21,12 +21,28 @@
 # Arguments:
 #   $1 -- android.intent.action.* action like TIME_SET, TIMEZONE_CHANGED, or BOOT_COMPLETED.
 #         Default = MY_PACKAGE_REPLACED.
-#   $2 -- optional flag like "-d" to force it to use an ADB USB Device,
-#         or TODO: "-s emulator-5554" to pick a specific emulator.
-#         Default = "-e".
+#   $2 -- optional device_serial, e.g. emulator-5554
+
+set -euo pipefail
+
+# Ensure adb is installed
+if ! command -v adb &>/dev/null; then
+  echo "Error: 'adb' command not found. Ensure adb is in your PATH." >&2
+  exit 1
+fi
 
 ACTION="android.intent.action.${1:-MY_PACKAGE_REPLACED}"
-PACKAGE="com.onefishtwo.bbqtimer"
-echo "Broadcasting: am broadcast -a" "${ACTION}" "${PACKAGE}"
+PACKAGE="${PACKAGE:-com.onefishtwo.bbqtimer}"
+SERIAL="${2:-${ANDROID_SERIAL:-}}"
 
-adb "${2:--e}" shell su root am broadcast -a "${ACTION}" "${PACKAGE}"
+if [ -n "$SERIAL" ]; then
+  ADB="adb -s $SERIAL"
+  ID=" ($SERIAL)"
+else
+  ADB="adb"
+  ID=""
+fi
+
+echo "Broadcasting on Android Emulator${ID}: am broadcast -a" "${ACTION}" "${PACKAGE}"
+
+$ADB shell su root am broadcast -a "${ACTION}" "${PACKAGE}"
