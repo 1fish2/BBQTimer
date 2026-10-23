@@ -47,11 +47,23 @@ import org.hamcrest.Matcher;
  * OnClickListener in JVM code synchronously, thus bypassing all motion event injection, input
  * dispatchers, window layering, hit-testing, and coordinate math.
  * <p>
+ * WORKAROUND for an Android framework / Espresso event injection issue on API 37+: click()
+ * injects MotionEvents (ACTION_DOWN, ACTION_UP) which fail to reach a button while/after a Dialog
+ * is finishing its exit transition and handing off window focus. The input framework drops those
+ * motion events during window focus restoration, preventing a button click from opening a
+ * PopUpMenu, making the next test step sometimes fail with NoMatchingViewException.
+ * <p>
  * Note: If somehow the dialog dismissal issue requires posting the click event to the end of the
  * main looper queue (so the current event loop iteration completes first), replace
  * `view.performClick()` with `view.post(view::performClick)`.
  */
 public class LowLevelClick implements ViewAction {
+
+    @NonNull
+    public static ViewAction lowLevelClick() {
+        return new LowLevelClick();
+    }
+
     @NonNull
     @Override
     public Matcher<View> getConstraints() {

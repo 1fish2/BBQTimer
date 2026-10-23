@@ -21,6 +21,8 @@
 
 package com.onefishtwo.bbqtimer;
 
+import static com.onefishtwo.bbqtimer.LowLevelClick.lowLevelClick;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.ContextWrapper;
@@ -45,7 +47,7 @@ public class DismissClickViewAction implements ViewAction {
     @NonNull
     private final String dialogTag;
     @NonNull
-    private final ViewAction click = WORKAROUND ? new LowLevelClick() : ViewActions.click();
+    private final ViewAction click = WORKAROUND ? lowLevelClick() : ViewActions.click();
 
     /**
      * Factory method to construct a ViewAction to: click on a dialog button that's intended to

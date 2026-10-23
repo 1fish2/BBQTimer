@@ -36,6 +36,7 @@ import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.action.ViewActions.typeTextIntoFocusedView;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.RootMatchers.isPlatformPopup;
 import static androidx.test.espresso.matcher.ViewMatchers.doesNotHaveFocus;
 import static androidx.test.espresso.matcher.ViewMatchers.hasFocus;
 import static androidx.test.espresso.matcher.ViewMatchers.isChecked;
@@ -49,6 +50,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withTagValue;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static com.onefishtwo.bbqtimer.CustomViewActions.waitMsec;
+import static com.onefishtwo.bbqtimer.LowLevelClick.lowLevelClick;
 import static com.onefishtwo.bbqtimer.TimeIntervalMatcher.inTimeInterval;
 import static com.onefishtwo.bbqtimer.TimeIntervalMatcher.inWholeTimeInterval;
 import static org.hamcrest.Matchers.allOf;
@@ -586,7 +588,7 @@ public class InAppUITest implements Notifier.NotificationListener {
         onView(ALARM_PERIOD_TEXT_FIELD).check(matches(withText("7")));
 
         onView(POPUP_MENU).perform(click());
-        onView(ALARM_PERIOD_TEXT_FIELD).check(doesNotExist()); // not in the current (menu) view hierarchy
+        onView(ALARM_PERIOD_TEXT_FIELD).inRoot(isPlatformPopup()).check(doesNotExist()); // not in the current (menu) view hierarchy
         Espresso.pressBack(); // dismiss the popup menu
         onView(ALARM_PERIOD_TEXT_FIELD).check(matches(isDisplayed()));
     }
@@ -612,7 +614,11 @@ public class InAppUITest implements Notifier.NotificationListener {
         onView(DIALOG_CANCEL_BUTTON).perform(scrollTo(), recipeDismissClick());
         logFragmentStatus("dialog should be closing");
 
-        onView(POPUP_MENU).perform(click());
+        // WORKAROUND: click() injects MotionEvents (ACTION_DOWN, ACTION_UP) while the AlertDialog
+        // is finishing its exit transition and handing off focus. On ≈API 37+, the input framework
+        // drops those motion events, sometimes somehow preventing the button click. Then the popup
+        // doesn't open the test can fail with NoMatchingViewException. Use a LowLevelClick instead.
+        onView(POPUP_MENU).perform(lowLevelClick());
         Espresso.pressBack(); // dismiss the popup menu
     }
 
@@ -632,12 +638,12 @@ public class InAppUITest implements Notifier.NotificationListener {
         logFragmentStatus("dialog should be saving");
 
         // Open the recipe editor dialog, check the saved text, edit it, then Reset.
-        onView(POPUP_MENU).perform(click());
-
-        // Verify ":30" is not in the popup menu using onView() instead of onData()
-        onView(withText(":30")).check(doesNotExist());
+        onView(POPUP_MENU).perform(lowLevelClick());
 
         checkMenuCommand(replacement.trim());
+
+        // Verify ":30" is not in the popup menu using onView() instead of onData()
+        onView(withText(":30")).inRoot(isPlatformPopup()).check(doesNotExist());
 
         DataInteraction cmdEdit = checkMenuCommand(R.string.edit_this_list);
         cmdEdit.perform(click());
@@ -651,7 +657,7 @@ public class InAppUITest implements Notifier.NotificationListener {
         logFragmentStatus("dialog should be resetting");
 
         // Check that the menu's contents were reset.
-        onView(POPUP_MENU).perform(click());
+        onView(POPUP_MENU).perform(lowLevelClick());
         checkMenuCommand(":30").check(matches(isDisplayed()));
         checkMenuCommand("1").check(matches(isDisplayed()));
         checkMenuCommandPrefix("6 ").check(matches(isDisplayed()));
