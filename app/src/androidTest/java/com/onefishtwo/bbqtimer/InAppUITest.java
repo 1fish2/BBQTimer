@@ -59,6 +59,7 @@ import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.startsWith;
 import static org.hamcrest.object.HasToString.hasToString;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import android.content.Context;
 import android.os.Build;
@@ -117,6 +118,7 @@ public class InAppUITest implements Notifier.NotificationListener {
 
     private FragmentManager fm; // for logging the dialog fragment status
     private final AtomicInteger notificationCount = new AtomicInteger(0);
+    private final AtomicInteger alarmNotificationCount = new AtomicInteger(0);
 
     private final TestRule clearPrefsRule = new TestUtils.ClearPrefsRule();
 
@@ -145,8 +147,11 @@ public class InAppUITest implements Notifier.NotificationListener {
     public final TestRule disableAnimationsRule = new DisableAnimationsRule();
 
     @Override
-    public void onNotificationPosted() {
+    public void onNotificationPosted(boolean isAlarm) {
         notificationCount.incrementAndGet();
+        if (isAlarm) {
+            alarmNotificationCount.incrementAndGet();
+        }
     }
 
     @Before
@@ -155,6 +160,7 @@ public class InAppUITest implements Notifier.NotificationListener {
                 activity -> fm = activity.getSupportFragmentManager());
 
         notificationCount.set(0);
+        alarmNotificationCount.set(0);
         Notifier.setNotificationListener(this);
     }
 
@@ -438,26 +444,43 @@ public class InAppUITest implements Notifier.NotificationListener {
         onView(ALARM_PERIOD_TEXT_FIELD).check(matches(doesNotHaveFocus()));
     }
 
+    private void assertNotificationCountRange(int min, int max) {
+        int count = notificationCount.get();
+
+        assertTrue("notificationCount (" + count + ") should be in ["
+                + min + " .. " + max + "]", count >= min && count <= max);
+    }
+
     /** Tests notification counts generated during timer playback. */
     @Test
     public void testAlarmTimeNotificationTrigger() {
         checkStopped();
 
         onView(ALARM_PERIOD_TEXT_FIELD).perform(clearText());
-        onView(ALARM_PERIOD_TEXT_FIELD).perform(typeText(":7\n"));
+        onView(ALARM_PERIOD_TEXT_FIELD).perform(typeText(":7\n"), closeSoftKeyboard());
         onView(ALARM_PERIOD_TEXT_FIELD).check(matches(withText("0:07")));
 
         assertEquals(0, notificationCount.get());
+        assertEquals(0, alarmNotificationCount.get());
+
         onView(PLAY_PAUSE_BUTTON).perform(click()); // Play...
-        assertEquals(1, notificationCount.get());
+        Espresso.onIdle();
+        assertNotificationCountRange(1, 2); // allow for a lastKnownWatchConnected update
+        assertEquals(0, alarmNotificationCount.get());
+
         onView(PLAY_PAUSE_BUTTON).perform(waitMsec(8_000)); // ...for 8 secs...
-        assertEquals(2, notificationCount.get()); // 5 second timed notification
+        Espresso.onIdle();
+        assertNotificationCountRange(2, 3);
+        assertEquals(1, alarmNotificationCount.get());
+
         try {
             onView(PLAY_PAUSE_BUTTON).perform(CustomViewActions.clickAtCenterLeft()); // ...then Pause
         } catch (Exception e) {
             onView(COUNTDOWN_DISPLAY).perform(CustomViewActions.clickAtCenterLeft()); // ...then Pause
         }
-        assertEquals(3, notificationCount.get());
+        Espresso.onIdle();
+        assertNotificationCountRange(3, 4);
+        assertEquals(1, alarmNotificationCount.get());
         TimeIntervalMatcher time8 = inTimeInterval(8_000, 11_000);
         checkPausedAt(time8);
 
@@ -465,7 +488,8 @@ public class InAppUITest implements Notifier.NotificationListener {
         onView(STOP_BUTTON).perform(click());
         checkStopped();
 
-        assertEquals(3, notificationCount.get());
+        assertNotificationCountRange(3, 4);
+        assertEquals(1, alarmNotificationCount.get());
     }
 
     /** Tests the CLEAR_TEXT endIcon in the alarmPeriodLayout TextInputLayout. */

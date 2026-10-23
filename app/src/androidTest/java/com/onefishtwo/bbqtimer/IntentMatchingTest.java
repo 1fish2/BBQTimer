@@ -384,7 +384,7 @@ public class IntentMatchingTest {
         verifyReceiverFilterExists(Intent.ACTION_MY_PACKAGE_REPLACED, ResumeReceiver.class);
 
         // Test that ResumeReceiver receives an implicit broadcast of an unprotected action added to
-        // its intent-filter just for testing.
+        // its intent-filter (but not its dispatch code) just for testing.
         checkActionViaImplicitIntent(Intent.ACTION_RUN); // "android.intent.action.RUN", not TimerAppWidgetProvider.ACTION_RUN
     }
 

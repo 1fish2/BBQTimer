@@ -86,7 +86,7 @@ public class Notifier {
     /** A listener for UI notifications posted, for testing. */
     @SuppressWarnings("unused")
     public interface NotificationListener {
-        void onNotificationPosted();
+        void onNotificationPosted(boolean isAlarm);
     }
 
     @Nullable
@@ -380,7 +380,7 @@ public class Notifier {
         try {
             notificationManagerCompat.notify(id, notification);
             if (notificationListener != null) {
-                notificationListener.onNotificationPosted();
+                notificationListener.onNotificationPosted(soundAlarm);
             }
         } catch (SecurityException e) { // ≈API 33+: The app should've requested permission already.
             Log.e(TAG, "Need POST_NOTIFICATIONS permission", e);
