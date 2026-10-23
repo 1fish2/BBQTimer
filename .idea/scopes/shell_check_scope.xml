@@ -1,0 +1,3 @@
+<component name="DependencyValidationManager">
+  <scope name="shell_check_scope" pattern="!file[BBQTimer]:*/||file[BBQTimer]:bin//*" />
+</component>

@@ -8,7 +8,7 @@
 * **Quick access on the lock screen, home screen, and notifications without unlocking your phone.**  
   Pull-down notification, lock screen notification, home screen widget, lock screen widget, and use the app over the lock screen (on supported devices).
 * Adjust alarms while the timer is running.
-* Make a quick-access menu with your most frequently used interval times and your own notes.
+* Create a quick-access menu with frequent interval times and your own notes.
 * No ads.
 
 Example intervals:
@@ -101,7 +101,7 @@ Don’t get me wrong -- commercial software is also great!
 
 
 ## Media Asset Sources
-The app’s notification sound is composed of sampled cowbell sounds which are used by permission from Phil Burk,
+The app’s alarm sound is composed of recorded cowbell sounds which are used by permission from Phil Burk,
 Copyright © 2014 Mobileer Inc.
 
 

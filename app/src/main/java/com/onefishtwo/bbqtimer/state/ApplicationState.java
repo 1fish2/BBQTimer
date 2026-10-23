@@ -142,7 +142,7 @@ public class ApplicationState {
 
     /** Clips the given interval time in seconds to sane bounds. */
     public static int boundIntervalTimeSeconds(int seconds) {
-        return Math.min(Math.max(seconds, MINIMUM_ALARM_SECONDS), MAXIMUM_ALARM_SECONDS);
+        return Math.clamp(seconds, MINIMUM_ALARM_SECONDS, MAXIMUM_ALARM_SECONDS);
     }
 
     /**

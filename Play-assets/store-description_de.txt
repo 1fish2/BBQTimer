@@ -3,7 +3,7 @@
 • Schnellzugriff über Sperrbildschirm, Startbildschirm und Benachrichtigungen ohne Entsperren.
   Pulldown- und Sperrbildschirm-Benachrichtigung, Start- und Sperrbildschirm-Widget sowie App über dem Sperrbildschirm nutzen (auf unterstützten Geräten).
 • Alarme bei laufendem Timer anpassen.
-• Schnellzugriff-Menü mit häufigen Intervallzeiten und eigenen Notizen erstellen.
+• Schnellzugriff-Menü mit häufigen Intervallen und eigenen Notizen erstellen.
 • Werbefrei.
 
 Beispiel-Intervalle:
@@ -16,7 +16,7 @@ Praktische Kurzformen:
  0:09 = :9 = 9 Sekunden
  2:00:00 = 2:0:0 = 2:: = 120 = 2 Stunden
 
-Gib die Intervallzeit in Minuten, Minuten:Sekunden oder Stunden:Minuten:Sekunden ein (MM, MM:SS, HH:MM:SS).
+Gib das Alarmintervall in Minuten, Minuten:Sekunden oder Stunden:Minuten:Sekunden ein (MM, MM:SS, HH:MM:SS).
 
 Tipps
 • Kontrollkästchen antippen, um regelmäßige Erinnerungsalarme ein-/auszuschalten.
@@ -33,7 +33,7 @@ Tipps
 • App, Start-/Sperrbildschirm-Widget und Pulldown-Benachrichtigung zeigen Countdown-Intervall und gesamte verstrichene Zeit.
 • Im Alarmintervall-Feld auf ▲ tippen, um das Menü der Alarmintervalle zu öffnen.
   • Im Menü auf „Diese Intervalle bearbeiten…“ tippen (oder ▲ gedrückt halten), um es anzupassen.
-  • Jede Zeile hat eine Dauer im Format HH:MM:SS, MM:SS oder MM plus optionale Notizen. Z. B. „6 dünne Fischfilets, bis 63°C“ für 6 Min./Seite und Prüfung auf 63°C.
+  • Jede Zeile hat eine Dauer im Format HH:MM:SS, MM:SS oder MM plus optionale Notizen. Z. B. „6 dünne Fischfilets, bis 63 °C“ für 6 Min./Seite und Prüfung auf 63 °C.
   • Im Editor auf „Zurücksetzen“ tippen, um das Menü anhand der aktuellen Temperatureinheit (Android 14+) oder Sprache/Region neu zu erstellen.
 • In der App regeln die Lautstärketasten des Geräts die Alarmlautstärke.
 • BBQ Timer-Widget zum Sperrbildschirm hinzufügen (auf einigen Geräten verfügbar):

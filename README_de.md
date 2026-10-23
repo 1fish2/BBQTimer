@@ -8,7 +8,7 @@
 * **Schnellzugriff über Sperrbildschirm, Startbildschirm und Benachrichtigungen ohne Entsperren.**  
   Pulldown- und Sperrbildschirm-Benachrichtigung, Start- und Sperrbildschirm-Widget sowie App über dem Sperrbildschirm nutzen (auf unterstützten Geräten).
 * Alarme bei laufendem Timer anpassen.
-* Schnellzugriff-Menü mit häufigen Intervallzeiten und eigenen Notizen erstellen.
+* Schnellzugriff-Menü mit häufigen Intervallen und eigenen Notizen erstellen.
 * Werbefrei.
 
 Beispiel-Intervalle:
@@ -21,10 +21,10 @@ Praktische Kurzformen:
 * `0:09` = `:9` = 9 Sekunden
 * `2:00:00` = `2:0:0` = `2::` = `120` = 2 Stunden
 
-Gib die Intervallzeit in `Minuten`, `Minuten:Sekunden` oder `Stunden:Minuten:Sekunden` ein (MM, MM:SS, HH:MM:SS).
+Gib das Alarmintervall in `Minuten`, `Minuten:Sekunden` oder `Stunden:Minuten:Sekunden` ein (MM, MM:SS, HH:MM:SS).
 
 <!--suppress CheckImageSize -->
-<img alt="Screenshot: Pausierter Zustand" height="540" src="Play-assets/Pixel 3 screenshots/screenshot paused.png">
+<img alt="Screenshot: Pausiert" height="540" src="Play-assets/Pixel 3 screenshots/screenshot paused.png">
 <img alt="Screenshot: Sperrbildschirm" height="540" src="Play-assets/Pixel 3 screenshots/screenshot lock screen.png">
 
 ## Systemanforderungen
@@ -32,7 +32,6 @@ Gib die Intervallzeit in `Minuten`, `Minuten:Sekunden` oder `Stunden:Minuten:Sek
 **BBQ Timer** ist für Smartphones und Tablets ab Android 7.0 (Android N und höher).
 
 Falls auf deinem Android-Gerät Probleme auftreten, sende mir bitte die Details per E-Mail (Gerätemodell, Android-Version, Bildschirmgröße und Problembeschreibung).
-
 
 ## Tipps
 * Kontrollkästchen antippen, um regelmäßige Erinnerungsalarme ein-/auszuschalten.
@@ -50,7 +49,7 @@ Falls auf deinem Android-Gerät Probleme auftreten, sende mir bitte die Details 
 * App, Start-/Sperrbildschirm-Widget und Pulldown-Benachrichtigung zeigen Countdown-Intervall und gesamte verstrichene Zeit.
 * Im Alarmintervall-Feld auf ▲ tippen, um das Menü der Alarmintervalle zu öffnen.
   * Im Menü auf „Diese Intervalle bearbeiten…“ tippen (oder ▲ gedrückt halten), um es anzupassen.
-  * Jede Zeile hat eine Dauer im Format _HH:MM:SS_, _MM:SS_ oder _MM_ plus optionale Notizen. Z. B. „6 dünne Fischfilets, bis 63°C“ für 6 Min./Seite und Prüfung auf 63°C.
+  * Jede Zeile hat eine Dauer im Format _HH:MM:SS_, _MM:SS_ oder _MM_ plus optionale Notizen. Z. B. „6 dünne Fischfilets, bis 63 °C“ für 6 Min./Seite und Prüfung auf 63 °C.
   * Im Editor auf „Zurücksetzen“ tippen, um das Menü anhand der aktuellen Temperatureinheit (Android 14+) oder Sprache/Region neu zu erstellen.
 * In der App regeln die Lautstärketasten des Geräts die Alarmlautstärke.[](no-store)
 * Den Alarmton der App kannst du unter Einstellungen → Benachrichtigungen ändern. Bei „Keiner“ ertönt kein Alarm. Um den Kuhglocken-Ton wiederherzustellen: App deinstallieren und neu installieren.[](/no-store)
@@ -99,7 +98,7 @@ Nicht falsch verstehen – kommerzielle Software ist ebenfalls großartig!
 
 
 ## Medienquellen
-Der Benachrichtigungston der App besteht aus gesampelten Kuhglocken-Klängen, verwendet mit freundlicher Genehmigung von Phil Burk,
+Der Alarmton der App besteht aus aufgenommenen Kuhglocken-Klängen, verwendet mit freundlicher Genehmigung von Phil Burk,
 Copyright © 2014 Mobileer Inc.
 
 

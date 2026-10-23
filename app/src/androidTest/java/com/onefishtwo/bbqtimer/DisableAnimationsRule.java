@@ -76,7 +76,6 @@ public class DisableAnimationsRule implements TestRule {
         /**
          * Collapse the notification shade so Espresso can access the app's UI.
          */
-        @SuppressWarnings("SpellCheckingInspection")
         private void collapseNotificationShade(@NonNull UiAutomation uiAutomation) {
             String command = "cmd statusbar collapse"; // "service call statusbar 2" on API < 24
             executeAndConsumeShellCommand(uiAutomation, command);
