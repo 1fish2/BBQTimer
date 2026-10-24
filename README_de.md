@@ -1,4 +1,4 @@
-# BBQTimer Android-App
+# BBQ Timer Android-App
 
 [<img alt='Jetzt bei Google Play' height="80" src='https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png'>](https://play.google.com/store/apps/details?id=com.onefishtwo.bbqtimer&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1)
 [<img alt="Erhältlich bei IzzyOnDroid" height="80" src="https://gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroid.png">](https://apt.izzysoft.de/fdroid/index/apk/com.onefishtwo.bbqtimer)
@@ -34,6 +34,7 @@ Gib das Alarmintervall in `Minuten`, `Minuten:Sekunden` oder `Stunden:Minuten:Se
 Falls auf deinem Android-Gerät Probleme auftreten, sende mir bitte die Details per E-Mail (Gerätemodell, Android-Version, Bildschirmgröße und Problembeschreibung).
 
 ## Tipps
+* **Start** / **Pause** / **Stopp** des Timers auf einer Wear OS-Smartwatch über die App-Benachrichtigung, aber Wear OS zeigt keinen tickenden Timer an.
 * Kontrollkästchen antippen, um regelmäßige Erinnerungsalarme ein-/auszuschalten.
 * Zeitanzeige antippen, um zwischen *gestoppt* → *läuft* → *pausiert* → *gestoppt* zu wechseln.
 * App über dem Sperrbildschirm nutzen[](no-store) (Android 8.1+)[](/no-store): Bei geöffneter App die Ein-/Aus-Taste drücken, um den Bildschirm auszuschalten, und erneut drücken zum Aufwecken.

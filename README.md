@@ -1,4 +1,4 @@
-# BBQTimer Android app
+# BBQ Timer Android app
 
 [<img alt='Get it on Google Play' height="80" src='https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png'>](https://play.google.com/store/apps/details?id=com.onefishtwo.bbqtimer&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1)
 [<img alt="Get it on IzzyOnDroid" height="80" src="https://gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroid.png">](https://apt.izzysoft.de/fdroid/index/apk/com.onefishtwo.bbqtimer)
@@ -36,6 +36,7 @@ version, screen size, and problem details).
 
 
 ## Tips
+* **Run** / **Pause** / **Stop** the timer on a Wear OS smartwatch via the app's notification, but Wear OS doesn't show the ticking timer.
 * Tap the checkbox to turn periodic reminder alarms on/off.
 * Tap the time display to cycle between *stopped* → *running* → *paused* → *stopped*.
 * To use the app over the lock screen[](no-store) (Android 8.1+)[](/no-store): While viewing the app’s activity, tap the power button to turn off the screen, then tap the power button to wake the screen.

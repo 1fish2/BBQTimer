@@ -19,6 +19,7 @@ Praktische Kurzformen:
 Gib das Alarmintervall in Minuten, Minuten:Sekunden oder Stunden:Minuten:Sekunden ein (MM, MM:SS, HH:MM:SS).
 
 Tipps
+• Start / Pause / Stopp des Timers auf einer Wear OS-Smartwatch über die App-Benachrichtigung, aber Wear OS zeigt keinen tickenden Timer an.
 • Kontrollkästchen antippen, um regelmäßige Erinnerungsalarme ein-/auszuschalten.
 • Zeitanzeige antippen, um zwischen gestoppt → läuft → pausiert → gestoppt zu wechseln.
 • App über dem Sperrbildschirm nutzen: Bei geöffneter App die Ein-/Aus-Taste drücken, um den Bildschirm auszuschalten, und erneut drücken zum Aufwecken.

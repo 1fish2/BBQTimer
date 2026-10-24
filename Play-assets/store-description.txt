@@ -19,6 +19,7 @@ Short forms:
 Enter the interval time in minutes, minutes:seconds, or hours:minutes:seconds (MM, MM:SS, HH:MM:SS).
 
 Tips
+• Run / Pause / Stop the timer on a Wear OS smartwatch via the app's notification, but Wear OS doesn't show the ticking timer.
 • Tap the checkbox to turn periodic reminder alarms on/off.
 • Tap the time display to cycle between stopped → running → paused → stopped.
 • To use the app over the lock screen: While viewing the app’s activity, tap the power button to turn off the screen, then tap the power button to wake the screen.
