@@ -1,9 +1,11 @@
-# BBQ Timer change history
+# BBQTimer change history
 
-## Beta release 5.0b1, versionCode 25, targetSdk 37 Android 17
+## Beta release 5.0b1, versionCode 26, targetSdk 37 Android 17
 
 ### en-US
 * Support Android versions 7 - 17+, minSdk 24.
+* Control via notifications on Wear OS smartwatches: Start/stop timers directly on your wrist
+* Use BBQ Timer without unlocking: in the app, turn the screen off and back on; or open it from a lock screen Notification or from a lock screen Widget (on supported devices; turn on Settings/Display/Lock screen/Widgets on lock screen)
 * Modernize the UI to Material Design 3 with color token palettes, color contrast levels, scalable vector drawables, tool tips, better layout on large screens, and a little animation. Add a backward-compatible SplashScreen.
 * Edge-to-edge compatibility, accommodating display cutouts and gesture navigation areas.
 * Support notifications bridged to Wear OS.
@@ -21,6 +23,9 @@
 
 ### de-DE
 * Unterstützung für Android-Versionen 7 bis 17+ (minSdk 24).
+* Steuerung über Benachrichtigungen auf Wear OS-Smartwatches: Timer direkt am Handgelenk starten/stoppen
+* BBQ Timer ohne Entsperren nutzen: Bildschirm in der App aus- und wieder einschalten oder über eine Sperrbildschirm-Benachrichtigung bzw. ein Sperrbildschirm-Widget öffnen (auf unterstützten Geräten; aktivieren unter Einstellungen/Display (Anzeige)/Sperrbildschirm/Widgets auf dem Sperrbildschirm)
+* Verbesserte Übersetzungen
 * Modernisierung der Benutzeroberfläche auf Material Design 3 mit Farb-Token-Paletten, Kontraststufen, skalierbaren Vektorgrafiken (Vector
 Drawables), Tooltips, optimiertem Layout für große Bildschirme und dezenten Animationen. Abwärtskompatibler SplashScreen hinzugefügt.
 * Edge-to-Edge-Kompatibilität unter Berücksichtigung von Display-Ausschnitten (Cutouts) und Gesten-Navigationsbereichen.
