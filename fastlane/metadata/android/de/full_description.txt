@@ -1,43 +1,51 @@
-* <b>Kombinierter Intervalltimer / Stoppuhr</b> = periodische Alarme + verstrichene Zeit. Erinnert Sie regelmäßig daran, Speisen umzudrehen, und verfolgt die gesamte Garzeit.
-* Schneller Zugriff über <b>Sperrbildschirmbenachrichtigung</b>,
-  <b>Pulldown-Benachrichtigung</b> und <b>Startbildschirm-Widget</b>.
-* Bearbeitbares <b>Menü der Intervallzeiten</b>. Greifen Sie schnell auf Ihre bevorzugten Timer mit Notizen zu.
-* <b>Änderbare Alarme</b> während es läuft.
-* Keine Werbung.
+* <b>Erinnert dich regelmäßig ans Prüfen/Wenden des Grillguts und misst die gesamte Garzeit.</b>
+  Intervall-Timer + Stoppuhr = regelmäßige Alarme + verstrichene Zeit.
+* <b>Schnellzugriff über Sperrbildschirm, Startbildschirm und Benachrichtigungen ohne Entsperren.</b>
+  Pulldown- und Sperrbildschirm-Benachrichtigung, Start- und Sperrbildschirm-Widget sowie App über dem Sperrbildschirm nutzen (auf unterstützten Geräten).
+* Alarme bei laufendem Timer anpassen.
+* Schnellzugriff-Menü mit häufigen Intervallen und eigenen Notizen erstellen.
+* Werbefrei.
 
-Eingabe der Intervallzeit: <i>Minuten</i>, <i>Minuten:Sekunden</i> oder <i>Stunden:Minuten:Sekunden</i>.
-
-<br><b>Beispiel Intervalle</b>
+Beispiel-Intervalle:
 
 * <i>10</i> = 10 Minuten
 * <i>7:30</i> = 7 Minuten, 30 Sekunden
 * <i>3:15:00</i> = 3 Stunden, 15 Minuten
 
-<br><b>Kurz Formen</b>
+Praktische Kurzformen:
 
 * <i>12:00</i> = <i>12:0</i> = <i>12:</i> = <i>12</i> = 12 Minuten
 * <i>0:09</i> = <i>:9</i> = 9 Sekunden
 * <i>2:00:00</i> = <i>2:0:0</i> = <i>2::</i> = <i>120</i> = 2 Stunden
 
+Gib das Alarmintervall in <i>Minuten</i>, <i>Minuten:Sekunden</i> oder <i>Stunden:Minuten:Sekunden</i> ein (MM, MM:SS, HH:MM:SS).
 
 <br><b>Tipps</b>
 
-* Auf das Kontrollkästchen tippen, um die regelmäßigen Erinnerungsalarme ein-/auszuschalten.
-* Auf die Zeitanzeige tippen, um zwischen <i>gestoppt</i> → <i>läuft</i> → <i>pausiert</i> → <i>gestoppt</i> zu wechseln.
-* Das BBQ-Timer-Widget zum Startbildschirm hinzufügen.
-    * Auf die verstrichene Zeit des Widgets tippen, um es zu starten/pausieren/stoppen.
-    * Auf den Hintergrund des Widgets tippen oder seine Countdown-Zeit, um die App zu öffnen.
-    * Ändern Sie die Größe des Widgets (drücken Sie lange darauf und ziehen Sie dann an den Ziehpunkten zur Größenänderung), um mehr oder weniger Informationen anzuzeigen.
-* Während der BBQ-Timer <i>läuft</i> oder <i>pausiert</i> ist, erscheint er <b>auf dem Sperrbildschirm</b> und <b>in der Pulldown-Benachrichtigung</b> Sie können es an diesen Stellen sehen und steuern.
-* Auf ▲ tippen im Textfeld „Alarmintervall“, um das Menü „Intervallzeit“ zu öffnen. Auf „Diese Intervalle bearbeiten…“ tippen im Menü, um das Menü anzupassen.
-* Die App, das Startbildschirm-Widget und die Pulldown-Benachrichtigung zeigen die Countdown-Intervallzeit sowie die verstrichene Gesamtzeit.
-* In der App passen die Lautstärketasten des Telefons die Alarmlautstärke an.
+* <b>Start</b> / <b>Pause</b> / <b>Stopp</b> des Timers auf einer Wear OS-Smartwatch über die App-Benachrichtigung, aber Wear OS zeigt keinen tickenden Timer an.
+* Kontrollkästchen antippen, um regelmäßige Erinnerungsalarme ein-/auszuschalten.
+* Zeitanzeige antippen, um zwischen <i>gestoppt</i> → <i>läuft</i> → <i>pausiert</i> → <i>gestoppt</i> zu wechseln.
+* App über dem Sperrbildschirm nutzen: Bei geöffneter App die Ein-/Aus-Taste drücken, um den Bildschirm auszuschalten, und erneut drücken zum Aufwecken.
+* BBQ Timer Startbildschirm-Widget:
+    * Hinzufügen: App-Symbol gedrückt halten, im Menü auf Widgets tippen und das BBQ Timer-Widget antippen oder ziehen.
+    * Im Widget auf ⏸️/▶️ oder die verstrichene Zeit tippen, um den Timer zu <i>starten</i>/<i>pausieren</i>/<i>stoppen</i>.
+    * Auf Hintergrund oder Countdown tippen, um die App zu öffnen.
+    * Gedrückt halten und Rahmen ziehen, um mehr/weniger Infos zu sehen.
+* Wenn BBQ Timer <i>läuft</i> oder <i>pausiert</i> ist, ist er <b>auf dem Sperrbildschirm</b> und <b>in der Pulldown-Benachrichtigung</b>.
+    * Für die Sperrbildschirm-Anzeige: In App oder Widget auf ⏸️ oder ▶️ tippen.
+    * App-Symbol auf dem Startbildschirm gedrückt halten und „Pause bei 00:00“ wählen, um ihn zu <i>pausieren</i>.
+* App, Start-/Sperrbildschirm-Widget und Pulldown-Benachrichtigung zeigen Countdown-Intervall und gesamte verstrichene Zeit.
+* Im Alarmintervall-Feld auf ▲ tippen, um das Menü der Alarmintervalle zu öffnen.
+    * Im Menü auf „Diese Intervalle bearbeiten…“ tippen (oder ▲ gedrückt halten), um es anzupassen.
+    * Jede Zeile hat eine Dauer im Format <i>HH:MM:SS</i>, <i>MM:SS</i> oder <i>MM</i> plus optionale Notizen. Z. B. „6 dünne Fischfilets, bis 63 °C“ für 6 Min./Seite und Prüfung auf 63 °C.
+    * Im Editor auf „Zurücksetzen“ tippen, um das Menü anhand der aktuellen Temperatureinheit (Android 14+) oder Sprache/Region neu zu erstellen.
+* In der App regeln die Lautstärketasten des Geräts die Alarmlautstärke.
 
-<b>Hinweis: Diese Systemeinstellungen sind erforderlich, um BBQ-Timer-Alarme zu hören und zu sehen:</b>
+<br><b>Systemeinstellungen für zuverlässige Alarme</b>
 
-* Laut genug „Alarmlautstärke“.
-* Sperrbildschirm / Alle oder nicht private Benachrichtigungen anzeigen.
-* Apps / BBQ-Timer „Benachrichtigungen anzeigen“, nicht lautlos.
-* Apps / BBQ-Timer-Benachrichtigungskategorie „Alarm“ / „Benachrichtigungen anzeigen“, nicht „Stumm“, „Ton erzeugen und auf dem Bildschirm anzeigen“, Tonauswahl nicht „Keine“, Wichtigkeit „Hoch“ oder höher auf dem Sperrbildschirm und im Benachrichtigungsbereich zu hören und zu sehen.
-* Apps / Spezieller App-Zugriff / Wecker und Erinnerungen / Erlauben.
-* Benachrichtigungen / App-Einstellungen / BBQ-Timer / Ein.
+* Alarmlautstärke auf hörbarer Stufe.
+* Sperrbildschirm → Nicht-private oder alle Benachrichtigungen anzeigen.
+* Einstellungen → Apps → Spezieller App-Zugriff → Wecker & Erinnerungen → Zugelassen.
+* Apps → BBQ Timer „Benachrichtigungen anzeigen“ <i>nicht</i> Lautlos. (Optional: „Bitte nicht stören“ überschreiben.)
+* Apps → BBQ Timer Benachrichtigungskategorie „Alarm“ → „Benachrichtigungen anzeigen“; <i>nicht</i> „Lautlos“; „Ton abspielen und auf dem Bildschirm einblenden“; Ton <i>nicht</i> „Keiner“; Wichtigkeit „Hoch“ oder höher, um ihn auf Sperrbildschirm und im Benachrichtigungsbereich zu hören und zu sehen.
+* Benachrichtigungen → App-Benachrichtigungen → BBQ Timer → Ein.

@@ -1,52 +1,51 @@
-* <b>Combined interval timer / stopwatch</b> = periodic alarms + elapsed time.
-    * Periodically reminds you to turn the food and tracks the total cooking time.
-* Quick access via <b>lock screen notification</b>, <b>pull-down notification</b>,
-  and <b>home screen widget</b>.
-* Editable <b>menu of interval times</b>. Quickly access your favorite
-  timers with notes.
-* <b>Changeable alarms</b> while it’s running.
+* <b>Reminds you periodically to check/flip the food while it tracks the total cooking time.</b>
+  Interval timer + stopwatch = periodic alarms + elapsed time.
+* <b>Quick access on the lock screen, home screen, and notifications without unlocking your phone.</b>
+  Pull-down notification, lock screen notification, home screen widget, lock screen widget, and use the app over the lock screen (on supported devices).
+* Adjust alarms while the timer is running.
+* Create a quick-access menu with frequent interval times and your own notes.
 * No ads.
 
-Type in the interval time: <i>minutes</i>, <i>minutes:seconds</i>, or <i>hours:minutes:seconds</i>.
-
-<br><b>Example intervals</b>
+Example intervals:
 
 * <i>10</i> = 10 minutes
 * <i>7:30</i> = 7 minutes, 30 seconds
 * <i>3:15:00</i> = 3 hours, 15 minutes
 
-<br><b>Short forms</b>
+Short forms:
 
 * <i>12:00</i> = <i>12:0</i> = <i>12:</i> = <i>12</i> = 12 minutes
 * <i>0:09</i> = <i>:9</i> = 9 seconds
 * <i>2:00:00</i> = <i>2:0:0</i> = <i>2::</i> = <i>120</i> = 2 hours
 
+Enter the interval time in <i>minutes</i>, <i>minutes:seconds</i>, or <i>hours:minutes:seconds</i> (MM, MM:SS, HH:MM:SS).
 
 <br><b>Tips</b>
 
-* Tap the checkbox to turn the periodic reminder alarms on/off.
+* <b>Run</b> / <b>Pause</b> / <b>Stop</b> the timer on a Wear OS smartwatch via the app's notification, but Wear OS doesn't show the ticking timer.
+* Tap the checkbox to turn periodic reminder alarms on/off.
 * Tap the time display to cycle between <i>stopped</i> → <i>running</i> → <i>paused</i> → <i>stopped</i>.
-* Add the BBQ Timer widget to the home screen.
-    * Tap the widget’s elapsed time to start/pause/stop.
-    * Tap the widget’s background or its countdown time to open the app.
-    * Resize the widget (long-press it then drag its resize handles) to see more or less info.
-    * To remove the widget, long-press and drag it to “× Remove”.
-* While BBQ Timer is <i>running</i> or <i>paused</i>, it appears <b>on the lock screen</b> and <b>in the pull-down notification</b> so you can see and control it in those places.
-    * To put it on the lock screen, put it in <b>Pause</b> or <b>Play</b> mode by tapping buttons in the app or the home screen widget.
-    * Long-press the app’s home screen icon, then tap the “Pause at 00:00” shortcut (on Android 7.1+) to make it Paused and ready on the lock screen.
-* Tap ▲ in the alarm interval text field for the menu of interval times.
-    * Tap “Edit these intervals…” in the menu (or Long-press ▲) to customize the menu. Each line should start with a time interval in HH:MM:SS or MM:SS or MM, followed by a space and optional notes. E.g. “6 thin fish, cook to 145°F” is a 6 minute timer interval to flip or check the fish, with a reminder that fish is typically considered done at 145°F.
-    * When editing, tap the “Reset” command to build a fresh menu of alarm intervals using the current system Language preference and (on Android 14+) the current Regional preference for Temperature units.
-* The app, home screen widget, and pull-down notification show the countdown interval time as well as the total elapsed time (requires Android 7+).
+* To use the app over the lock screen: While viewing the app’s activity, tap the power button to turn off the screen, then tap the power button to wake the screen.
+* BBQ Timer home screen widget:
+    * Add it: Long-press the Home screen app icon, tap Widgets in the menu, then tap or drag the BBQ Timer widget.
+    * Tap the widget’s ⏸️/▶️ button or elapsed time to <i>run</i>/<i>pause</i>/<i>stop</i> the timer.
+    * Tap its background or countdown to open the app.
+    * Long-press it then drag its handles to see more/less info.
+* While BBQ Timer is <i>running</i> or <i>paused</i>, it's <b>on the lock screen</b> and <b>in the pull-down notification</b>.
+    * To get the notification onto the lock screen: tap ⏸️or ▶️in the app or widget.
+    * Long-press the app’s home screen icon, then tap the “Pause at 00:00” shortcut to <i>pause</i> it.
+* The app, home/lock screen widget, and pull-down notification show the countdown interval time and the total elapsed time.
+* Tap ▲ in the alarm interval field to open the menu of Alarm intervals.
+    * Tap “Edit these intervals…” in the menu (or long-press ▲) to edit the menu.
+    * Each line should have a duration in the form <i>HH:MM:SS</i> or <i>MM:SS</i> or <i>MM</i>, followed by optional notes. E.g. “6 thin fish, cook to 145°F” to cook 6 minutes/side and check it for 145°F.
+    * In the editor, tap the “Reset” command to build a fresh menu of intervals using the current Temperature units (Android 14+) or language/country.
 * In the app, the phone’s volume keys adjust the Alarm volume.
-* You can change BBQ Timer’s “Alarm” sound in Settings / Notifications. Don’t pick “None” if you want to hear the interval alarms. To restore the app’s cowbell sound, uninstall and reinstall the app.
 
+<br><b>System settings for reliable alarms</b>
 
-<br><b>Note: These System Settings are required to hear and see BBQ Timer alarms:</b>
-
-* Audible “Alarm volume” level.
-* Lock screen / Show all or non-private notifications.
-* Apps / BBQ Timer “Show notifications”, <i>not</i> Silent. (Optionally override “Do Not Disturb”.)
-* Apps / BBQ Timer “Alarm” notification category / “Show notifications”, <i>not</i> “Silent”, “Make sound and pop on screen”, sound choice <i>not</i> “None”, Importance “High” or higher to hear and see on the lock screen and in the notification area.
-* Apps / Special app access / Alarms & reminders / Allowed.
-* Notifications / App settings / BBQ Timer / On.
+* Alarm volume at an audible level.
+* Lock screen → Show non-private or all notifications.
+* Settings → Apps → Special app access → Alarms & reminders → Allowed.
+* Apps → BBQ Timer “Show notifications” <i>not</i> Silent. (Optional: Override Do Not Disturb.)
+* Apps → BBQ Timer “Alarm” notification category → “Show notifications”; <i>not</i> “Silent”; “Make sound and pop on screen”; sound choice <i>not</i> “None”; Importance “High” or higher to hear and see it on the lock screen and in the notification area.
+* Notifications → App notifications → BBQ Timer → On.

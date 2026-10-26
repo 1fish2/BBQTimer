@@ -53,7 +53,7 @@ Falls auf deinem Android-Gerät Probleme auftreten, sende mir bitte die Details 
   * Jede Zeile hat eine Dauer im Format _HH:MM:SS_, _MM:SS_ oder _MM_ plus optionale Notizen. Z. B. „6 dünne Fischfilets, bis 63 °C“ für 6 Min./Seite und Prüfung auf 63 °C.
   * Im Editor auf „Zurücksetzen“ tippen, um das Menü anhand der aktuellen Temperatureinheit (Android 14+) oder Sprache/Region neu zu erstellen.
 * In der App regeln die Lautstärketasten des Geräts die Alarmlautstärke.[](no-store)
-* Den Alarmton der App kannst du unter Einstellungen → Benachrichtigungen ändern. Bei „Keiner“ ertönt kein Alarm. Um den Kuhglocken-Ton wiederherzustellen: App deinstallieren und neu installieren.[](/no-store)
+* Den Alarmton der App kannst du unter Einstellungen → Benachrichtigungen ändern. Bei „Keiner“ ertönt kein Alarm. Um den Kuhglocken-Ton wiederherzustellen: App deinstallieren und neu installieren.[](/no-store)[](no-fastlane)
 * BBQ Timer-Widget zum Sperrbildschirm hinzufügen (auf einigen Geräten verfügbar):
   1. Einstellungen → „Widgets auf dem Sperrbildschirm“ aktivieren.
   2. Bildschirm aus- und einschalten.
@@ -62,7 +62,7 @@ Falls auf deinem Android-Gerät Probleme auftreten, sende mir bitte die Details 
   5. Durchsuchen → BBQ Timer tippen.
   6. BBQ Timer-Widget tippen.
   7. (+ Hinzufügen), (✔︎ Fertig) tippen.
-  * Widget nutzen: Bildschirm einschalten und nach links zu den Widgets wischen.
+  * Widget nutzen: Bildschirm einschalten und nach links zu den Widgets wischen.[](/no-fastlane)
 
 ### Systemeinstellungen für zuverlässige Alarme
 * Alarmlautstärke auf hörbarer Stufe.
