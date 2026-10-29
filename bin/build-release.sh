@@ -15,8 +15,8 @@ set -euo pipefail
 BBQTIMER_UPLOAD_KEYSTORE="${BBQTIMER_UPLOAD_KEYSTORE:-bbqtimer-upload-keystore.jks}"
 BBQTIMER_UPLOAD_ALIAS="${BBQTIMER_UPLOAD_ALIAS:-upload}"
 
-BBQTIMER_INSTALL_KEYSTORE="${BBQTIMER_INSTALL_KEYSTORE:-bbqtimer-release-keystore.jks}"
-BBQTIMER_INSTALL_ALIAS="${BBQTIMER_INSTALL_ALIAS:-BBQTimer}"
+BBQTIMER_INSTALL_KEYSTORE="${BBQTIMER_INSTALL_KEYSTORE:-$BBQTIMER_UPLOAD_KEYSTORE}"
+BBQTIMER_INSTALL_ALIAS="${BBQTIMER_INSTALL_ALIAS:-$BBQTIMER_UPLOAD_ALIAS}"
 
 DEST_DIR="app/release"
 mkdir -p "${DEST_DIR}"
@@ -27,16 +27,21 @@ echo "=== BBQTimer Dual Release Builder ==="
 
 # --- Step 1: Collect Passwords ---
 echo ""
-echo "--- 1. Google Play Upload Keystore (for AAB) ---"
-echo "Keystore: $BBQTIMER_UPLOAD_KEYSTORE"
+echo "--- 1. Keystore for Google Play (AAB) & IzzyOnDroid (APK) ---"
+echo "Upload Keystore: $BBQTIMER_UPLOAD_KEYSTORE (alias: $BBQTIMER_UPLOAD_ALIAS)"
 read -s -r -p "Enter Upload Keystore Password: " UPLOAD_STORE_PASS; echo ""
 read -s -r -p "Enter Upload Alias Password: " UPLOAD_KEY_PASS; echo ""
 
-echo ""
-echo "--- 2. App Installation Keystore (for APK for IzzyOnDroid) ---"
-echo "Keystore: $BBQTIMER_INSTALL_KEYSTORE"
-read -s -r -p "Enter Install Keystore Password: " INSTALL_STORE_PASS; echo ""
-read -s -r -p "Enter Install Alias Password: " INSTALL_KEY_PASS; echo ""
+if [ "$BBQTIMER_INSTALL_KEYSTORE" = "$BBQTIMER_UPLOAD_KEYSTORE" ] && [ "$BBQTIMER_INSTALL_ALIAS" = "$BBQTIMER_UPLOAD_ALIAS" ]; then
+    INSTALL_STORE_PASS="$UPLOAD_STORE_PASS"
+    INSTALL_KEY_PASS="$UPLOAD_KEY_PASS"
+else
+    echo ""
+    echo "--- 2. App Installation Keystore (for APK for IzzyOnDroid) ---"
+    echo "Install Keystore: $BBQTIMER_INSTALL_KEYSTORE (alias: $BBQTIMER_INSTALL_ALIAS)"
+    read -s -r -p "Enter Install Keystore Password: " INSTALL_STORE_PASS; echo ""
+    read -s -r -p "Enter Install Alias Password: " INSTALL_KEY_PASS; echo ""
+fi
 
 echo ""
 echo "Cleaning previous build outputs..."

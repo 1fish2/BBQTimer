@@ -62,20 +62,19 @@ android {
         play {
             dimension "store"
             isDefault = true
-            def playSigning = signingConfigs.playRelease
-            signingConfig = (playSigning.storeFile != null) ? playSigning : signingConfigs.debug
+            signingConfig signingConfigs.playRelease
         }
         izzy {
             dimension "store"
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.txt', 'proguard-izzy.txt'
-            def izzySigning = signingConfigs.izzyRelease
-            signingConfig = (izzySigning.storeFile != null) ? izzySigning : signingConfigs.debug
+            signingConfig signingConfigs.izzyRelease
         }
     }
 
     buildTypes {
         debug {
             isDefault = true
+            signingConfig signingConfigs.debug
             // Enable StrictMode for debug builds
             buildConfigField "boolean", "ENABLE_STRICT_MODE", "true"
         }
