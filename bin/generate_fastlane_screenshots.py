@@ -86,7 +86,7 @@ def resize_image_file(
         im_tool: str,
         src_file: Path,
         dst_file: Path,
-        scale: float,
+        scale: float = 1.0,
         quality: int = 90,
         verbose: bool = True) -> str:
     """Resize an image file and convert the format per dst_file."""
@@ -153,7 +153,7 @@ def resize_all(
                         f"(scale={scale_factor})"
                     )
                 else:
-                    resize_image_file(im_tool, src_path, dst_path, scale_factor, verbose)
+                    resize_image_file(im_tool, src_path, dst_path, scale_factor, verbose=verbose)
 
 
 def main() -> None:
