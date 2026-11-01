@@ -89,10 +89,13 @@ fi
 # Check the APK signature
 if command -v apksigner >/dev/null 2>&1; then
     echo "Verifying APK signature..."
-    apksigner verify "$APK_DEST"
+    apksigner verify --print-certs "$APK_DEST"
 else
     echo "apksigner is not on the path. Skipped: apksigner verify \"$APK_DEST\""
 fi
+
+# To list the aliases in a keystore:
+#   keytool -list -v -keystore $BBQTIMER_INSTALL_KEYSTORE
 
 echo ""
 echo "SUCCESS: Both artifacts built, verified, and staged:"
