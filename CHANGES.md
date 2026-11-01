@@ -1,6 +1,17 @@
 # BBQTimer change history
 
-## Beta release 5.0b1, versionCode 26, targetSdk 37 Android 17
+## Release 5.1, versionCode 27, targetSdk 37 Android 17
+
+### en-US
+
+* More tightly compressed widget preview images for Android 7–11.
+
+### de-DE
+
+* Stärker komprimierte Widget-Vorschaubilder für Android 7–11.
+
+
+## Release 5.0 = Beta release 5.0b1, versionCode 26, targetSdk 37 Android 17
 
 ### en-US
 * Support Android versions 7 - 17+, minSdk 24.
