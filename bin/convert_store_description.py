@@ -15,7 +15,8 @@ and a blank line). This script:
   * FastlaneConverter: Markdown bullet lists (* and 4-space nested *), preceding blank
     lines before bullet lists, and basic HTML inline formatting (<b>, <i>, <br><b>)
     for fastlane/metadata/android/*/full_description.txt.
-- Reports character counts and compares them to the 4,000-character limit.
+- Reports character counts and estimated HTML conversion lengths, comparing them
+  to the 4,000-character limit.
 """
 
 from __future__ import annotations
@@ -25,6 +26,7 @@ import argparse
 from pathlib import Path
 import re
 import sys
+from typing import Optional
 
 STORE_MAX_CHARS = 4000
 
@@ -153,6 +155,10 @@ class DescriptionConverter(ABC):
         _ = dst_path
         return 0, ""
 
+    def estimate_html(self, text: str) -> Optional[str]:
+        """Estimate how Fastlane or store tools convert description text to HTML."""
+        return None
+
     def convert_lines(self, raw_lines: list[str], is_german: bool) -> str:
         """Convert extracted Markdown lines into the target format."""
         output_lines: list[str] = []
@@ -265,12 +271,24 @@ class DescriptionConverter(ABC):
         total_chars = char_count + extra_chars
         diff_4000 = total_chars - STORE_MAX_CHARS
 
+        html_result = self.estimate_html(result)
+        if html_result is not None:
+            html_char_count = len(html_result)
+            html_total_chars = html_char_count + extra_chars
+            html_diff_4000 = html_total_chars - STORE_MAX_CHARS
+            max_diff_4000 = max(diff_4000, html_diff_4000)
+        else:
+            html_char_count = 0
+            html_total_chars = total_chars
+            html_diff_4000 = diff_4000
+            max_diff_4000 = diff_4000
+
         status_4000 = (
             f"{abs(diff_4000)} chars under limit"
             if diff_4000 <= 0
             else f"{diff_4000} CHARS OVER LIMIT!"
         )
-        status_indicator = "✓ OK" if diff_4000 <= 0 else "⚠ EXCEEDS LIMIT"
+        status_indicator = "✓ OK" if max_diff_4000 <= 0 else "⚠ EXCEEDS LIMIT"
 
         print(f"[{status_indicator}] {src_path.name} -> {dst_path}")
         if extra_chars > 0:
@@ -282,12 +300,27 @@ class DescriptionConverter(ABC):
             print(f"  Length: {char_count} characters")
         print(f"  vs {self.store_name} limit (4,000): {status_4000}")
 
+        if html_result is not None:
+            html_status_4000 = (
+                f"{abs(html_diff_4000)} chars under limit"
+                if html_diff_4000 <= 0
+                else f"{html_diff_4000} CHARS OVER LIMIT!"
+            )
+            if extra_chars > 0:
+                print(
+                    f"  Estimated HTML length: {html_char_count} characters"
+                    f" (+ {extra_chars} {extra_desc} = {html_total_chars} total)"
+                )
+            else:
+                print(f"  Estimated HTML length: {html_char_count} characters")
+            print(f"  vs {self.store_name} HTML limit (4,000): {html_status_4000}")
+
         if not dry_run:
             dst_path.parent.mkdir(parents=True, exist_ok=True)
             dst_path.write_text(result, encoding="utf-8")
             print(f"  Wrote {char_count} characters to {dst_path}")
 
-        return 0 if diff_4000 <= 0 else 2
+        return 0 if max_diff_4000 <= 0 else 2
 
 
 class PlayStoreConverter(DescriptionConverter):
@@ -370,6 +403,70 @@ class FastlaneConverter(DescriptionConverter):
             # IzzyOnDroid prepends short_description.txt + a blank line ("\n\n")
             return len(short_text) + 2, "for short_description + blank line"
         return 0, ""
+
+    def estimate_html(self, text: str) -> Optional[str]:
+        """Estimate how Fastlane tools convert full_description.txt to HTML.
+
+        - Bullet lists and nested lists are wrapped in <ul> ... </ul> tags.
+        - Each list item is wrapped in <li> ... </li> tags in place of bullet indicators
+          (e.g. "* " or "  • ").
+        - Paragraphs preceded by a blank line are wrapped in <p> ... </p> tags.
+        """
+        blocks = [b for b in text.strip().split("\n\n") if b]
+        html_blocks = []
+
+        for block in blocks:
+            lines = block.splitlines()
+            first_line = lines[0].strip()
+
+            # Check if block is a heading (starts with <br>)
+            if first_line.startswith("<br>"):
+                html_blocks.append(block)
+                continue
+
+            # Check if block is a bullet list (starts with * or • or indented bullet)
+            if re.match(r"^(\s*|\xa0*)[*\-•]\s+", first_line):
+                list_lines = ["<ul>"]
+                in_sublist = False
+
+                for line in lines:
+                    m_sub = re.match(r"^(\s{2,}|\xa0{2,})[*\-•]\s+(.*)$", line)
+                    m_top = re.match(r"^([*\-•])\s+(.*)$", line)
+                    m_cont = re.match(r"^(\s{2,})(.*)$", line)
+
+                    if m_sub:
+                        if not in_sublist:
+                            if list_lines and list_lines[-1].endswith("</li>"):
+                                list_lines[-1] = list_lines[-1][:-5]
+                            list_lines.append("<ul>")
+                            in_sublist = True
+                        list_lines.append(f"<li>{m_sub.group(2)}</li>")
+                    elif m_top:
+                        if in_sublist:
+                            list_lines.append("</ul>")
+                            list_lines.append("</li>")
+                            in_sublist = False
+                        list_lines.append(f"<li>{m_top.group(2)}</li>")
+                    elif m_cont:
+                        if list_lines:
+                            if list_lines[-1].endswith("</li>"):
+                                list_lines[-1] = list_lines[-1][:-5] + "\n" + line + "</li>"
+                            else:
+                                list_lines[-1] += "\n" + line
+                    else:
+                        list_lines.append(line)
+
+                if in_sublist:
+                    list_lines.append("</ul>")
+                    list_lines.append("</li>")
+
+                list_lines.append("</ul>")
+                html_blocks.append("\n".join(list_lines))
+            else:
+                # Paragraph block preceded by a blank line
+                html_blocks.append(f"<p>{block}</p>")
+
+        return "\n\n".join(html_blocks) + "\n"
 
 
 def main() -> int:

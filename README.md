@@ -8,8 +8,8 @@
 * **Quick access on the lock screen, home screen, and notifications without unlocking your phone.**  
   Pull-down notification, lock screen notification, home screen widget, lock screen widget, and use the app over the lock screen (on supported devices).
 * Adjust alarms while the timer is running.
-* Create a quick-access menu with frequent interval times and your own notes.
-* No ads.
+* Create a quick-access menu with frequent interval times and your own notes.[](no-fastlane)
+* No ads.[](/no-fastlane)
 
 Example intervals:
 * `10` = 10 minutes
@@ -24,8 +24,8 @@ Short forms:
 Enter the interval time in `minutes`, `minutes:seconds`, or `hours:minutes:seconds` (MM, MM:SS, HH:MM:SS).
 
 <!--suppress CheckImageSize -->
-<img alt="paused screenshot" height="540" src="Play-assets/Pixel 3 screenshots/screenshot paused.png">
-<img alt="lock-screen screenshot" height="540" src="Play-assets/Pixel 3 screenshots/screenshot lock screen.png">
+<img alt="paused screenshot" height="600" src="Play-assets/en-US/Pixel-8a-screenshots/paused.png">
+<img alt="lock-screen screenshot" height="600" src="Play-assets/en-US/Pixel-8a-screenshots/app-over-lockscreen-interval-menu.png">
 
 ## Android Requirements
 

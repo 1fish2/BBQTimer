@@ -4,15 +4,14 @@
   Pulldown- und Sperrbildschirm-Benachrichtigung, Start- und Sperrbildschirm-Widget sowie App über dem Sperrbildschirm nutzen (auf unterstützten Geräten).
 * Alarme bei laufendem Timer anpassen.
 * Schnellzugriff-Menü mit häufigen Intervallen und eigenen Notizen erstellen.
-* Werbefrei.
 
-<br>Beispiel-Intervalle:
+Beispiel-Intervalle:
 
 * <i>10</i> = 10 Minuten
 * <i>7:30</i> = 7 Minuten, 30 Sekunden
 * <i>3:15:00</i> = 3 Stunden, 15 Minuten
 
-<br>Praktische Kurzformen:
+Praktische Kurzformen:
 
 * <i>12:00</i> = <i>12:0</i> = <i>12:</i> = <i>12</i> = 12 Minuten
 * <i>0:09</i> = <i>:9</i> = 9 Sekunden
@@ -29,12 +28,10 @@ Gib das Alarmintervall in <i>Minuten</i>, <i>Minuten:Sekunden</i> oder <i>Stunde
 * BBQ Timer Startbildschirm-Widget:
     * Hinzufügen: App-Symbol gedrückt halten, im Menü auf Widgets tippen und das BBQ Timer-Widget antippen oder ziehen.
     * Im Widget auf ⏸️/▶️ oder die verstrichene Zeit tippen, um den Timer zu <i>starten</i>/<i>pausieren</i>/<i>stoppen</i>.
-    * Auf Hintergrund oder Countdown tippen, um die App zu öffnen.
     * Gedrückt halten und Rahmen ziehen, um mehr/weniger Infos zu sehen.
 * Wenn BBQ Timer <i>läuft</i> oder <i>pausiert</i> ist, ist er <b>auf dem Sperrbildschirm</b> und <b>in der Pulldown-Benachrichtigung</b>.
     * Für die Sperrbildschirm-Anzeige: In App oder Widget auf ⏸️ oder ▶️ tippen.
     * App-Symbol auf dem Startbildschirm gedrückt halten und „Pause bei 00:00“ wählen, um ihn zu <i>pausieren</i>.
-* App, Start-/Sperrbildschirm-Widget und Pulldown-Benachrichtigung zeigen Countdown-Intervall und gesamte verstrichene Zeit.
 * Im Alarmintervall-Feld auf ▲ tippen, um das Menü der Alarmintervalle zu öffnen.
     * Im Menü auf „Diese Intervalle bearbeiten…“ tippen (oder ▲ gedrückt halten), um es anzupassen.
     * Jede Zeile hat eine Dauer im Format <i>HH:MM:SS</i>, <i>MM:SS</i> oder <i>MM</i> plus optionale Notizen. Z. B. „6 dünne Fischfilets, bis 63 °C“ für 6 Min./Seite und Prüfung auf 63 °C.
