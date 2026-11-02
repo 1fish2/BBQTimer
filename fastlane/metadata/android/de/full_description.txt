@@ -1,6 +1,6 @@
 * <b>Erinnert dich regelmäßig ans Prüfen/Wenden des Grillguts und misst die gesamte Garzeit.</b>
   Intervall-Timer + Stoppuhr = regelmäßige Alarme + verstrichene Zeit.
-* <b>Schnellzugriff über Sperrbildschirm, Startbildschirm und Benachrichtigungen ohne Entsperren.</b>
+* <b>Schnellzugriff über Sperrbildschirm, Startbildschirm, Benachrichtigungen und Smartwatch ohne Entsperren.</b>
   Pulldown- und Sperrbildschirm-Benachrichtigung, Start- und Sperrbildschirm-Widget sowie App über dem Sperrbildschirm nutzen (auf unterstützten Geräten).
 * Alarme bei laufendem Timer anpassen.
 * Schnellzugriff-Menü mit häufigen Intervallen und eigenen Notizen erstellen.

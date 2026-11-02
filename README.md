@@ -5,7 +5,7 @@
 
 * **Reminds you periodically to check/flip the food while it tracks the total cooking time.**  
   Interval timer + stopwatch = periodic alarms + elapsed time.
-* **Quick access on the lock screen, home screen, and notifications without unlocking your phone.**  
+* **Quick access on the lock screen, home screen, notifications, and smartwatch without unlocking your phone.**  
   Pull-down notification, lock screen notification, home screen widget, lock screen widget, and use the app over the lock screen (on supported devices).
 * Adjust alarms while the timer is running.
 * Create a quick-access menu with frequent interval times and your own notes.[](no-fastlane)
